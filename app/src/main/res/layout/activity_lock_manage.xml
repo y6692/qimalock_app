@@ -99,6 +99,7 @@
                     style="@style/button_style"
                     android:text="修改开锁密码" />
                 <Button
+                    android:visibility="gone"
                     android:id="@+id/update_version_btn"
                     style="@style/button_style"
                     android:text="进入OAD模式"/>
@@ -107,6 +108,7 @@
                     style="@style/button_style"
                     android:text="@string/reset_lock" />
                 <Button
+                    android:visibility="gone"
                     android:id="@+id/bt_wx"
                     style="@style/button_style"
                     android:text="固件升级"/>

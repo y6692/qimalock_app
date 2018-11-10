@@ -211,8 +211,7 @@ public class LockStatusScanCaptureAct extends SwipeBackActivity{
 
 			Image barcode = new Image(size.width, size.height, "Y800");
 			barcode.setData(rotatedData);
-			barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(),
-					mCropRect.height());
+			barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
 
 			int result = mImageScanner.scanImage(barcode);
 			String resultStr = null;

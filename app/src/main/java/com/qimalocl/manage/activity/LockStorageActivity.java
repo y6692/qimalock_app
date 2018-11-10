@@ -116,6 +116,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     private String address;
     private boolean isAuto;
     private Dialog loadingDialog;
+    private Dialog loadingDialog2;
     public static final int QR_SCAN_REQUEST_CODE = 3638;
 
     private List<BleDevice> bleDeviceList = new ArrayList<>();
@@ -175,6 +176,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         name = getIntent().getStringExtra("name");
         address = getIntent().getStringExtra("address");
         codenum = getIntent().getStringExtra("codenum");
+
+        Log.e("LockStorageActivity===", name+"==="+address+"==="+codenum);
+
         if (!TextUtils.isEmpty(address)) {
             BaseApplication.getInstance().getIBLE().connect(address, this);
         }
@@ -192,12 +196,12 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
 //                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
-//                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-//                        Config.passwordnew[2], Config.passwordnew[3],
-//                        Config.passwordnew[4], Config.passwordnew[5]};
-                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
-                        Config.passwordnew2[2], Config.passwordnew2[3],
-                        Config.passwordnew2[4], Config.passwordnew2[5]};
+                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+                        Config.passwordnew[2], Config.passwordnew[3],
+                        Config.passwordnew[4], Config.passwordnew[5]};
+//                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
+//                        Config.passwordnew2[2], Config.passwordnew2[3],
+//                        Config.passwordnew2[4], Config.passwordnew2[5]};
                 BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
 
                 m_myHandler.postDelayed(new Runnable() {
@@ -262,15 +266,15 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                         }
                     }
                     try {
-//                        Intent intent = new Intent();
-//                        intent.setClass(LockStorageActivity.this, AddCarCaptureAct.class);
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        intent.putExtra("isChangeKey",false);
-//                        startActivityForResult(intent, 1);
+                        Intent intent = new Intent();
+                        intent.setClass(LockStorageActivity.this, AddCarCaptureAct.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.putExtra("isChangeKey",false);
+                        startActivityForResult(intent, 1);
 
 //                        37===010580b015b14bb200a444f8a765f4a1===http://www.7mate.cn/app.php?randnum=bqk0008804===60008804===CB:12:F0:0C:60:33
 
-                        addCar("http://www.7mate.cn/app.php?randnum=bqk0008804","60008804");
+//                        addCar("http://www.7mate.cn/app.php?randnum=bqk0008804","60008804");
 
 
                     } catch (Exception e) {
@@ -418,8 +422,8 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                             changPsd();
                         }
                     }
-                    if (loadingDialog != null && loadingDialog.isShowing()) {
-                        loadingDialog.dismiss();
+                    if (loadingDialog2 != null && loadingDialog2.isShowing()) {
+                        loadingDialog2.dismiss();
                     }
                     break;
                 default:
@@ -475,15 +479,44 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     if (result.getFlag().equals("Success")) {
                         Toast.makeText(context, "恭喜您，数据提交成功", Toast.LENGTH_SHORT).show();
                         BaseApplication.getInstance().getIBLE().setChangKey(true);
+
+
+
+                        isChangePsd = true;
+                        loadingDialog2 = DialogUtils.getLoadingDialog(context, "正在修改密码");
+                        loadingDialog2.show();
+
+//                        loadingDialog.setTitle("正在修改密码");
+//                        loadingDialog.show();
+
+                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+                                Config.passwordnew[2], Config.passwordnew[3],
+                                Config.passwordnew[4], Config.passwordnew[5]};
+                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
+
+                        m_myHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+                                        Config.passwordnew[2], Config.passwordnew[3],
+                                        Config.passwordnew[4], Config.passwordnew[5]};
+
+                                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
+                            }
+                        }, 2000);
+
                     } else {
                         Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+
                 }
                 if (loadingDialog != null && loadingDialog.isShowing()) {
                     loadingDialog.dismiss();
                 }
+
             }
         });
     }
@@ -505,16 +538,16 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         HttpHelper.post(context, Urls.changePsd, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在提交");
-                    loadingDialog.show();
+                if (loadingDialog2 != null && !loadingDialog2.isShowing()) {
+                    loadingDialog2.setTitle("正在提交");
+                    loadingDialog2.show();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()) {
-                    loadingDialog.dismiss();
+                if (loadingDialog2 != null && loadingDialog2.isShowing()) {
+                    loadingDialog2.dismiss();
                 }
                 UIHelper.ToastError(context, throwable.toString());
             }
@@ -532,8 +565,8 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (loadingDialog != null && loadingDialog.isShowing()) {
-                    loadingDialog.dismiss();
+                if (loadingDialog2 != null && loadingDialog2.isShowing()) {
+                    loadingDialog2.dismiss();
                 }
             }
         });
@@ -612,8 +645,8 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
             case 1:
                 if (resultCode == RESULT_OK) {
                     String result = data.getStringExtra("QR_CODE");
-                    String bikeNum = edbikeNum.getText().toString().trim();
-                    addCar(result,bikeNum);
+                    codenum = edbikeNum.getText().toString().trim();
+                    addCar(result, codenum);
                 } else {
                     Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                 }
@@ -734,14 +767,18 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 //                            return;
                         }else {
                             Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         Log.e("addCar===eee", "==="+e);
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
                     }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
+
                 }
             });
         }

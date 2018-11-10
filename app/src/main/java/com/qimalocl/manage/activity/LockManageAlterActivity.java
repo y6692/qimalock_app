@@ -166,6 +166,9 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         codenum = getIntent().getStringExtra("codenum");
         pdk = getIntent().getStringExtra("pdk");
         pwd = getIntent().getStringExtra("pwd");
+
+        Log.e("LockManageAlert===", pdk+"==="+address);
+
         if (!TextUtils.isEmpty(address)) {
             BaseApplication.getInstance().getIBLE().connect(address, this);
         }
@@ -275,6 +278,9 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             String data = intent.getStringExtra("data");
+
+            Log.e("Receiver===", action+"==="+data);
+
             switch (action) {
                 case Config.TOKEN_ACTION:
                     isStop = true;
@@ -400,6 +406,9 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
             UIHelper.goToAct(context, LoginActivity.class);
             return;
         }
+
+        Log.e("changKey===", uid+"==="+access_token+"==="+codenum);
+
         RequestParams params = new RequestParams();
         params.put("uid", uid);
         params.put("access_token", access_token);
@@ -523,10 +532,14 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
      * 获取token
      */
     private void getToken() {
+        Log.e("===1", "===");
+
         m_myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Log.e("===2", "===");
                 BaseApplication.getInstance().getIBLE().getToken();
+                Log.e("===3", "===");
             }
         }, 1000);
     }

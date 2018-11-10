@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -281,6 +282,25 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
     }
 
     @Override
+    public void permissionSuccess(int requestCode) {
+        super.permissionSuccess(requestCode);
+
+        Log.e("LockManageActivity===", "==="+pdk);
+
+        if (101 == requestCode) {
+            Logger.e(getClass().getSimpleName(), "申请成功了");
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    BaseApplication.getInstance().getIBLE().stopScan();
+                }
+            }, 20 * 1000);
+            bluetoothDeviceList.clear();
+            BaseApplication.getInstance().getIBLE().startScan(this);
+        }
+    }
+
+    @Override
     public void onScanDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
         if (!bluetoothDeviceList.contains(device)) {
             bluetoothDeviceList.add(device);
@@ -330,6 +350,9 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                     }, 1000);
                     tvVersion.setText(getText(R.string.device_version) + GlobalParameterUtils.getInstance().getVersion());
                     //修改密钥
+
+                    Log.e("LockManageActivity===", "==="+pdk);
+
                     if ("1".equals(pdk)) {
                         loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
                         loadingDialog.show();
@@ -597,21 +620,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
         requestPermission(new String[]{Manifest.permission.CAMERA}, 101);
     }
 
-    @Override
-    public void permissionSuccess(int requestCode) {
-        super.permissionSuccess(requestCode);
-        if (101 == requestCode) {
-            Logger.e(getClass().getSimpleName(), "申请成功了");
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    BaseApplication.getInstance().getIBLE().stopScan();
-                }
-            }, 20 * 1000);
-            bluetoothDeviceList.clear();
-            BaseApplication.getInstance().getIBLE().startScan(this);
-        }
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

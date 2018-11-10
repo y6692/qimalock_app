@@ -713,26 +713,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Log.e("requestCode===", "==="+requestCode);
+
         switch (requestCode) {
+
             case 1:
                 if (resultCode == RESULT_OK) {
                     String result = data.getStringExtra("QR_CODE");
-                    upcarmap(result);
+//                    upcarmap(result);
+                    lock(result);
                 } else {
 					Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                 }
+
+                Log.e("requestCode===1", "==="+resultCode);
                 break;
+
             case 2:
                 if (resultCode == RESULT_OK) {
                     String result = data.getStringExtra("QR_CODE");
                     switch (isLock){
                         case 1:
+                            Log.e("requestCode===2_1", "==="+resultCode);
                             lock(result);
                             break;
                         case 2:
+                            Log.e("requestCode===2_2", "==="+resultCode);
                             unLock(result);
                             break;
                         case 3:
+                            Log.e("requestCode===2_3", "==="+resultCode);
                             endCar(result);
                             break;
                         default:
@@ -741,9 +752,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
                 } else {
                     Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                 }
+
+                Log.e("requestCode===2", "==="+resultCode);
                 break;
+
             default:
                 break;
+
         }
     }
 

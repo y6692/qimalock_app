@@ -302,7 +302,7 @@ public class AndroidBle implements IBLE {
                 }else {
                     miwen = Encrypt(ConvertUtils.hexString2Bytes(txOrder.generateString()), Config.key);
 
-//                    miwen = Encrypt(ConvertUtils.hexString2Bytes(txOrder.generateString()), Config.newKey2);
+//                    miwen = Encrypt(ConvertUtils.hexString2Bytes(txOrder.generateString()), Config.newKey);
 
                     Log.e("writeObject===3", "==="+miwen);
 

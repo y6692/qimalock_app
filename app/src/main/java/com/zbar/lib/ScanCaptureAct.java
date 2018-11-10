@@ -398,6 +398,9 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 								scrollToFinishActivity();
 							}else {
 								codenum = jsonObject.getString("codenum");
+
+								Log.e("Scan===", isChangeKey+"==="+jsonObject.getString("pdk"));
+
 								if (!isChangeKey){
 									if ("2".equals(jsonObject.getString("pdk"))){
 										BaseApplication.getInstance().getIBLE().setChangKey(true);
@@ -418,8 +421,7 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 									scrollToFinishActivity();
 								}
 								//蓝牙锁
-								BluetoothManager bluetoothManager =
-										(BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+								BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
 								mBluetoothAdapter = bluetoothManager.getAdapter();
 
