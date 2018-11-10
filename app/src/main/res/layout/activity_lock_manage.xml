@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/ui_main"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true">
+
+    <include
+        layout="@layout/ui_main_title"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/ui_backgroud"
+        android:paddingTop="@dimen/dp5">
+        <com.qimalocl.manage.core.widget.ReboundScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp30">
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    style="@style/text_style"
+                    android:text="name:"
+                    android:layout_width="match_parent" />
+
+                <TextView
+                    android:id="@+id/tv_address"
+                    style="@style/text_style"
+                    android:text="address:" />
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    style="@style/text_style"
+                    android:text="@string/connect_status" />
+
+                <TextView
+                    android:id="@+id/tv_version"
+                    style="@style/text_style"
+                    android:text="@string/device_version" />
+
+                <TextView
+                    android:id="@+id/tv_battery"
+                    style="@style/text_style"
+                    android:text="@string/battery" />
+
+                <TextView
+                    android:id="@+id/tv_cz"
+                    style="@style/text_style"
+                    android:text="@string/current_cz" />
+
+                <TextView
+                    android:id="@+id/open_count"
+                    style="@style/text_style"
+                    android:text="@string/open_count" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/bt_open"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:textAllCaps="false"
+                        android:background="@drawable/bg_button"
+                        android:textColor="@drawable/box_text_color"
+                        android:text="@string/Open"
+                        android:gravity="center"/>
+
+                    <CheckBox
+                        android:id="@+id/bt_auto"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@drawable/box_text_color"
+                        android:layout_weight="1"
+                        android:text="@string/auto_open"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/bt_status"
+                    style="@style/button_style"
+                    android:text="@string/lock_status" />
+                <Button
+                    android:id="@+id/change_psd_btn"
+                    style="@style/button_style"
+                    android:text="修改开锁密码" />
+                <Button
+                    android:id="@+id/update_version_btn"
+                    style="@style/button_style"
+                    android:text="进入OAD模式"/>
+                <Button
+                    android:id="@+id/bt_close"
+                    style="@style/button_style"
+                    android:text="@string/reset_lock" />
+                <Button
+                    android:id="@+id/bt_wx"
+                    style="@style/button_style"
+                    android:text="固件升级"/>
+                <RadioGroup
+                    android:id="@+id/rg_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rb_mt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="@string/mts" />
+
+                    <RadioButton
+                        android:visibility="gone"
+                        android:id="@+id/rb_yx"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="@string/ys" />
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/app_version"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="bottom|center"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:padding="5dp"
+                    android:text="Version：" />
+            </LinearLayout>
+        </com.qimalocl.manage.core.widget.ReboundScrollView>
+    </LinearLayout>
+</LinearLayout>

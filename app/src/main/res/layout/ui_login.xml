@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ui_main"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical" >
+
+    <include layout="@layout/ui_main_title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/ui_backgroud">
+
+        <com.qimalocl.manage.core.widget.MyScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/ui_backgroud">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#f7f7f7"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/loginUI_headLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp160"
+                    android:background="#f7f7f7"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="@dimen/dp90"
+                        android:layout_height="@dimen/dp90"
+                        android:background="@null"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/login_icon" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp45"
+                    android:layout_marginLeft="@dimen/dp10"
+                    android:layout_marginRight="@dimen/dp10"
+                    android:background="@drawable/shape_feedback_edit"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/dp15"
+                        android:text="账户:"
+                        android:textColor="@color/tx_black"
+                        android:textSize="@dimen/sp14" />
+
+                    <com.qimalocl.manage.core.widget.ClearEditText
+                        android:id="@+id/loginUI_userName"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:drawableRight="@drawable/delete_selector"
+                        android:hint="请输入您的手机号码"
+                        android:inputType="numberDecimal"
+                        android:maxLength="11"
+                        android:paddingBottom="0dp"
+                        android:paddingLeft="@dimen/dp20"
+                        android:paddingRight="0dp"
+                        android:textColorHint="#ceced4"
+                        android:textSize="@dimen/sp12" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp45"
+                    android:layout_marginLeft="@dimen/dp10"
+                    android:layout_marginRight="@dimen/dp10"
+                    android:layout_marginTop="@dimen/dp10"
+                    android:background="@drawable/shape_feedback_edit"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/dp15"
+                        android:text="密码:"
+                        android:textColor="@color/tx_black"
+                        android:textSize="@dimen/sp14" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <com.qimalocl.manage.core.widget.ClearEditText
+                            android:id="@+id/LoginUI_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="@dimen/dp10"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:drawableRight="@drawable/delete_selector"
+                            android:hint="登录密码"
+                            android:inputType="textPassword"
+                            android:paddingBottom="0dp"
+                            android:paddingLeft="@dimen/dp20"
+                            android:paddingRight="0dp"
+                            android:textColorHint="#ceced4"
+                            android:textSize="@dimen/sp12" />
+
+                        <ImageView
+                            android:id="@+id/LoginUI_checkBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="6"
+                            android:background="@null"
+                            android:padding="8dp"
+                            android:src="@drawable/checkbox_normal" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/loginUI_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp45"
+                    android:layout_marginLeft="@dimen/dp15"
+                    android:layout_marginRight="@dimen/dp15"
+                    android:layout_marginTop="@dimen/dp25"
+                    android:background="@drawable/btn_bcg"
+                    android:gravity="center"
+                    android:maxHeight="0dp"
+                    android:text="登录"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp16" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp45"
+                    android:layout_marginTop="@dimen/dp5">
+
+                </RelativeLayout>
+            </LinearLayout>
+        </com.qimalocl.manage.core.widget.MyScrollView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_height"
+            android:background="#a3a2a2" />
+    </LinearLayout>
+</LinearLayout>

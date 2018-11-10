@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp40"
+        android:background="#f57752"
+        android:text="温馨提示"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp16"
+        android:gravity="center"/>
+
+    <ImageView
+        android:id="@+id/dialogConfirm_icon"
+        android:layout_width="@dimen/dp30"
+        android:layout_height="@dimen/dp30"
+        android:layout_marginTop="@dimen/dp10"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_error"
+        android:scaleType="centerInside"/>
+
+    <TextView
+        android:id="@+id/dialogConfirm_descText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="@dimen/dp5"
+        android:layout_marginBottom="@dimen/dp10"
+        android:gravity="center"
+        android:textColor="@color/tx_black_light"
+        android:textSize="@dimen/sp14" 
+        android:lineSpacingExtra="@dimen/dp5"/>
+    
+     <View  
+        android:layout_width="match_parent"  
+        android:layout_height="1dip"  
+        android:background="#FFefefef" />
+     <LinearLayout
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+  
+        <Button
+            android:id="@+id/dialogConfirm_sureButton"
+            android:layout_width="0dip"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dip"
+            android:layout_weight="1"
+            android:background="@null"
+            android:singleLine="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="确定"
+            android:textSize="@dimen/sp14"
+            android:textColor="#f57752" />
+
+        <ImageView 
+            android:layout_marginLeft="1dp" 
+            android:layout_marginRight="1dp" 
+            android:layout_width="1dp" 
+            android:layout_height="match_parent"  
+            android:background="@drawable/alertborder"/>
+        <Button
+            android:id="@+id/dialogConfirm_cancelButton"
+            android:layout_marginTop="0dip"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:background="@null"
+            android:textSize="@dimen/sp14"
+            android:layout_height="40dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="取消"
+            android:singleLine="true"/>
+  
+    </LinearLayout>
+</LinearLayout>
