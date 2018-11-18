@@ -432,7 +432,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
                 UIHelper.goToAct(context,DeviceListActivity.class);
                 break;
             case R.id.mainUI_lockLayout:
-                isLock = 1;
+                isLock = 4;
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
                     UIHelper.goToAct(context,LoginActivity.class);
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
@@ -467,7 +467,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
                         intent.setClass(MainActivity.this, LockStatusScanCaptureAct.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtra("isChangeKey",true);
-                        startActivityForResult(intent, 1);
+                        intent.putExtra("notShow",true);
+                        startActivityForResult(intent, 2);
                     } catch (Exception e) {
                         UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
                     }
@@ -746,6 +747,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
                             Log.e("requestCode===2_3", "==="+resultCode);
                             endCar(result);
                             break;
+                        case 4:
+                            Log.e("requestCode===2_4", "==="+resultCode);
+                            recycle(result);
+                            break;
                         default:
                             break;
                     }
@@ -809,6 +814,54 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
             });
         }
     }
+
+    private void recycle(String result){
+
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("uid",uid);
+            params.put("access_token",access_token);
+            params.put("codenum",result);
+            HttpHelper.post(context, Urls.recycle, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            Toast.makeText(context,"恭喜您，回收成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+
     private void lock(String result){
 
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");

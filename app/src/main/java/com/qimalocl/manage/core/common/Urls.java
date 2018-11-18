@@ -36,6 +36,8 @@ public class Urls {
 	public static String changePsd = host + "/index.php?g=App&m=UserManage&a=pwd";
 	/**入库*/
 	public static String addCar = host + "/index.php?g=App&m=Index&a=addblueCar";
+	/**回收*/
+	public static String recycle = host + "/index.php?g=App&m=UserManage&a=update_car_callback_lock";
 	/**锁定*/
 	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";
 	/**解锁*/

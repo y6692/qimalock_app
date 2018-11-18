@@ -35,11 +35,16 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
-            android:gravity="center"
-            android:text="输入编号开锁"
+            android:layout_centerVertical="true"
+            android:paddingRight="@dimen/dp10"
+            android:paddingLeft="@dimen/dp10"
             android:textSize="@dimen/sp14"
             android:textColor="@color/white"
-            android:layout_marginRight="@dimen/dp10"/>
+            android:text="输入编号开锁"
+            android:gravity="center_vertical"
+            android:onClick="btn"/>
+
+
     </RelativeLayout>
 
     <RelativeLayout

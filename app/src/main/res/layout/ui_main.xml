@@ -130,13 +130,13 @@
             <ImageView
                 android:layout_width="@dimen/dp60"
                 android:layout_height="@dimen/dp60"
-                android:src="@drawable/lock_icon"
+                android:src="@drawable/recycle"
                 android:scaleType="centerInside"
                 android:padding="@dimen/dp10"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="锁定"
+                android:text="回收"
                 android:textColor="@color/tx_black"
                 android:textSize="@dimen/sp14"/>
         </LinearLayout>

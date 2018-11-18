@@ -1,6 +1,8 @@
 package com.zbar.lib;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetFileDescriptor;
@@ -17,17 +19,26 @@ import android.os.Vibrator;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.LoginActivity;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.zbar.lib.camera.CameraManager;
 import com.zbar.lib.camera.CameraPreview;
@@ -72,6 +83,13 @@ public class LockStatusScanCaptureAct extends SwipeBackActivity{
 	private TextView cancle;
 
 	private Button lightBtn;
+	private TextView bikeNunBtn;
+	private Context context = this;
+
+	private Dialog dialog;
+	private EditText bikeNumEdit;
+	private Button positiveButton,negativeButton;
+	private boolean notShow = false;
 
 	static {
 		System.loadLibrary("iconv");
@@ -81,6 +99,7 @@ public class LockStatusScanCaptureAct extends SwipeBackActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_scanner_location);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		notShow = getIntent().getExtras().getBoolean("notShow");
 		findViewById();
 	}
 
@@ -91,6 +110,22 @@ public class LockStatusScanCaptureAct extends SwipeBackActivity{
 		scanLine = (ImageView) findViewById(R.id.capture_scan_line);
 		cancle = (TextView) findViewById(R.id.loca_show_btncancle);
 		lightBtn = (Button)findViewById(R.id.activity_qr_scan_lightBtn);
+		bikeNunBtn = (TextView)findViewById(R.id.loca_show_btnBikeNum);
+
+		dialog = new Dialog(this, R.style.Theme_AppCompat_Dialog);
+		View dialogView = LayoutInflater.from(this).inflate(R.layout.pop_circles_menu, null);
+		dialog.setContentView(dialogView);
+		dialog.setCanceledOnTouchOutside(false);
+
+		bikeNumEdit = (EditText)dialogView.findViewById(R.id.pop_circlesMenu_bikeNumEdit);
+		positiveButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_positiveButton);
+		negativeButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_negativeButton);
+
+		if(notShow){
+			bikeNunBtn.setVisibility(View.GONE);
+		}else{
+			bikeNunBtn.setVisibility(View.VISIBLE);
+		}
 
 		cancle.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -104,6 +139,71 @@ public class LockStatusScanCaptureAct extends SwipeBackActivity{
 				light();
 			}
 		});
+
+		bikeNunBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+				String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+
+				if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+					Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+					UIHelper.goToAct(context, LoginActivity.class);
+				}else {
+					//关闭相机
+					releaseCamera();
+					mCameraManager.closeDriver();
+
+					WindowManager windowManager = getWindowManager();
+					Display display = windowManager.getDefaultDisplay();
+					WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+					lp.width = (int) (display.getWidth() * 0.8); 								// 设置宽度0.6
+					lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+					dialog.getWindow().setAttributes(lp);
+					dialog.getWindow().setWindowAnimations(R.style.dialogWindowAnim);
+					dialog.show();
+
+					InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+					manager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
+					manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+				}
+			}
+		});
+
+		positiveButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String bikeNum = bikeNumEdit.getText().toString().trim();
+				if (bikeNum == null || "".equals(bikeNum)){
+					Toast.makeText(context,"请输入单车编号",Toast.LENGTH_SHORT).show();
+					return;
+				}
+				InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+				manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+				if (dialog.isShowing()) {
+					dialog.dismiss();
+				}
+//				Tag = 1;
+
+				Intent rIntent = new Intent();
+				rIntent.putExtra("QR_CODE", bikeNum);
+				setResult(RESULT_OK, rIntent);
+				scrollToFinishActivity();
+
+			}
+		});
+
+		negativeButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				InputMethodManager manager1= (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+				manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+				if (dialog.isShowing()) {
+					dialog.dismiss();
+				}
+			}
+		});
+
 	}
 
 	@Override
@@ -181,7 +281,6 @@ public class LockStatusScanCaptureAct extends SwipeBackActivity{
 		inactivityTimer.shutdown();
 		super.onDestroy();
 	}
-
 
 	private Runnable doAutoFocus = new Runnable() {
 		public void run() {

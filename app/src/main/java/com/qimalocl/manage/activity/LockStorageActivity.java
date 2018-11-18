@@ -704,9 +704,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
             RequestParams params = new RequestParams();
             params.put("uid",uid);
             params.put("access_token",access_token);
-            params.put("tokencode",result);
-            params.put("codenum",codenum);
-            params.put("macinfo",address);
+            params.put("tokencode",result);    //二维码链接地址
+            params.put("codenum",codenum);     //车辆编号
+            params.put("macinfo",address);    //mac地址
 
             Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+codenum+"==="+address);
 
@@ -749,20 +749,20 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 //                            }, 2000);
 
 
-                            byte[] bytes = {Config.newKey2[0],
-                                    Config.newKey2[1], Config.newKey2[2], Config.newKey2[3], Config.newKey2[4],
-                                    Config.newKey2[5], Config.newKey2[6], Config.newKey2[7]};
-                            BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
-
-                            m_myHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    byte[] bytes1 = {Config.newKey2[8],
-                                            Config.newKey2[9], Config.newKey2[10], Config.newKey2[11], Config.newKey2[12],
-                                            Config.newKey2[13], Config.newKey2[14], Config.newKey2[15]};
-                                    BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
-                                }
-                            }, 2000);
+//                            byte[] bytes = {Config.newKey2[0],
+//                                    Config.newKey2[1], Config.newKey2[2], Config.newKey2[3], Config.newKey2[4],
+//                                    Config.newKey2[5], Config.newKey2[6], Config.newKey2[7]};
+//                            BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
+//
+//                            m_myHandler.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    byte[] bytes1 = {Config.newKey2[8],
+//                                            Config.newKey2[9], Config.newKey2[10], Config.newKey2[11], Config.newKey2[12],
+//                                            Config.newKey2[13], Config.newKey2[14], Config.newKey2[15]};
+//                                    BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
+//                                }
+//                            }, 2000);
 
 //                            return;
                         }else {
