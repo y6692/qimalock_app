@@ -18,6 +18,7 @@ public class Urls {
 	public static String loginNormal = host + "/index.php?g=App&m=Login&a=loginNormalDdy";
 	/**扫码用车*/
 	public static String useCar = host + "/index.php?g=App&m=User&a=useCarDdy";
+	public static String useCar2 = host + "/index.php?g=App&m=User&a=useCar";
 	/**获取启动页图广告*/
 	public static String getIndexAd = host + "/index.php?g=App&m=Index&a=getIndexAd";
 	/**上报位置*/

@@ -126,24 +126,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
             int checkPermission = this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
             if (checkPermission != PackageManager.PERMISSION_GRANTED) {
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                            101);
+                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
                 } else {
-                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                            MainActivity.this.requestPermissions(
-                                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                                    101);
-                        }
-                    });
-                    customBuilder.create().show();
+//                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
+//                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
+//                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.cancel();
+//                                }
+//                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.cancel();
+//                            MainActivity.this.requestPermissions(
+//                                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+//                                    101);
+//                        }
+//                    });
+//                    customBuilder.create().show();
+
+                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
                 }
                 return;
             }
@@ -1065,20 +1066,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,L
                 break;
             case 101:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
-                    if (permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        if (aMap == null) {
-                            aMap = mapView.getMap();
-                            setUpMap();
-                        }
-                        aMap.getUiSettings().setZoomControlsEnabled(false);
-                        aMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        aMap.getUiSettings()
-                                .setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(15);// 设置缩放监听
-                        aMap.moveCamera(cameraUpdate);
-                        setUpLocationStyle();
-                    }
+//                    if (permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+//                        if (aMap == null) {
+//                            aMap = mapView.getMap();
+//                            setUpMap();
+//                        }
+//                        aMap.getUiSettings().setZoomControlsEnabled(false);
+//                        aMap.getUiSettings().setMyLocationButtonEnabled(false);
+//                        aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
+//                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(15);// 设置缩放监听
+//                        aMap.moveCamera(cameraUpdate);
+//                        setUpLocationStyle();
+//                    }
+
+                    initView();
                 } else {
                     CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
                     customBuilder.setTitle("温馨提示").setMessage("您需要在设置里允许获取定位权限！")

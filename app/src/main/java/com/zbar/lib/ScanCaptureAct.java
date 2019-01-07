@@ -345,7 +345,6 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 			}
 
 			if (!TextUtils.isEmpty(resultStr)) {
-
 				inactivityTimer.onActivity();
 				playBeepSoundAndVibrate();
 
@@ -393,13 +392,14 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 						ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 						if (result.getFlag().equals("Success")) {
 							JSONObject jsonObject = new JSONObject(result.getData());
+
+							Log.e("Scan===", isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
 							if ("1".equals(jsonObject.getString("type"))){
 								//机械锁
 								scrollToFinishActivity();
 							}else {
 								codenum = jsonObject.getString("codenum");
-
-								Log.e("Scan===", isChangeKey+"==="+jsonObject.getString("pdk"));
 
 								if (!isChangeKey){
 									if ("2".equals(jsonObject.getString("pdk"))){
@@ -416,51 +416,110 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 									BaseApplication.getInstance().getIBLE().setChangKey(false);
 									BaseApplication.getInstance().getIBLE().setChangPsd(false);
 								}
-								if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-									Toast.makeText(ScanCaptureAct.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
-									scrollToFinishActivity();
-								}
-								//蓝牙锁
-								BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
-								mBluetoothAdapter = bluetoothManager.getAdapter();
+								if ("2".equals(jsonObject.getString("type"))){
+									if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+										Toast.makeText(ScanCaptureAct.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
+										scrollToFinishActivity();
+									}
+									//蓝牙锁
+									BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+									mBluetoothAdapter = bluetoothManager.getAdapter();
 
-								if (mBluetoothAdapter == null) {
-									Toast.makeText(ScanCaptureAct.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
-									scrollToFinishActivity();
-									return;
-								}
-								if (!mBluetoothAdapter.isEnabled()) {
-									Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-									startActivityForResult(enableBtIntent, 188);
-								}else{
-									if (!isChangeKey){
-										if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-											Intent intent = new Intent(ScanCaptureAct.this, LockManageAlterActivity.class);
-											intent.putExtra("name", "NokeLock");
-											intent.putExtra("codenum",codenum);
-											intent.putExtra("pdk",jsonObject.getString("pdk"));
-											intent.putExtra("pwd",jsonObject.getString("pwd"));
-											intent.putExtra("address", jsonObject.getString("macinfo"));
-											startActivity(intent);
+									if (mBluetoothAdapter == null) {
+										Toast.makeText(ScanCaptureAct.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
+										scrollToFinishActivity();
+										return;
+									}
+									if (!mBluetoothAdapter.isEnabled()) {
+										Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+										startActivityForResult(enableBtIntent, 188);
+									}else{
+										if (!isChangeKey){
+											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+												Intent intent = new Intent(ScanCaptureAct.this, LockManageAlterActivity.class);
+												intent.putExtra("name", "NokeLock");
+												intent.putExtra("codenum",codenum);
+												intent.putExtra("pdk",jsonObject.getString("pdk"));
+												intent.putExtra("pwd",jsonObject.getString("pwd"));
+												intent.putExtra("address", jsonObject.getString("macinfo"));
+												startActivity(intent);
+											}else {
+												Intent intent = new Intent(ScanCaptureAct.this, LockManageActivity.class);
+												intent.putExtra("name", "NokeLock");
+												intent.putExtra("codenum",codenum);
+												intent.putExtra("pdk",jsonObject.getString("pdk"));
+												intent.putExtra("pwd",jsonObject.getString("pwd"));
+												intent.putExtra("address", jsonObject.getString("macinfo"));
+												startActivity(intent);
+											}
 										}else {
-											Intent intent = new Intent(ScanCaptureAct.this, LockManageActivity.class);
+											Intent intent = new Intent(ScanCaptureAct.this, ChangeKeyLockManageActivity.class);
 											intent.putExtra("name", "NokeLock");
 											intent.putExtra("codenum",codenum);
-											intent.putExtra("pdk",jsonObject.getString("pdk"));
-											intent.putExtra("pwd",jsonObject.getString("pwd"));
 											intent.putExtra("address", jsonObject.getString("macinfo"));
 											startActivity(intent);
 										}
-									}else {
-										Intent intent = new Intent(ScanCaptureAct.this, ChangeKeyLockManageActivity.class);
-										intent.putExtra("name", "NokeLock");
-										intent.putExtra("codenum",codenum);
-										intent.putExtra("address", jsonObject.getString("macinfo"));
-										startActivity(intent);
+										scrollToFinishActivity();
 									}
-									scrollToFinishActivity();
+								}else if ("3".equals(jsonObject.getString("type"))){    //3合1锁
+
+									Log.e("Scan===", jsonObject.getString("code")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+
+									if ("200".equals(jsonObject.getString("code"))){
+										Log.e("useBike===", "===="+jsonObject);
+
+										scrollToFinishActivity();
+//										getCurrentorder(uid, access_token);
+									}else if ("404".equals(jsonObject.getString("code"))){
+										if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+											Toast.makeText(ScanCaptureAct.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
+											scrollToFinishActivity();
+										}
+										BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+										mBluetoothAdapter = bluetoothManager.getAdapter();
+
+										if (mBluetoothAdapter == null) {
+											Toast.makeText(ScanCaptureAct.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
+											scrollToFinishActivity();
+											return;
+										}
+										if (!mBluetoothAdapter.isEnabled()) {
+											Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+											startActivityForResult(enableBtIntent, 188);
+										}else{
+											if (!isChangeKey){
+												if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+													Intent intent = new Intent(ScanCaptureAct.this, LockManageAlterActivity.class);
+													intent.putExtra("name", "NokeLock");
+													intent.putExtra("codenum",codenum);
+													intent.putExtra("pdk",jsonObject.getString("pdk"));
+													intent.putExtra("pwd",jsonObject.getString("pwd"));
+													intent.putExtra("address", jsonObject.getString("macinfo"));
+													startActivity(intent);
+												}else {
+													Intent intent = new Intent(ScanCaptureAct.this, LockManageActivity.class);
+													intent.putExtra("name", "NokeLock");
+													intent.putExtra("codenum",codenum);
+													intent.putExtra("pdk",jsonObject.getString("pdk"));
+													intent.putExtra("pwd",jsonObject.getString("pwd"));
+													intent.putExtra("address", jsonObject.getString("macinfo"));
+													startActivity(intent);
+												}
+											}else {
+												Intent intent = new Intent(ScanCaptureAct.this, ChangeKeyLockManageActivity.class);
+												intent.putExtra("name", "NokeLock");
+												intent.putExtra("codenum",codenum);
+												intent.putExtra("address", jsonObject.getString("macinfo"));
+												startActivity(intent);
+											}
+											scrollToFinishActivity();
+										}
+									}
 								}
+
+
 							}
 						} else {
 							Toast.makeText(ScanCaptureAct.this,result.getMsg(),Toast.LENGTH_SHORT).show();
