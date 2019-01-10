@@ -16,33 +16,9 @@
             android:layout_height="50dp"
             android:layout_centerHorizontal="true"
             android:gravity="center_vertical"
-            android:text="扫一扫"
+            android:text="维护"
             android:textColor="@color/white"
             android:textSize="@dimen/sp22" />
-
-        <TextView
-            android:id="@+id/loca_show_btncancle"
-            android:layout_width="@dimen/dp45"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:gravity="center"
-            android:text="取消"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/loca_show_btnBikeNum"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:paddingRight="@dimen/dp10"
-            android:paddingLeft="@dimen/dp10"
-            android:textSize="@dimen/sp14"
-            android:textColor="@color/white"
-            android:text="输入编号开锁"
-            android:gravity="center_vertical"
-            android:onClick="btn"/>
 
     </RelativeLayout>
 
@@ -120,19 +96,64 @@
             android:text="@string/scan_tips"
             android:textColor="@android:color/white"
             android:textSize="15sp" />
-        <Button
-            android:id="@+id/activity_qr_scan_lightBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp30"
-            android:text="开启手电筒"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp14"
-            android:gravity="center"
-            android:background="@drawable/shape_scan_light"
-            android:paddingLeft="@dimen/dp10"
-            android:paddingRight="@dimen/dp10"
+
+
+        <LinearLayout
+            android:id="@+id/ll_scan"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
             android:layout_below="@id/activity_qr_scan_warn"
-            android:layout_marginTop="@dimen/dp10"/>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:onClick="btn"
+            android:weightSum="2">
+            <TextView
+                android:id="@+id/loca_show_btnBikeNum"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/top_hand"
+                android:gravity="center"
+                android:text="手动输入编号"
+                android:textColor="#DBD5D5"
+                android:onClick="btn"
+                />
+
+            <LinearLayout
+                android:id="@+id/activity_qr_scan_lightBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="30dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:onClick="btn"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_light"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/light"
+                    android:gravity="center"
+                    android:text="手电筒"
+                    android:textColor="#DBD5D5"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="手电筒"
+                    android:textColor="#DBD5D5"
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
     </RelativeLayout>
 </RelativeLayout>

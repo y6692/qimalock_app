@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ui_main"
+    android:background="@color/white"
     android:fitsSystemWindows="true"
     android:clipToPadding="true"
     android:orientation="vertical">
@@ -13,8 +13,9 @@
 
         <ImageView
             android:id="@+id/ui_historysRecord_backBtn"
-            android:layout_width="@dimen/dp45"
-            android:layout_height="match_parent"
+            android:layout_width="@dimen/dp40"
+            android:layout_height="@dimen/dp40"
+            android:padding="8dp"
             android:src="@drawable/back_image"
             android:scaleType="centerInside"
             android:background="@null"/>
@@ -37,7 +38,7 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/ui_historysRecord_codeNumEdit"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:text="搜索"
             android:paddingLeft="@dimen/dp5"
             android:paddingRight="@dimen/dp5"

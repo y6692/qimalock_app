@@ -166,8 +166,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
         tagAdapter = new TagAdapter<TagBean>(tagDatas) {
             @Override
             public View getView(FlowLayout parent, int position, TagBean bean) {
-                TextView tag = (TextView) LayoutInflater.from(context).inflate(R.layout.ui_tag,
-                        tagFlowLayout, false);
+                TextView tag = (TextView) LayoutInflater.from(context).inflate(R.layout.ui_tag, tagFlowLayout, false);
                 tag.setText(bean.getName());
                 return tag;
             }

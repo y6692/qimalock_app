@@ -9,7 +9,7 @@
     android:gravity="center">
 
     <LinearLayout
-        android:id="@+id/dialog_tag_mainLayout"
+        android:id="@+id/dialog_maintenance_mainLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -19,19 +19,6 @@
         android:layout_marginRight="@dimen/dp15"
         android:gravity="center">
 
-        <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="@dimen/dp45"-->
-            <!--android:background="@color/ui_main"-->
-            <!--android:gravity="center">-->
-
-            <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:textColor="@color/white"-->
-                <!--android:textSize="@dimen/sp16"-->
-                <!--android:text="选择操作方式"/>-->
-        <!--</LinearLayout>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -40,11 +27,12 @@
             android:gravity="center_vertical">
 
             <com.zhy.view.flowlayout.TagFlowLayout
-                android:id="@+id/dialog_deductMark_flowlayout"
+                android:id="@+id/dialog_maintenance_flowlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/dp5"
                 android:paddingTop="@dimen/dp5"
+                zhy:tag_gravity="center"
                 zhy:max_select="1"/>
         </LinearLayout>
         <View
@@ -57,7 +45,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/dialog_deductMark_closeLayout"
+                android:id="@+id/dialog_maintenance_closeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -78,7 +66,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"/>
             <LinearLayout
-                android:id="@+id/dialog_deductMark_affirmLayout"
+                android:id="@+id/dialog_maintenance_affirmLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

@@ -97,7 +97,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
     private LoadingDialog loadingDialog;
     @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
-    @BindView(R.id.mainUI_scanCode_lock) ImageView scanCodeBtn;
+    @BindView(R.id.mainUI_scanCode_lock) LinearLayout scanCodeBtn;
     @BindView(R.id.mainUI_leftBtn) ImageView leftBtn;
     @BindView(R.id.mainUI_scanCode_lookRecordBtn) Button lookBtn;
     @BindView(R.id.mainUI_lookLocationBtn) LinearLayout lookLocationBtn;

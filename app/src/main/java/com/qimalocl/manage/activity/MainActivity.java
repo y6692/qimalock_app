@@ -104,10 +104,10 @@ public class MainActivity extends BaseActivity{
     private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
     private String[] mTitles = { "用车", "任务", "查询", "维护" };
     private int[] mIconUnselectIds = {
-            R.mipmap.msg, R.mipmap.park, R.mipmap.pay,R.mipmap.me
+            R.mipmap.scan, R.mipmap.mission, R.mipmap.query,R.mipmap.maintenance
     };
     private int[] mIconSelectIds = {
-            R.mipmap.msg_press, R.mipmap.park_press, R.mipmap.pay_press, R.mipmap.me_press
+            R.mipmap.scan2, R.mipmap.mission2, R.mipmap.query2,R.mipmap.maintenance2
     };
     private ScanFragment scanFragment;
     private MissionFragment missionFragment;
