@@ -5,25 +5,45 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.hardware.Camera;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +76,7 @@ import com.qimalocl.manage.activity.DeviceListActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.base.BaseFragment;
+import com.qimalocl.manage.core.common.DisplayUtil;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
@@ -64,534 +85,350 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.TagBean;
 import com.zbar.lib.LockStatusScanCaptureAct;
 import com.zbar.lib.ScanCaptureAct;
 import com.zbar.lib.UpLocationScanCaptureAct;
+import com.zbar.lib.camera.CameraManager;
+import com.zbar.lib.camera.CameraPreview;
+import com.zbar.lib.decode.InactivityTimer;
+import com.zhy.view.flowlayout.FlowLayout;
+import com.zhy.view.flowlayout.TagAdapter;
+import com.zhy.view.flowlayout.TagFlowLayout;
+
+import net.sourceforge.zbar.Config;
+import net.sourceforge.zbar.Image;
+import net.sourceforge.zbar.ImageScanner;
+import net.sourceforge.zbar.Symbol;
+import net.sourceforge.zbar.SymbolSet;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.AUDIO_SERVICE;
+import static android.content.Context.INPUT_METHOD_SERVICE;
+import static android.content.Context.VIBRATOR_SERVICE;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 @SuppressLint("NewApi")
-public class MaintenanceFragment extends BaseFragment implements View.OnClickListener,LocationSource,
-        AMapLocationListener,AMap.OnCameraChangeListener,AMap.OnMapTouchListener{
+public class MaintenanceFragment extends BaseFragment implements View.OnClickListener{
 
     Unbinder unbinder;
-
-    private Context context;
-    private TextView rightBtn;
-    private ImageView scanCodeBtn;
-    private LoadingDialog loadingDialog;
-    private ImageView leftBtn;
-    private Button lookBtn;
-    private LinearLayout lookLocationBtn;
-    private LinearLayout storeageLayout;
-    private Button changeKeyBtn;
-    private LinearLayout lockLayout,unLockLayout;
-    private LinearLayout endLayout;
-
-    private AMap aMap;
-    private MapView mapView;
-    private OnLocationChangedListener mListener;
-    private AMapLocationClient mlocationClient;
-    private AMapLocationClientOption mLocationOption;
-
-    private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
-    private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
-    private boolean mFirstFix = true;
-    private LatLng myLocation = null;
-    private Circle mCircle;
-    private BitmapDescriptor successDescripter;
-    private BitmapDescriptor bikeDescripter;
-    private Handler handler = new Handler();
-    private Marker centerMarker;
-    private boolean isMovingMarker = false;
-
-    private List<Marker> bikeMarkerList;
-    private boolean isUp = false;
-
-    private double latitude = 0.0;
-    private double longitude = 0.0;
-    private int isLock = 0;
     private View v;
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.fragment_scan);
-//        mapView = (MapView) findViewById(R.id.mainUI_map);
-//        mapView.onCreate(savedInstanceState);// 此方法必须重写
-//        bikeMarkerList = new ArrayList<>();
-//        initView();
-//    }
+    @BindView(R.id.capture_preview) FrameLayout scanPreview;
+    @BindView(R.id.capture_container) RelativeLayout scanContainer;
+    @BindView(R.id.capture_crop_view) RelativeLayout scanCropView;
+    @BindView(R.id.capture_scan_line) ImageView scanLine;
+    @BindView(R.id.loca_show_btncancle) TextView cancle;
+    @BindView(R.id.activity_qr_scan_lightBtn) Button lightBtn;
+    @BindView(R.id.loca_show_btnBikeNum) TextView bikeNunBtn;
 
-    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                       Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_scan, null);
+    private Camera mCamera;
+    private CameraPreview mPreview;
+    private Handler autoFocusHandler;
+    private CameraManager mCameraManager;
+
+    private InactivityTimer inactivityTimer;
+
+    private Rect mCropRect = null;
+    private boolean barcodeScanned = false;
+    private boolean previewing = true;
+    private ImageScanner mImageScanner = null;
+
+    private MediaPlayer mediaPlayer;
+    private boolean playBeep;
+    private static final float BEEP_VOLUME = 0.50f;
+    private boolean vibrate;
+    private Context context;
+    private Activity activity;
+
+    private Dialog dialog;
+    private Dialog dialog2;
+    private LinearLayout tagMainLayout;
+    private TagFlowLayout tagFlowLayout;
+    private LinearLayout closeLayout;
+    private LinearLayout affirmLayout;
+    private TagAdapter tagAdapter;
+    private List<TagBean> tagDatas;
+    private EditText bikeNumEdit;
+    private Button positiveButton,negativeButton;
+    private boolean notShow = false;
+    private int type = 0;
+
+    static {
+        System.loadLibrary("iconv");
+    }
+
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        v = inflater.inflate(R.layout.activity_scanner_location, null);
         unbinder = ButterKnife.bind(this, v);
         return v;
     }
 
-//    @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        registerReceiver(new String[] { LibraryConstants.BROADCAST_UPDATE_USER_INFO });
-//    }
 
     @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = getActivity();
+        activity = getActivity();
 
-        mapView = (MapView) v.findViewById(R.id.mainUI_map);
-        mapView.onCreate(savedInstanceState);// 此方法必须重写
-        bikeMarkerList = new ArrayList<>();
+        tagDatas = new ArrayList<>();
+        for (int i = 0; i < 3;i++){
+            TagBean bean = new TagBean();
+            switch (i){
+                case 0:
+                    bean.setType(3);
+                    bean.setName("回收");
+                    break;
+                case 1:
+                    bean.setType(4);
+                    bean.setName("解除锁定");
+                    break;
+                case 2:
+                    bean.setType(5);
+                    bean.setName("结束骑行");
+                    break;
+                default:
+                    break;
+            }
+            tagDatas.add(bean);
+        }
+
         initView();
     }
 
+    private void initView() {
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//
+//        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+//            UIHelper.goToAct(context,LoginActivity.class);
+//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//        }else {
+//
+////            try {
+////                Intent intent = new Intent();
+////                intent.setClass(context, LockStatusScanCaptureAct.class);
+////                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+////                intent.putExtra("isChangeKey",true);
+////                startActivityForResult(intent, 2);
+////            } catch (Exception e) {
+////                UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
+////            }
+//        }
 
-    private void initView(){
+//        scanPreview = (FrameLayout) findViewById(R.id.capture_preview);
+//        scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
+//        scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
+//        scanLine = (ImageView) findViewById(R.id.capture_scan_line);
+//        cancle = (TextView) findViewById(R.id.loca_show_btncancle);
+//        lightBtn = (Button)findViewById(R.id.activity_qr_scan_lightBtn);
+//        bikeNunBtn = (TextView)findViewById(R.id.loca_show_btnBikeNum);
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            int checkPermission = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-            if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
-                } else {
-//                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
-//                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.cancel();
-//                                }
-//                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.cancel();
-//                            MainActivity.this.requestPermissions(
-//                                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-//                                    101);
-//                        }
-//                    });
-//                    customBuilder.create().show();
+        dialog = new Dialog(context, R.style.Theme_AppCompat_Dialog);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.pop_circles_menu, null);
+        dialog.setContentView(dialogView);
+        dialog.setCanceledOnTouchOutside(false);
 
-                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
-                }
-                return;
-            }
-        }
 
-        loadingDialog = new LoadingDialog(context);
-        loadingDialog.setCancelable(false);
-        loadingDialog.setCanceledOnTouchOutside(false);
-        if (aMap == null) {
-            aMap = mapView.getMap();
-            setUpMap();
-        }
-        aMap.getUiSettings().setZoomControlsEnabled(false);
-        aMap.getUiSettings().setMyLocationButtonEnabled(false);
-        aMap.getUiSettings()
-                .setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
-        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(15);// 设置缩放监听
-        aMap.moveCamera(cameraUpdate);
-        successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
-        bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
+        dialog2 = new Dialog(context, R.style.main_publishdialog_style);
+        View tagView = LayoutInflater.from(context).inflate(R.layout.dialog_deduct_mark, null);
+        dialog2.setContentView(tagView);
+        dialog2.setCanceledOnTouchOutside(false);
 
-        aMap.setOnMapTouchListener(MaintenanceFragment.this);
-        setUpLocationStyle();
+        tagMainLayout = tagView.findViewById(R.id.dialog_tag_mainLayout);
+        tagFlowLayout = tagView.findViewById(R.id.dialog_deductMark_flowlayout);
+        closeLayout = tagView.findViewById(R.id.dialog_deductMark_closeLayout);
+        affirmLayout = tagView.findViewById(R.id.dialog_deductMark_affirmLayout);
 
-        leftBtn = v.findViewById(R.id.mainUI_leftBtn);
-        rightBtn = v.findViewById(R.id.mainUI_rightBtn);
-        lookBtn = v.findViewById(R.id.mainUI_scanCode_lookRecordBtn);
-        scanCodeBtn = v.findViewById(R.id.mainUI_scanCode_lock);
-        lookLocationBtn = v.findViewById(R.id.mainUI_lookLocationBtn);
-        changeKeyBtn = v.findViewById(R.id.mainUI_scanCode_changeKeyBtn);
-        storeageLayout = v.findViewById(R.id.mainUI_storageLayout);
-        lockLayout = v.findViewById(R.id.mainUI_lockLayout);
-        unLockLayout = v.findViewById(R.id.mainUI_unLockLayout);
-        endLayout = v.findViewById(R.id.mainUI_scanCode_endLayout);
+        LinearLayout.LayoutParams params4 = (LinearLayout.LayoutParams)tagMainLayout.getLayoutParams();
+        params4.width = DisplayUtil.getWindowWidth(activity) * 4 / 5;
+        tagMainLayout.setLayoutParams(params4);
 
-        rightBtn.setOnClickListener(this);
-        leftBtn.setOnClickListener(this);
-        lookBtn.setOnClickListener(this);
-        scanCodeBtn.setOnClickListener(this);
-        lookLocationBtn.setOnClickListener(this);
-        changeKeyBtn.setOnClickListener(this);
-        storeageLayout.setOnClickListener(this);
-        lockLayout.setOnClickListener(this);
-        unLockLayout.setOnClickListener(this);
-        endLayout.setOnClickListener(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid != null && !"".equals(uid) && access_token != null && !"".equals(access_token)){
-            rightBtn.setText("退出登录");
-        }else {
-            rightBtn.setText("登录");
-        }
-    }
-
-    private void addChooseMarker() {
-        // 加入自定义标签
-        MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter);
-        centerMarker = aMap.addMarker(centerMarkerOption);
-        centerMarker.setPositionByPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
-        handler.postDelayed(new Runnable() {
+        tagAdapter = new TagAdapter<TagBean>(tagDatas) {
             @Override
-            public void run() {
-                CameraUpdate update = CameraUpdateFactory.zoomTo(15f);
-                aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
-                    @Override
-                    public void onFinish() {
-                        aMap.setOnCameraChangeListener(MaintenanceFragment.this);
-                    }
-
-                    @Override
-                    public void onCancel() {
-                    }
-                });
+            public View getView(FlowLayout parent, int position, TagBean bean) {
+                TextView tag = (TextView) LayoutInflater.from(context).inflate(R.layout.ui_tag,
+                        tagFlowLayout, false);
+                tag.setText(bean.getName());
+                return tag;
             }
-        }, 1000);
-    }
+        };
+        tagFlowLayout.setAdapter(tagAdapter);
 
-    private void setMovingMarker() {
-        if (isMovingMarker)
-            return;
 
-        isMovingMarker = true;
-        centerMarker.setIcon(successDescripter);
-    }
+        bikeNumEdit = (EditText)dialogView.findViewById(R.id.pop_circlesMenu_bikeNumEdit);
+        positiveButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_positiveButton);
+        negativeButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_negativeButton);
 
-    @Override
-    public void onCameraChange(CameraPosition cameraPosition) {
-        if (centerMarker != null) {
-            setMovingMarker();
+        if(notShow){
+            bikeNunBtn.setVisibility(View.GONE);
+        }else{
+            bikeNunBtn.setVisibility(View.VISIBLE);
         }
-    }
 
-    @Override
-    public void onCameraChangeFinish(CameraPosition cameraPosition) {
-        if (isUp){
-            initNearby(cameraPosition.target.latitude,cameraPosition.target.longitude);
-            if (centerMarker != null) {
-                animMarker();
+        closeLayout.setOnClickListener(this);
+        affirmLayout.setOnClickListener(this);
+
+        cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                scrollToFinishActivity();
+                releaseCamera();
+
+                if(mCameraManager!=null){
+                    mCameraManager.closeDriver();
+                }
+
+//                CameraManager.get().closeDriver();
+
+                if(inactivityTimer!=null){
+                    inactivityTimer.shutdown();
+                }
+
+//                activity.setContentView(R.layout.activity_scanner_location);
+
+                mCamera.stopPreview();
+
             }
+        });
+
+        lightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                light();
+            }
+        });
+
+        bikeNunBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+                String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+
+                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+                    UIHelper.goToAct(context, LoginActivity.class);
+                }else {
+                    //关闭相机
+                    releaseCamera();
+                    mCameraManager.closeDriver();
+
+                    WindowManager windowManager = activity.getWindowManager();
+                    Display display = windowManager.getDefaultDisplay();
+                    WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+                    lp.width = (int) (display.getWidth() * 0.8); 								// 设置宽度0.6
+                    lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    dialog.getWindow().setAttributes(lp);
+                    dialog.getWindow().setWindowAnimations(R.style.dialogWindowAnim);
+                    dialog.show();
+
+                    InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                    manager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
+                    manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
+            }
+        });
+
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String bikeNum = bikeNumEdit.getText().toString().trim();
+                if (bikeNum == null || "".equals(bikeNum)){
+                    Toast.makeText(context,"请输入单车编号",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+//				Tag = 1;
+
+                Intent rIntent = new Intent();
+                rIntent.putExtra("QR_CODE", bikeNum);
+                activity.setResult(RESULT_OK, rIntent);
+//                scrollToFinishActivity();
+
+            }
+        });
+
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodManager manager1= (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        initViews();
+        playBeep = true;
+        AudioManager audioService = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+        if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+            playBeep = false;
         }
+        initBeepSound();
+        vibrate = true;
+
     }
-
-    @Override
-    public void onTouch(MotionEvent motionEvent) {
-        if (motionEvent.getAction() == MotionEvent.ACTION_UP ||
-                motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_OUTSIDE
-                || motionEvent.getActionMasked() == MotionEvent.ACTION_POINTER_UP){
-            isUp = true;
-        }else {
-            isUp = false;
-        }
-    }
-
-
-    /**
-     * 设置一些amap的属性
-     */
-    private void setUpMap() {
-        aMap.setLocationSource(this);// 设置定位监听
-        aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
-        aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
-        // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
-        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-    }
-
 
     @Override
     public void onClick(View v) {
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         switch (v.getId()){
-            case R.id.mainUI_leftBtn:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        MaintenanceFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, UpLocationScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivityForResult(intent, 1);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
+//            case R.id.ui_historysRecord_backBtn:
+//                scrollToFinishActivity();
+//                break;
+            case R.id.dialog_deductMark_closeLayout:
+                if (dialog != null && dialog.isShowing()){
+                    dialog.dismiss();
                 }
                 break;
-            case R.id.mainUI_rightBtn:
-                if ("登录".equals(rightBtn.getText().toString().trim())){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                }else {
-                    SharedPreferencesUrls.getInstance().putString("uid","");
-                    SharedPreferencesUrls.getInstance().putString("access_token","");
-                    Toast.makeText(context,"登出登录成功",Toast.LENGTH_SHORT).show();
-                    rightBtn.setText("登录");
-                }
-                break;
-            case R.id.mainUI_scanCode_lookRecordBtn:
+            case R.id.dialog_deductMark_affirmLayout:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+                    Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
                     UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    UIHelper.goToAct(context,HistorysRecordActivity.class);
-                }
-                break;
-            case R.id.mainUI_scanCode_lock:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        MaintenanceFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, ScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",false);
-                        startActivityForResult(intent, 101);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
-                }
-                break;
-            case R.id.mainUI_lookLocationBtn:
-                UIHelper.goToAct(context,BikeLocationActivity.class);
-                break;
-            case R.id.mainUI_scanCode_changeKeyBtn:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        MaintenanceFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, ScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        startActivityForResult(intent, 101);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
-                }
-                break;
-            case R.id.mainUI_storageLayout:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                UIHelper.goToAct(context,DeviceListActivity.class);
-                break;
-            case R.id.mainUI_lockLayout:
-                isLock = 4;
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        MaintenanceFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, LockStatusScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        intent.putExtra("notShow",true);
-                        startActivityForResult(intent, 2);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
+                if (tagFlowLayout.getSelectedList().size() == 0){
+                    Toast.makeText(context,"请选择操作方式",Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                break;
-            case R.id.mainUI_unLockLayout:
-                isLock = 2;
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        MaintenanceFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, LockStatusScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        startActivityForResult(intent, 2);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
+                for (Integer posotion : tagFlowLayout.getSelectedList()){
+                    type = tagDatas.get(posotion).getType();
                 }
-                break;
-            case R.id.mainUI_scanCode_endLayout:
-                isLock = 3;
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        MaintenanceFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
+                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
                             }
-                            return;
-                        }
+                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+//                        delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
+
+                        Log.e("Maintenance===onClick", "==="+type);
+
                     }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, LockStatusScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        startActivityForResult(intent, 2);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
+                });
+                customBuilder.create().show();
+                if (dialog != null && dialog.isShowing()){
+                    dialog.dismiss();
                 }
                 break;
             default:
@@ -599,613 +436,368 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-        deactivate();
-//		mFirstFix = false;
-    }
-    /**
-     * 方法必须重写
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
-    }
 
-    /**
-     * 方法必须重写
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-        if(null != mlocationClient){
-            mlocationClient.onDestroy();
-        }
-    }
-    private void setUpLocationStyle() {
-        // 自定义系统定位蓝点
-        MyLocationStyle myLocationStyle = new MyLocationStyle();
-        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked));
-        myLocationStyle.strokeWidth(0);
-        myLocationStyle.strokeColor(R.color.main_theme_color);
-        myLocationStyle.radiusFillColor(Color.TRANSPARENT);
-        aMap.setMyLocationStyle(myLocationStyle);
-    }
-    /**
-     * 定位成功后回调函数
-     */
-    @Override
-    public void onLocationChanged(AMapLocation amapLocation) {
-        if (mListener != null && amapLocation != null) {
-            if (amapLocation != null
-                    && amapLocation.getErrorCode() == 0) {
-                if (mListener != null) {
-                    mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
-                }
-                myLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
-                latitude = amapLocation.getLatitude();
-                longitude = amapLocation.getLongitude();
-                //保存位置到本地
-                SharedPreferencesUrls.getInstance().putString("latitude",""+latitude);
-                SharedPreferencesUrls.getInstance().putString("longitude",""+longitude);
-                if (mFirstFix){
-                    initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
-                    mFirstFix = false;
-                    addChooseMarker();
-                } else {
-                    centerMarker.remove();
-                    mCircle.remove();
-                    addChooseMarker();
-                }
-                addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
-                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
-            }
-        }
-    }
-
-    /**
-     * 激活定位
-     */
-    @Override
-    public void activate(OnLocationChangedListener listener) {
-        mListener = listener;
-        if (mlocationClient == null) {
-            mlocationClient = new AMapLocationClient(context);
-            mLocationOption = new AMapLocationClientOption();
-            //设置定位监听
-            mlocationClient.setLocationListener(this);
-            //设置为高精度定位模式
-            mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);
-            mLocationOption.setInterval(30 * 1000);
-            //设置定位参数
-            mlocationClient.setLocationOption(mLocationOption);
-            // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-            // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
-            // 在定位结束后，在合适的生命周期调用onDestroy()方法
-            // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
-            mlocationClient.startLocation();
-        }
-    }
-
-    /**
-     * 停止定位
-     */
-    @Override
-    public void deactivate() {
-        mListener = null;
-        if (mlocationClient != null) {
-            mlocationClient.stopLocation();
-            mlocationClient.onDestroy();
-        }
-        mlocationClient = null;
-    }
-
-    /**
-     * 添加Circle
-     * @param latlng  坐标
-     * @param radius  半径
-     */
-    private void addCircle(LatLng latlng, double radius) {
-        CircleOptions options = new CircleOptions();
-        options.strokeWidth(1f);
-        options.fillColor(FILL_COLOR);
-        options.strokeColor(STROKE_COLOR);
-        options.center(latlng);
-        options.radius(radius);
-        mCircle = aMap.addCircle(options);
-    }
-
-    private ValueAnimator animator = null;
-
-    private void animMarker() {
-        isMovingMarker = false;
-        if (animator != null) {
-            animator.start();
-            return;
-        }
-        animator = ValueAnimator.ofFloat(mapView.getHeight() / 2, mapView.getHeight() / 2 - 30);
-        animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(150);
-        animator.setRepeatCount(1);
-        animator.setRepeatMode(ValueAnimator.REVERSE);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                Float value = (Float) animation.getAnimatedValue();
-                centerMarker.setPositionByPixels(mapView.getWidth() / 2, Math.round(value));
-            }
-        });
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                centerMarker.setIcon(successDescripter);
-            }
-        });
-        animator.start();
-    }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onResume() {
+        super.onResume();
 
-        Log.e("requestCode===", "==="+requestCode);
+        Log.e("onResume===Maintenance", "===");
 
-        switch (requestCode) {
 
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    String result = data.getStringExtra("QR_CODE");
-//                    upcarmap(result);
-                    lock(result);
-                } else {
-					Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
-                }
 
-                Log.e("requestCode===1", "==="+resultCode);
-                break;
 
-            case 2:
-                if (resultCode == RESULT_OK) {
-                    String result = data.getStringExtra("QR_CODE");
-                    switch (isLock){
-                        case 1:
-                            Log.e("requestCode===2_1", "==="+resultCode);
-                            lock(result);
-                            break;
-                        case 2:
-                            Log.e("requestCode===2_2", "==="+resultCode);
-                            unLock(result);
-                            break;
-                        case 3:
-                            Log.e("requestCode===2_3", "==="+resultCode);
-                            endCar(result);
-                            break;
-                        case 4:
-                            Log.e("requestCode===2_4", "==="+resultCode);
-                            recycle(result);
-                            break;
-                        default:
-                            break;
-                    }
-                } else {
-                    Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
-                }
 
-                Log.e("requestCode===2", "==="+resultCode);
-                break;
-
-            default:
-                break;
-
-        }
     }
 
-    private void upcarmap(String result){
+    private void initViews() {
+        inactivityTimer = new InactivityTimer(activity);
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
-        }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("tokencode",result);
-            params.put("latitude",latitude);
-            params.put("longitude",longitude);
-            HttpHelper.post(context, Urls.upcarmap, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，提交成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
+        mImageScanner = new ImageScanner();
+        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
+        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
+
+        autoFocusHandler = new Handler();
+        mCameraManager = new CameraManager(context);
+        try {
+            mCameraManager.openDriver();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
 
-    private void recycle(String result){
+        //调整扫描框大小,自适应屏幕
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
-        }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("codenum",result);
-            HttpHelper.post(context, Urls.recycle, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，回收成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        }
-    }
+        RelativeLayout.LayoutParams linearParams = (RelativeLayout.LayoutParams) scanCropView.getLayoutParams();
+        linearParams.height = (int) (width * 0.65);
+        linearParams.width = (int) (width * 0.65);
+        scanCropView.setLayoutParams(linearParams);
 
+        mCamera = mCameraManager.getCamera();
+        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
+        scanPreview.addView(mPreview);
 
-    private void lock(String result){
+        TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,
+                TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
+                TranslateAnimation.RELATIVE_TO_PARENT, 0.9f);
+        mAnimation.setDuration(1500);
+        mAnimation.setRepeatCount(-1);
+        mAnimation.setRepeatMode(Animation.REVERSE);
+        mAnimation.setInterpolator(new LinearInterpolator());
+        scanLine.setAnimation(mAnimation);
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
-        }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("codenum",result);
-            HttpHelper.post(context, Urls.lock, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，锁定成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        }
-    }
-    private void unLock(String result){
-
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
-        }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("codenum",result);
-            HttpHelper.post(context, Urls.unLock, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，解锁成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        }
-    }
-    private void endCar(String result){
-
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
-        }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("tokencode",result);
-            HttpHelper.post(context, Urls.endCar, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，结束用车成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        }
     }
 
 //    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            try{
-//                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-//                customBuilder.setTitle("温馨提示").setMessage("确认退出吗?")
-//                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.cancel();
-//                            }
-//                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                        AppManager.getAppManager().AppExit(context);
-//                    }
-//                });
-//                customBuilder.create().show();
-//                return true;
-//            }catch (Exception e){
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser) {
+//            //相当于Fragment的onResume
 //
+//            Log.e("onPause===Maintenance1", "===");
+//
+//        } else {
+//            //相当于Fragment的onPause
+//
+//            Log.e("onPause===Maintenance2", "===");
+//        }
+//    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(hidden){
+            //pause
+
+//            if(inactivityTimer!=null){
+//                inactivityTimer.onActivity();
 //            }
+//
+//            playBeepSoundAndVibrate();
+
+//            previewing = false;
+//            if(mCamera!=null){
+//                mCamera.setPreviewCallback(null);
+//                mCamera.stopPreview();
+//            }
+//            releaseCamera();
+//
+//            if(mCameraManager!=null){
+//                mCameraManager.closeDriver();
+//            }
+
+//            if(inactivityTimer!=null){
+//                inactivityTimer.shutdown();
+//            }
+
+        }else{
+            //resume
+
+
+        }
+    }
+
+
+//    @Override
+//    public void onDestroy() {
+//
+//        super.onDestroy();
+//    }
+
+    private void releaseCamera() {
+        if (mCamera != null) {
+            previewing = false;
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+            mCamera = null;
+
+            Log.e("onPause===releaseCamera", "==="+mCamera);
+        }
+    }
+
+    private Runnable doAutoFocus = new Runnable() {
+        public void run() {
+            if (previewing)
+                mCamera.autoFocus(autoFocusCB);
+        }
+    };
+
+    Camera.PreviewCallback previewCb = new Camera.PreviewCallback() {
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            Camera.Size size = camera.getParameters().getPreviewSize();
+
+            // 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
+            byte[] rotatedData = new byte[data.length];
+            for (int y = 0; y < size.height; y++) {
+                for (int x = 0; x < size.width; x++)
+                    rotatedData[x * size.height + size.height - y - 1] = data[x
+                            + y * size.width];
+            }
+
+            // 宽高也要调整
+            int tmp = size.width;
+            size.width = size.height;
+            size.height = tmp;
+
+            initCrop();
+
+            Image barcode = new Image(size.width, size.height, "Y800");
+            barcode.setData(rotatedData);
+            barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
+
+            int result = mImageScanner.scanImage(barcode);
+            String resultStr = null;
+
+            if (result != 0) {
+                SymbolSet syms = mImageScanner.getResults();
+                for (Symbol sym : syms) {
+                    resultStr = sym.getData();
+                }
+            }
+            if (!TextUtils.isEmpty(resultStr)) {
+                inactivityTimer.onActivity();
+                playBeepSoundAndVibrate();
+
+                previewing = false;
+                mCamera.setPreviewCallback(null);
+                mCamera.stopPreview();
+
+                releaseCamera();
+                barcodeScanned = true;
+
+//                Intent rIntent = new Intent();
+//                rIntent.putExtra("QR_CODE", resultStr);
+//                activity.setResult(RESULT_OK, rIntent);
+//                activity.scrollToFinishActivity();
+
+
+                Log.e("Maint===preview", "===");
+
+//                WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
+//                params1.width = LinearLayout.LayoutParams.MATCH_PARENT;
+//                params1.height = LinearLayout.LayoutParams.MATCH_PARENT;
+//                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//                dialog.getWindow().setAttributes(params1);
+                dialog2.show();
+
+
+            }
+        }
+    };
+
+    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
+        public void onAutoFocus(boolean success, Camera camera) {
+            autoFocusHandler.postDelayed(doAutoFocus, 1000);
+        }
+    };
+
+    /**
+     * 初始化截取的矩形区域
+     */
+    private void initCrop() {
+        int cameraWidth = mCameraManager.getCameraResolution().y;
+        int cameraHeight = mCameraManager.getCameraResolution().x;
+
+        /** 获取布局中扫描框的位置信息 */
+        int[] location = new int[2];
+        scanCropView.getLocationInWindow(location);
+
+        int cropLeft = location[0];
+        int cropTop = location[1] - getStatusBarHeight();
+
+        int cropWidth = scanCropView.getWidth();
+        int cropHeight = scanCropView.getHeight();
+
+        /** 获取布局容器的宽高 */
+        int containerWidth = scanContainer.getWidth();
+        int containerHeight = scanContainer.getHeight();
+
+        /** 计算最终截取的矩形的左上角顶点x坐标 */
+        int x = cropLeft * cameraWidth / containerWidth;
+        /** 计算最终截取的矩形的左上角顶点y坐标 */
+        int y = cropTop * cameraHeight / containerHeight;
+
+        /** 计算最终截取的矩形的宽度 */
+        int width = cropWidth * cameraWidth / containerWidth;
+        /** 计算最终截取的矩形的高度 */
+        int height = cropHeight * cameraHeight / containerHeight;
+
+        /** 生成最终的截取的矩形 */
+        mCropRect = new Rect(x, y, width + x, height + y);
+    }
+
+    private int getStatusBarHeight() {
+        try {
+            Class<?> c = Class.forName("com.android.internal.R$dimen");
+            Object obj = c.newInstance();
+            Field field = c.getField("status_bar_height");
+            int x = Integer.parseInt(field.get(obj).toString());
+            return getResources().getDimensionPixelSize(x);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    boolean flag = true;
+
+    protected void light() {
+        if (flag == true) {
+            flag = false;
+            // 打开
+            mCameraManager.openLight();
+        } else {
+            flag = true;
+            // 关闭
+            mCameraManager.offLight();
+        }
+    }
+
+    private void initBeepSound() {
+        if (playBeep && mediaPlayer == null) {
+            activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnCompletionListener(beepListener);
+
+            AssetFileDescriptor file = getResources().openRawResourceFd(R.raw.beep);
+            try {
+                mediaPlayer.setDataSource(file.getFileDescriptor(),
+                        file.getStartOffset(), file.getLength());
+                file.close();
+                mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                mediaPlayer = null;
+            }
+        }
+    }
+
+    private static final long VIBRATE_DURATION = 200L;
+
+    private void playBeepSoundAndVibrate() {
+        if (playBeep && mediaPlayer != null) {
+            mediaPlayer.start();
+        }
+        if (vibrate) {
+            Vibrator vibrator = (Vibrator) context.getSystemService(VIBRATOR_SERVICE);
+            vibrator.vibrate(VIBRATE_DURATION);
+        }
+    }
+
+    private final MediaPlayer.OnCompletionListener beepListener = new MediaPlayer.OnCompletionListener() {
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            mediaPlayer.seekTo(0);
+        }
+    };
+
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            scrollToFinishActivity();
+//            return true;
 //        }
 //        return super.onKeyDown(keyCode, event);
 //    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
 
-            case 100:
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
-                    if (permissions[0].equals(Manifest.permission.CAMERA)){
-                        try {
-                            Intent intent = new Intent();
-                            intent.setClass(context, ScanCaptureAct.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            intent.putExtra("isChangeKey",false);
-                            startActivityForResult(intent, 101);
-                        } catch (Exception e) {
-                            UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                        }
-                    }
-                }else {
-                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里允许获取相机权限！")
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            }).setPositiveButton("去设置", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                            Intent localIntent = new Intent();
-                            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                            localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
-                            startActivity(localIntent);
-//                            finishMine();
-                        }
-                    });
-                    customBuilder.create().show();
-                }
-                break;
-            case 101:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    if (permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
-//                        if (aMap == null) {
-//                            aMap = mapView.getMap();
-//                            setUpMap();
-//                        }
-//                        aMap.getUiSettings().setZoomControlsEnabled(false);
-//                        aMap.getUiSettings().setMyLocationButtonEnabled(false);
-//                        aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
-//                        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(15);// 设置缩放监听
-//                        aMap.moveCamera(cameraUpdate);
-//                        setUpLocationStyle();
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        switch (requestCode) {
+//
+//            case 100:
+////                if (loadingDialog != null && loadingDialog.isShowing()){
+////                    loadingDialog.dismiss();
+////                }
+////                if (customDialog2 != null && customDialog2.isShowing()){
+////                    customDialog2.dismiss();
+////                }
+//
+//                if (grantResults[0] == PERMISSION_GRANTED) {
+//                    // Permission Granted
+//                    if (permissions[0].equals(Manifest.permission.CAMERA)){
+////                        try {
+//////                            closeBroadcast();
+//////                            deactivate();
+//////
+//////                            Intent intent = new Intent();
+//////                            intent.setClass(MainActivity.this, ActivityScanerCode.class);
+//////                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//////                            startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
+////
+////                        } catch (Exception e) {
+////                            UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
+////                        }
 //                    }
+//                }else {
+//                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里允许获取相机权限！")
+//                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.cancel();
+//                                }
+//                            }).setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.cancel();
+//                            Intent localIntent = new Intent();
+//                            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+//                            localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
+//                            startActivity(localIntent);
+////                            finishMine();
+//                        }
+//                    });
+//                    customBuilder.create().show();
+//                }
+//                break;
+//
+//            default:
+//                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        }
+//    }
 
-                    initView();
-                } else {
-                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里允许获取定位权限！")
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-//                                    context.finishMine();
-                                }
-                            }).setPositiveButton("去设置", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                            Intent localIntent = new Intent();
-                            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                            localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
-                            startActivity(localIntent);
-//                            context.finishMine();
-                        }
-                    });
-                    customBuilder.create().show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
 
-    /**
-     *
-     * 附近车接口
-     *
-     * */
-    private void initNearby(double latitude, double longitude){
-
-        RequestParams params = new RequestParams();
-        params.put("latitude",latitude);
-        params.put("longitude",longitude);
-        HttpHelper.get(context, Urls.nearby, params, new TextHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-                        JSONArray array = new JSONArray(result.getData());
-                        for (Marker marker : bikeMarkerList){
-                            if (marker != null){
-                                marker.remove();
-                            }
-                        }
-                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                            bikeMarkerList.clear();
-                        }
-                        if (0 == array.length()){
-                            Toast.makeText(context,"附近没有自行车",Toast.LENGTH_SHORT).show();
-                        }else {
-                            for (int i = 0; i < array.length(); i++){
-                                NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
-                                // 加入自定义标签
-                                MarkerOptions bikeMarkerOption = new MarkerOptions().position(new LatLng(
-                                        Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
-                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                bikeMarkerList.add(bikeMarker);
-                            }
-                        }
-                    } else {
-                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception e) {
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-            }
-        });
-    }
 }

@@ -382,6 +382,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
             }
         });
     }
+
     private String linkTel = "";
     @SuppressLint("NewApi")
     private class MyAdapter extends BaseViewAdapter<HistorysRecordBean>{

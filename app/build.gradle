@@ -1,4 +1,10 @@
 apply plugin: 'com.android.application'
+
+def static releaseTime() {
+    //return new Date().format("yyyyMMdd_HH:mm", TimeZone.getTimeZone("UTC"))
+    return new Date().format("yyyyMMdd_HHmm")
+}
+
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.2'
@@ -16,14 +22,48 @@ android {
 
         multiDexEnabled true
     }
+
+    signingConfigs {
+        config {
+            keyPassword 'password'
+            keyAlias "android.keystore"
+            storeFile file('debug.keystore')
+            storePassword 'password'
+        }
+
+        release {
+            keyAlias "7malock"
+            keyPassword "123456"
+            storeFile file("../7malock.jks")
+            storePassword "123456"
+        }
+    }
+
     buildTypes {
         release {
+            debuggable true
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "7MAlock_${releaseTime()}.apk"
+                }
+            }
+        }
+
+
+        debug {
+            debuggable true
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     dexOptions {
-        javaMaxHeapSize "1g"
+        javaMaxHeapSize "4g"
     }
 }
 

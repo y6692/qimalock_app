@@ -82,6 +82,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 @SuppressLint("NewApi")
 public class MainActivity extends BaseActivity{
@@ -93,9 +94,10 @@ public class MainActivity extends BaseActivity{
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_EXTRAS = "extras";
 
-    FrameLayout flChange;
-    CommonTabLayout tab;
-    LinearLayout llTab;
+
+    @BindView(R.id.fl_change) FrameLayout flChange;
+    @BindView(R.id.tab) CommonTabLayout tab;
+    @BindView(R.id.ll_tab) LinearLayout llTab;
 
     private Context mContext;
     private ArrayList<Fragment> mFragments = new ArrayList<>();
@@ -116,6 +118,8 @@ public class MainActivity extends BaseActivity{
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.ui_main);
+        ButterKnife.bind(this);
+
 //        registerReceiver(new String[] {
 //                Constants.SHOW_MSG_NUM,
 //                Constants.BROADCAST_UPDATE_MONEY, Constants.BROADCAST_TURN_TO_LOCK_LIST,
@@ -148,7 +152,7 @@ public class MainActivity extends BaseActivity{
 
     private void initView() {
 
-        tab = findViewById(R.id.tab);
+//        tab = findViewById(R.id.tab);
 
         tab.setTabData(mTabEntities, MainActivity.this, R.id.fl_change, mFragments);
         tab.setCurrentTab(0);

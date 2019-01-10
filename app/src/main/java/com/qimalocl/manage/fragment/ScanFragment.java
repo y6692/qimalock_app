@@ -5,11 +5,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -77,10 +79,12 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.AUDIO_SERVICE;
 
 @SuppressLint("NewApi")
 public class ScanFragment extends BaseFragment implements View.OnClickListener,LocationSource,
@@ -89,16 +93,31 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     Unbinder unbinder;
 
     private Context context;
-    private TextView rightBtn;
-    private ImageView scanCodeBtn;
+    private Activity activity;
+
     private LoadingDialog loadingDialog;
-    private ImageView leftBtn;
-    private Button lookBtn;
-    private LinearLayout lookLocationBtn;
-    private LinearLayout storeageLayout;
-    private Button changeKeyBtn;
-    private LinearLayout lockLayout,unLockLayout;
-    private LinearLayout endLayout;
+    @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
+    @BindView(R.id.mainUI_scanCode_lock) ImageView scanCodeBtn;
+    @BindView(R.id.mainUI_leftBtn) ImageView leftBtn;
+    @BindView(R.id.mainUI_scanCode_lookRecordBtn) Button lookBtn;
+    @BindView(R.id.mainUI_lookLocationBtn) LinearLayout lookLocationBtn;
+    @BindView(R.id.mainUI_storageLayout) LinearLayout storeageLayout;
+    @BindView(R.id.mainUI_scanCode_changeKeyBtn) Button changeKeyBtn;
+    @BindView(R.id.mainUI_lockLayout) LinearLayout lockLayout;
+    @BindView(R.id.mainUI_unLockLayout) LinearLayout unLockLayout;
+    @BindView(R.id.mainUI_scanCode_endLayout) LinearLayout endLayout;
+
+//    leftBtn = v.findViewById(R.id.mainUI_leftBtn);
+//    rightBtn = v.findViewById(R.id.mainUI_rightBtn);
+//    lookBtn = v.findViewById(R.id.mainUI_scanCode_lookRecordBtn);
+//    scanCodeBtn = v.findViewById(R.id.mainUI_scanCode_lock);
+//    lookLocationBtn = v.findViewById(R.id.mainUI_lookLocationBtn);
+//    changeKeyBtn = v.findViewById(R.id.mainUI_scanCode_changeKeyBtn);
+//    storeageLayout = v.findViewById(R.id.mainUI_storageLayout);
+//    lockLayout = v.findViewById(R.id.mainUI_lockLayout);
+//    unLockLayout = v.findViewById(R.id.mainUI_unLockLayout);
+//    endLayout = v.findViewById(R.id.mainUI_scanCode_endLayout);
+
 
     private AMap aMap;
     private MapView mapView;
@@ -150,6 +169,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = getActivity();
+        activity = getActivity();
 
         mapView = v.findViewById(R.id.mainUI_map);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
@@ -166,22 +186,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
                 } else {
-//                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
-//                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.cancel();
-//                                }
-//                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.cancel();
-//                            MainActivity.this.requestPermissions(
-//                                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-//                                    101);
-//                        }
-//                    });
-//                    customBuilder.create().show();
-
                     requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
                 }
                 return;
@@ -197,8 +201,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         }
         aMap.getUiSettings().setZoomControlsEnabled(false);
         aMap.getUiSettings().setMyLocationButtonEnabled(false);
-        aMap.getUiSettings()
-                .setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
+        aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
         CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(15);// 设置缩放监听
         aMap.moveCamera(cameraUpdate);
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
@@ -207,16 +210,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         aMap.setOnMapTouchListener(ScanFragment.this);
         setUpLocationStyle();
 
-        leftBtn = v.findViewById(R.id.mainUI_leftBtn);
-        rightBtn = v.findViewById(R.id.mainUI_rightBtn);
-        lookBtn = v.findViewById(R.id.mainUI_scanCode_lookRecordBtn);
-        scanCodeBtn = v.findViewById(R.id.mainUI_scanCode_lock);
-        lookLocationBtn = v.findViewById(R.id.mainUI_lookLocationBtn);
-        changeKeyBtn = v.findViewById(R.id.mainUI_scanCode_changeKeyBtn);
-        storeageLayout = v.findViewById(R.id.mainUI_storageLayout);
-        lockLayout = v.findViewById(R.id.mainUI_lockLayout);
-        unLockLayout = v.findViewById(R.id.mainUI_unLockLayout);
-        endLayout = v.findViewById(R.id.mainUI_scanCode_endLayout);
+//        leftBtn = v.findViewById(R.id.mainUI_leftBtn);
+//        rightBtn = v.findViewById(R.id.mainUI_rightBtn);
+//        lookBtn = v.findViewById(R.id.mainUI_scanCode_lookRecordBtn);
+//        scanCodeBtn = v.findViewById(R.id.mainUI_scanCode_lock);
+//        lookLocationBtn = v.findViewById(R.id.mainUI_lookLocationBtn);
+//        changeKeyBtn = v.findViewById(R.id.mainUI_scanCode_changeKeyBtn);
+//        storeageLayout = v.findViewById(R.id.mainUI_storageLayout);
+//        lockLayout = v.findViewById(R.id.mainUI_lockLayout);
+//        unLockLayout = v.findViewById(R.id.mainUI_unLockLayout);
+//        endLayout = v.findViewById(R.id.mainUI_scanCode_endLayout);
 
         rightBtn.setOnClickListener(this);
         leftBtn.setOnClickListener(this);
@@ -230,9 +233,47 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         endLayout.setOnClickListener(this);
     }
 
+    private void setUpMap() {
+        aMap.setLocationSource(this);// 设置定位监听
+        aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
+        aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+        // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
+        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+
+        Log.e("onHiddenChanged===Scan", "==="+hidden);
+
+        if(hidden){
+            //pause
+
+            mapView.setVisibility(View.GONE);
+
+//            mapView.onPause();
+//            deactivate();
+        }else{
+            //resume
+
+            mapView.setVisibility(View.VISIBLE);
+
+//            mapView.onResume();
+//
+//            if (aMap != null) {
+//                setUpMap();
+//            }
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        Log.e("onResume===Scan", "===");
+
+        mapView.onResume();
+
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (uid != null && !"".equals(uid) && access_token != null && !"".equals(access_token)){
@@ -241,6 +282,42 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             rightBtn.setText("登录");
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+        deactivate();
+//		mFirstFix = false;
+    }
+    /**
+     * 方法必须重写
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+
+    /**
+     * 方法必须重写
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+        if(null != mlocationClient){
+            mlocationClient.onDestroy();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+        if (mapView != null) mapView.onDestroy();
+    }
+
 
     private void addChooseMarker() {
         // 加入自定义标签
@@ -302,16 +379,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     }
 
 
-    /**
-     * 设置一些amap的属性
-     */
-    private void setUpMap() {
-        aMap.setLocationSource(this);// 设置定位监听
-        aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
-        aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
-        // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
-        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-    }
+
 
 
     @Override
@@ -321,7 +389,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         switch (v.getId()){
             case R.id.mainUI_leftBtn:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
+                    UIHelper.goToAct(context, LoginActivity.class);
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 }else {
                     if (Build.VERSION.SDK_INT >= 23) {
@@ -339,9 +407,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                                         }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.cancel();
-                                        ScanFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
+                                        ScanFragment.this.requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
                                     }
                                 });
                                 customBuilder.create().show();
@@ -371,10 +437,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 break;
             case R.id.mainUI_scanCode_lookRecordBtn:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
+                    UIHelper.goToAct(activity, LoginActivity.class);
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 }else {
-                    UIHelper.goToAct(context,HistorysRecordActivity.class);
+                    UIHelper.goToAct(context, HistorysRecordActivity.class);
                 }
                 break;
             case R.id.mainUI_scanCode_lock:
@@ -419,7 +485,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 }
                 break;
             case R.id.mainUI_lookLocationBtn:
-                UIHelper.goToAct(context,BikeLocationActivity.class);
+                UIHelper.goToAct(context, BikeLocationActivity.class);
                 break;
             case R.id.mainUI_scanCode_changeKeyBtn:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
@@ -602,33 +668,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-        deactivate();
-//		mFirstFix = false;
-    }
-    /**
-     * 方法必须重写
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
-    }
 
-    /**
-     * 方法必须重写
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-        if(null != mlocationClient){
-            mlocationClient.onDestroy();
-        }
-    }
     private void setUpLocationStyle() {
         // 自定义系统定位蓝点
         MyLocationStyle myLocationStyle = new MyLocationStyle();
