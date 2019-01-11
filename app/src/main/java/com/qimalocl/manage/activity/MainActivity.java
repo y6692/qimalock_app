@@ -5,9 +5,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -120,11 +122,8 @@ public class MainActivity extends BaseActivity{
         setContentView(R.layout.ui_main);
         ButterKnife.bind(this);
 
-//        registerReceiver(new String[] {
-//                Constants.SHOW_MSG_NUM,
-//                Constants.BROADCAST_UPDATE_MONEY, Constants.BROADCAST_TURN_TO_LOCK_LIST,
-//                Constants.BROADCAST_SHARE_AUTO_CANCEL,
-//        });
+        IntentFilter filter = new IntentFilter("data.broadcast.action");
+        registerReceiver(mReceiver, filter);
 
         initData();
         initView();
@@ -133,6 +132,26 @@ public class MainActivity extends BaseActivity{
 //        AppApplication.getApp().scan();
     }
 
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        private String action = null;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            action = intent.getAction();
+
+            Log.e("main===mReceiver", "==="+action);
+
+            if ("data.broadcast.action".equals(action)) {
+                int count = intent.getIntExtra("count", 0);
+                if (count > 0) {
+                    tab.showMsg(1, count);
+                    tab.setMsgMargin(1, -8, 5);
+                } else {
+                    tab.hideMsg(0);
+                }
+            }
+        }
+    };
 
     private void initData() {
         mContext = this;

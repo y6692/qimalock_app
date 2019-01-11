@@ -25,6 +25,10 @@ public class Urls {
 	public static String upcarmap = host + "/index.php?g=App&m=User&a=upcarmap";
 	/**附近车接口*/
 	public static String nearby = host + "/index.php?g=App&m=Index&a=nearby";
+	/**坏车列表*/
+	public static String badcarList = host + "/index.php?g=App&m=UserManage&a=badcar_list";
+	/**坏车详情*/
+	public static String badcarShow = host + "/index.php?g=App&m=UserManage&a=badcar_show";
 	/**历史订单*/
 	public static String historys = host + "/index.php?g=App&m=UserManage&a=historys";
 	/**扣分接口*/

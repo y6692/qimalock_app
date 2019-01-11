@@ -314,7 +314,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                             if (datas.size() != 0){
                                 datas.clear();
                             }
-                            for (int i = 0; i < array.length();i++){
+                            for (int i = 0; i < 4;i++){
                                 HistorysRecordBean bean = JSON.parseObject(array.getJSONObject(i).toString(),HistorysRecordBean.class);
                                 datas.add(bean);
                             }

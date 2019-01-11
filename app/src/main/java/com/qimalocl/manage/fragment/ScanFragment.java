@@ -6,9 +6,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -17,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -96,6 +101,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private Activity activity;
 
     private LoadingDialog loadingDialog;
+    @BindView(R.id.msg) TextView tvMsg;
     @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
     @BindView(R.id.mainUI_scanCode_lock) LinearLayout scanCodeBtn;
     @BindView(R.id.mainUI_leftBtn) ImageView leftBtn;
@@ -106,18 +112,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_lockLayout) LinearLayout lockLayout;
     @BindView(R.id.mainUI_unLockLayout) LinearLayout unLockLayout;
     @BindView(R.id.mainUI_scanCode_endLayout) LinearLayout endLayout;
-
-//    leftBtn = v.findViewById(R.id.mainUI_leftBtn);
-//    rightBtn = v.findViewById(R.id.mainUI_rightBtn);
-//    lookBtn = v.findViewById(R.id.mainUI_scanCode_lookRecordBtn);
-//    scanCodeBtn = v.findViewById(R.id.mainUI_scanCode_lock);
-//    lookLocationBtn = v.findViewById(R.id.mainUI_lookLocationBtn);
-//    changeKeyBtn = v.findViewById(R.id.mainUI_scanCode_changeKeyBtn);
-//    storeageLayout = v.findViewById(R.id.mainUI_storageLayout);
-//    lockLayout = v.findViewById(R.id.mainUI_lockLayout);
-//    unLockLayout = v.findViewById(R.id.mainUI_unLockLayout);
-//    endLayout = v.findViewById(R.id.mainUI_scanCode_endLayout);
-
 
     private AMap aMap;
     private MapView mapView;
@@ -144,15 +138,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private int isLock = 0;
     private View v;
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.fragment_scan);
-//        mapView = (MapView) findViewById(R.id.mainUI_map);
-//        mapView.onCreate(savedInstanceState);// 此方法必须重写
-//        bikeMarkerList = new ArrayList<>();
-//        initView();
-//    }
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                        Bundle savedInstanceState) {
@@ -161,21 +146,39 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         return v;
     }
 
-//    @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        registerReceiver(new String[] { LibraryConstants.BROADCAST_UPDATE_USER_INFO });
-//    }
-
     @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = getActivity();
         activity = getActivity();
 
+//        registerReceiver(new String[] { LibraryConstants.BROADCAST_UPDATE_USER_INFO });
+
+		IntentFilter filter = new IntentFilter("data.broadcast.action");
+		context.registerReceiver(mReceiver, filter);
+
         mapView = v.findViewById(R.id.mainUI_map);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         bikeMarkerList = new ArrayList<>();
         initView();
+
     }
+
+
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        private String action = null;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            action = intent.getAction();
+
+            Log.e("scan===mReceiver", "==="+action);
+
+            if ("data.broadcast.action".equals(action)) {
+                tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
+//                tvMsg.setText(""+intent.getStringExtra("count"));
+            }
+        }
+    };
 
 
     private void initView(){

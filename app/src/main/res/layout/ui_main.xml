@@ -29,7 +29,7 @@
             app:tl_iconWidth="25dp"
             app:tl_indicator_color="@color/theme_color"
             app:tl_indicator_height="0dp"
-            app:tl_textSelectColor="@color/theme_color"
+            app:tl_textSelectColor="@color/red"
             app:tl_textUnselectColor="#66000000"
             app:tl_textsize="12sp"
             app:tl_underline_color="#DDDDDD"

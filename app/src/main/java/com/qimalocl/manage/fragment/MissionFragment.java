@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +49,8 @@ import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.core.widget.MyListView;
-import com.qimalocl.manage.model.HistorysRecordBean;
+import com.qimalocl.manage.model.BadCarBean;
+import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.ResultConsel;
 
 import org.apache.http.Header;
@@ -63,16 +66,19 @@ import butterknife.Unbinder;
 import static android.app.Activity.RESULT_OK;
 
 @SuppressLint("NewApi")
-public class MissionFragment extends BaseFragment implements View.OnClickListener{
+public class MissionFragment extends BaseFragment implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener,
+        AdapterView.OnItemClickListener{
 
     Unbinder unbinder;
 
     private Context context;
 
-    @BindView(R.id.listview)
-    MyListView listview;
-    @BindView(R.id.msgText)
-    TextView msgText;
+    @BindView(R.id.Layout_swipeListView)
+    ListView listview;
+    @BindView(R.id.Layout_swipeParentLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+//    @BindView(R.id.msgText)
+//    TextView msgText;
 
 
     private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
@@ -96,14 +102,28 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
     private LoadingDialog loadingDialog;
     private Dialog dialog;
-    private List<HistorysRecordBean> datas;
+    private List<BadCarBean> datas;
     private MyAdapter myAdapter;
     private int curPosition = 0;
+    private int showPage = 1;
+    private boolean isRefresh = true;// 是否刷新中
+    private boolean isLast = false;
+
+    private View footerView;
+    private View footerViewType01;
+    private View footerViewType02;
+    private View footerViewType03;
+    private View footerViewType04;
+    private View footerViewType05;
+
+    private View footerLayout;
+
 
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mission, null);
         unbinder = ButterKnife.bind(this, v);
+
         return v;
     }
 
@@ -115,7 +135,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
         initView();
 
-        initHttp("20000691");
+        initHttp();
     }
 
 
@@ -129,9 +149,31 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         dialog.setContentView(tagView);
         dialog.setCanceledOnTouchOutside(false);
 
+        footerView = LayoutInflater.from(context).inflate(R.layout.footer_item, null);
+//        footerView = inflater.inflate(R.layout.footer_item, null);
+        footerViewType01 = footerView.findViewById(R.id.footer_Layout_type01);// 点击加载更多
+        footerViewType02 = footerView.findViewById(R.id.footer_Layout_type02);// 正在加载，请您稍等
+        footerViewType03 = footerView.findViewById(R.id.footer_Layout_type03);// 已无更多
+        footerViewType04 = footerView.findViewById(R.id.footer_Layout_type04);// 刷新失败，请重试
+        footerViewType05 = footerView.findViewById(R.id.footer_Layout_type05);// 暂无数据
+        footerLayout = footerView.findViewById(R.id.footer_Layout);
+
+
+//        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.Layout_swipeParentLayout);
+//        myList = (ListView)findViewById(R.id.Layout_swipeListView);
+        listview.addFooterView(footerView);
+
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_green_dark), getResources().getColor(android.R.color.holo_green_light),
+                getResources().getColor(android.R.color.holo_orange_light), getResources().getColor(android.R.color.holo_red_light));
+
+//        myList.setOnItemClickListener(this);
+
         myAdapter = new MyAdapter(context);
         myAdapter.setDatas(datas);
         listview.setAdapter(myAdapter);
+
+        footerLayout.setOnClickListener(this);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -144,9 +186,10 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                dialog.getWindow().setAttributes(params1);
 //                dialog.show();
 
+
+
                 Intent intent = new Intent(context, MissionDetailActivity.class);
-                intent.putExtra("latitude", "0");
-                intent.putExtra("longitude", "0");
+                intent.putExtra("codenum", myAdapter.getDatas().get(position).getCodenum());
 //                intent.putExtra("latitude", jsonObject.getString("latitude"));
 //                intent.putExtra("longitude", jsonObject.getString("longitude"));
                 startActivity(intent);
@@ -154,8 +197,28 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         });
     }
 
+    @Override
+    public void onRefresh() {
+        showPage = 1;
+        if (!isRefresh) {
+            if(datas.size()!=0){
+                myAdapter.getDatas().clear();
+                myAdapter.notifyDataSetChanged();
+            }
+            isRefresh = true;
+            initHttp();
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
     @SuppressLint("NewApi")
-    private class MyAdapter extends BaseViewAdapter<HistorysRecordBean> {
+    private class MyAdapter extends BaseViewAdapter<BadCarBean> {
 
         private LayoutInflater inflater;
 
@@ -172,16 +235,27 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
             TextView num = BaseViewHolder.get(convertView,R.id.item_num);
             TextView status = BaseViewHolder.get(convertView,R.id.item_status);
             TextView time = BaseViewHolder.get(convertView,R.id.item_time);
-            final HistorysRecordBean bean = getDatas().get(position);
-            num.setText(bean.getUsername());
-            status.setText(bean.getTelphone());
-            time.setText(bean.getStart_end_date());
+            final BadCarBean bean = getDatas().get(position);
+
+            num.setText(bean.getCodenum());
+            status.setText(bean.getStatus_name());
+            time.setText(bean.getBadtime());
+
+            if("即将超时".equals(bean.getStatus_name())){
+                num.setTextColor(getResources().getColor(R.color.red));
+                status.setTextColor(getResources().getColor(R.color.red));
+                time.setTextColor(getResources().getColor(R.color.red));
+            }else{
+                num.setTextColor(getResources().getColor(R.color.tx_black));
+                status.setTextColor(getResources().getColor(R.color.tx_black));
+                time.setTextColor(getResources().getColor(R.color.tx_black));
+            }
 
             return convertView;
         }
     }
 
-    private void initHttp(String codenum) {
+    private void initHttp() {
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
@@ -192,22 +266,30 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         RequestParams params = new RequestParams();
         params.put("uid",uid);
         params.put("access_token",access_token);
-        params.put("codenum",codenum);
-        HttpHelper.get(context, Urls.historys, params, new TextHttpResponseHandler() {
+        params.put("page", showPage);
+        params.put("pagesize", GlobalConfig.PAGE_SIZE);
+
+        HttpHelper.get(context, Urls.badcarList, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在加载");
+//                    loadingDialog.show();
+//                }
+
+                setFooterType(1);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
                 UIHelper.ToastError(context, throwable.toString());
+                swipeRefreshLayout.setRefreshing(false);
+                isRefresh = false;
+                setFooterType(3);
+                setFooterVisibility();
             }
 
             @Override
@@ -215,35 +297,139 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                     if (result.getFlag().equals("Success")) {
+//                        JSONArray array = new JSONArray(result.getData());
+//                        if (0 == array.length()) {
+//                            msgText.setVisibility(View.VISIBLE);
+//                            listview.setVisibility(View.GONE);
+//                            msgText.setText("对不起,暂无信息");
+//                        }else {
+//                            msgText.setVisibility(View.GONE);
+//                            listview.setVisibility(View.VISIBLE);
+//                            if (datas.size() != 0){
+//                                datas.clear();
+//                            }
+//                            for (int i = 0; i < array.length();i++){
+//                                BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+//                                datas.add(bean);
+//                            }
+//                            myAdapter.notifyDataSetChanged();
+//                        }
+
                         JSONArray array = new JSONArray(result.getData());
-                        if (0 == array.length()) {
-                            msgText.setVisibility(View.VISIBLE);
-                            listview.setVisibility(View.GONE);
-                            msgText.setText("对不起,暂无信息");
-                        }else {
-                            msgText.setVisibility(View.GONE);
-                            listview.setVisibility(View.VISIBLE);
-                            if (datas.size() != 0){
-                                datas.clear();
-                            }
-                            for (int i = 0; i < array.length();i++){
-                                HistorysRecordBean bean = JSON.parseObject(array.getJSONObject(i).toString(),HistorysRecordBean.class);
-                                datas.add(bean);
-                            }
-                            myAdapter.notifyDataSetChanged();
+                        if (array.length() == 0 && showPage == 1) {
+                            footerLayout.setVisibility(View.VISIBLE);
+                            setFooterType(4);
+                            return;
+                        } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+                            footerLayout.setVisibility(View.GONE);
+                            setFooterType(5);
+                        } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+                            footerLayout.setVisibility(View.VISIBLE);
+                            setFooterType(2);
+                        } else if (array.length() >= 10) {
+                            footerLayout.setVisibility(View.VISIBLE);
+                            setFooterType(0);
                         }
+                        String codenum="";
+                        String totalnum="";
+                        for (int i = 0; i < array.length();i++){
+                            BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+
+                            if(i==0){
+                                codenum = bean.getCodenum();
+                                totalnum = bean.getTotalnum();
+                            }
+
+                            datas.add(bean);
+                        }
+
+                        Intent intent = new Intent("data.broadcast.action");
+                        intent.putExtra("codenum", codenum);
+                        intent.putExtra("count", Integer.parseInt(totalnum));
+                        context.sendBroadcast(intent);
+
+//                        View view = LayoutInflater.from(context).inflate(R.layout.fragment_scan, null);
+//                        TextView tvMsg = view.findViewById(R.id.msg);
+//                        tvMsg.setText("456");
+
                     } else {
                         Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    swipeRefreshLayout.setRefreshing(false);
+                    isRefresh = false;
+                    setFooterVisibility();
                 }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
             }
         });
     }
+
+    private void setFooterType(int type) {
+        switch (type) {
+            case 0:
+                isLast = false;
+                footerViewType01.setVisibility(View.VISIBLE);
+                footerViewType02.setVisibility(View.GONE);
+                footerViewType03.setVisibility(View.GONE);
+                footerViewType04.setVisibility(View.GONE);
+                footerViewType05.setVisibility(View.GONE);
+                break;
+            case 1:
+                isLast = false;
+                footerViewType01.setVisibility(View.GONE);
+                footerViewType02.setVisibility(View.VISIBLE);
+                footerViewType03.setVisibility(View.GONE);
+                footerViewType04.setVisibility(View.GONE);
+                footerViewType05.setVisibility(View.GONE);
+                break;
+            case 2:
+                isLast = true;
+                footerViewType01.setVisibility(View.GONE);
+                footerViewType02.setVisibility(View.GONE);
+                footerViewType03.setVisibility(View.VISIBLE);
+                footerViewType04.setVisibility(View.GONE);
+                footerViewType05.setVisibility(View.GONE);
+                break;
+            case 3:
+                isLast = false;
+                // showPage -= 1;
+                footerViewType01.setVisibility(View.GONE);
+                footerViewType02.setVisibility(View.GONE);
+                footerViewType03.setVisibility(View.GONE);
+                footerViewType04.setVisibility(View.VISIBLE);
+                footerViewType05.setVisibility(View.GONE);
+                break;
+            case 4:
+                isLast = true;
+                footerViewType01.setVisibility(View.GONE);
+                footerViewType02.setVisibility(View.GONE);
+                footerViewType03.setVisibility(View.GONE);
+                footerViewType04.setVisibility(View.GONE);
+                footerViewType05.setVisibility(View.VISIBLE);
+                break;
+            case 5:
+                isLast = true;
+                footerViewType01.setVisibility(View.GONE);
+                footerViewType02.setVisibility(View.GONE);
+                footerViewType03.setVisibility(View.GONE);
+                footerViewType04.setVisibility(View.GONE);
+                footerViewType05.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void setFooterVisibility() {
+        if (footerView.getVisibility() == View.GONE) {
+            footerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+
 
     @Override
     public void onHiddenChanged(boolean hidden) {
@@ -258,7 +444,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-
+        isRefresh = true;
     }
 
 
@@ -275,6 +461,14 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
             case R.id.locationLayout:
                 UIHelper.goToAct(context, BikeLocationActivity.class);
+                break;
+
+            case R.id.footer_Layout:
+                if (!isLast) {
+                    showPage += 1;
+                    initHttp();
+                    myAdapter.notifyDataSetChanged();
+                }
                 break;
 
             default:

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ui_main"
+    android:background="@color/white"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:clipToPadding="true">
@@ -20,6 +20,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal"
             android:background="@color/ui_backgroud">
 
@@ -53,7 +57,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/line_color"/>
+                android:background="@color/black"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,7 +89,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/line_color"/>
+                android:background="@color/black"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -122,10 +126,12 @@
             android:id="@+id/tv_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="5dp"
             android:layout_centerInParent="true"
             android:text="地图位置显示"
             android:textColor="@android:color/black"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
 
         <com.amap.api.maps.MapView
             android:id="@+id/ui_merchantAddress_map"

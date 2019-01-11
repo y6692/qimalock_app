@@ -4,11 +4,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -19,9 +22,22 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.core.common.HttpHelper;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.core.common.UIHelper;
+import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.model.BadCarBean;
+import com.qimalocl.manage.model.GlobalConfig;
+import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,11 +55,19 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
     @BindView(R.id.ui_merchantAddress_map)
     MapView mapView;
 
+    @BindView(R.id.num)
+    TextView tvNum;
+    @BindView(R.id.tel)
+    TextView tvTel;
+    @BindView(R.id.time)
+    TextView tvTime;
+
     private Context context;
     private LoadingDialog loadingDialog;
 
     private double latitude;
     private double longitude;
+    private String codenum;
     private AMap aMap;
     private static final int STROKE_COLOR = Color.argb(80, 3, 0, 255);
     private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
@@ -58,9 +82,14 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
         ButterKnife.bind(this);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         context = this;
-        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
-        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+//        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
+//        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+
+        codenum =getIntent().getExtras().getString("codenum");
+
         init();
+
+        initHttp();
     }
 
     private void init(){
@@ -80,9 +109,93 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
         aMap.moveCamera(cameraUpdate);
 
         initListener();
-        myLocation = new LatLng(latitude,longitude);
-        addChooseMarker();
-        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
+
+    }
+
+
+    private void initHttp() {
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+            return;
+        }
+        RequestParams params = new RequestParams();
+        params.put("uid",uid);
+        params.put("access_token",access_token);
+        params.put("codenum", codenum);
+
+        HttpHelper.get(context, Urls.badcarShow, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在加载");
+                    loadingDialog.show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+                UIHelper.ToastError(context, throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                    if (result.getFlag().equals("Success")) {
+//                        JSONArray array = new JSONArray(result.getData());
+
+                        JSONObject obj = new JSONObject(result.getData());
+
+//                        {"data":{"longitude":"117.147399","latitude":"34.218477","codenum":"50007307","telphone":"15105203536","lastusetime":"2018-12-26 07:59:22"}}
+
+                        Log.e("initHttp===", "==="+obj.getString("longitude"));
+
+                        longitude = Double.parseDouble(obj.getString("longitude"));
+                        latitude = Double.parseDouble(obj.getString("latitude"));
+                        tvNum.setText(obj.getString("codenum"));
+                        tvTel.setText(obj.getString("telphone"));
+                        tvTime.setText(obj.getString("lastusetime").substring(0,16));
+
+                        myLocation = new LatLng(latitude,longitude);
+                        addChooseMarker();
+                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
+
+
+//                        if (0 == array.length()) {
+////                            msgText.setVisibility(View.VISIBLE);
+////                            listview.setVisibility(View.GONE);
+////                            msgText.setText("对不起,暂无信息");
+//                        }else {
+////                            msgText.setVisibility(View.GONE);
+////                            listview.setVisibility(View.VISIBLE);
+////                            if (datas.size() != 0){
+////                                datas.clear();
+////                            }
+//                            for (int i = 0; i < array.length();i++){
+//                                BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+//                                datas.add(bean);
+//                            }
+//                            myAdapter.notifyDataSetChanged();
+//                        }
+
+
+                    } else {
+                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+            }
+        });
     }
 
     private void initListener(){
