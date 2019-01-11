@@ -65,9 +65,7 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
-import com.zbar.lib.LockStatusScanCaptureAct;
 import com.zbar.lib.ScanCaptureAct;
-import com.zbar.lib.UpLocationScanCaptureAct;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -114,8 +112,7 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
     private View v;
 
 
-    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                       Bundle savedInstanceState) {
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_query, null);
         unbinder = ButterKnife.bind(this, v);
         return v;

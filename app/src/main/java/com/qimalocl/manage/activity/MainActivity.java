@@ -73,9 +73,7 @@ import com.qimalocl.manage.fragment.ScanFragment;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TabEntity;
-import com.zbar.lib.LockStatusScanCaptureAct;
 import com.zbar.lib.ScanCaptureAct;
-import com.zbar.lib.UpLocationScanCaptureAct;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -175,6 +173,10 @@ public class MainActivity extends BaseActivity{
 
         tab.setTabData(mTabEntities, MainActivity.this, R.id.fl_change, mFragments);
         tab.setCurrentTab(0);
+    }
+
+    public void changeTab(int index) {
+        tab.setCurrentTab(index);
     }
 
     private void initListener() {

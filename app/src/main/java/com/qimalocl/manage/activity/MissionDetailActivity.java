@@ -1,7 +1,13 @@
 package com.qimalocl.manage.activity;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -29,6 +35,7 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.GlobalConfig;
@@ -159,30 +166,62 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
                         longitude = Double.parseDouble(obj.getString("longitude"));
                         latitude = Double.parseDouble(obj.getString("latitude"));
                         tvNum.setText(obj.getString("codenum"));
-                        tvTel.setText(obj.getString("telphone"));
+
+                        final String telphone = obj.getString("telphone");
+
+                        tvTel.setText(telphone);
                         tvTime.setText(obj.getString("lastusetime").substring(0,16));
 
                         myLocation = new LatLng(latitude,longitude);
                         addChooseMarker();
                         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
 
-
-//                        if (0 == array.length()) {
-////                            msgText.setVisibility(View.VISIBLE);
-////                            listview.setVisibility(View.GONE);
-////                            msgText.setText("对不起,暂无信息");
-//                        }else {
-////                            msgText.setVisibility(View.GONE);
-////                            listview.setVisibility(View.VISIBLE);
-////                            if (datas.size() != 0){
-////                                datas.clear();
-////                            }
-//                            for (int i = 0; i < array.length();i++){
-//                                BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
-//                                datas.add(bean);
-//                            }
-//                            myAdapter.notifyDataSetChanged();
-//                        }
+                        tvTel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Log.e("Test","111111111");
+//                                linkTel = bean.getTelphone();
+                                if (Build.VERSION.SDK_INT >= 23) {
+                                    int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);
+                                    if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                                        if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
+                                            requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
+                                        } else {
+                                            CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                                            customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开拨打电话权限！")
+                                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            dialog.cancel();
+                                                        }
+                                                    }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                    MissionDetailActivity.this.requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
+                                                }
+                                            });
+                                            customBuilder.create().show();
+                                        }
+                                        return;
+                                    }
+                                }
+                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                                customBuilder.setTitle("温馨提示").setMessage("确认拨打" + telphone + "吗?")
+                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.cancel();
+                                            }
+                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                        Intent intent=new Intent();
+                                        intent.setAction(Intent.ACTION_CALL);
+                                        intent.setData(Uri.parse("tel:" + telphone));
+                                        startActivity(intent);
+                                    }
+                                });
+                                customBuilder.create().show();
+                            }
+                        });
 
 
                     } else {

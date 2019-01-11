@@ -24,6 +24,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -71,7 +72,7 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 	private boolean vibrate;
 	private TextView cancle;
 
-	private Button lightBtn;
+	private LinearLayout lightBtn;
 
 	static {
 		System.loadLibrary("iconv");
@@ -89,15 +90,16 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 		scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
 		scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
 		scanLine = (ImageView) findViewById(R.id.capture_scan_line);
-		cancle = (TextView) findViewById(R.id.loca_show_btncancle);
-		lightBtn = (Button)findViewById(R.id.activity_qr_scan_lightBtn);
-
-		cancle.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				scrollToFinishActivity();
-			}
-		});
+		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
+//		cancle = (TextView) findViewById(R.id.loca_show_btncancle);
+//
+//
+//		cancle.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				scrollToFinishActivity();
+//			}
+//		});
 		lightBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

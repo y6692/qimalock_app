@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -56,6 +57,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.flyco.tablayout.CommonTabLayout;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -63,6 +65,7 @@ import com.qimalocl.manage.activity.BikeLocationActivity;
 import com.qimalocl.manage.activity.DeviceListActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
+import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.base.BaseActivity;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.core.common.AppManager;
@@ -74,9 +77,7 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
-import com.zbar.lib.LockStatusScanCaptureAct;
 import com.zbar.lib.ScanCaptureAct;
-import com.zbar.lib.UpLocationScanCaptureAct;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -102,6 +103,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
     private LoadingDialog loadingDialog;
     @BindView(R.id.msg) TextView tvMsg;
+    @BindView(R.id.mainUI_msg) LinearLayout llMsg;
     @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
     @BindView(R.id.mainUI_scanCode_lock) LinearLayout scanCodeBtn;
     @BindView(R.id.mainUI_leftBtn) ImageView leftBtn;
@@ -112,6 +114,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_lockLayout) LinearLayout lockLayout;
     @BindView(R.id.mainUI_unLockLayout) LinearLayout unLockLayout;
     @BindView(R.id.mainUI_scanCode_endLayout) LinearLayout endLayout;
+    @BindView(R.id.mainUI_myLocationLayout) LinearLayout myLocationLayout;
 
     private AMap aMap;
     private MapView mapView;
@@ -139,8 +142,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private View v;
 
 
-    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                       Bundle savedInstanceState) {
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
         unbinder = ButterKnife.bind(this, v);
         return v;
@@ -175,7 +177,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
             if ("data.broadcast.action".equals(action)) {
                 tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
-//                tvMsg.setText(""+intent.getStringExtra("count"));
             }
         }
     };
@@ -224,6 +225,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 //        unLockLayout = v.findViewById(R.id.mainUI_unLockLayout);
 //        endLayout = v.findViewById(R.id.mainUI_scanCode_endLayout);
 
+        llMsg.setOnClickListener(this);
         rightBtn.setOnClickListener(this);
         leftBtn.setOnClickListener(this);
         lookBtn.setOnClickListener(this);
@@ -234,6 +236,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         lockLayout.setOnClickListener(this);
         unLockLayout.setOnClickListener(this);
         endLayout.setOnClickListener(this);
+        myLocationLayout.setOnClickListener(this);
     }
 
     private void setUpMap() {
@@ -382,6 +385,31 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     }
 
 
+//    private void showTab(int idx){
+//         for(int i = 0; i < fragments.size(); i++){
+//                 Fragment fragment = fragments.get(i);
+//                 FragmentTransaction ft = obtainFragmentTransaction(idx);
+//
+//                 if(idx == i){
+//                         ft.show(fragment);
+//                     }else{
+//                         ft.hide(fragment);
+//                     }
+//                 ft.commit();
+//             }
+//         currentTab = idx; // 更新目标tab为当前tab
+//     }
+//
+//    private FragmentTransaction obtainFragmentTransaction(int index){
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        // 设置切换动画
+//        if(index > currentTab){
+//             ft.setCustomAnimations(R.anim.slide_left_in, R.anim.slide_left_out);
+//         }else{
+//             ft.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_right_out);
+//         }
+//        return ft;
+//    }
 
 
 
@@ -390,44 +418,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         switch (v.getId()){
-            case R.id.mainUI_leftBtn:
+            case R.id.mainUI_msg:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context, LoginActivity.class);
+                    UIHelper.goToAct(activity, LoginActivity.class);
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        ScanFragment.this.requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, UpLocationScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivityForResult(intent, 1);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
+                    ((MainActivity)getActivity()).changeTab(1);
                 }
                 break;
+
             case R.id.mainUI_rightBtn:
                 if ("登录".equals(rightBtn.getText().toString().trim())){
                     UIHelper.goToAct(context,LoginActivity.class);
@@ -438,14 +437,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     rightBtn.setText("登录");
                 }
                 break;
-            case R.id.mainUI_scanCode_lookRecordBtn:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(activity, LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    UIHelper.goToAct(context, HistorysRecordActivity.class);
+
+            case R.id.mainUI_myLocationLayout:
+                if (myLocation != null) {
+                    CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
+                    aMap.animateCamera(update);
                 }
                 break;
+
             case R.id.mainUI_scanCode_lock:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
                     UIHelper.goToAct(context,LoginActivity.class);
@@ -487,185 +486,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     }
                 }
                 break;
-            case R.id.mainUI_lookLocationBtn:
-                UIHelper.goToAct(context, BikeLocationActivity.class);
-                break;
-            case R.id.mainUI_scanCode_changeKeyBtn:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        ScanFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, ScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        startActivityForResult(intent, 101);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
-                }
-                break;
-            case R.id.mainUI_storageLayout:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                UIHelper.goToAct(context,DeviceListActivity.class);
-                break;
-            case R.id.mainUI_lockLayout:
-                isLock = 4;
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        ScanFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, LockStatusScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        intent.putExtra("notShow",true);
-                        startActivityForResult(intent, 2);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
-                }
-                break;
-            case R.id.mainUI_unLockLayout:
-                isLock = 2;
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        ScanFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, LockStatusScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        startActivityForResult(intent, 2);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
-                }
-                break;
-            case R.id.mainUI_scanCode_endLayout:
-                isLock = 3;
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    UIHelper.goToAct(context,LoginActivity.class);
-                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                }else {
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
-                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                            } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        ScanFragment.this.requestPermissions(
-                                                new String[] { Manifest.permission.CAMERA },
-                                                100);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                            return;
-                        }
-                    }
-                    try {
-                        Intent intent = new Intent();
-                        intent.setClass(context, LockStatusScanCaptureAct.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra("isChangeKey",true);
-                        startActivityForResult(intent, 2);
-                    } catch (Exception e) {
-                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-                    }
-                }
-                break;
+
+
             default:
                 break;
         }

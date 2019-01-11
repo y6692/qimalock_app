@@ -87,9 +87,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TagBean;
-import com.zbar.lib.LockStatusScanCaptureAct;
 import com.zbar.lib.ScanCaptureAct;
-import com.zbar.lib.UpLocationScanCaptureAct;
 import com.zbar.lib.camera.CameraManager;
 import com.zbar.lib.camera.CameraPreview;
 import com.zbar.lib.decode.InactivityTimer;
@@ -305,8 +303,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
 
     private void initView() {
-
-
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
@@ -376,9 +372,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             }
         };
         tagFlowLayout2.setAdapter(tagAdapter2);
-
-
-
 
         closeLayout.setOnClickListener(this);
         affirmLayout.setOnClickListener(this);
@@ -653,6 +646,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                         }else {
                             Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                         }
+
+                        resetCamera();
                     } catch (Exception e) {
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()){
@@ -699,6 +694,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                         }else {
                             Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                         }
+
+                        resetCamera();
                     } catch (Exception e) {
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()){
@@ -745,6 +742,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                         }else {
                             Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                         }
+
+                        resetCamera();
                     } catch (Exception e) {
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()){

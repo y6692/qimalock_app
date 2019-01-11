@@ -91,6 +91,7 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 	private RelativeLayout scanContainer;
 	private RelativeLayout scanCropView;
 	private ImageView scanLine;
+	private ImageView ivLight;
 
 	private Rect mCropRect = null;
 	private boolean barcodeScanned = false;
@@ -101,7 +102,7 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 	private boolean playBeep;
 	private static final float BEEP_VOLUME = 0.50f;
 	private boolean vibrate;
-	private TextView cancle;
+	private ImageView cancle;
 	private TextView bikeNunBtn;
 	private LoadingDialog loadingDialog;
 
@@ -110,7 +111,7 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 	private Dialog dialog;
 	private EditText bikeNumEdit;
 	private Button positiveButton,negativeButton;
-	private Button lightBtn;
+	private LinearLayout lightBtn;
 	private boolean flag = true;
 	private int Tag = 0;
 	private boolean isChangeKey = false;
@@ -137,9 +138,10 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 		scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
 		scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
 		scanLine = (ImageView) findViewById(R.id.capture_scan_line);
-		cancle = (TextView)findViewById(R.id.loca_show_btncancle);
+		ivLight = (ImageView) findViewById(R.id.iv_light);
+		cancle = (ImageView)findViewById(R.id.iv_cancle);
 		bikeNunBtn = (TextView)findViewById(R.id.loca_show_btnBikeNum);
-		lightBtn = (Button)findViewById(R.id.activity_qr_scan_lightBtn);
+		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
 
 		dialog = new Dialog(this, R.style.Theme_AppCompat_Dialog);
 		View dialogView = LayoutInflater.from(this).inflate(R.layout.pop_circles_menu, null);
@@ -162,7 +164,7 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
 		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
 		switch (v.getId()){
-			case R.id.loca_show_btncancle:
+			case R.id.iv_cancle:
 				scrollToFinishActivity();
 				break;
 			case R.id.loca_show_btnBikeNum:
@@ -210,17 +212,26 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 				if (dialog.isShowing()) {
 					dialog.dismiss();
 				}
+
+				resetCamera();
+
 				break;
 			case R.id.activity_qr_scan_lightBtn:
-				if (flag) {
+
+				if (flag == true) {
 					flag = false;
-					lightBtn.setText("关闭手电筒");
+					// 打开
+					ivLight.setImageResource(R.drawable.light2);
+
 					mCameraManager.openLight();
 				} else {
 					flag = true;
-					lightBtn.setText("开启手电筒");
+					// 关闭
+					ivLight.setImageResource(R.drawable.light);
 					mCameraManager.offLight();
 				}
+
+
 				break;
 			default:
 				break;
@@ -359,6 +370,22 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 			}
 		}
 	};
+
+	private void resetCamera(){
+		mCameraManager = new CameraManager(this);
+		try {
+			mCameraManager.openDriver();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		mCamera = mCameraManager.getCamera();
+		mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+		scanPreview.addView(mPreview);
+
+		previewing = true;
+	}
+
 	private void useBike(String result){
 
 		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
