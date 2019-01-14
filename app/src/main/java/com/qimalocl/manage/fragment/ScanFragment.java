@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -163,7 +164,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         bikeMarkerList = new ArrayList<>();
         initView();
 
+
+
+
+
     }
+
+
 
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -176,7 +183,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             Log.e("scan===mReceiver", "==="+action);
 
             if ("data.broadcast.action".equals(action)) {
-                tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
+                if(tvMsg!=null){
+                    tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
+                }
+
             }
         }
     };
@@ -214,16 +224,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         aMap.setOnMapTouchListener(ScanFragment.this);
         setUpLocationStyle();
 
-//        leftBtn = v.findViewById(R.id.mainUI_leftBtn);
-//        rightBtn = v.findViewById(R.id.mainUI_rightBtn);
-//        lookBtn = v.findViewById(R.id.mainUI_scanCode_lookRecordBtn);
-//        scanCodeBtn = v.findViewById(R.id.mainUI_scanCode_lock);
-//        lookLocationBtn = v.findViewById(R.id.mainUI_lookLocationBtn);
-//        changeKeyBtn = v.findViewById(R.id.mainUI_scanCode_changeKeyBtn);
-//        storeageLayout = v.findViewById(R.id.mainUI_storageLayout);
-//        lockLayout = v.findViewById(R.id.mainUI_lockLayout);
-//        unLockLayout = v.findViewById(R.id.mainUI_unLockLayout);
-//        endLayout = v.findViewById(R.id.mainUI_scanCode_endLayout);
 
         llMsg.setOnClickListener(this);
         rightBtn.setOnClickListener(this);

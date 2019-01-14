@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -135,7 +136,52 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
         initView();
 
-        initHttp();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+
+                while (true){
+                    m_myHandler.sendEmptyMessage(1);
+
+                    try {
+                        Thread.sleep(30*1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }).start();
+
+    }
+
+    protected Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                case 0:
+                    break;
+                case 1:
+                    initHttp();
+
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(hidden){
+            //pause
+        }else{
+            //resume
+            initHttp();
+        }
     }
 
 
@@ -431,15 +477,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
 
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(hidden){
-            //pause
-        }else{
-            //resume
-        }
-    }
+
 
     @Override
     public void onResume() {
