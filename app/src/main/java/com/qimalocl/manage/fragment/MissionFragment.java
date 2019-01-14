@@ -67,7 +67,7 @@ import butterknife.Unbinder;
 import static android.app.Activity.RESULT_OK;
 
 @SuppressLint("NewApi")
-public class MissionFragment extends BaseFragment implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener,
+public class MissionFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener{
 
     Unbinder unbinder;
@@ -119,6 +119,9 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
     private View footerLayout;
 
+    String badtime="2115-02-08 20:20";
+    String codenum="";
+    String totalnum="";
 
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -136,19 +139,23 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
         initView();
 
+        initHttp();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
 
 
                 while (true){
-                    m_myHandler.sendEmptyMessage(1);
+
 
                     try {
                         Thread.sleep(30*1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+                    m_myHandler.sendEmptyMessage(1);
                 }
 
             }
@@ -163,7 +170,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                 case 0:
                     break;
                 case 1:
-                    initHttp();
+                    resetList();
 
                     break;
                 default:
@@ -173,6 +180,21 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         }
     });
 
+    public void resetList(){
+        showPage = 1;
+        badtime="2115-02-08 20:20";
+        if (!isRefresh) {
+            if(datas.size()!=0){
+                myAdapter.getDatas().clear();
+                myAdapter.notifyDataSetChanged();
+            }
+            isRefresh = true;
+            initHttp();
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
@@ -180,7 +202,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
             //pause
         }else{
             //resume
-            initHttp();
+            resetList();
         }
     }
 
@@ -231,8 +253,6 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 //                dialog.getWindow().setAttributes(params1);
 //                dialog.show();
-
-
 
                 Intent intent = new Intent(context, MissionDetailActivity.class);
                 intent.putExtra("codenum", myAdapter.getDatas().get(position).getCodenum());
@@ -376,12 +396,12 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                             footerLayout.setVisibility(View.VISIBLE);
                             setFooterType(0);
                         }
-                        String codenum="";
-                        String totalnum="";
+
                         for (int i = 0; i < array.length();i++){
                             BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
 
-                            if(i==0){
+                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
+                                badtime = bean.getBadtime();
                                 codenum = bean.getCodenum();
                                 totalnum = bean.getTotalnum();
                             }
