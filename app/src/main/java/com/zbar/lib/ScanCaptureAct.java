@@ -311,6 +311,8 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 	protected void onDestroy() {
 		inactivityTimer.shutdown();
 		super.onDestroy();
+
+//		resetCamera();
 	}
 
 

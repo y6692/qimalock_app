@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity{
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
 
-            Log.e("main===mReceiver", "==="+action);
+//            Log.e("main===mReceiver", "==="+action);
 
             if ("data.broadcast.action".equals(action)) {
                 int count = intent.getIntExtra("count", 0);

@@ -180,7 +180,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
 
-            Log.e("scan===mReceiver", "==="+action);
+//            Log.e("scan===mReceiver", "==="+action);
 
             if ("data.broadcast.action".equals(action)) {
                 if(tvMsg!=null){

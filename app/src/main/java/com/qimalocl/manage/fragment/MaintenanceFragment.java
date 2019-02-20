@@ -181,14 +181,16 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         System.loadLibrary("iconv");
     }
 
-    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.activity_scanner_location, null);
         unbinder = ButterKnife.bind(this, v);
         return v;
     }
 
 
-    @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = getActivity();
         activity = getActivity();
@@ -286,7 +288,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //                activity.setResult(RESULT_OK, rIntent);
 //                activity.scrollToFinishActivity();
 
-
                 Log.e("Maint===preview", "===");
 
 //                WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
@@ -295,7 +296,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 //                dialog.getWindow().setAttributes(params1);
                 dialog2.show();
-
 
             }
         }
@@ -347,8 +347,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         };
         tagFlowLayout.setAdapter(tagAdapter);
 
-
-
         dialog3 = new Dialog(context, R.style.main_publishdialog_style);
         tagView = LayoutInflater.from(context).inflate(R.layout.dialog_maintenance_hand, null);
         dialog3.setContentView(tagView);
@@ -377,13 +375,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         affirmLayout.setOnClickListener(this);
         closeLayout2.setOnClickListener(this);
         affirmLayout2.setOnClickListener(this);
-
-//        cancle.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                scrollToFinishActivity();
-//            }
-//        });
 
         lightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -469,6 +460,109 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         initBeepSound();
         vibrate = true;
 
+    }
+
+    private void initViews() {
+        inactivityTimer = new InactivityTimer(activity);
+
+        mImageScanner = new ImageScanner();
+        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
+        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
+
+        autoFocusHandler = new Handler();
+
+//        mCameraManager = new CameraManager(context);
+//        try {
+//            mCameraManager.openDriver();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        //调整扫描框大小,自适应屏幕
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
+
+        RelativeLayout.LayoutParams linearParams = (RelativeLayout.LayoutParams) scanCropView.getLayoutParams();
+        linearParams.height = (int) (width * 0.65);
+        linearParams.width = (int) (width * 0.65);
+        scanCropView.setLayoutParams(linearParams);
+
+//        mCamera = mCameraManager.getCamera();
+//        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
+//        scanPreview.addView(mPreview);
+
+        TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,
+                TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
+                TranslateAnimation.RELATIVE_TO_PARENT, 0.9f);
+        mAnimation.setDuration(1500);
+        mAnimation.setRepeatCount(-1);
+        mAnimation.setRepeatMode(Animation.REVERSE);
+        mAnimation.setInterpolator(new LinearInterpolator());
+        scanLine.setAnimation(mAnimation);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Log.e("onResume===Maintenance", "===");
+
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(hidden){
+            //pause
+
+//            if(inactivityTimer!=null){
+//                inactivityTimer.onActivity();
+//            }
+//
+//            playBeepSoundAndVibrate();
+
+//            previewing = false;
+//            if(mCamera!=null){
+//                mCamera.setPreviewCallback(null);
+//                mCamera.stopPreview();
+//            }
+            releaseCamera();
+
+//            if(mCameraManager!=null){
+//                mCameraManager.closeDriver();
+//            }
+//
+//            if(inactivityTimer!=null){
+//                inactivityTimer.shutdown();
+//            }
+
+        }else{
+            //resume
+//            previewing = true;
+//
+//            playBeep = true;
+//            AudioManager audioService = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+//            if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+//                playBeep = false;
+//            }
+//            initBeepSound();
+//            vibrate = true;
+
+            resetCamera();
+        }
+    }
+
+    private void releaseCamera() {
+        if (mCamera != null) {
+            previewing = false;
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+            mCamera = null;
+
+            Log.e("onPause===releaseCamera", "==="+mCamera);
+        }
     }
 
     private void resetCamera(){
@@ -707,7 +801,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void endCar(String result){
-
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
@@ -756,53 +849,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
 
-        Log.e("onResume===Maintenance", "===");
 
-    }
 
-    private void initViews() {
-        inactivityTimer = new InactivityTimer(activity);
-
-        mImageScanner = new ImageScanner();
-        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
-        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
-
-        autoFocusHandler = new Handler();
-        mCameraManager = new CameraManager(context);
-        try {
-            mCameraManager.openDriver();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //调整扫描框大小,自适应屏幕
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
-        int height = display.getHeight();
-
-        RelativeLayout.LayoutParams linearParams = (RelativeLayout.LayoutParams) scanCropView.getLayoutParams();
-        linearParams.height = (int) (width * 0.65);
-        linearParams.width = (int) (width * 0.65);
-        scanCropView.setLayoutParams(linearParams);
-
-        mCamera = mCameraManager.getCamera();
-        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
-        scanPreview.addView(mPreview);
-
-        TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,
-                TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.9f);
-        mAnimation.setDuration(1500);
-        mAnimation.setRepeatCount(-1);
-        mAnimation.setRepeatMode(Animation.REVERSE);
-        mAnimation.setInterpolator(new LinearInterpolator());
-        scanLine.setAnimation(mAnimation);
-
-    }
 
 //    @Override
 //    public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -819,37 +868,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //        }
 //    }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(hidden){
-            //pause
 
-//            if(inactivityTimer!=null){
-//                inactivityTimer.onActivity();
-//            }
-//
-//            playBeepSoundAndVibrate();
-
-//            previewing = false;
-//            if(mCamera!=null){
-//                mCamera.setPreviewCallback(null);
-//                mCamera.stopPreview();
-//            }
-//            releaseCamera();
-//
-//            if(mCameraManager!=null){
-//                mCameraManager.closeDriver();
-//            }
-
-//            if(inactivityTimer!=null){
-//                inactivityTimer.shutdown();
-//            }
-
-        }else{
-            //resume
-        }
-    }
 
 
 //    @Override
@@ -858,16 +877,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //        super.onDestroy();
 //    }
 
-    private void releaseCamera() {
-        if (mCamera != null) {
-            previewing = false;
-            mCamera.setPreviewCallback(null);
-            mCamera.release();
-            mCamera = null;
 
-            Log.e("onPause===releaseCamera", "==="+mCamera);
-        }
-    }
 
     private Runnable doAutoFocus = new Runnable() {
         public void run() {
