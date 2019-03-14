@@ -145,9 +145,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
             @Override
             public void run() {
 
-
                 while (true){
-
 
                     try {
                         Thread.sleep(30*1000);

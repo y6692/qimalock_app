@@ -49,4 +49,6 @@ public class Urls {
 	public static String unLock = host + "/index.php?g=App&m=UserManage&a=update_car_status";
 	/**结束用车*/
 	public static String endCar = host + "/index.php?g=App&m=UserManage&a=normal_back_car";
+	/**已修好*/
+	public static String hasRepaired = host + "/index.php?g=App&m=UserManage&a=update_edit_bad";
 }

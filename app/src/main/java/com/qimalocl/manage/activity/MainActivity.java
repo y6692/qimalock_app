@@ -94,7 +94,6 @@ public class MainActivity extends BaseActivity{
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_EXTRAS = "extras";
 
-
     @BindView(R.id.fl_change) FrameLayout flChange;
     @BindView(R.id.tab) CommonTabLayout tab;
     @BindView(R.id.ll_tab) LinearLayout llTab;
