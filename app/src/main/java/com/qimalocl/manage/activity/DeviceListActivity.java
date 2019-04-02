@@ -165,9 +165,14 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
     }
     private boolean parseAdvData(int rssi, byte[] scanRecord) {
         byte[] bytes = ParseLeAdvData.adv_report_parse(ParseLeAdvData.BLE_GAP_AD_TYPE_MANUFACTURER_SPECIFIC_DATA, scanRecord);
-        if (bytes[0] == 0x01 && bytes[1] == 0x02) {
-            return true;
+        if(bytes==null || bytes.length==0){
+            return false;
+        }else{
+            if (bytes[0] == 0x01 && bytes[1] == 0x02) {
+                return true;
+            }
         }
+
         return false;
     }
     private Handler handler = new Handler() {

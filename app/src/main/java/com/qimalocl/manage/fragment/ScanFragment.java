@@ -107,7 +107,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_msg) LinearLayout llMsg;
     @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
     @BindView(R.id.mainUI_scanCode_lock) LinearLayout scanCodeBtn;
-    @BindView(R.id.mainUI_leftBtn) ImageView leftBtn;
+    @BindView(R.id.mainUI_leftBtn) TextView leftBtn;
     @BindView(R.id.mainUI_scanCode_lookRecordBtn) Button lookBtn;
     @BindView(R.id.mainUI_lookLocationBtn) LinearLayout lookLocationBtn;
     @BindView(R.id.mainUI_storageLayout) LinearLayout storeageLayout;
@@ -425,6 +425,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 }else {
                     ((MainActivity)getActivity()).changeTab(1);
                 }
+                break;
+
+            case R.id.mainUI_leftBtn:
+                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+                    UIHelper.goToAct(context,LoginActivity.class);
+                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                UIHelper.goToAct(context,DeviceListActivity.class);
                 break;
 
             case R.id.mainUI_rightBtn:
