@@ -164,10 +164,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         bikeMarkerList = new ArrayList<>();
         initView();
 
-
-
-
-
     }
 
 

@@ -63,6 +63,14 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 		});
 	}
 
+	public void oncall(){
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);

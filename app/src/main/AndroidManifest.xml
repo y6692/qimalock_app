@@ -75,6 +75,11 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
         <activity
+            android:name=".activity.Main2Activity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+
+        <activity
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
