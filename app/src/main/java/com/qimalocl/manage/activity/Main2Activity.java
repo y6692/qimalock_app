@@ -164,7 +164,7 @@ public class Main2Activity extends SwipeBackActivity {
             params.put("uid",uid);
             params.put("access_token",access_token);
             params.put("tokencode",codenum);
-            HttpHelper.get(Main2Activity.this, Urls.lockInfo, params, new TextHttpResponseHandler() {
+            HttpHelper.get(Main2Activity.this, Urls.ebikeInfo, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -280,10 +280,10 @@ public class Main2Activity extends SwipeBackActivity {
             loadingDialog.show();
         }
 
-        openEbike();
+        useCar();
     }
 
-    public void openEbike(){
+    public void useCar(){
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
 
