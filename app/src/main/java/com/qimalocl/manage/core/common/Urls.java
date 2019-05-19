@@ -18,6 +18,9 @@ public class Urls {
 	public static String loginNormal = host + "/index.php?g=App&m=Login&a=loginNormalDdy";
 	/**扫码用车*/
 	public static String useCar = host + "/index.php?g=App&m=User&a=useCarDdy";
+	/**扫码获取锁信息（不开锁）*/
+	public static String lockInfo = host + "?g=App&m=UserManage&a=lock_info";
+
 	public static String useCar2 = host + "/index.php?g=App&m=User&a=useCar";
 	/**获取启动页图广告*/
 	public static String getIndexAd = host + "/index.php?g=App&m=Index&a=getIndexAd";
@@ -56,4 +59,7 @@ public class Urls {
 	public static String battery_unlock = host + "?g=App&m=Ebike&a=battery_unlock";
 	/**电单车信息接口*/
 	public static String ebikeInfo = host + "?g=App&m=Ebike&a=info";
+
+	/**电单车关锁*/
+	public static String closeEbikeDdy = host + "?g=App&m=User&a=closeEbikeDdy";
 }

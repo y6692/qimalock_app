@@ -3,10 +3,13 @@ package com.qimalocl.manage.activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,12 +25,15 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.CustomDialog;
+import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.EbikeInfoBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.ByteUtil;
 import com.qimalocl.manage.utils.IoBuffer;
 import com.qimalocl.manage.utils.SharePreUtil;
+import com.qimalocl.manage.utils.ToastUtil;
 import com.zbar.lib.ScanCaptureAct;
 
 import org.apache.http.Header;
@@ -42,6 +48,8 @@ public class Main2Activity extends SwipeBackActivity {
     private BluetoothAdapter mBluetoothAdapter;
     BLEService bleService = new BLEService();
 
+    private Context context;
+
     @BindView(R.id.tv)
     TextView tv;
     @BindView(R.id.mainUI_title_titleText)
@@ -49,14 +57,22 @@ public class Main2Activity extends SwipeBackActivity {
 
     private String tel = "13188888888";
 
+    private LoadingDialog loadingDialog;
+//    private CustomDialog customDialog6;
+//    private CustomDialog customDialog7;
+
+    private String bleid = "";
     private String codenum = "";
     private String mac = "";
+
+    private int cn = 0;
 
     @Override
     public  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ui_main2);
         ButterKnife.bind(this);
+        context = this;
 //        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
 //            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
 //            finish();
@@ -68,8 +84,31 @@ public class Main2Activity extends SwipeBackActivity {
         titleText.setText("锁的信息");
 
         final Intent intent = getIntent();
+        bleid = intent.getStringExtra("bleid");
         codenum = intent.getStringExtra("codenum");
         mac = intent.getStringExtra("address");
+
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+
+//        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//        customBuilder.setTitle("温馨提示").setMessage("连接失败，请重试")
+//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//        customDialog6 = customBuilder.create();
+//
+//        customBuilder = new CustomDialog.Builder(context);
+//        customBuilder.setTitle("温馨提示").setMessage("关锁失败，请重试")
+//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//        customDialog7 = customBuilder.create();
 
         // 初始化 Bluetooth adapter, 通过蓝牙管理器得到一个参考蓝牙适配器(API必须在以上android4.3或以上和版本)
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -125,7 +164,7 @@ public class Main2Activity extends SwipeBackActivity {
             params.put("uid",uid);
             params.put("access_token",access_token);
             params.put("tokencode",codenum);
-            HttpHelper.get(Main2Activity.this, Urls.ebikeInfo, params, new TextHttpResponseHandler() {
+            HttpHelper.get(Main2Activity.this, Urls.lockInfo, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -227,20 +266,140 @@ public class Main2Activity extends SwipeBackActivity {
         }
     }
 
-
-
-
     @OnClick(R.id.open)
-    void button3() {
+    void open() {
+//        bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
+//
+//        button8();
+//        button9();
+//
+//        button31();
 
-        bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
+        if (loadingDialog != null && !loadingDialog.isShowing()) {
+            loadingDialog.setTitle("正在加载");
+            loadingDialog.show();
+        }
 
-        button8();
-        button9();
-
-        button31();
-
+        openEbike();
     }
+
+    public void openEbike(){
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+
+        RequestParams params = new RequestParams();
+        params.put("uid", uid);
+        params.put("access_token", access_token);
+        params.put("tokencode", codenum);
+        HttpHelper.post(this, Urls.useCar, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在加载");
+                    loadingDialog.show();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+                UIHelper.ToastError(context, throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                    if (result.getFlag().equals("Success")) {
+                        Log.e("biking===", "openEbike===="+result.getData());
+                        ToastUtil.showMessageApp(context,"开锁成功");
+                    } else {
+                        ToastUtil.showMessageApp(context,"开锁失败");
+
+                        bleService.connect(mac);
+
+                        cn=0;
+
+                        openLock();
+
+                        ToastUtil.showMessageApp(context,result.getMsg());
+                    }
+                } catch (Exception e) {
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    void openLock(){
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("checkConnect===", "===");
+
+                if(!bleService.connect){
+                    cn++;
+
+                    if(cn<5){
+                        openLock();
+                    }else{
+//                        customDialog6.show();
+                        ToastUtil.showMessageApp(context,"连接失败，请重试");
+                        return;
+                    }
+
+                }else{
+                    bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
+
+                    m_myHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("openLock===4_3", "==="+mac);
+
+                            button8();
+                            button9();
+                            button3();  //启动
+
+                            openLock2();
+                        }
+                    }, 500);
+                }
+
+            }
+        }, 2 * 1000);
+    }
+
+    void openLock2() {
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("openLock2===4_4", bleService.cc+"==="+"B1 25 80 00 00 56 ".equals(bleService.cc));
+
+                if("B1 25 80 00 00 56 ".equals(bleService.cc)){
+                    Log.e("openLock2===4_5", "==="+bleService.cc);
+                    ToastUtil.showMessageApp(context,"开锁成功");
+
+                }else{
+//                  openLock2();
+//                  customDialog8.show();
+
+                    ToastUtil.showMessageApp(context,"开锁失败，请重试");
+                }
+
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+
+                Log.e("openLock2===4_6", "==="+bleService.cc);
+
+            }
+        }, 500);
+    }
+
+
 
 //    //关闭
 //    @OnClick(R.id.button4_fdq)
@@ -261,27 +420,173 @@ public class Main2Activity extends SwipeBackActivity {
 //        ioBuffer.writeBytes(cmd);
 //        bleService.write(toBody(ioBuffer.readableBytes()));
 
-        bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
-
+//        bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
+//
 //        button8();
-        button9();
+//        button9();
+//
+//        //设防
+//        IoBuffer ioBuffer = IoBuffer.allocate(20);
+//        byte[] cmd = sendCmd("00001000", "00000000");
+//        ioBuffer.writeBytes(cmd);
+//        bleService.write(toBody(ioBuffer.readableBytes()));
 
+        if (loadingDialog != null && !loadingDialog.isShowing()) {
+            loadingDialog.setTitle("正在加载");
+            loadingDialog.show();
+        }
+
+        closeEbikeTemp();
+
+    }
+
+    public void closeEbikeTemp(){
+
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+
+        RequestParams params = new RequestParams();
+        params.put("uid",uid);
+        params.put("access_token",access_token);
+        params.put("tokencode", codenum);
+        HttpHelper.post(this, Urls.closeEbikeDdy, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在加载");
+                    loadingDialog.show();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+                UIHelper.ToastError(context, throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                    if (result.getFlag().equals("Success")) {
+                        ToastUtil.showMessage(context,"数据更新成功");
+
+                        Log.e("biking===", "closeEbike===="+result.getData());
+
+                        if ("0".equals(result.getData())){
+                            ToastUtil.showMessageApp(context,"关锁成功");
+
+                        } else {
+                            ToastUtil.showMessageApp(context,"关锁失败");
+
+                            bleService.connect(mac);
+                            cn = 0;
+
+                            temporaryLock();
+
+                        }
+                    } else {
+                        ToastUtil.showMessageApp(context,result.getMsg());
+                    }
+                } catch (Exception e) {
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    void temporaryLock(){
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("temporaryLock===", "===");
+
+                if(!bleService.connect){
+                    cn++;
+
+                    if(cn<5){
+                        temporaryLock();
+                    }else{
+//                        customDialog6.show();
+                        ToastUtil.showMessageApp(context,"连接失败，请重试");
+                        return;
+                    }
+
+                }else{
+
+                    bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
+
+                    m_myHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("temporaryLock===4_3", "==="+mac);
+
+                            button8();
+                            button9();
+                            button2();    //设防
+
+                            closeLock();
+                        }
+                    }, 500);
+
+                }
+
+            }
+        }, 2 * 1000);
+    }
+
+    void closeLock(){
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("temporaryLock===4_4", bleService.cc+"==="+"B1 2A 80 00 00 5B ".equals(bleService.cc));
+
+                if("B1 2A 80 00 00 5B ".equals(bleService.cc)){
+                    Log.e("temporaryLock===4_5", "==="+bleService.cc);
+
+                    ToastUtil.showMessageApp(context,"关锁成功");
+
+                    SharedPreferencesUrls.getInstance().putString("tempStat","1");
+
+                }else{
+//                    customDialog7.show();
+                    ToastUtil.showMessageApp(context,"关锁失败，请重试");
+                }
+
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+
+
+                Log.e("temporaryLock===4_6", "==="+bleService.cc);
+
+            }
+        }, 500);
+    }
+
+    Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
+
+    //设防
+    void button2() {
         IoBuffer ioBuffer = IoBuffer.allocate(20);
         byte[] cmd = sendCmd("00001000", "00000000");
         ioBuffer.writeBytes(cmd);
         bleService.write(toBody(ioBuffer.readableBytes()));
-
-//        bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
-//
-////        bleService.sleep(2000);
-//
-//        IoBuffer ioBuffer = IoBuffer.allocate(20);
-//        byte[] cmd = sendCmd("00000101", "00000000");
-//        ioBuffer.writeBytes(cmd);
-//        bleService.write(toBody(ioBuffer.readableBytes()));
     }
 
-    void button31() {
+    void button3() {
 //        bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
 
 //        bleService.sleep(2000);
@@ -335,7 +640,7 @@ public class Main2Activity extends SwipeBackActivity {
         }
         ioBuffer.writeBytes(bb);
 
-        int crc = (int) ByteUtil.crc32(getfdqId("G3A1800000629BCXH"));
+        int crc = (int) ByteUtil.crc32(getfdqId(bleid));
         byte cc[] = ByteUtil.intToByteArray(crc);
         ioBuffer.writeByte(cc[0] ^ cc[3]);
         ioBuffer.writeByte(cc[1] ^ cc[2]);

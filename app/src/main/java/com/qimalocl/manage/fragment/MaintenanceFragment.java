@@ -3,15 +3,21 @@ package com.qimalocl.manage.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -39,8 +45,14 @@ import com.alibaba.fastjson.JSON;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.ChangeKeyLockManageActivity;
+import com.qimalocl.manage.activity.LockManageActivity;
+import com.qimalocl.manage.activity.LockManageAlterActivity;
 import com.qimalocl.manage.activity.LoginActivity;
+import com.qimalocl.manage.activity.Main2Activity;
+import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
+import com.qimalocl.manage.ble.BLEService;
 import com.qimalocl.manage.core.common.DisplayUtil;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
@@ -51,6 +63,11 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TagBean;
+import com.qimalocl.manage.utils.ByteUtil;
+import com.qimalocl.manage.utils.IoBuffer;
+import com.qimalocl.manage.utils.SharePreUtil;
+import com.qimalocl.manage.utils.ToastUtil;
+import com.zbar.lib.ScanCaptureAct;
 import com.zbar.lib.camera.CameraManager;
 import com.zbar.lib.camera.CameraPreview;
 import com.zbar.lib.decode.InactivityTimer;
@@ -65,6 +82,7 @@ import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 
 import org.apache.http.Header;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -137,6 +155,18 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private String bikeNum;
 
     boolean first=true;
+
+    private String carType = "";
+    private String codenum = "";
+    private String mac = "";
+    private String bleid = "";
+
+    private int cn = 0;
+
+    private BluetoothAdapter mBluetoothAdapter;
+    BLEService bleService = new BLEService();
+
+    private String tel = "13188888888";
 
     static {
         System.loadLibrary("iconv");
@@ -464,18 +494,95 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                     Log.e("Maint===preview", "===");
 
+                    lockInfo(resultStr);
+
 //                WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
 //                params1.width = LinearLayout.LayoutParams.MATCH_PARENT;
 //                params1.height = LinearLayout.LayoutParams.MATCH_PARENT;
-                    dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-//                dialog.getWindow().setAttributes(params1);
-                    dialog2.show();
+
 
                 }
             }
         };
 
     }
+
+
+    private void lockInfo(String result){
+
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("uid",uid);
+            params.put("access_token",access_token);
+            params.put("tokencode",result);
+            params.put("type", 2);
+            HttpHelper.post(context, Urls.lockInfo, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            JSONObject jsonObject = new JSONObject(result.getData());
+
+                            Log.e("lockInfo===", jsonObject.getString("bleid")+"==="+responseString+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                            carType = jsonObject.getString("type");
+
+                            if ("1".equals(carType)){      //机械锁
+                            }else {
+                                codenum = jsonObject.getString("codenum");
+                                mac = jsonObject.getString("macinfo");
+
+                                if ("2".equals(carType)){          //蓝牙锁
+                                    Log.e("lockInfo===2", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                }else if ("3".equals(carType)){    //3合1锁
+                                    Log.e("lockInfo===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                }else if ("4".equals(carType)){    //电单车
+                                    Log.e("lockInfo===4", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                    bleid = jsonObject.getString("bleid");
+                                }
+                            }
+
+                            dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//                          dialog.getWindow().setAttributes(params1);
+                            dialog2.show();
+
+                        } else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("Test","异常"+e);
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+
 
     @Override
     public void onResume() {
@@ -486,7 +593,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         if(!first){
             resetCamera();
         }
-
     }
 
     @Override
@@ -622,10 +728,12 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     Log.e("requestCode===2_1", "==="+bikeNum);
                                     recycle(bikeNum);
                                     break;
+
                                 case 2:
                                     Log.e("requestCode===2_2", "==="+bikeNum);
                                     unLock(bikeNum);
                                     break;
+
                                 case 3:
                                     Log.e("requestCode===2_3", "==="+bikeNum);
                                     endCar(bikeNum);
@@ -810,7 +918,26 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }
     }
 
-    private void endCar(String result){
+    private void endCar(final String result){
+        int code = 0;
+//        if(result.split("&").length==1){
+//            if(result.split("\\?")[1].split("&")[0].split("=")[1].matches(".*[a-zA-z].*")){
+//                useCar(result);
+//                return;
+//            }else{
+//                code = Integer.parseInt(result.split("\\?")[1].split("&")[0].split("=")[1]);
+//            }
+//        }else{
+//            code = Integer.parseInt(result.split("\\?")[1].split("&")[0].split("=")[1]);
+//        }
+//
+//        if(result.indexOf('&')!=-1 || (code >= 80001651 && code <= 80002000)){  //电单车
+//            ebikeInfo(result);
+//        }else{
+//            useCar(result);
+//        }
+
+
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
@@ -841,12 +968,23 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     try {
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                         if (result.getFlag().equals("Success")) {
+
                             Toast.makeText(context,"恭喜您，结束用车成功",Toast.LENGTH_SHORT).show();
+
+                            if("4".equals(carType)){
+                                closeEbikeTemp();
+                            }else{
+                                resetCamera();
+                            }
+
+
                         }else {
                             Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+
+                            resetCamera();
                         }
 
-                        resetCamera();
+
                     } catch (Exception e) {
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()){
@@ -906,8 +1044,233 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     }
 
 
+    public void closeEbikeTemp(){
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+
+        RequestParams params = new RequestParams();
+        params.put("uid",uid);
+        params.put("access_token",access_token);
+        params.put("tokencode", codenum);
+        HttpHelper.post(context, Urls.closeEbikeDdy, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在加载");
+                    loadingDialog.show();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+                UIHelper.ToastError(context, throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                    if (result.getFlag().equals("Success")) {
+//                        ToastUtil.showMessage(context,"数据更新成功");
+
+                        Log.e("biking===", "closeEbike===="+result.getData());
+
+                        if ("0".equals(result.getData())){
+                            ToastUtil.showMessageApp(context,"关锁成功");
+
+                            resetCamera();
+                        } else {
+                            ToastUtil.showMessageApp(context,"关锁失败");
+
+                            final BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+                            mBluetoothAdapter = bluetoothManager.getAdapter();
+
+                            // 检查设备上是否支持蓝牙
+                            if (mBluetoothAdapter == null) {
+                                Toast.makeText(context, "不支持蓝牙", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            BLEService.bluetoothAdapter = mBluetoothAdapter;
+
+                            bleService.view = context;
+                            bleService.showValue = true;
+
+                            bleService.connect(mac);
+                            cn = 0;
+
+                            temporaryLock();
+
+                        }
+                    } else {
+                        ToastUtil.showMessageApp(context,result.getMsg());
+
+                        resetCamera();
+                    }
+                } catch (Exception e) {
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    void temporaryLock(){
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("temporaryLock===", "===");
+
+                if(!bleService.connect){
+                    cn++;
+
+                    if(cn<5){
+                        temporaryLock();
+                    }else{
+//                        customDialog6.show();
+                        ToastUtil.showMessageApp(context,"连接失败，请重试");
+                        resetCamera();
+                        return;
+                    }
+
+                }else{
+
+                    bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
+
+                    m_myHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("temporaryLock===4_3", "==="+mac);
+
+                            button8();
+                            button9();
+                            button2();    //设防
+
+                            closeLock();
+                        }
+                    }, 500);
+
+                }
+
+            }
+        }, 2 * 1000);
+    }
+
+    void closeLock(){
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("temporaryLock===4_4", bleService.cc+"==="+"B1 2A 80 00 00 5B ".equals(bleService.cc));
+
+                if("B1 2A 80 00 00 5B ".equals(bleService.cc)){
+                    Log.e("temporaryLock===4_5", "==="+bleService.cc);
+
+                    ToastUtil.showMessageApp(context,"关锁成功");
+
+                    SharedPreferencesUrls.getInstance().putString("tempStat","1");
+
+                }else{
+//                    customDialog7.show();
+                    ToastUtil.showMessageApp(context,"关锁失败，请重试");
+                }
+
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+
+                resetCamera();
+                Log.e("temporaryLock===4_6", "==="+bleService.cc);
+
+            }
+        }, 500);
+    }
+
+    //设防
+    void button2() {
+        IoBuffer ioBuffer = IoBuffer.allocate(20);
+        byte[] cmd = sendCmd("00001000", "00000000");
+        ioBuffer.writeBytes(cmd);
+        bleService.write(toBody(ioBuffer.readableBytes()));
+    }
+
+    // 注册
+    void button8() {
+        //0x02,0x11,0xXX,0xXX,0xXX,0xXX,0xXX,0xXX,0xXX,0xXX, 0xXX,0xXX,0xXX,0xXX,0xXX,0xXX,0xXX, 0xXX,0xXX,0xTT
+        IoBuffer ioBuffer = IoBuffer.allocate(20);
+        ioBuffer.writeByte((byte) 0x82);
+        ByteUtil.log("tel-->" + tel);
+        String str = tel;
+
+        byte[] bb = new byte[11];
+        for (int i = 0; i < str.length(); i++) {
+            char a = str.charAt(i);
+            bb[i] = (byte) a;
+        }
+        ioBuffer.writeBytes(bb);
+
+        int crc = (int) ByteUtil.crc32(getfdqId(bleid));
+        byte cc[] = ByteUtil.intToByteArray(crc);
+        ioBuffer.writeByte(cc[0] ^ cc[3]);
+        ioBuffer.writeByte(cc[1] ^ cc[2]);
+        ioBuffer.writeInt(0);
+        bleService.write(toBody(ioBuffer.readableBytes()));
+    }
+
+    void button9() {
+//		bleService.write( new byte[]{0x03, (byte)0x81,0x01,(byte)0x82});
+//		bleService.sleep(200);
+        IoBuffer ioBuffer = IoBuffer.allocate(20);
+        ioBuffer.writeByte((byte) 0x83);
+        ioBuffer.writeBytes(getfdqId(tel));
+        bleService.write(toBody(ioBuffer.readableBytes()));
+        SharePreUtil.getPreferences("FDQID").putString("ID", tel);
+    }
+
+    byte[] getfdqId(String str) {
+
+        IoBuffer ioBuffer = IoBuffer.allocate(17);
+        for (int i = 0; i < str.length(); i++) {
+            char a = str.charAt(i);
+            ioBuffer.writeByte((byte) a);
+        }
+        return ioBuffer.array();
+    }
+
+    public byte[] sendCmd(String s1, String s2) {
+        IoBuffer ioBuffer = IoBuffer.allocate(5);
+        ioBuffer.writeByte(0XA1);
+        ioBuffer.writeByte(ByteUtil.BitToByte(s1));
+        ioBuffer.writeByte(ByteUtil.BitToByte(s2));
+
+        ioBuffer.writeByte(0);
+        ioBuffer.writeByte(0);
+
+        return ioBuffer.array();
+    }
+
+    IoBuffer toBody(byte[] bb) {
+        IoBuffer buffer = IoBuffer.allocate(20);
+        buffer.writeByte(bb.length + 1);
+        buffer.writeBytes(bb);
+        buffer.writeByte((int) ByteUtil.SumCheck(bb));
 
 
+        return buffer.flip();
+    }
+
+
+    Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
 
 //    @Override
 //    public void setUserVisibleHint(boolean isVisibleToUser) {
