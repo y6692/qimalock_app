@@ -280,7 +280,13 @@ public class Main2Activity extends SwipeBackActivity {
             loadingDialog.show();
         }
 
-        useCar();
+        bleService.connect(mac);
+
+        cn=0;
+
+        openLock();
+
+//        useCar();
     }
 
     public void useCar(){
@@ -436,7 +442,12 @@ public class Main2Activity extends SwipeBackActivity {
             loadingDialog.show();
         }
 
-        closeEbikeTemp();
+        bleService.connect(mac);
+        cn = 0;
+
+        temporaryLock();
+
+//        closeEbikeTemp();
 
     }
 
