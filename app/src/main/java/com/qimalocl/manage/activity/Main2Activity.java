@@ -550,7 +550,6 @@ public class Main2Activity extends SwipeBackActivity {
                     ToastUtil.showMessageApp(context,"关锁成功");
 
                     SharedPreferencesUrls.getInstance().putString("tempStat","1");
-
                 }else{
 //                    customDialog7.show();
                     ToastUtil.showMessageApp(context,"关锁失败，请重试");
