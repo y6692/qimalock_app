@@ -357,19 +357,27 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     Toast.makeText(context,"请输入单车编号",Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+
+
                 InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                 manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+
+
+
                 if (dialog.isShowing()) {
                     dialog.dismiss();
                 }
 //				Tag = 1;
 
+                lockInfo(bikeNum);
+
 //                Intent rIntent = new Intent();
 //                rIntent.putExtra("QR_CODE", bikeNum);
 //                activity.setResult(RESULT_OK, rIntent);
 //                scrollToFinishActivity();
-
-                dialog3.show();
+//
+//                dialog3.show();
 
             }
         });
