@@ -63,6 +63,7 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.BikeLocationActivity;
+import com.qimalocl.manage.activity.DeviceList2Activity;
 import com.qimalocl.manage.activity.DeviceListActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
@@ -164,6 +165,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         bikeMarkerList = new ArrayList<>();
         initView();
 
+
     }
 
 
@@ -209,13 +211,30 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             aMap = mapView.getMap();
             setUpMap();
         }
+
+        aMap.setMapType(AMap.MAP_TYPE_NAVI);
         aMap.getUiSettings().setZoomControlsEnabled(false);
         aMap.getUiSettings().setMyLocationButtonEnabled(false);
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
-        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(15);// 设置缩放监听
+        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(20f);// 设置缩放监听
         aMap.moveCamera(cameraUpdate);
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
         bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
+
+        aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                LatLng position = marker.getPosition();
+                double x = position.latitude;
+                double y = position.longitude;
+
+                Toast.makeText(getActivity(), position+"", Toast.LENGTH_SHORT).show();
+                Log.i("banjing",x+"");
+                Log.i("banjing",y+"");
+                //返回false为点击变为中心点  true是不用
+                return false;
+            }
+        });
 
         aMap.setOnMapTouchListener(ScanFragment.this);
         setUpLocationStyle();
@@ -329,7 +348,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                CameraUpdate update = CameraUpdateFactory.zoomTo(15f);
+                CameraUpdate update = CameraUpdateFactory.zoomTo(20f);
                 aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
@@ -429,7 +448,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                UIHelper.goToAct(context,DeviceListActivity.class);
+                UIHelper.goToAct(context, DeviceList2Activity.class);
                 break;
 
             case R.id.mainUI_rightBtn:
@@ -1068,6 +1087,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                                         Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
                                 Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
                                 bikeMarkerList.add(bikeMarker);
+
                             }
                         }
                     } else {

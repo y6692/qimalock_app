@@ -55,6 +55,9 @@ import com.amap.api.maps.model.MyLocationStyle;
 import com.fitsleep.sunshinelibrary.utils.SharedPreferencesUtils;
 import com.flyco.tablayout.CommonTabLayout;
 import com.flyco.tablayout.listener.CustomTabEntity;
+import com.http.OkHttpClientManager;
+import com.http.ResultCallback;
+import com.http.rdata.RUserLogin;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -73,6 +76,7 @@ import com.qimalocl.manage.fragment.ScanFragment;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TabEntity;
+import com.qimalocl.manage.utils.Globals;
 import com.zbar.lib.ScanCaptureAct;
 
 import org.apache.http.Header;
@@ -83,6 +87,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Request;
 
 @SuppressLint("NewApi")
 public class MainActivity extends BaseActivity{
@@ -127,6 +132,29 @@ public class MainActivity extends BaseActivity{
         initListener();
 //        initLocation();
 //        AppApplication.getApp().scan();
+
+        OkHttpClientManager.getInstance().UserLogin("99920170623", "123456", new ResultCallback<RUserLogin>() {
+            @Override
+            public void onError(Request request, Exception e) {
+                Log.e("UserLogin===", "====Error");
+//                UIHelper.showToast(this, e.getMessage());
+//                failLogin();
+            }
+
+            @Override
+            public void onResponse(RUserLogin rUserLogin) {
+                if (rUserLogin.getResult() < 0) {
+//                    failLogin();
+                    Log.e("UserLogin===", "====fail");
+                }
+                else {
+                    Globals.USERNAME = "99920170623";
+//                    Globals.BLE_NAME = "GpDTxe7<a";
+//                    successLogin();
+                    Log.e("UserLogin===", "====success");
+                }
+            }
+        });
     }
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
