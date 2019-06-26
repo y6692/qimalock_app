@@ -5,6 +5,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,11 +14,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -89,6 +97,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.Request;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 @SuppressLint("NewApi")
 public class MainActivity extends BaseActivity{
 
@@ -98,6 +108,8 @@ public class MainActivity extends BaseActivity{
     public final static String MESSAGE_RECEIVED_ACTION = "io.yunba.example.msg_received_action";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_EXTRAS = "extras";
+    private static final int PRIVATE_CODE = 1315;//开启GPS权限
+    static private final int REQUEST_CODE_ASK_PERMISSIONS = 101;
 
     @BindView(R.id.fl_change) FrameLayout flChange;
     @BindView(R.id.tab) CommonTabLayout tab;
@@ -117,6 +129,9 @@ public class MainActivity extends BaseActivity{
     private MissionFragment missionFragment;
     private QueryFragment queryFragment;
     private MaintenanceFragment maintenanceFragment;
+
+    LocationManager locationManager;
+    String provider = LocationManager.GPS_PROVIDER;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -194,13 +209,177 @@ public class MainActivity extends BaseActivity{
         }
     }
 
+    private final LocationListener locationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+        }
+
+        @Override
+        public void onProviderDisabled(String arg0) {
+        }
+
+        @Override
+        public void onProviderEnabled(String arg0) {
+        }
+
+        @Override
+        public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+        }
+
+    };
+
+
+    private boolean checkGPSIsOpen() {
+        boolean isOpen;
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE); // 高精度
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setCostAllowed(true);
+        criteria.setPowerRequirement(Criteria.POWER_LOW); // 低功耗
+        provider = locationManager.getBestProvider(criteria, true);
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        locationManager.requestLocationUpdates(provider, 2000, 500, locationListener);
+
+        isOpen = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
+        return isOpen;
+    }
+
+    private void openGPSSettings() {
+
+        if (checkGPSIsOpen()) {
+        } else {
+
+            CustomDialog.Builder customBuilder = new CustomDialog.Builder(mContext);
+            customBuilder.setTitle("温馨提示").setMessage("请在手机设置打开应用的位置权限并选择最精准的定位模式")
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            finish();
+                        }
+                    })
+                    .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivityForResult(intent, PRIVATE_CODE);
+                        }
+                    });
+            customBuilder.create().show();
+
+        }
+    }
+
     private void initView() {
+
+        openGPSSettings();
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            int checkPermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+            if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_ASK_PERMISSIONS);
+                return;
+            }
+        }
 
 //        tab = findViewById(R.id.tab);
 
         tab.setTabData(mTabEntities, MainActivity.this, R.id.fl_change, mFragments);
         tab.setCurrentTab(0);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                default:
+                    break;
+
+            }
+        } else {
+            switch (requestCode) {
+                case PRIVATE_CODE:
+                    openGPSSettings();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 0:
+                if (grantResults[0] == PERMISSION_GRANTED) {
+                    // Permission Granted
+                    if (permissions[0].equals(Manifest.permission.CALL_PHONE)){
+                        Intent intent=new Intent();
+                        intent.setAction(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + "0519-86999222"));
+                        startActivity(intent);
+                    }
+                }else {
+                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(mContext);
+                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开电话权限！")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            }).setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent localIntent = new Intent();
+                            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                            localIntent.setData(Uri.fromParts("package", getPackageName(), null));
+                            startActivity(localIntent);
+                            finish();
+                        }
+                    });
+                    customBuilder.create().show();
+                }
+                break;
+
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                if (grantResults[0] == PERMISSION_GRANTED) {
+
+                    initView();
+                } else {
+                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(mContext);
+                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里允许获取定位权限！")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                    finish();
+                                }
+                            }).setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent localIntent = new Intent();
+                            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                            localIntent.setData(Uri.fromParts("package", getPackageName(), null));
+                            startActivity(localIntent);
+                            finish();
+                        }
+                    });
+                    customBuilder.create().show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+
 
     public void changeTab(int index) {
         tab.setCurrentTab(index);
@@ -211,6 +390,16 @@ public class MainActivity extends BaseActivity{
 
     @Override protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (mReceiver != null) {
+            unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
     }
 
 //    @Override

@@ -93,7 +93,6 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
 //		cancle = (TextView) findViewById(R.id.loca_show_btncancle);
 //
-//
 //		cancle.setOnClickListener(new View.OnClickListener() {
 //			@Override
 //			public void onClick(View v) {
@@ -321,8 +320,7 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 
 			AssetFileDescriptor file = getResources().openRawResourceFd(R.raw.beep);
 			try {
-				mediaPlayer.setDataSource(file.getFileDescriptor(),
-						file.getStartOffset(), file.getLength());
+				mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
 				file.close();
 				mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
 				mediaPlayer.prepare();

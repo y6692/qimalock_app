@@ -2,23 +2,44 @@ package com.qimalocl.manage.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.fitsleep.sunshinelibrary.utils.DialogUtils;
+import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.http.OkHttpClientManager;
 import com.http.ResultCallback;
 import com.http.rdata.RGetUserTradeStatus;
 import com.http.rdata.RRent;
 import com.http.rdata.RetData;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.core.common.HttpHelper;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.CustomDialog;
+import com.qimalocl.manage.model.KeyBean;
+import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.Globals;
+import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UIHelper;
 import com.sofi.blelocker.library.Code;
 import com.sofi.blelocker.library.connect.listener.BleConnectStatusListener;
@@ -36,10 +57,15 @@ import com.sofi.blelocker.library.search.SearchResult;
 import com.sofi.blelocker.library.search.response.SearchResponse;
 import com.sofi.blelocker.library.utils.BluetoothLog;
 import com.sofi.blelocker.library.utils.StringUtils;
+import com.zbar.lib.AddCarCaptureAct;
+
+import org.apache.http.Header;
 
 import java.util.Locale;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.Request;
 
 import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
@@ -50,6 +76,9 @@ import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
 
 public class DeviceDetailActivity extends Activity implements View.OnClickListener{
     private static final String TAG = DeviceDetailActivity.class.getSimpleName();
+
+    Context context;
+
     //    @BindView(R.id.layLock)
     RelativeLayout layLock;
     //    @BindView(R.id.tvName)
@@ -61,6 +90,15 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //    @BindView(R.id.tvLog)
 //    TextView tvLog;
 
+
+    @BindView(R.id.bt_wx)
+    TextView bt_wx;
+
+    @BindView(R.id.mainUI_title_backBtn)
+    ImageView backBtn;
+    @BindView(R.id.mainUI_title_titleText)
+    TextView titleText;
+
     Button btnQueryState;
     Button temporaryAction;
 
@@ -68,27 +106,55 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     private boolean mConnected = false;
     private String version = "";   //硬件版本号
 
-//    @Override
-//    protected int getLayoutRes() {
-//        return R.layout.ac_ui_device_detail;
-//    }
+    private Dialog loadingDialog;
+
+    private String keySource = "";
+    //密钥索引
+    int encryptionKey= 0;
+    //开锁密钥
+    String keys = null;
+    //服务器时间戳，精确到秒，用于锁同步时间
+    long serverTime;
+
+    String type = "5";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        // 修改状态栏颜色，4.4+生效
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // 透明状态栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            // 透明导航栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+
         setContentView(R.layout.ac_ui_device_detail);
         ButterKnife.bind(this);
+
+        context = this;
+
+        type = SharedPreferencesUrls.getInstance().getString("type", "");
+
+        Log.e("DD===onCreate", "==="+type);
+
+
+        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
+//        loadingDialog.show();
 
         layLock = findViewById(R.id.layLock);
         tvName = findViewById(R.id.tvName);
         tvState = findViewById(R.id.tvState);
         tvOpen = findViewById(R.id.tvOpen);
         btnQueryState = findViewById(R.id.btnQueryState);
-        temporaryAction = findViewById(R.id.temporaryAction);
 
         layLock.setOnClickListener(this);
         btnQueryState.setOnClickListener(this);
-        temporaryAction.setOnClickListener(this);
+
+        titleText.setText("锁的信息");
 
         bindData();
 //        bindView();
@@ -100,18 +166,212 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 //        }
 //        setTitle("大门锁");
+//        btWx.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+
     }
 
-    //    @Override
+    @OnClick(R.id.mainUI_title_backBtn)
+    void back() {
+        finish();
+    }
+
+    @OnClick(R.id.bt_wx)
+    void bt_wx() {
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//        String bikeName = edbikeNum.getText().toString().trim();
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            com.qimalocl.manage.core.common.UIHelper.goToAct(context,LoginActivity.class);
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+        }else {
+//            if (bikeName == null || "".equals(bikeName)){
+//                ToastUtils.showMessage("请输入车编号");
+//                return;
+//            }
+            if (Build.VERSION.SDK_INT >= 23) {
+                int checkPermission = checkSelfPermission(Manifest.permission.CAMERA);
+                if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                        requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
+                    } else {
+                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                        customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
+                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                requestPermissions(new String[] { Manifest.permission.CAMERA },100);
+                            }
+                        });
+                        customBuilder.create().show();
+                    }
+                    return;
+                }
+            }
+            try {
+                Intent intent = new Intent();
+                intent.setClass(context, AddCarCaptureAct.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("isChangeKey",false);
+                startActivityForResult(intent, 1);
+
+            } catch (Exception e) {
+                com.qimalocl.manage.core.common.UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    String result = data.getStringExtra("QR_CODE");
+//                    codenum = edbikeNum.getText().toString().trim();
+                    addCar(result);
+                } else {
+                    Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    protected void rent(){
+
+        Log.e("rent===000",mac+"==="+name+"==="+keySource);
+
+        RequestParams params = new RequestParams();
+//        params.put("macinfo", "");
+        params.put("lock_no", name);
+        params.put("keySource",keySource);
+        HttpHelper.get(this, Urls.rent, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在提交");
+                    loadingDialog.show();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+                com.qimalocl.manage.core.common.UIHelper.ToastError(context, throwable.toString());
+            }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Log.e("rent===","==="+responseString);
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                    if (result.getFlag().equals("Success")) {
+                        KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
+
+                        encryptionKey = bean.getEncryptionKey();
+                        keys = bean.getKeys();
+                        serverTime = bean.getServerTime();
+
+                        Log.e("rent===", mac+"==="+encryptionKey+"==="+keys);
+
+                        openBleLock(null);
+                    }else {
+                        ToastUtil.showMessageApp(context, result.getMsg());
+                    }
+                }catch (Exception e){
+
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+
+            }
+        });
+    }
+
+    private void addCar(String result){
+
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            com.qimalocl.manage.core.common.UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("uid",uid);
+            params.put("access_token",access_token);
+            params.put("tokencode",result);    //二维码链接地址
+            params.put("codenum",result.split("=")[1]);     //车辆编号
+            params.put("macinfo",mac);    //mac地址
+            params.put("lock_no", name);    //
+            params.put("type", type);    //泺平新锁
+
+            Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+result.split("=")[1]+"==="+mac+"==="+name+"==="+type);
+
+            HttpHelper.post(context, Urls.addCar, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    com.qimalocl.manage.core.common.UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
+                            //修改密钥
+                        }else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("addCar===eee", "==="+e);
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+
+                }
+            });
+        }
+    }
+
+    //@Override
     protected void bindData() {
-//        if (getIntent() != null) {
-//            mac = getIntent().getStringExtra("mac");
-//            name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
-//        }
+        if (getIntent() != null) {
+            mac = getIntent().getStringExtra("mac");
+            name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
+        }
+
+        Log.e("bindData===", name+"==="+mac);
 
 //        mac = "A4:34:F1:7B:BF:A9";
-        mac = "A4:34:F1:7B:BF:9A";
-        name = "GpDTxe7<a";
+//        mac = "A4:34:F1:7B:BF:9A";
+//        name = "GpDTxe7<a";
 
 //        connectDevice();
 
@@ -176,7 +436,10 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     @Override
                     public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
                         UIHelper.dismiss();
-                        queryStatusServer(version, keySerial, macKey, vol);
+//                        queryStatusServer(version, keySerial, macKey, vol);
+
+                        keySource = keySerial;
+                        rent();
                     }
 
                     @Override
@@ -192,9 +455,9 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             case R.id.btnQueryState:
                 queryOpenState();
                 break;
-            case R.id.temporaryAction:
-                temporaryAction();
-                break;
+//            case R.id.temporaryAction:
+//                temporaryAction();
+//                break;
 //            case R.id.btnScan:
 //                ClientManager.getClient().disconnect(mac);
 //                break;
@@ -369,8 +632,11 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     private void openBleLock(RRent.ResultBean resultBean) {
         UIHelper.showProgress(this, "open_bike_status");
 //        ClientManager.getClient().openLock(mac, "18112348925", resultBean.getServerTime(),
-        ClientManager.getClient().openLock(mac,"000000000000", resultBean.getServerTime(),
-                resultBean.getKeys(), resultBean.getEncryptionKey(), new IEmptyResponse(){
+
+        Log.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
+
+        ClientManager.getClient().openLock(mac,"000000000000", (int) serverTime, keys, encryptionKey, new IEmptyResponse(){
+//        ClientManager.getClient().openLock(mac,"000000000000", resultBean.getServerTime(), resultBean.getKeys(), resultBean.getEncryptionKey(), new IEmptyResponse(){
                     @Override
                     public void onResponseFail(int code) {
                         Log.e(TAG, Code.toString(code));

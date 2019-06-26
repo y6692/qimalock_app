@@ -89,7 +89,6 @@ dependencies {
     compile files('libs/fastjson-1.1.34.android.jar')
     compile 'com.android.support:multidex:1.0.0'
     compile files('libs/glide-3.7.0.jar')
-    compile files('libs/AMap_Location_V3.3.0_20170118.jar')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
     compile 'com.jakewharton:butterknife:8.0.1'
     compile project(':blelibrary')
@@ -101,6 +100,8 @@ dependencies {
     compile(name: 'bleLocker', ext: 'aar')
     compile 'com.android.support:recyclerview-v7:26.1.0'
     implementation files('libs/Android_Map3D_SDK_V6.9.0_20190530.jar')
+    implementation files('libs/AMap_Location_V4.6.0_20190423.jar')
+    implementation files('libs/AMap_Search_V6.1.0_20180330.jar')
 }
 afterEvaluate {
     tasks.matching {

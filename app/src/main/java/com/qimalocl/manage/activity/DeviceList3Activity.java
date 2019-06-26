@@ -17,7 +17,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.adapters.DeviceListAdapter;
 import com.qimalocl.manage.core.common.UIHelper;
@@ -39,7 +38,7 @@ import butterknife.OnClick;
  * Created by heyong on 2017/5/19.
  */
 
-public class DeviceList2Activity extends Activity {
+public class DeviceList3Activity extends Activity {
 //    @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
     private DeviceListAdapter mAdapter;
@@ -214,7 +213,7 @@ public class DeviceList2Activity extends Activity {
                 searchDevice();
             }
             else {
-                UIHelper.showToastMsg(DeviceList2Activity.this, "ble_disable", R.drawable.ic_error);
+                UIHelper.showToastMsg(DeviceList3Activity.this, "ble_disable", R.drawable.ic_error);
             }
         }
     };

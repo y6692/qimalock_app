@@ -28,6 +28,8 @@ public class Urls {
 	public static String upcarmap = host + "/index.php?g=App&m=User&a=upcarmap";
 	/**附近车接口*/
 	public static String nearby = host + "/index.php?g=App&m=Index&a=nearby";
+	/**附近的电单车接口*/
+	public static String nearbyEbike = host + "?g=App&m=Index&a=nearbyEbike";
 	/**坏车列表*/
 	public static String badcarList = host + "/index.php?g=App&m=UserManage&a=badcar_list";
 	/**坏车详情*/
@@ -42,6 +44,8 @@ public class Urls {
 	public static String changeKey = host + "/index.php?g=App&m=UserManage&a=pdk";
 	/**提交密码*/
 	public static String changePsd = host + "/index.php?g=App&m=UserManage&a=pwd";
+	/**泺平锁加密接口*/
+	public static String rent = host + "?g=App&m=Index&a=rent";
 	/**入库*/
 	public static String addCar = host + "/index.php?g=App&m=Index&a=addblueCar";
 	/**回收*/
@@ -62,4 +66,11 @@ public class Urls {
 
 	/**电单车关锁*/
 	public static String closeEbikeDdy = host + "?g=App&m=User&a=closeEbikeDdy";
+	/**电单车寻车接口*/
+	public static String ddSearch = host + "?g=App&m=Ebike&a=ddSearch";
+
+    /**学校范围电子栅栏*/
+    public static String schoolRange = host + "?g=App&m=SchoolRange&a=index";
+	/**创建电子围栏接口*/
+	public static String addSchoolRange = host + "?g=App&m=SchoolRange&a=store";
 }

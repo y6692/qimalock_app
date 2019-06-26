@@ -187,28 +187,17 @@ public class SplashActivity extends BaseActivity {
 			}
 		}
 
-
-		if (checkGPSIsOpen()) {
-		} else {
-
-			CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-			customBuilder.setTitle("温馨提示").setMessage("请在手机设置打开应用的位置权限并选择最精准的定位模式")
-					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-							finishMine();
-						}
-					})
-					.setPositiveButton("去设置", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-							Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-							startActivityForResult(intent, PRIVATE_CODE);
-						}
-					});
-			customBuilder.create().show();
-
-		}
+//		if (Build.VERSION.SDK_INT >= 23) {
+//			int checkPermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+//			if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+//				if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+//					requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_ASK_PERMISSIONS);
+//				} else {
+//					requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_ASK_PERMISSIONS);
+//				}
+//				return;
+//			}
+//		}
 
 		UIHelper.goToAct(context, MainActivity.class);
 		finishMine();

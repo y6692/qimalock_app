@@ -2,16 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#329d67"
-        android:fitsSystemWindows="true"
-        android:clipToPadding="true"
-        android:paddingTop="@dimen/dp25"
-        android:paddingBottom="@dimen/dp5">
+        android:layout_height="40dp"
+        android:background="#329d67">
 
         <TextView
             android:id="@+id/tv_scan"
