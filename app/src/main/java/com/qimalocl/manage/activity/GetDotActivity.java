@@ -128,7 +128,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     static private final int REQUEST_CODE_ASK_PERMISSIONS = 101;
     private final static int SCANNIN_GREQUEST_CODE = 1;
-    private LoadingDialog lockLoading;
+//    private LoadingDialog lockLoading;
     private LoadingDialog loadingDialog;
     private LoadingDialog loadingDialog1;
     public static boolean isForeground = false;
@@ -178,11 +178,11 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     private static final int PRIVATE_CODE = 1315;//开启GPS权限
 
     protected OnLocationChangedListener mListener;
-    CustomDialog.Builder customBuilder;
-    private CustomDialog customDialog;
-    private CustomDialog customDialog2;
-    private CustomDialog customDialog3;
-    private CustomDialog customDialog4;
+//    CustomDialog.Builder customBuilder;
+//    private CustomDialog customDialog;
+//    private CustomDialog customDialog2;
+//    private CustomDialog customDialog3;
+//    private CustomDialog customDialog4;
     private boolean isConnect = false;
     private int flag = 0;
     private int flag2 = 0;
@@ -228,7 +228,8 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     public double referLongitude = 0.0;
 
     private List<LngLatBean> list = new ArrayList<LngLatBean>();
-    String json_LngLat;
+    private String json_LngLat;
+    private boolean isSubmit = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,27 +264,27 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
         ToastUtil.showMessage(context, SharedPreferencesUrls.getInstance().getString("userName", "") + "===" + SharedPreferencesUrls.getInstance().getString("uid", "") + "<==>" + SharedPreferencesUrls.getInstance().getString("access_token", ""));
 
-        customBuilder = new CustomDialog.Builder(context);
+//        customBuilder = new CustomDialog.Builder(context);
 //        customBuilder.setType(1).setTitle("温馨提示").setMessage("当前行程已停止计费，客服正在加紧处理，请稍等\n客服电话：0519—86999222");
-        customDialog = customBuilder.create();
-
-        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-        customBuilder.setTitle("温馨提示").setMessage("还车须至校内地图红色区域，或打开手机GPS并重启软件再试")
-                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        customDialog3 = customBuilder.create();
-
-        customBuilder = new CustomDialog.Builder(context);
-        customBuilder.setTitle("温馨提示").setMessage("还车须至校内地图红色区域")
-                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        customDialog4 = customBuilder.create();
+//        customDialog = customBuilder.create();
+//
+//        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//        customBuilder.setTitle("温馨提示").setMessage("还车须至校内地图红色区域，或打开手机GPS并重启软件再试")
+//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//        customDialog3 = customBuilder.create();
+//
+//        customBuilder = new CustomDialog.Builder(context);
+//        customBuilder.setTitle("温馨提示").setMessage("还车须至校内地图红色区域")
+//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//        customDialog4 = customBuilder.create();
 
     }
 
@@ -524,9 +525,9 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
-        lockLoading = new LoadingDialog(context);
-        lockLoading.setCancelable(false);
-        lockLoading.setCanceledOnTouchOutside(false);
+//        lockLoading = new LoadingDialog(context);
+//        lockLoading.setCancelable(false);
+//        lockLoading.setCanceledOnTouchOutside(false);
 
         loadingDialog1 = new LoadingDialog(context);
         loadingDialog1.setCancelable(false);
@@ -872,18 +873,18 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
-        if (lockLoading != null && lockLoading.isShowing()) {
-            lockLoading.dismiss();
-        }
+//        if (lockLoading != null && lockLoading.isShowing()) {
+//            lockLoading.dismiss();
+//        }
         super.onPause();
 
 //		if(mlocationClient!=null) {
 //			mlocationClient.stopLocation();//停止定位
 //		}
 
-		if(mapView!=null){
-            mapView.onPause();
-        }
+//		if(mapView!=null){
+//            mapView.onPause();
+//        }
 
 //		deactivate();
 //		mFirstFix = false;
@@ -1013,12 +1014,12 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             case R.id.getDot_confirmLayout:
                 Log.e("confirmLayout===", referLatitude+"==="+referLongitude);
 
-                MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter2);
+                MarkerOptions centerMarkerOption = new MarkerOptions().position(new LatLng(centerMarker.getPosition().latitude, centerMarker.getPosition().longitude)).icon(successDescripter2);
                 dotMarker = aMap.addMarker(centerMarkerOption);
 
                 LngLatBean bean = new LngLatBean();
-                bean.setLng(referLongitude);
-                bean.setLat(referLatitude);
+                bean.setLng(centerMarker.getPosition().longitude);
+                bean.setLat(centerMarker.getPosition().latitude);
 
                 list.add(bean);
 
@@ -1032,14 +1033,15 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
 //                for (int j = 0; j < jsonArray.getJSONArray(i).length(); j ++){
 //                JSONObject jsonObject = jsonArray.getJSONArray(i).getJSONObject(j);
-//
 //                JSONObject json = JSONObject.fromObject(stu);
 //                JSONArray array = JSONArray.
-
 
                 break;
 
             case R.id.getDot_cancelLayout:
+
+//                Log.e("cancelLayout===", centerMarker.getPosition()+"==="+centerMarker.getPosition().latitude+"==="+centerMarker.getPosition().longitude+"==="+referLongitude+"==="+referLatitude);
+
                 if(dotMarker!=null){
                     dotMarker.remove();
                 }
@@ -1051,47 +1053,19 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                 break;
 
             case R.id.getDot_submitLayout:
-                submit();
+
+                if(isSubmit){
+                    submit();
+                }else{
+                    ToastUtil.showMessageApp(context, "不能重复提交！");
+                }
+
                 break;
 
             default:
                 break;
         }
     }
-
-
-    private final LocationListener locationListener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-        }
-
-        @Override
-        public void onProviderDisabled(String arg0) {
-        }
-
-        @Override
-        public void onProviderEnabled(String arg0) {
-        }
-
-        @Override
-        public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-        }
-
-    };
-
-
-//    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            Log.e("broadcastReceiver===1", "==="+intent);
-//
-//            getCurrentorder1(SharedPreferencesUrls.getInstance().getString("uid", ""), SharedPreferencesUrls.getInstance().getString("access_token", ""));
-//            getFeedbackStatus();
-//        }
-//    };
-
 
     protected void submit(){
         Log.e("main===submit",json_LngLat+"==="+referLatitude+"==="+referLongitude);
@@ -1155,6 +1129,9 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
                         ToastUtil.showMessageApp(context, "提交成功");
 
+                        isSubmit = false;
+//                        submitLayout.setEnabled(false);
+
                     }else {
                         ToastUtil.showMessageApp(context, result.getMsg());
                     }
@@ -1168,6 +1145,37 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         });
     }
 
+    private final LocationListener locationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+        }
+
+        @Override
+        public void onProviderDisabled(String arg0) {
+        }
+
+        @Override
+        public void onProviderEnabled(String arg0) {
+        }
+
+        @Override
+        public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+        }
+
+    };
+
+
+//    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Log.e("broadcastReceiver===1", "==="+intent);
+//
+//            getCurrentorder1(SharedPreferencesUrls.getInstance().getString("uid", ""), SharedPreferencesUrls.getInstance().getString("access_token", ""));
+//            getFeedbackStatus();
+//        }
+//    };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

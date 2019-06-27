@@ -579,7 +579,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+//        mapView.onPause();
         deactivate();
 //		mFirstFix = false;
     }
