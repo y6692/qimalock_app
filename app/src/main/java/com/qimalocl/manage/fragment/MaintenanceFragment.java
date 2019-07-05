@@ -131,7 +131,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private Activity activity;
 
     private LoadingDialog loadingDialog;
-    private Dialog dialog;
+    private Dialog dialog, dialogRemark;
     private Dialog dialog2;
     private LinearLayout tagMainLayout;
     private TagFlowLayout tagFlowLayout;
@@ -148,11 +148,12 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private TagAdapter tagAdapter2;
     private List<TagBean> tagDatas2;
 
-    private EditText bikeNumEdit;
-    private Button positiveButton,negativeButton;
+    private EditText bikeNumEdit, remarkEdit;
+    private Button positiveButton, negativeButton, positiveButton2, negativeButton2;
     private boolean notShow = false;
     private int type = 0;
     private String bikeNum;
+    private String remark;
 
     boolean first=true;
 
@@ -167,6 +168,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     BLEService bleService = new BLEService();
 
     private String tel = "13188888888";
+    private boolean isHidden = true;
 
     static {
         System.loadLibrary("iconv");
@@ -250,12 +252,20 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         positiveButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_positiveButton);
         negativeButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_negativeButton);
 
+        dialogRemark = new Dialog(context, R.style.Theme_AppCompat_Dialog);
+        View dialogView2 = LayoutInflater.from(context).inflate(R.layout.pop_circles_menu2, null);
+        dialogRemark.setContentView(dialogView2);
+        dialogRemark.setCanceledOnTouchOutside(false);
+
+        remarkEdit = (EditText)dialogView2.findViewById(R.id.pop_circlesMenu2_remarkEdit);
+        positiveButton2 = (Button)dialogView2.findViewById(R.id.pop_circlesMenu2_positiveButton);
+        negativeButton2 = (Button)dialogView2.findViewById(R.id.pop_circlesMenu2_negativeButton);
+
         if(notShow){
             bikeNunBtn.setVisibility(View.GONE);
         }else{
             bikeNunBtn.setVisibility(View.VISIBLE);
         }
-
 
         dialog2 = new Dialog(context, R.style.main_publishdialog_style);
         View tagView = LayoutInflater.from(context).inflate(R.layout.dialog_maintenance, null);
@@ -358,12 +368,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     return;
                 }
 
-
-
                 InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
                 manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
-
-
 
                 if (dialog.isShowing()) {
                     dialog.dismiss();
@@ -394,6 +400,89 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 resetCamera();
             }
         });
+
+
+        positiveButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                remark = remarkEdit.getText().toString().trim();
+                if (remark == null || "".equals(remark)){
+                    Toast.makeText(context,"请输入备注",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+
+                if (dialogRemark.isShowing()) {
+                    dialogRemark.dismiss();
+                }
+////				Tag = 1;
+//
+//                lockInfo(bikeNum);
+
+                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+
+                                tagFlowLayout.setAdapter(tagAdapter);
+                                resetCamera();
+                            }
+                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+        //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
+
+                                    Log.e("Maintenance===onC", "==="+type);
+
+                                    tagFlowLayout.setAdapter(tagAdapter);
+        //                            tagAdapter.unSelected(0, tagFlowLayout);
+
+                                    switch (type){
+                                        case 1:
+                                            Log.e("requestCode===2_1", "==="+bikeNum);
+                                            recycle(bikeNum);
+                                            break;
+
+                                        case 2:
+                                            Log.e("requestCode===2_2", "==="+bikeNum);
+                                            unLock(bikeNum);
+                                            break;
+
+                                        case 3:
+                                            Log.e("requestCode===2_3", "==="+bikeNum);
+                                            endCar(bikeNum);
+                                            break;
+
+                                        case 4:
+                                            Log.e("requestCode===2_4", "==="+bikeNum);
+                                            hasRepaired(bikeNum);
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
+                            }
+                        });
+                customBuilder.create().show();
+            }
+        });
+
+        negativeButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodManager manager1= (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+                if (dialogRemark.isShowing()) {
+                    dialogRemark.dismiss();
+                }
+
+                resetCamera();
+            }
+        });
+
 
         initViews();
         playBeep = true;
@@ -596,7 +685,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     public void onResume() {
         super.onResume();
 
-        Log.e("onResume===Maintenance", "===");
+        Log.e("onResume===Maintenance", "==="+first);
 
         if(!first){
             resetCamera();
@@ -609,7 +698,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
         Log.e("onResume===Maintenance", "===");
 
-        if(!first){
+        if(!first && !isHidden){
             releaseCamera();
         }
 
@@ -618,6 +707,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+
+        isHidden = hidden;
+
         if(hidden){
 
             if(!first){
@@ -698,28 +790,48 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 break;
             case R.id.dialog_maintenance_affirmLayout:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-                    Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "请先登录您的账号", Toast.LENGTH_SHORT).show();
                     UIHelper.goToAct(context,LoginActivity.class);
                     return;
                 }
                 if (tagFlowLayout.getSelectedList().size() == 0){
-                    Toast.makeText(context,"请选择操作方式",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "请选择操作方式", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 for (Integer posotion : tagFlowLayout.getSelectedList()){
                     type = tagDatas.get(posotion).getType();
                 }
-                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
 
-                                tagFlowLayout.setAdapter(tagAdapter);
-                                resetCamera();
-                            }
-                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                Log.e("affirmLayout===", "==="+type);
+
+                if(type==1 || type==4){
+                    releaseCamera();
+                    mCameraManager.closeDriver();
+
+                    WindowManager windowManager = activity.getWindowManager();
+                    Display display = windowManager.getDefaultDisplay();
+                    WindowManager.LayoutParams lp = dialogRemark.getWindow().getAttributes();
+                    lp.width = (int) (display.getWidth() * 0.8); 								// 设置宽度0.6
+                    lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    dialogRemark.getWindow().setAttributes(lp);
+                    dialogRemark.getWindow().setWindowAnimations(R.style.dialogWindowAnim);
+                    dialogRemark.show();
+
+                    InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                    manager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
+                    manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }else{
+                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                    customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+
+                                    tagFlowLayout.setAdapter(tagAdapter);
+                                    resetCamera();
+                                }
+                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
 //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
 
@@ -728,14 +840,11 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                             tagFlowLayout.setAdapter(tagAdapter);
 //                            tagAdapter.unSelected(0, tagFlowLayout);
 
-//                            tagFlowLayout.
-//                                    tagAdapter.
-
                             switch (type){
-                                case 1:
-                                    Log.e("requestCode===2_1", "==="+bikeNum);
-                                    recycle(bikeNum);
-                                    break;
+//                                case 1:
+//                                    Log.e("requestCode===2_1", "==="+bikeNum);
+//                                    recycle(bikeNum);
+//                                    break;
 
                                 case 2:
                                     Log.e("requestCode===2_2", "==="+bikeNum);
@@ -747,18 +856,26 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     endCar(bikeNum);
                                     break;
 
-                                case 4:
-                                    Log.e("requestCode===2_4", "==="+bikeNum);
-                                    hasRepaired(bikeNum);
-                                    break;
+//                                case 4:
+//                                    Log.e("requestCode===2_4", "==="+bikeNum);
+//                                    hasRepaired(bikeNum);
+//                                    break;
 
                                 default:
                                     break;
                             }
 
-                    }
-                });
-                customBuilder.create().show();
+                        }
+                    });
+                    customBuilder.create().show();
+                }
+
+
+
+
+
+
+
                 if (dialog2 != null && dialog2.isShowing()){
                     dialog2.dismiss();
                 }
@@ -787,7 +904,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 for (Integer posotion : tagFlowLayout2.getSelectedList()){
                     type = tagDatas2.get(posotion).getType();
                 }
-                customBuilder = new CustomDialog.Builder(context);
+
+                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
                 customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -842,6 +960,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             params.put("uid",uid);
             params.put("access_token",access_token);
             params.put("codenum",result);
+            params.put("remark", remark);
             HttpHelper.post(context, Urls.recycle, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -1014,7 +1133,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             RequestParams params = new RequestParams();
             params.put("uid",uid);
             params.put("access_token",access_token);
-            params.put("codenum",result);
+            params.put("codenum", result);
+            params.put("remark", remark);
             HttpHelper.post(context, Urls.hasRepaired, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {

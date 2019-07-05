@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -230,25 +232,30 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    String result = data.getStringExtra("QR_CODE");
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                switch (requestCode) {
+                    case 1:
+                        if (resultCode == RESULT_OK) {
+                            String result = data.getStringExtra("QR_CODE");
 //                    codenum = edbikeNum.getText().toString().trim();
-                    addCar(result);
-                } else {
-                    Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
-                }
-                break;
+                            addCar(result);
+                        } else {
+                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
 
-            default:
-                break;
-        }
+                    default:
+                        break;
+                }
+            }
+        });
+
     }
 
     protected void rent(){
-
         Log.e("rent===000",mac+"==="+name+"==="+keySource);
 
         RequestParams params = new RequestParams();
@@ -258,42 +265,61 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         HttpHelper.get(this, Urls.rent, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在提交");
-                    loadingDialog.show();
-                }
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                com.qimalocl.manage.core.common.UIHelper.ToastError(context, throwable.toString());
-            }
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.e("rent===","==="+responseString);
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-                        KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
-
-                        encryptionKey = bean.getEncryptionKey();
-                        keys = bean.getKeys();
-                        serverTime = bean.getServerTime();
-
-                        Log.e("rent===", mac+"==="+encryptionKey+"==="+keys);
-
-                        openBleLock(null);
-                    }else {
-                        ToastUtil.showMessageApp(context, result.getMsg());
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (loadingDialog != null && !loadingDialog.isShowing()) {
+                            loadingDialog.setTitle("正在提交");
+                            loadingDialog.show();
+                        }
                     }
-                }catch (Exception e){
+                });
 
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                        com.qimalocl.manage.core.common.UIHelper.ToastError(context, throwable.toString());
+                    }
+                });
+
+
+            }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("rent===","==="+responseString);
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                            if (result.getFlag().equals("Success")) {
+                                KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
+
+                                encryptionKey = bean.getEncryptionKey();
+                                keys = bean.getKeys();
+                                serverTime = bean.getServerTime();
+
+                                Log.e("rent===", mac+"==="+encryptionKey+"==="+keys);
+
+                                openBleLock(null);
+                            }else {
+                                ToastUtil.showMessageApp(context, result.getMsg());
+                            }
+                        }catch (Exception e){
+
+                        }
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+                });
+
 
             }
         });
@@ -321,39 +347,58 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             HttpHelper.post(context, Urls.addCar, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    com.qimalocl.manage.core.common.UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
-                            //修改密钥
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (loadingDialog != null && !loadingDialog.isShowing()) {
+                                loadingDialog.setTitle("正在提交");
+                                loadingDialog.show();
+                            }
                         }
+                    });
 
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                            com.qimalocl.manage.core.common.UIHelper.ToastError(context, throwable.toString());
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("addCar===eee", "==="+e);
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
+                    });
+
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
+                                    //修改密钥
+                                }else {
+                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                }
+
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e("addCar===eee", "==="+e);
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                            }
                         }
-                    }
+                    });
+
+
 
                 }
             });
@@ -380,27 +425,39 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
         OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
             @Override
-            public void onResponse(RGetUserTradeStatus rGetUserTradeStatus) {
-                if (rGetUserTradeStatus.getResult() < 0) {
-                    UIHelper.showToast(DeviceDetailActivity.this, ""+rGetUserTradeStatus.getResult());
-                } else {
-                    RGetUserTradeStatus.ResultBean resultBean = rGetUserTradeStatus.getInfo();
+            public void onResponse(final RGetUserTradeStatus rGetUserTradeStatus) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (rGetUserTradeStatus.getResult() < 0) {
+                            UIHelper.showToast(DeviceDetailActivity.this, ""+rGetUserTradeStatus.getResult());
+                        } else {
+                            RGetUserTradeStatus.ResultBean resultBean = rGetUserTradeStatus.getInfo();
 
-                    Globals.bType = resultBean.getUserTradeStatus();
-                    Globals.bikeNo = resultBean.getBikeNo();
-                    if (Globals.bType == 1) {
-                        tvOpen.setText("已开锁");
-                        returnCar();
-                    } else {
-                        tvOpen.setText("开锁");
-                        rentCar();
+                            Globals.bType = resultBean.getUserTradeStatus();
+                            Globals.bikeNo = resultBean.getBikeNo();
+                            if (Globals.bType == 1) {
+                                tvOpen.setText("已开锁");
+                                returnCar();
+                            } else {
+                                tvOpen.setText("开锁");
+                                rentCar();
+                            }
+                        }
                     }
-                }
+                });
+
             }
 
             @Override
-            public void onError(Request request, Exception e) {
-                UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+            public void onError(Request request, final Exception e) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+                    }
+                });
+
             }
         });
     }
@@ -435,18 +492,28 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
                     @Override
                     public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
-                        UIHelper.dismiss();
-//                        queryStatusServer(version, keySerial, macKey, vol);
-
                         keySource = keySerial;
-                        rent();
+
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                UIHelper.dismiss();
+                                rent();
+                            }
+                        });
                     }
 
                     @Override
-                    public void onResponseFail(int code) {
-                        Log.e(TAG, Code.toString(code));
-                        UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                    public void onResponseFail(final int code) {
+
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.e(TAG, Code.toString(code));
+                                UIHelper.dismiss();
+                                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                            }
+                        });
                     }
 
                 });
@@ -491,6 +558,19 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         }
     }
 
+    protected Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                case 0:
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
+
     private void refreshData(boolean refresh) {
         if (refresh) {
             tvState.setText("");
@@ -516,20 +596,32 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
         ClientManager.getClient().connect(mac, options, new IConnectResponse() {
             @Override
-            public void onResponseFail(int code) {
-                Log.e(TAG, Code.toString(code));
-                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, Code.toString(code));
+                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                    }
+                });
+
             }
 
             @Override
             public void onResponseSuccess(BleGattProfile profile) {
-                BluetoothLog.v(String.format("profile:\n%s", profile));
-                refreshData(true);
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+//                        BluetoothLog.v(String.format("profile:\n%s", profile));
+                        refreshData(true);
 
-                if (Globals.bType == 1) {
-                    UIHelper.showProgress(DeviceDetailActivity.this, "正在关锁中");
-                    getBleRecord();
-                }
+                        if (Globals.bType == 1) {
+                            UIHelper.showProgress(DeviceDetailActivity.this, "正在关锁中");
+                            getBleRecord();
+                        }
+                    }
+                });
+
             }
         });
     }
@@ -550,12 +642,18 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         }
 
         @Override
-        public void onDeviceFounded(SearchResult device) {
-            Log.e("===","DeviceDetailActivity.onDeviceFounded " + device.device.getAddress());
-            if (device.getAddress().contains(mac)) {
-                ClientManager.getClient().stopSearch();
-                connectDeviceIfNeeded();
-            }
+        public void onDeviceFounded(final SearchResult device) {
+            m_myHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e("===","DeviceDetailActivity.onDeviceFounded " + device.device.getAddress());
+                    if (device.getAddress().contains(mac)) {
+                        ClientManager.getClient().stopSearch();
+                        connectDeviceIfNeeded();
+                    }
+                }
+            });
+
         }
 
         @Override
@@ -604,25 +702,42 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         this.version = version;
         int timestamp = (int) StringUtils.getCurrentTimestamp();
 
-        UIHelper.showProgress(this, "get_bike_server");
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIHelper.showProgress(context, "get_bike_server");
+            }
+        });
         OkHttpClientManager.getInstance().Rent(macKey, keySerial, timestamp, new ResultCallback<RRent>() {
 
             @Override
-            public void onResponse(RRent rRent) {
-                UIHelper.dismiss();
-                if (rRent.getResult() >= 0) {
-                    RRent.ResultBean resultBean = rRent.getInfo();
-                    openBleLock(resultBean);
-                }
-                else {
-                    UIHelper.showToast(DeviceDetailActivity.this, ""+rRent.getResult());
-                }
+            public void onResponse(final RRent rRent) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
+                        if (rRent.getResult() >= 0) {
+                            RRent.ResultBean resultBean = rRent.getInfo();
+                            openBleLock(resultBean);
+                        }
+                        else {
+                            UIHelper.showToast(DeviceDetailActivity.this, ""+rRent.getResult());
+                        }
+                    }
+                });
+
             }
 
             @Override
-            public void onError(Request request, Exception e) {
-                UIHelper.dismiss();
-                UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+            public void onError(Request request, final Exception e) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
+                        UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+                    }
+                });
+
             }
 
         });
@@ -630,7 +745,13 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
     //与设备，开锁
     private void openBleLock(RRent.ResultBean resultBean) {
-        UIHelper.showProgress(this, "open_bike_status");
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIHelper.showProgress(context, "open_bike_status");
+            }
+        });
+
 //        ClientManager.getClient().openLock(mac, "18112348925", resultBean.getServerTime(),
 
         Log.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
@@ -638,134 +759,220 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         ClientManager.getClient().openLock(mac,"000000000000", (int) serverTime, keys, encryptionKey, new IEmptyResponse(){
 //        ClientManager.getClient().openLock(mac,"000000000000", resultBean.getServerTime(), resultBean.getKeys(), resultBean.getEncryptionKey(), new IEmptyResponse(){
                     @Override
-                    public void onResponseFail(int code) {
-                        Log.e(TAG, Code.toString(code));
-                        UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                    public void onResponseFail(final int code) {
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.e(TAG, code+"==="+Code.toString(code));
+                                UIHelper.dismiss();
+                                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                            }
+                        });
+
                     }
 
                     @Override
                     public void onResponseSuccess() {
-                        UIHelper.dismiss();
-                        getBleRecord();
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                UIHelper.dismiss();
+                                getBleRecord();
+                            }
+                        });
+
                     }
                 });
     }
 
     //与设备，临时停车
     private void temporaryAction() {
-        UIHelper.showProgress(this, "temporaryAction");
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIHelper.showProgress(context, "temporaryAction");
+            }
+        });
+
 //        ClientManager.getClient().temporaryAction(mac, "18112348925", new ITemporaryActionResponse() {
         ClientManager.getClient().temporaryAction(mac, "000000000000", new ITemporaryActionResponse() {
             @Override
             public void onResponseSuccess() {
-                UIHelper.dismiss();
-                UIHelper.showToast(DeviceDetailActivity.this, "临时停车成功");
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
+                        UIHelper.showToast(DeviceDetailActivity.this, "临时停车成功");
+                    }
+                });
+
+
             }
 
             @Override
-            public void onResponseFail(int code) {
-                Log.e(TAG, Code.toString(code));
-                UIHelper.dismiss();
-                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, Code.toString(code));
+                        UIHelper.dismiss();
+                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                    }
+                });
+
             }
         });
     }
 
     //与设备，获取记录
     private void getBleRecord() {
-        UIHelper.showProgress(this, "get_bike_record");
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIHelper.showProgress(context, "get_bike_record");
+            }
+        });
+
         ClientManager.getClient().getRecord(mac, new IGetRecordResponse() {
             @Override
-            public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp,
-                                          String transType, String mackey, String index, String cap, String vol) {
-                UIHelper.dismiss();
-                uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+            public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, String cap, String vol) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
+//                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+                    }
+                });
+
             }
 
             @Override
             public void onResponseSuccessEmpty() {
-                UIHelper.dismiss();
-                UIHelper.showToast(DeviceDetailActivity.this, "record empty");
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
+                        UIHelper.showToast(DeviceDetailActivity.this, "record empty");
+                    }
+                });
+
             }
 
             @Override
-            public void onResponseFail(int code) {
-                Log.e(TAG, Code.toString(code));
-                UIHelper.dismiss();
-                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, Code.toString(code));
+                        UIHelper.dismiss();
+                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                    }
+                });
+
             }
         });
     }
 
     //与服务器，上传记录
     private String tradeNo = "";
-    private void uploadRecordServer(String phone, String bikeTradeNo, String timestamp, String transType,
-                                    String mackey, String index, String cap, String vol) {
-        UIHelper.showProgress(this, "upload_record_server");
+    private void uploadRecordServer(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, String cap, String vol) {
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIHelper.showProgress(context, "upload_record_server");
+            }
+        });
+
         tradeNo = bikeTradeNo;
         OkHttpClientManager.getInstance().BikeTradeRecord(phone, StringUtils.decodeTradeNo(bikeTradeNo),
                 timestamp, transType, mackey, index, cap, vol, "", "", new ResultCallback<RetData>() {
                     @Override
-                    public void onResponse(RetData retData) {
-                        UIHelper.dismiss();
-                        if (retData.getResult() >= 0) {
-                            deleteBleRecord();
-                        }
-                        else {
-                            UIHelper.showToast(DeviceDetailActivity.this, ""+retData.getResult());
-                        }
+                    public void onResponse(final RetData retData) {
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                UIHelper.dismiss();
+                                if (retData.getResult() >= 0) {
+                                    deleteBleRecord();
+                                }
+                                else {
+                                    UIHelper.showToast(DeviceDetailActivity.this, ""+retData.getResult());
+                                }
+                            }
+                        });
+
                     }
 
                     @Override
-                    public void onError(Request request, Exception e) {
-                        UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+                    public void onError(Request request, final Exception e) {
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                UIHelper.dismiss();
+                                UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+                            }
+                        });
+
                     }
                 });
     }
 
     //与设备，删除记录
     private void deleteBleRecord() {
-        UIHelper.showProgress(this, "delete_bike_record");
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                UIHelper.showProgress(context, "delete_bike_record");
+            }
+        });
+
         ClientManager.getClient().deleteRecord(mac, tradeNo, new IGetRecordResponse() {
             @Override
             public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, String cap, String vol) {
-                UIHelper.dismiss();
-                uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
+//                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+                    }
+                });
+
             }
 
             @Override
             public void onResponseSuccessEmpty() {
-                UIHelper.dismiss();
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
 
-                if(Globals.bType == 1) {
-                    Globals.bType = 0;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                        if(Globals.bType == 1) {
+                            Globals.bType = 0;
                             tvOpen.setText("开锁");
+                            rentCar();
                         }
-                    });
-                    rentCar();
-                }
-                else {
-                    Globals.bType = 1;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                        else {
+                            Globals.bType = 1;
                             tvOpen.setText("已开锁");
+                            returnCar();
                         }
-                    });
-                    returnCar();
-                }
+                    }
+                });
+
             }
 
             @Override
-            public void onResponseFail(int code) {
-                Log.e(TAG, Code.toString(code));
-                UIHelper.dismiss();
-                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, Code.toString(code));
+                        UIHelper.dismiss();
+                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                    }
+                });
+
+
             }
         });
     }
@@ -794,36 +1001,31 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         UIHelper.showProgress(this, "collectState");
         ClientManager.getClient().queryOpenState(mac, new IQueryOpenStateResponse() {
             @Override
-            public void onResponseSuccess(boolean open) {
-                UIHelper.dismiss();
+            public void onResponseSuccess(final boolean open) {
 
-                Log.e("queryOpenState===", "===="+open);
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.dismiss();
 
-//                if(open) {
-//                    Globals.bType = 1;
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            tvOpen.setText("已开锁");
-//                        }
-//                    });
-//                }
-//                else {
-//                    Globals.bType = 0;
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            tvOpen.setText("开锁");
-//                        }
-//                    });
-//                }
+                        Log.e("queryOpenState===", "===="+open);
+                    }
+                });
+
+
             }
 
             @Override
-            public void onResponseFail(int code) {
-                Log.e(TAG, Code.toString(code));
-                UIHelper.dismiss();
-                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, Code.toString(code));
+                        UIHelper.dismiss();
+                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                    }
+                });
+
             }
         });
     }
@@ -1026,31 +1228,37 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     private final ICloseListener mCloseListener = new ICloseListener() {
         @Override
         public void onNotifyClose() {
-            Log.e("onNotifyClose===", "====");
-
-            BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
-            runOnUiThread(new Runnable() {
+            m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.e("onNotifyClose===", "====");
+
+                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
                     tvOpen.setText("开锁");
+                    getBleRecord();
                 }
             });
-            getBleRecord();
+
         }
     };
 
     //监听当前连接状态
     private final BleConnectStatusListener mConnectStatusListener = new BleConnectStatusListener() {
         @Override
-        public void onConnectStatusChanged(String mac, int status) {
-            BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onConnectStatusChanged %d in %s",
-                    status, Thread.currentThread().getName()));
+        public void onConnectStatusChanged(String mac, final int status) {
+            m_myHandler.post(new Runnable() {
+                @Override
+                public void run() {
+//                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onConnectStatusChanged %d in %s", status, Thread.currentThread().getName()));
 
-            Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
+                    Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
 
-            Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
-            refreshData(mConnected);
-            connectDeviceIfNeeded();
+                    Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
+                    refreshData(mConnected);
+                    connectDeviceIfNeeded();
+                }
+            });
+
         }
     };
 

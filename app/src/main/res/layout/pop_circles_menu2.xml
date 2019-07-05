@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#f57752"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/DialogText.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="输入备注"
+            android:padding="@dimen/dp10"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/dp10">
+
+        <com.qimalocl.manage.core.widget.ClearEditText
+            android:id="@+id/pop_circlesMenu2_remarkEdit"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp45"
+            android:layout_marginTop="@dimen/dp10"
+            android:layout_marginLeft="@dimen/dp5"
+            android:layout_marginRight="@dimen/dp5"
+            android:background="@drawable/shape_change_phone"
+            android:drawableRight="@drawable/delete_selector"
+            android:gravity="center_vertical"
+            android:hint="请输入备注"
+            android:lineSpacingExtra="@dimen/dp5"
+            android:paddingBottom="0dp"
+            android:paddingLeft="@dimen/dp10"
+            android:paddingRight="0dp"
+            android:textColor="@color/tx_black"
+            android:textColorHint="#c0c0c0"
+            android:textSize="@dimen/sp14" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:layout_marginTop="@dimen/dp20"
+        android:background="@color/line_color"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="#ffffff"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/pop_circlesMenu2_negativeButton"
+            android:layout_width="0dip"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dip"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="取消"
+            android:textSize="@dimen/sp12" />
+
+
+        <ImageView
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@drawable/alertborder" />
+
+        <Button
+            android:id="@+id/pop_circlesMenu2_positiveButton"
+            android:layout_width="0dip"
+            android:layout_height="40dp"
+            android:layout_marginTop="0dip"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="确定"
+            android:textColor="#f57752"
+            android:textSize="@dimen/sp12" />
+
+
+    </LinearLayout>
+</LinearLayout>

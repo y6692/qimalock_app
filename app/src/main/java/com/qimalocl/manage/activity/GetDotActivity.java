@@ -242,6 +242,10 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         WindowManager.LayoutParams winParams = getWindow().getAttributes();
         winParams.flags |= (WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
+
+        carType = getIntent().getIntExtra("carType", 1);
+
+
         isContainsList = new ArrayList<>();
         macList = new ArrayList<>();
         macList2 = new ArrayList<>();
@@ -295,7 +299,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         Log.e("main===schoolRange0", "==="+carType);
 
         RequestParams params = new RequestParams();
-        params.put("type", 1);
+        params.put("type", carType);
 
         HttpHelper.get(context, Urls.schoolRange, params, new TextHttpResponseHandler() {
             @Override
@@ -337,9 +341,17 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                             Polygon polygon = null;
                             PolygonOptions pOption = new PolygonOptions();
                             pOption.addAll(list);
-                            polygon = aMap.addPolygon(pOption.strokeWidth(2)
-                                    .strokeColor(Color.argb(160, 255, 0, 0))
-                                    .fillColor(Color.argb(160, 255, 0, 0)));
+
+                            if(carType == 1){
+                                polygon = aMap.addPolygon(pOption.strokeWidth(2)
+                                        .strokeColor(Color.argb(160, 255, 0, 0))
+                                        .fillColor(Color.argb(160, 255, 0, 0)));
+                            }else{
+                                polygon = aMap.addPolygon(pOption.strokeWidth(2)
+                                        .strokeColor(Color.argb(160, 0, 255, 0))
+                                        .fillColor(Color.argb(160, 0, 255, 0)));
+                            }
+
 
 //                            polygon = aMap.addPolygon(pOption.strokeWidth(2)
 //                                    .strokeColor(Color.argb(160, 0, 0, 255))
@@ -950,8 +962,6 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     }
 
 
-
-
     private boolean checkGPSIsOpen() {
         boolean isOpen;
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -1004,6 +1014,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             case R.id.getDot_leftBtn:
                 finishMine();
                 break;
+
             case R.id.mainUI_myLocationLayout:
                 if (myLocation != null) {
                     CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
@@ -1054,7 +1065,14 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
             case R.id.getDot_submitLayout:
 
+                if("".equals(et_name.getText().toString())){
+                    ToastUtil.showMessageApp(context, "名称不能为空！");
+                    return;
+                }
+
                 if(isSubmit){
+                    isSubmit = false;
+
                     submit();
                 }else{
                     ToastUtil.showMessageApp(context, "不能重复提交！");
@@ -1070,15 +1088,10 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     protected void submit(){
         Log.e("main===submit",json_LngLat+"==="+referLatitude+"==="+referLongitude);
 
-        if("".equals(et_name.getText().toString())){
-            ToastUtil.showMessageApp(context, "名称不能为空！");
-            return;
-        }
-
         RequestParams params = new RequestParams();
         params.put("lng_lat", json_LngLat);
         params.put("area_name", et_name.getText().toString());
-        params.put("type", 1);
+        params.put("type", carType);
         HttpHelper.post(context, Urls.addSchoolRange, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -1129,7 +1142,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
                         ToastUtil.showMessageApp(context, "提交成功");
 
-                        isSubmit = false;
+
 //                        submitLayout.setEnabled(false);
 
                     }else {

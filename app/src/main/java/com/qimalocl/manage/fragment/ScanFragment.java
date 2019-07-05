@@ -72,6 +72,7 @@ import com.qimalocl.manage.activity.BikeLocationActivity;
 import com.qimalocl.manage.activity.DeviceList2Activity;
 import com.qimalocl.manage.activity.DeviceListActivity;
 import com.qimalocl.manage.activity.DeviceSelectActivity;
+import com.qimalocl.manage.activity.DotSelectActivity;
 import com.qimalocl.manage.activity.GetDotActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
@@ -240,7 +241,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         aMap.getUiSettings().setZoomControlsEnabled(false);
         aMap.getUiSettings().setMyLocationButtonEnabled(false);
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
-        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(20f);// 设置缩放监听
+        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(18f);// 设置缩放监听
         aMap.moveCamera(cameraUpdate);
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
         bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
@@ -628,7 +629,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                CameraUpdate update = CameraUpdateFactory.zoomTo(20f);
+                CameraUpdate update = CameraUpdateFactory.zoomTo(18f);
                 aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
@@ -750,7 +751,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 break;
 
             case R.id.mainUI_getDotLayout:
-                UIHelper.goToAct(context, GetDotActivity.class);
+                UIHelper.goToAct(context, DotSelectActivity.class);
                 break;
 
             case R.id.mainUI_scanCode_lock:
@@ -838,7 +839,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     addChooseMarker();
                 }
                 addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
-                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 20f));
+                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10f));
             }
         }
     }
