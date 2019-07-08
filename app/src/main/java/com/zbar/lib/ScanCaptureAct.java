@@ -131,6 +131,21 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 		findViewById();
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		initViews();
+		playBeep = true;
+		AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
+		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+			playBeep = false;
+		}
+		initBeepSound();
+		vibrate = true;
+
+		bikeNumEdit.setText("");
+	}
+
 	private void findViewById() {
 
 		loadingDialog = new LoadingDialog(ScanCaptureAct.this);
@@ -241,18 +256,7 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 		}
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		initViews();
-		playBeep = true;
-		AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
-		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
-			playBeep = false;
-		}
-		initBeepSound();
-		vibrate = true;
-	}
+
 
 	private void initViews() {
 
@@ -624,8 +628,6 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 									intent.putExtra("name", jsonObject.getString("lock_no"));
 									startActivity(intent);
 								}
-
-
 							}
 						} else {
 							Toast.makeText(ScanCaptureAct.this,result.getMsg(),Toast.LENGTH_SHORT).show();

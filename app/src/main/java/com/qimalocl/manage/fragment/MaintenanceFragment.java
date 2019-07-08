@@ -261,6 +261,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         positiveButton2 = (Button)dialogView2.findViewById(R.id.pop_circlesMenu2_positiveButton);
         negativeButton2 = (Button)dialogView2.findViewById(R.id.pop_circlesMenu2_negativeButton);
 
+
+
         if(notShow){
             bikeNunBtn.setVisibility(View.GONE);
         }else{
@@ -342,6 +344,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     //关闭相机
                     releaseCamera();
                     mCameraManager.closeDriver();
+
+                    bikeNumEdit.setText("");
 
                     WindowManager windowManager = activity.getWindowManager();
                     Display display = windowManager.getDefaultDisplay();
@@ -685,6 +689,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     public void onResume() {
         super.onResume();
 
+        bikeNumEdit.setText("");
+        remarkEdit.setText("");
+
         Log.e("onResume===Maintenance", "==="+first);
 
         if(!first){
@@ -807,6 +814,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 if(type==1 || type==4){
                     releaseCamera();
                     mCameraManager.closeDriver();
+
+                    remarkEdit.setText("");
 
                     WindowManager windowManager = activity.getWindowManager();
                     Display display = windowManager.getDefaultDisplay();

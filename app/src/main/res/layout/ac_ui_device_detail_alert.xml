@@ -80,10 +80,10 @@
             <!--style="@style/text_style"-->
             <!--android:text="@string/device_version" />-->
 
-        <!--<TextView-->
-            <!--android:id="@+id/tv_battery"-->
-            <!--style="@style/text_style"-->
-            <!--android:text="@string/battery" />-->
+        <TextView
+            android:id="@+id/tv_battery"
+            style="@style/text_style"
+            android:text="当前电压：" />
     </LinearLayout>
 
 </RelativeLayout>

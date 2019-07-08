@@ -87,24 +87,24 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
     TextView tvAddress;
     //    @BindView(R.id.tvState)
     TextView tvState;
+    TextView tvBattery;
     //    @BindView(R.id.tvOpen)
     TextView tvOpen;
 //    @BindView(R.id.tvLog)
 //    TextView tvLog;
 
 
-    @BindView(R.id.bt_wx)
-    TextView bt_wx;
-
-    @BindView(R.id.mainUI_title_backBtn)
-    ImageView backBtn;
+//    @BindView(R.id.bt_wx)
+//    TextView bt_wx;
+//    @BindView(R.id.mainUI_title_backBtn)
+//    ImageView backBtn;
     @BindView(R.id.mainUI_title_titleText)
     TextView titleText;
 
     Button btnQueryState;
     Button temporaryAction;
 
-    private String mac, name;
+    private String mac, name, battery;
     private boolean mConnected = false;
     private String version = "";   //硬件版本号
 
@@ -151,6 +151,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         tvName = findViewById(R.id.tv_name);
         tvAddress = findViewById(R.id.tv_address);
         tvState = findViewById(R.id.tv_status);
+        tvBattery = findViewById(R.id.tv_battery);
         tvOpen = findViewById(R.id.tvOpen);
         btnQueryState = findViewById(R.id.btnQueryState);
 
@@ -186,18 +187,21 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         if (getIntent() != null) {
             mac = getIntent().getStringExtra("mac");
             name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
+            int n = getIntent().getStringExtra("name").length();
+            battery = getIntent().getStringExtra("name").substring(n-3, n);
 
-            tvAddress.setText("MAC："+mac);
-            tvName.setText("Name："+name);
+            tvAddress.setText("MAC：" + mac);
+            tvName.setText("Name：" + name);
 //            tvStatus.setText(getText(R.string.connect_status) + "Disconnect");
 //            tvCz.setText(R.string.current_cz);
-//            tvBattery.setText(R.string.battery);
+
 //            tvVersion.setText(R.string.device_version);
         }
 
 
 
-        Log.e("bindData===", name+"==="+mac);
+
+        Log.e("bindData===", name+"==="+mac+"==="+getIntent().getStringExtra("name"));
 
 //        mac = "A4:34:F1:7B:BF:A9";
 //        mac = "A4:34:F1:7B:BF:9A";
@@ -247,59 +251,59 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         });
     }
 
-    @OnClick(R.id.mainUI_title_backBtn)
-    void back() {
-        finish();
-    }
-
-    @OnClick(R.id.bt_wx)
-    void bt_wx() {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-//        String bikeName = edbikeNum.getText().toString().trim();
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            com.qimalocl.manage.core.common.UIHelper.goToAct(context,LoginActivity.class);
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-        }else {
-//            if (bikeName == null || "".equals(bikeName)){
-//                ToastUtils.showMessage("请输入车编号");
-//                return;
+//    @OnClick(R.id.mainUI_title_backBtn)
+//    void back() {
+//        finish();
+//    }
+//
+//    @OnClick(R.id.bt_wx)
+//    void bt_wx() {
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+////        String bikeName = edbikeNum.getText().toString().trim();
+//        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+//            com.qimalocl.manage.core.common.UIHelper.goToAct(context,LoginActivity.class);
+//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//        }else {
+////            if (bikeName == null || "".equals(bikeName)){
+////                ToastUtils.showMessage("请输入车编号");
+////                return;
+////            }
+//            if (Build.VERSION.SDK_INT >= 23) {
+//                int checkPermission = checkSelfPermission(Manifest.permission.CAMERA);
+//                if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+//                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+//                        requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
+//                    } else {
+//                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//                        customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
+//                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        dialog.cancel();
+//                                    }
+//                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.cancel();
+//                                requestPermissions(new String[] { Manifest.permission.CAMERA },100);
+//                            }
+//                        });
+//                        customBuilder.create().show();
+//                    }
+//                    return;
+//                }
 //            }
-            if (Build.VERSION.SDK_INT >= 23) {
-                int checkPermission = checkSelfPermission(Manifest.permission.CAMERA);
-                if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                        requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                    } else {
-                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                        customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                                requestPermissions(new String[] { Manifest.permission.CAMERA },100);
-                            }
-                        });
-                        customBuilder.create().show();
-                    }
-                    return;
-                }
-            }
-            try {
-                Intent intent = new Intent();
-                intent.setClass(context, AddCarCaptureAct.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("isChangeKey",false);
-                startActivityForResult(intent, 1);
-
-            } catch (Exception e) {
-                com.qimalocl.manage.core.common.UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-            }
-        }
-    }
+//            try {
+//                Intent intent = new Intent();
+//                intent.setClass(context, AddCarCaptureAct.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                intent.putExtra("isChangeKey",false);
+//                startActivityForResult(intent, 1);
+//
+//            } catch (Exception e) {
+//                com.qimalocl.manage.core.common.UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
+//            }
+//        }
+//    }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -591,6 +595,36 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             tvState.setText("连接状态：蓝牙已连接");
 //            tvName.setText(Globals.BLE_NAME);
             layLock.setClickable(true);
+
+
+            ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
+                @Override
+                public void onResponseSuccess(String version, String keySerial, String macKey, final String vol) {
+                    keySource = keySerial;
+
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvBattery.setText("当前电压：" + vol + "V");
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponseFail(final int code) {
+
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e(TAG, Code.toString(code));
+                            UIHelper.dismiss();
+                            UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
+                        }
+                    });
+                }
+
+            });
+
         } else {
             tvState.setText("连接状态：开始蓝牙扫描");
 //            tvName.setText("");
