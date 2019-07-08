@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.fitsleep.sunshinelibrary.utils.DialogUtils;
-import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.http.OkHttpClientManager;
 import com.http.ResultCallback;
 import com.http.rdata.RGetUserTradeStatus;
@@ -76,8 +75,8 @@ import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
  * Created by heyong on 2017/5/19.
  */
 
-public class DeviceDetailActivity extends Activity implements View.OnClickListener{
-    private static final String TAG = DeviceDetailActivity.class.getSimpleName();
+public class DeviceDetailAlertActivity extends Activity implements View.OnClickListener{
+    private static final String TAG = DeviceDetailAlertActivity.class.getSimpleName();
 
     Context context;
 
@@ -85,6 +84,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     RelativeLayout layLock;
     //    @BindView(R.id.tvName)
     TextView tvName;
+    TextView tvAddress;
     //    @BindView(R.id.tvState)
     TextView tvState;
     //    @BindView(R.id.tvOpen)
@@ -134,7 +134,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
 
-        setContentView(R.layout.ac_ui_device_detail);
+        setContentView(R.layout.ac_ui_device_detail_alert);
         ButterKnife.bind(this);
 
         context = this;
@@ -148,10 +148,14 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //        loadingDialog.show();
 
         layLock = findViewById(R.id.layLock);
-        tvName = findViewById(R.id.tvName);
-        tvState = findViewById(R.id.tvState);
+        tvName = findViewById(R.id.tv_name);
+        tvAddress = findViewById(R.id.tv_address);
+        tvState = findViewById(R.id.tv_status);
         tvOpen = findViewById(R.id.tvOpen);
         btnQueryState = findViewById(R.id.btnQueryState);
+
+        TextView tvState2 = findViewById(R.id.tvState);
+        tvState2.setVisibility(View.GONE);
 
         layLock.setOnClickListener(this);
         btnQueryState.setOnClickListener(this);
@@ -175,6 +179,72 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //            }
 //        });
 
+    }
+
+    //@Override
+    protected void bindData() {
+        if (getIntent() != null) {
+            mac = getIntent().getStringExtra("mac");
+            name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
+
+            tvAddress.setText("MAC："+mac);
+            tvName.setText("Name："+name);
+//            tvStatus.setText(getText(R.string.connect_status) + "Disconnect");
+//            tvCz.setText(R.string.current_cz);
+//            tvBattery.setText(R.string.battery);
+//            tvVersion.setText(R.string.device_version);
+        }
+
+
+
+        Log.e("bindData===", name+"==="+mac);
+
+//        mac = "A4:34:F1:7B:BF:A9";
+//        mac = "A4:34:F1:7B:BF:9A";
+//        name = "GpDTxe7<a";
+
+//        connectDevice();
+
+        ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+        ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+
+        OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
+            @Override
+            public void onResponse(final RGetUserTradeStatus rGetUserTradeStatus) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (rGetUserTradeStatus.getResult() < 0) {
+                            UIHelper.showToast(DeviceDetailAlertActivity.this, ""+rGetUserTradeStatus.getResult());
+                        } else {
+                            RGetUserTradeStatus.ResultBean resultBean = rGetUserTradeStatus.getInfo();
+
+                            Globals.bType = resultBean.getUserTradeStatus();
+                            Globals.bikeNo = resultBean.getBikeNo();
+                            if (Globals.bType == 1) {
+                                tvOpen.setText("已开锁");
+                                returnCar();
+                            } else {
+                                tvOpen.setText("开锁");
+                                rentCar();
+                            }
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(Request request, final Exception e) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, e.getMessage());
+                    }
+                });
+
+            }
+        });
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
@@ -405,62 +475,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         }
     }
 
-    //@Override
-    protected void bindData() {
-        if (getIntent() != null) {
-            mac = getIntent().getStringExtra("mac");
-            name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
-        }
 
-        Log.e("bindData===", name+"==="+mac);
-
-//        mac = "A4:34:F1:7B:BF:A9";
-//        mac = "A4:34:F1:7B:BF:9A";
-//        name = "GpDTxe7<a";
-
-//        connectDevice();
-
-        ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-        ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
-
-        OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
-            @Override
-            public void onResponse(final RGetUserTradeStatus rGetUserTradeStatus) {
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rGetUserTradeStatus.getResult() < 0) {
-                            UIHelper.showToast(DeviceDetailActivity.this, ""+rGetUserTradeStatus.getResult());
-                        } else {
-                            RGetUserTradeStatus.ResultBean resultBean = rGetUserTradeStatus.getInfo();
-
-                            Globals.bType = resultBean.getUserTradeStatus();
-                            Globals.bikeNo = resultBean.getBikeNo();
-                            if (Globals.bType == 1) {
-                                tvOpen.setText("已开锁");
-                                returnCar();
-                            } else {
-                                tvOpen.setText("开锁");
-                                rentCar();
-                            }
-                        }
-                    }
-                });
-
-            }
-
-            @Override
-            public void onError(Request request, final Exception e) {
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
-                    }
-                });
-
-            }
-        });
-    }
 
 //    @Override
 //    protected void bindView() {
@@ -511,7 +526,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                             public void run() {
                                 Log.e(TAG, Code.toString(code));
                                 UIHelper.dismiss();
-                                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                                UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                             }
                         });
                     }
@@ -573,12 +588,12 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
     private void refreshData(boolean refresh) {
         if (refresh) {
-            tvState.setText("");
-            tvName.setText(Globals.BLE_NAME);
+            tvState.setText("连接状态：蓝牙已连接");
+//            tvName.setText(Globals.BLE_NAME);
             layLock.setClickable(true);
         } else {
-            tvState.setText("开始蓝牙扫描");
-            tvName.setText("");
+            tvState.setText("连接状态：开始蓝牙扫描");
+//            tvName.setText("");
             layLock.setClickable(false);
         }
     }
@@ -601,7 +616,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     @Override
                     public void run() {
                         Log.e(TAG, Code.toString(code));
-                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
                 });
 
@@ -616,7 +631,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                         refreshData(true);
 
                         if (Globals.bType == 1) {
-                            UIHelper.showProgress(DeviceDetailActivity.this, "正在关锁中");
+                            UIHelper.showProgress(DeviceDetailAlertActivity.this, "正在关锁中");
                             getBleRecord();
                         }
                     }
@@ -721,7 +736,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                             openBleLock(resultBean);
                         }
                         else {
-                            UIHelper.showToast(DeviceDetailActivity.this, ""+rRent.getResult());
+                            UIHelper.showToast(DeviceDetailAlertActivity.this, ""+rRent.getResult());
                         }
                     }
                 });
@@ -734,7 +749,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     @Override
                     public void run() {
                         UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, e.getMessage());
                     }
                 });
 
@@ -765,7 +780,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                             public void run() {
                                 Log.e(TAG, code+"==="+Code.toString(code));
                                 UIHelper.dismiss();
-                                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                                UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                             }
                         });
 
@@ -802,7 +817,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     @Override
                     public void run() {
                         UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, "临时停车成功");
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, "临时停车成功");
                     }
                 });
 
@@ -816,7 +831,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     public void run() {
                         Log.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
                 });
 
@@ -852,7 +867,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     @Override
                     public void run() {
                         UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, "record empty");
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, "record empty");
                     }
                 });
 
@@ -865,7 +880,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     public void run() {
                         Log.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
                 });
 
@@ -896,7 +911,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                                     deleteBleRecord();
                                 }
                                 else {
-                                    UIHelper.showToast(DeviceDetailActivity.this, ""+retData.getResult());
+                                    UIHelper.showToast(DeviceDetailAlertActivity.this, ""+retData.getResult());
                                 }
                             }
                         });
@@ -909,7 +924,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                             @Override
                             public void run() {
                                 UIHelper.dismiss();
-                                UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+                                UIHelper.showToast(DeviceDetailAlertActivity.this, e.getMessage());
                             }
                         });
 
@@ -968,7 +983,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     public void run() {
                         Log.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
                 });
 
@@ -1022,7 +1037,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     public void run() {
                         Log.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
-                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                        UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
                 });
 

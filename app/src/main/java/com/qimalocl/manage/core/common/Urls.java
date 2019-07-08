@@ -50,14 +50,15 @@ public class Urls {
 	public static String addCar = host + "/index.php?g=App&m=Index&a=addblueCar";
 	/**回收*/
 	public static String recycle = host + "/index.php?g=App&m=UserManage&a=update_car_callback_lock";
-	/**锁定*/
-	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";
 	/**解锁*/
 	public static String unLock = host + "/index.php?g=App&m=UserManage&a=update_car_status";
 	/**结束用车*/
 	public static String endCar = host + "/index.php?g=App&m=UserManage&a=normal_back_car";
 	/**已修好*/
 	public static String hasRepaired = host + "/index.php?g=App&m=UserManage&a=update_edit_bad";
+
+	/**锁定*/
+	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";
 
 	/**打开电池锁接口*/
 	public static String battery_unlock = host + "?g=App&m=Ebike&a=battery_unlock";

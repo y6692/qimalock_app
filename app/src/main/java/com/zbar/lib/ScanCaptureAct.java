@@ -45,6 +45,8 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.ChangeKeyLockManageActivity;
+import com.qimalocl.manage.activity.DeviceDetailActivity;
+import com.qimalocl.manage.activity.DeviceDetailAlertActivity;
 import com.qimalocl.manage.activity.LockManageActivity;
 import com.qimalocl.manage.activity.LockManageAlterActivity;
 import com.qimalocl.manage.activity.LoginActivity;
@@ -610,6 +612,17 @@ public class ScanCaptureAct extends SwipeBackActivity implements View.OnClickLis
 ////										}
 //									}
 
+								}else if ("5".equals(jsonObject.getString("type")) || "6".equals(jsonObject.getString("type"))){    //3合1锁
+
+									Log.e("Scan===4", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
+
+									Intent intent = new Intent(ScanCaptureAct.this, DeviceDetailAlertActivity.class);
+//									intent.putExtra("lock_no", jsonObject.getString("lock_no"));
+//									intent.putExtra("codenum", jsonObject.getString("codenum"));
+//									intent.putExtra("address", jsonObject.getString("macinfo"));
+									intent.putExtra("mac", jsonObject.getString("macinfo"));
+									intent.putExtra("name", jsonObject.getString("lock_no"));
+									startActivity(intent);
 								}
 
 

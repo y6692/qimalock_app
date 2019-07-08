@@ -24,7 +24,8 @@
         android:background="@color/white"
         android:orientation="horizontal"
         android:gravity="center"
-        android:baselineAligned="false">
+        android:baselineAligned="false"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/btnQueryState"
@@ -49,5 +50,40 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:baselineAligned="false">
+
+        <TextView
+            android:id="@+id/tv_name"
+            style="@style/text_style"
+            android:text="name:"
+            android:layout_width="match_parent" />
+
+        <TextView
+            android:id="@+id/tv_address"
+            style="@style/text_style"
+            android:text="address:" />
+
+        <TextView
+            android:id="@+id/tv_status"
+            style="@style/text_style"
+            android:text="连接状态：蓝牙未连接" />
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_version"-->
+            <!--style="@style/text_style"-->
+            <!--android:text="@string/device_version" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_battery"-->
+            <!--style="@style/text_style"-->
+            <!--android:text="@string/battery" />-->
+    </LinearLayout>
 
 </RelativeLayout>

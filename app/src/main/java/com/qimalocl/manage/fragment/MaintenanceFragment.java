@@ -617,7 +617,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             params.put("uid",uid);
             params.put("access_token",access_token);
             params.put("tokencode",result);
-            params.put("type", 2);
+            params.put("type", 2);    //1：维护或使用中会提示
             HttpHelper.post(context, Urls.lockInfo, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -640,7 +640,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                         if (result.getFlag().equals("Success")) {
                             JSONObject jsonObject = new JSONObject(result.getData());
 
-                            Log.e("lockInfo===", jsonObject.getString("bleid")+"==="+responseString+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                            Log.e("lockInfo===", jsonObject.getString("lock_no")+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
                             carType = jsonObject.getString("type");
 
                             if ("1".equals(carType)){      //机械锁
@@ -1418,11 +1418,33 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
 
 
-//    @Override
-//    public void onDestroy() {
-//
-//        super.onDestroy();
-//    }
+    @Override
+    public void onDestroy() {
+        inactivityTimer.shutdown();
+//        mScanerListener = null;
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+        super.onDestroy();
+
+        Log.e("mainten===onDestroy", "===");
+
+
+        if(dialog != null){
+            dialog.dismiss();
+        }
+        if(dialog2 != null){
+            dialog2.dismiss();
+        }
+        if(dialog3 != null){
+            dialog3.dismiss();
+        }
+        if(dialogRemark != null){
+            dialogRemark.dismiss();
+        }
+
+        m_myHandler.removeCallbacksAndMessages(null);
+    }
 
 
 
