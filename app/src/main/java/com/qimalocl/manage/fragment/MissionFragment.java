@@ -333,6 +333,8 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
+        Log.e("badcarList===0", totalnum+"==="+codenum);
+
         HttpHelper.get(context, Urls.badcarList, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -360,6 +362,9 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                    Log.e("badcarList===1", "==="+responseString);
+
                     if (result.getFlag().equals("Success")) {
 //                        JSONArray array = new JSONArray(result.getData());
 //                        if (0 == array.length()) {
@@ -379,11 +384,17 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                            myAdapter.notifyDataSetChanged();
 //                        }
 
+
                         JSONArray array = new JSONArray(result.getData());
+
+                        Log.e("badcarList===2", "==="+array);
+
                         if (array.length() == 0 && showPage == 1) {
+                            totalnum = "0";
+                            codenum = "";
+
                             footerLayout.setVisibility(View.VISIBLE);
                             setFooterType(4);
-                            return;
                         } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
                             footerLayout.setVisibility(View.GONE);
                             setFooterType(5);
@@ -407,10 +418,15 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                             datas.add(bean);
                         }
 
-                        Intent intent = new Intent("data.broadcast.action");
-                        intent.putExtra("codenum", codenum);
-                        intent.putExtra("count", Integer.parseInt(totalnum));
-                        context.sendBroadcast(intent);
+                        Log.e("badcarList===3", totalnum+"==="+codenum);
+
+                        if(!"".equals(totalnum)){
+                            Intent intent = new Intent("data.broadcast.action");
+                            intent.putExtra("codenum", codenum);
+                            intent.putExtra("count", Integer.parseInt(totalnum));
+                            context.sendBroadcast(intent);
+                        }
+
 
 //                        View view = LayoutInflater.from(context).inflate(R.layout.fragment_scan, null);
 //                        TextView tvMsg = view.findViewById(R.id.msg);

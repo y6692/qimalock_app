@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.fitsleep.sunshinelibrary.utils.IntentUtils;
 import com.fitsleep.sunshinelibrary.utils.Logger;
-import com.fitsleep.sunshinelibrary.utils.MPermissionsActivity;
+import com.qimalocl.manage.base.MPermissionsActivity;
 import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseApplication;

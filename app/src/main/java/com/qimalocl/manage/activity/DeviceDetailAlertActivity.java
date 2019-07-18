@@ -207,7 +207,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //        mac = "A4:34:F1:7B:BF:9A";
 //        name = "GpDTxe7<a";
 
-//        connectDevice();
+        connectDevice();
 
         ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
         ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
@@ -227,10 +227,10 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                             Globals.bikeNo = resultBean.getBikeNo();
                             if (Globals.bType == 1) {
                                 tvOpen.setText("已开锁");
-                                returnCar();
+//                                returnCar();
                             } else {
                                 tvOpen.setText("开锁");
-                                rentCar();
+//                                rentCar();
                             }
                         }
                     }
@@ -815,6 +815,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                                 Log.e(TAG, code+"==="+Code.toString(code));
                                 UIHelper.dismiss();
                                 UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
+                                getBleRecord();
                             }
                         });
 
@@ -827,6 +828,8 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                             public void run() {
                                 UIHelper.dismiss();
                                 getBleRecord();
+
+//                                ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
                             }
                         });
 
@@ -875,21 +878,22 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
     //与设备，获取记录
     private void getBleRecord() {
-        m_myHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                UIHelper.showProgress(context, "get_bike_record");
-            }
-        });
+//        m_myHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                UIHelper.showProgress(context, "get_bike_record");
+//            }
+//        });
 
         ClientManager.getClient().getRecord(mac, new IGetRecordResponse() {
             @Override
-            public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, String cap, String vol) {
+            public void onResponseSuccess(String phone, final String bikeTradeNo, String timestamp, String transType, String mackey, String index, final int Major, final int Minor, String vol) {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        UIHelper.dismiss();
+//                        UIHelper.dismiss();
 //                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+                        deleteBleRecord(bikeTradeNo);
                     }
                 });
 
@@ -900,7 +904,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        UIHelper.dismiss();
+//                        UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, "record empty");
                     }
                 });
@@ -913,7 +917,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                     @Override
                     public void run() {
                         Log.e(TAG, Code.toString(code));
-                        UIHelper.dismiss();
+//                        UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
                 });
@@ -933,41 +937,41 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         });
 
         tradeNo = bikeTradeNo;
-        OkHttpClientManager.getInstance().BikeTradeRecord(phone, StringUtils.decodeTradeNo(bikeTradeNo),
-                timestamp, transType, mackey, index, cap, vol, "", "", new ResultCallback<RetData>() {
-                    @Override
-                    public void onResponse(final RetData retData) {
-                        m_myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                UIHelper.dismiss();
-                                if (retData.getResult() >= 0) {
-                                    deleteBleRecord();
-                                }
-                                else {
-                                    UIHelper.showToast(DeviceDetailAlertActivity.this, ""+retData.getResult());
-                                }
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onError(Request request, final Exception e) {
-                        m_myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                UIHelper.dismiss();
-                                UIHelper.showToast(DeviceDetailAlertActivity.this, e.getMessage());
-                            }
-                        });
-
-                    }
-                });
+//        OkHttpClientManager.getInstance().BikeTradeRecord(phone, StringUtils.decodeTradeNo(bikeTradeNo),
+//                timestamp, transType, mackey, index, cap, vol, "", "", new ResultCallback<RetData>() {
+//                    @Override
+//                    public void onResponse(final RetData retData) {
+//                        m_myHandler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                UIHelper.dismiss();
+//                                if (retData.getResult() >= 0) {
+//                                    deleteBleRecord();
+//                                }
+//                                else {
+//                                    UIHelper.showToast(DeviceDetailAlertActivity.this, ""+retData.getResult());
+//                                }
+//                            }
+//                        });
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Request request, final Exception e) {
+//                        m_myHandler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                UIHelper.dismiss();
+//                                UIHelper.showToast(DeviceDetailAlertActivity.this, e.getMessage());
+//                            }
+//                        });
+//
+//                    }
+//                });
     }
 
     //与设备，删除记录
-    private void deleteBleRecord() {
+    private void deleteBleRecord(String tradeNo) {
         m_myHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -977,12 +981,13 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
         ClientManager.getClient().deleteRecord(mac, tradeNo, new IGetRecordResponse() {
             @Override
-            public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, String cap, String vol) {
+            public void onResponseSuccess(String phone, final String bikeTradeNo, String timestamp, String transType, String mackey, String index, final int Major, final int Minor, String vol) {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         UIHelper.dismiss();
 //                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+                        deleteBleRecord(bikeTradeNo);
                     }
                 });
 
@@ -998,12 +1003,12 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                         if(Globals.bType == 1) {
                             Globals.bType = 0;
                             tvOpen.setText("开锁");
-                            rentCar();
+//                            rentCar();
                         }
                         else {
                             Globals.bType = 1;
                             tvOpen.setText("已开锁");
-                            returnCar();
+//                            returnCar();
                         }
                     }
                 });
@@ -1282,7 +1287,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 public void run() {
                     Log.e("onNotifyClose===", "====");
 
-                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
+//                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
                     tvOpen.setText("开锁");
                     getBleRecord();
                 }
@@ -1302,9 +1307,9 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
                     Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
 
-                    Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
-                    refreshData(mConnected);
-                    connectDeviceIfNeeded();
+//                    Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
+//                    refreshData(mConnected);
+//                    connectDeviceIfNeeded();
                 }
             });
 

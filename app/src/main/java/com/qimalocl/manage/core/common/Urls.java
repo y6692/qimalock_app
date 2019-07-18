@@ -56,6 +56,8 @@ public class Urls {
 	public static String endCar = host + "/index.php?g=App&m=UserManage&a=normal_back_car";
 	/**已修好*/
 	public static String hasRepaired = host + "/index.php?g=App&m=UserManage&a=update_edit_bad";
+	/**车辆报废接口*/
+	public static String set_car_scrapped = host + "?g=App&m=UserManage&a=set_car_scrapped";
 
 	/**锁定*/
 	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";

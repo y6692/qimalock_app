@@ -60,6 +60,8 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.model.BadCarBean;
+import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TagBean;
@@ -82,6 +84,7 @@ import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 
 import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -130,7 +133,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private Context context;
     private Activity activity;
 
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
     private Dialog dialog, dialogRemark;
     private Dialog dialog2;
     private LinearLayout tagMainLayout;
@@ -170,6 +173,13 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private String tel = "13188888888";
     private boolean isHidden = true;
 
+    private boolean isHand = true;
+
+    private int showPage = 1;
+    String badtime="2115-02-08 20:20";
+    String codenum_bad="";
+    String totalnum="";
+
     static {
         System.loadLibrary("iconv");
     }
@@ -189,7 +199,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         activity = getActivity();
 
         tagDatas = new ArrayList<>();
-        for (int i = 0; i < 4;i++){
+        for (int i = 0; i < 5;i++){
             TagBean bean = new TagBean();
             switch (i){
                 case 0:
@@ -208,6 +218,10 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     bean.setType(4);
                     bean.setName("已  修  好");
                     break;
+                case 4:
+                    bean.setType(5);
+                    bean.setName("报        废");
+                    break;
                 default:
                     break;
             }
@@ -215,7 +229,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }
 
         tagDatas2 = new ArrayList<>();
-        for (int i = 0; i < 2;i++){
+        for (int i = 0; i < 3;i++){
             TagBean bean = new TagBean();
             switch (i){
                 case 0:
@@ -225,6 +239,10 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 case 1:
                     bean.setType(3);
                     bean.setName("结束骑行");
+                    break;
+                case 2:
+                    bean.setType(5);
+                    bean.setName("报        废");
                     break;
                 default:
                     break;
@@ -380,7 +398,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 }
 //				Tag = 1;
 
+                isHand = true;
                 lockInfo(bikeNum);
+
 
 //                Intent rIntent = new Intent();
 //                rIntent.putExtra("QR_CODE", bikeNum);
@@ -432,6 +452,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                 dialog.cancel();
 
                                 tagFlowLayout.setAdapter(tagAdapter);
+                                tagFlowLayout2.setAdapter(tagAdapter2);
                                 resetCamera();
                             }
                         }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
@@ -442,6 +463,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     Log.e("Maintenance===onC", "==="+type);
 
                                     tagFlowLayout.setAdapter(tagAdapter);
+                                    tagFlowLayout2.setAdapter(tagAdapter2);
         //                            tagAdapter.unSelected(0, tagFlowLayout);
 
                                     switch (type){
@@ -465,6 +487,11 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                             hasRepaired(bikeNum);
                                             break;
 
+                                        case 5:
+                                            Log.e("requestCode===2_5", "==="+bikeNum);
+                                            setCarScrapped(bikeNum);
+                                            break;
+
                                         default:
                                             break;
                                     }
@@ -483,6 +510,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     dialogRemark.dismiss();
                 }
 
+                tagFlowLayout.setAdapter(tagAdapter);
+                tagFlowLayout2.setAdapter(tagAdapter2);
                 resetCamera();
             }
         });
@@ -545,64 +574,82 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         };
 
         previewCb = new Camera.PreviewCallback() {
-            public void onPreviewFrame(byte[] data, Camera camera) {
-                Camera.Size size = camera.getParameters().getPreviewSize();
+            public void onPreviewFrame(final byte[] data, final Camera camera) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!previewing) return;
 
-                // 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
-                byte[] rotatedData = new byte[data.length];
-                for (int y = 0; y < size.height; y++) {
-                    for (int x = 0; x < size.width; x++)
-                        rotatedData[x * size.height + size.height - y - 1] = data[x + y * size.width];
-                }
+                        Camera.Size size = null;
+                        if(camera!=null){
+                            size = camera.getParameters().getPreviewSize();
+                        }
 
-                // 宽高也要调整
-                int tmp = size.width;
-                size.width = size.height;
-                size.height = tmp;
+                        if(size == null) return;
 
-                initCrop();
+//                        Log.e("0===preview", "===");
 
-                Image barcode = new Image(size.width, size.height, "Y800");
-                barcode.setData(rotatedData);
-                barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
+                        // 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
+                        byte[] rotatedData = new byte[data.length];
+                        for (int y = 0; y < size.height; y++) {
+                            for (int x = 0; x < size.width; x++)
+                                rotatedData[x * size.height + size.height - y - 1] = data[x + y * size.width];
+                        }
 
-                int result = mImageScanner.scanImage(barcode);
-                String resultStr = null;
+                        // 宽高也要调整
+                        int tmp = size.width;
+                        size.width = size.height;
+                        size.height = tmp;
 
-                if (result != 0) {
-                    SymbolSet syms = mImageScanner.getResults();
-                    for (Symbol sym : syms) {
-                        resultStr = sym.getData();
+                        initCrop();
+
+//                        Log.e("1===preview", "===");
+
+                        Image barcode = new Image(size.width, size.height, "Y800");
+                        barcode.setData(rotatedData);
+                        barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
+
+                        int result = mImageScanner.scanImage(barcode);
+                        String resultStr = null;
+
+                        if (result != 0) {
+                            SymbolSet syms = mImageScanner.getResults();
+                            for (Symbol sym : syms) {
+                                resultStr = sym.getData();
+                            }
+                        }
+                        if (!TextUtils.isEmpty(resultStr)) {
+                            inactivityTimer.onActivity();
+                            playBeepSoundAndVibrate();
+
+                            previewing = false;
+                            mCamera.setPreviewCallback(null);
+                            mCamera.stopPreview();
+
+                            releaseCamera();
+                            barcodeScanned = true;
+
+                            bikeNum = resultStr;
+
+//                          Intent rIntent = new Intent();
+//                          rIntent.putExtra("QR_CODE", resultStr);
+//                          activity.setResult(RESULT_OK, rIntent);
+//                          activity.scrollToFinishActivity();
+
+                            Log.e("Maint===preview", "===");
+
+                            isHand = false;
+                            lockInfo(resultStr);
+
+//                          WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
+//                          params1.width = LinearLayout.LayoutParams.MATCH_PARENT;
+//                          params1.height = LinearLayout.LayoutParams.MATCH_PARENT;
+
+
+                        }
                     }
-                }
-                if (!TextUtils.isEmpty(resultStr)) {
-                    inactivityTimer.onActivity();
-                    playBeepSoundAndVibrate();
+                });
 
-                    previewing = false;
-                    mCamera.setPreviewCallback(null);
-                    mCamera.stopPreview();
-
-                    releaseCamera();
-                    barcodeScanned = true;
-
-                    bikeNum = resultStr;
-
-//                Intent rIntent = new Intent();
-//                rIntent.putExtra("QR_CODE", resultStr);
-//                activity.setResult(RESULT_OK, rIntent);
-//                activity.scrollToFinishActivity();
-
-                    Log.e("Maint===preview", "===");
-
-                    lockInfo(resultStr);
-
-//                WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
-//                params1.width = LinearLayout.LayoutParams.MATCH_PARENT;
-//                params1.height = LinearLayout.LayoutParams.MATCH_PARENT;
-
-
-                }
             }
         };
 
@@ -625,59 +672,68 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             HttpHelper.post(context, Urls.lockInfo, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
+                    onStartCommon("正在提交");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            JSONObject jsonObject = new JSONObject(result.getData());
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    JSONObject jsonObject = new JSONObject(result.getData());
 
-                            Log.e("lockInfo===", jsonObject.getString("lock_no")+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-                            carType = jsonObject.getString("type");
+                                    Log.e("lockInfo===", "==="+responseString);
 
-                            if ("1".equals(carType)){      //机械锁
-                            }else {
-                                codenum = jsonObject.getString("codenum");
-                                mac = jsonObject.getString("macinfo");
+//                                    Log.e("lockInfo===", jsonObject.getString("lock_no")+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                    carType = jsonObject.getString("type");
 
-                                if ("2".equals(carType)){          //蓝牙锁
-                                    Log.e("lockInfo===2", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-                                }else if ("3".equals(carType)){    //3合1锁
-                                    Log.e("lockInfo===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-                                }else if ("4".equals(carType)){    //电单车
-                                    Log.e("lockInfo===4", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-                                    bleid = jsonObject.getString("bleid");
+                                    if ("1".equals(carType)){      //机械锁
+                                    }else {
+                                        codenum = jsonObject.getString("codenum");
+                                        mac = jsonObject.getString("macinfo");
+
+                                        if ("2".equals(carType)){          //蓝牙锁
+                                            Log.e("lockInfo===2", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                        }else if ("3".equals(carType)){    //3合1锁
+                                            Log.e("lockInfo===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                        }else if ("4".equals(carType)){    //电单车
+                                            Log.e("lockInfo===4", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                            bleid = jsonObject.getString("bleid");
+                                        }
+                                    }
+
+                                    if(isHand){
+                                        dialog3.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//                                      dialog.getWindow().setAttributes(params1);
+                                        dialog3.show();
+                                    }else{
+                                        dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+//                                      dialog.getWindow().setAttributes(params1);
+                                        dialog2.show();
+                                    }
+
+
+                                } else {
+                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                    if (loadingDialog != null && loadingDialog.isShowing()){
+                                        loadingDialog.dismiss();
+                                    }
                                 }
+                            } catch (Exception e) {
+                                Log.e("Test","异常"+e);
                             }
-
-                            dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-//                          dialog.getWindow().setAttributes(params1);
-                            dialog2.show();
-
-                        } else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
                             }
                         }
-                    } catch (Exception e) {
-                        Log.e("Test","异常"+e);
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
+                    });
+
                 }
             });
         }
@@ -692,7 +748,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         bikeNumEdit.setText("");
         remarkEdit.setText("");
 
-        Log.e("onResume===Maintenance", "==="+first);
+        Log.e("onResume===Maintenance", isHidden+"==="+first);
 
         if(!first){
             resetCamera();
@@ -701,14 +757,42 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public void onPause() {
-        super.onPause();
-
-        Log.e("onResume===Maintenance", "===");
+        Log.e("onPause===Maintenance", isHidden+"==="+first);
 
         if(!first && !isHidden){
             releaseCamera();
         }
 
+        super.onPause();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        inactivityTimer.shutdown();
+//        mScanerListener = null;
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+        super.onDestroy();
+
+        Log.e("mainten===onDestroy", "===");
+
+
+        if(dialog != null){
+            dialog.dismiss();
+        }
+        if(dialog2 != null){
+            dialog2.dismiss();
+        }
+        if(dialog3 != null){
+            dialog3.dismiss();
+        }
+        if(dialogRemark != null){
+            dialogRemark.dismiss();
+        }
+
+        m_myHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -744,12 +828,15 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
     private void releaseCamera() {
         if (mCamera != null) {
+
+            Log.e("0===releaseCamera", "==="+mCamera);
+
             previewing = false;
             mCamera.setPreviewCallback(null);
+            Log.e("1===releaseCamera", "==="+mCamera);
             mCamera.release();
+            Log.e("2===releaseCamera", "==="+mCamera);
             mCamera = null;
-
-            Log.e("===releaseCamera", "==="+mCamera);
         }
     }
 
@@ -811,7 +898,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                 Log.e("affirmLayout===", "==="+type);
 
-                if(type==1 || type==4){
+                if(type==1 || type==4 || type==5){
                     releaseCamera();
                     mCameraManager.closeDriver();
 
@@ -879,12 +966,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     customBuilder.create().show();
                 }
 
-
-
-
-
-
-
                 if (dialog2 != null && dialog2.isShowing()){
                     dialog2.dismiss();
                 }
@@ -914,17 +995,36 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     type = tagDatas2.get(posotion).getType();
                 }
 
-                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
+                if(type==5) {
+                    releaseCamera();
+                    mCameraManager.closeDriver();
 
-                                tagFlowLayout2.setAdapter(tagAdapter2);
-                                resetCamera();
-                            }
-                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                    remarkEdit.setText("");
+
+                    WindowManager windowManager = activity.getWindowManager();
+                    Display display = windowManager.getDefaultDisplay();
+                    WindowManager.LayoutParams lp = dialogRemark.getWindow().getAttributes();
+                    lp.width = (int) (display.getWidth() * 0.8);                                // 设置宽度0.6
+                    lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    dialogRemark.getWindow().setAttributes(lp);
+                    dialogRemark.getWindow().setWindowAnimations(R.style.dialogWindowAnim);
+                    dialogRemark.show();
+
+                    InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                    manager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
+                    manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }else{
+                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                    customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+
+                                    tagFlowLayout2.setAdapter(tagAdapter2);
+                                    resetCamera();
+                                }
+                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
 //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
 
@@ -941,12 +1041,19 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     Log.e("requestCode_hand===2_3", "==="+bikeNum);
                                     endCar(bikeNum);
                                     break;
+//                                case 5:
+//                                    Log.e("requestCode_hand===2_4", "==="+bikeNum);
+//                                    setCarScrapped(bikeNum);
+//                                    break;
                                 default:
                                     break;
                             }
-                    }
-                });
-                customBuilder.create().show();
+                        }
+                    });
+                    customBuilder.create().show();
+                }
+
+
                 if (dialog3 != null && dialog3.isShowing()){
                     dialog3.dismiss();
                 }
@@ -973,34 +1080,36 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             HttpHelper.post(context, Urls.recycle, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
+                    onStartCommon("正在提交");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，回收成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    Toast.makeText(context,"恭喜您，回收成功",Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                }
 
-                        resetCamera();
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
+                                initHttp();
+
+                                resetCamera();
+                            } catch (Exception e) {
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
                 }
             });
         }
@@ -1021,34 +1130,34 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             HttpHelper.post(context, Urls.unLock, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
+                    onStartCommon("正在提交");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，解锁成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    Toast.makeText(context,"恭喜您，解锁成功",Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                }
 
-                        resetCamera();
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
+                                resetCamera();
+                            } catch (Exception e) {
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
                 }
             });
         }
@@ -1084,48 +1193,50 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             params.put("uid",uid);
             params.put("access_token",access_token);
             params.put("tokencode",result);
+            params.put("back_type","man_OS");
             HttpHelper.post(context, Urls.endCar, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
+                    onStartCommon("正在提交");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
+
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
 
-                            Toast.makeText(context,"恭喜您，结束用车成功",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context,"恭喜您，结束用车成功",Toast.LENGTH_SHORT).show();
 
-                            if("4".equals(carType)){
-                                closeEbikeTemp();
-                            }else{
-                                resetCamera();
+                                    if("4".equals(carType)){
+                                        closeEbikeTemp();
+                                    }else{
+                                        resetCamera();
+                                    }
+
+
+                                }else {
+                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+
+                                    resetCamera();
+                                }
+
+
+                            } catch (Exception e) {
                             }
-
-
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-
-                            resetCamera();
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
                         }
+                    });
 
-
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
                 }
             });
         }
@@ -1147,37 +1258,182 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             HttpHelper.post(context, Urls.hasRepaired, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
+                    onStartCommon("正在提交");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，该车已修好",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    Toast.makeText(context,"恭喜您，该车已修好",Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                }
 
-                        resetCamera();
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
+                                initHttp();
+
+                                resetCamera();
+                            } catch (Exception e) {
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
                 }
             });
         }
+    }
+
+    private void setCarScrapped(String result){
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("uid",uid);
+            params.put("access_token",access_token);
+            params.put("codenum", result);
+            params.put("remark", remark);
+            HttpHelper.post(context, Urls.set_car_scrapped, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    onStartCommon("正在提交");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    Toast.makeText(context, "恭喜您，该车已报废", Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                initHttp();
+
+                                resetCamera();
+                            } catch (Exception e) {
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+    }
+
+    private void initHttp() {
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+            return;
+        }
+        RequestParams params = new RequestParams();
+        params.put("uid",uid);
+        params.put("access_token",access_token);
+        params.put("page", showPage);
+        params.put("pagesize", GlobalConfig.PAGE_SIZE);
+
+        Log.e("badcarList===0", totalnum+"==="+codenum);
+
+        HttpHelper.get(context, Urls.badcarList, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在加载");
+//                    loadingDialog.show();
+//                }
+
+//                setFooterType(1);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
+                UIHelper.ToastError(context, throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                    Log.e("badcarList===1", "==="+responseString);
+
+                    if (result.getFlag().equals("Success")) {
+
+                        JSONArray array = new JSONArray(result.getData());
+
+                        Log.e("badcarList===2", "==="+array);
+
+                        if (array.length() == 0 && showPage == 1) {
+                            totalnum = "0";
+                            codenum = "";
+                        }
+
+                        for (int i = 0; i < array.length();i++){
+                            BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+
+                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
+                                badtime = bean.getBadtime();
+                                codenum = bean.getCodenum();
+                                totalnum = bean.getTotalnum();
+                            }
+
+//                            datas.add(bean);
+                        }
+
+                        Log.e("badcarList===3", totalnum+"==="+codenum);
+
+                        if(!"".equals(totalnum)){
+                            Intent intent = new Intent("data.broadcast.action");
+                            intent.putExtra("codenum", codenum);
+                            intent.putExtra("count", Integer.parseInt(totalnum));
+                            context.sendBroadcast(intent);
+                        }
+
+
+//                        View view = LayoutInflater.from(context).inflate(R.layout.fragment_scan, null);
+//                        TextView tvMsg = view.findViewById(R.id.msg);
+//                        tvMsg.setText("456");
+
+                    } else {
+                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                }
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
+            }
+        });
     }
 
 
@@ -1192,64 +1448,64 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         HttpHelper.post(context, Urls.closeEbikeDdy, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
+                onStartCommon("正在加载");
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
+                onFailureCommon(throwable.toString());
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-//                        ToastUtil.showMessage(context,"数据更新成功");
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                            if (result.getFlag().equals("Success")) {
+//                              ToastUtil.showMessage(context,"数据更新成功");
 
-                        Log.e("biking===", "closeEbike===="+result.getData());
+                                Log.e("biking===", "closeEbike===="+result.getData());
 
-                        if ("0".equals(result.getData())){
-                            ToastUtil.showMessageApp(context,"关锁成功");
+                                if ("0".equals(result.getData())){
+                                    ToastUtil.showMessageApp(context,"关锁成功");
 
-                            resetCamera();
-                        } else {
-                            ToastUtil.showMessageApp(context,"关锁失败");
+                                    resetCamera();
+                                } else {
+                                    ToastUtil.showMessageApp(context,"关锁失败");
 
-                            final BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
-                            mBluetoothAdapter = bluetoothManager.getAdapter();
+                                    final BluetoothManager bluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+                                    mBluetoothAdapter = bluetoothManager.getAdapter();
 
-                            // 检查设备上是否支持蓝牙
-                            if (mBluetoothAdapter == null) {
-                                Toast.makeText(context, "不支持蓝牙", Toast.LENGTH_SHORT).show();
-                                return;
+                                    // 检查设备上是否支持蓝牙
+                                    if (mBluetoothAdapter == null) {
+                                        Toast.makeText(context, "不支持蓝牙", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    BLEService.bluetoothAdapter = mBluetoothAdapter;
+
+                                    bleService.view = context;
+                                    bleService.showValue = true;
+
+                                    bleService.connect(mac);
+                                    cn = 0;
+
+                                    temporaryLock();
+
+                                }
+                            } else {
+                                ToastUtil.showMessageApp(context,result.getMsg());
+
+                                resetCamera();
                             }
-                            BLEService.bluetoothAdapter = mBluetoothAdapter;
-
-                            bleService.view = context;
-                            bleService.showValue = true;
-
-                            bleService.connect(mac);
-                            cn = 0;
-
-                            temporaryLock();
-
+                        } catch (Exception e) {
                         }
-                    } else {
-                        ToastUtil.showMessageApp(context,result.getMsg());
-
-                        resetCamera();
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
                     }
-                } catch (Exception e) {
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
+                });
+
             }
         });
     }
@@ -1427,40 +1683,23 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
 
 
-    @Override
-    public void onDestroy() {
-        inactivityTimer.shutdown();
-//        mScanerListener = null;
-        if (loadingDialog != null && loadingDialog.isShowing()) {
-            loadingDialog.dismiss();
-        }
-        super.onDestroy();
 
-        Log.e("mainten===onDestroy", "===");
-
-
-        if(dialog != null){
-            dialog.dismiss();
-        }
-        if(dialog2 != null){
-            dialog2.dismiss();
-        }
-        if(dialog3 != null){
-            dialog3.dismiss();
-        }
-        if(dialogRemark != null){
-            dialogRemark.dismiss();
-        }
-
-        m_myHandler.removeCallbacksAndMessages(null);
-    }
 
 
 
     private Runnable doAutoFocus = new Runnable() {
         public void run() {
-            if (previewing)
+
+            Log.e("0===doAutoFocus", "==="+previewing);
+
+            if (previewing){
+
+                Log.e("1===doAutoFocus", "==="+previewing);
                 mCamera.autoFocus(autoFocusCB);
+
+                Log.e("2===doAutoFocus", "==="+previewing);
+            }
+
         }
     };
 

@@ -179,15 +179,18 @@ public class MainActivity extends BaseActivity{
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
 
-//            Log.e("main===mReceiver", "==="+action);
+
 
             if ("data.broadcast.action".equals(action)) {
                 int count = intent.getIntExtra("count", 0);
+
+                Log.e("main===mReceiver", "==="+count);
+
                 if (count > 0) {
                     tab.showMsg(1, count);
                     tab.setMsgMargin(1, -8, 5);
                 } else {
-                    tab.hideMsg(0);
+                    tab.hideMsg(1);
                 }
             }
         }

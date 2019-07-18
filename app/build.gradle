@@ -79,41 +79,51 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-    compile files('libs/fastjson-1.1.34.android.jar')
-    compile 'com.android.support:multidex:1.0.0'
-    compile files('libs/glide-3.7.0.jar')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    testImplementation 'junit:junit:4.12'
+    implementation files('libs/fastjson-1.1.34.android.jar')
+    implementation 'com.android.support:multidex:1.0.0'
+    implementation files('libs/glide-3.7.0.jar')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
-    compile 'com.jakewharton:butterknife:8.0.1'
-    compile project(':blelibrary')
-    compile project(':flowlayout-lib')
-    compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile(name: 'bleLocker', ext: 'aar')
-    compile 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.jakewharton:butterknife:8.0.1'
+    implementation project(':blelibrary')
+    implementation project(':flowlayout-lib')
+    implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+    implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation(name: 'bleLocker', ext: 'aar')
+    implementation(name: 'XiaoanBleSdk_V1.0.3', ext: 'aar')
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation files('libs/Android_Map3D_SDK_V6.9.0_20190530.jar')
     implementation files('libs/AMap_Location_V4.6.0_20190423.jar')
     implementation files('libs/AMap_Search_V6.1.0_20180330.jar')
-}
-afterEvaluate {
-    tasks.matching {
-        it.name.startsWith('dex')
-    }.each { dx ->
-        if (dx.additionalParameters == null) {
-            dx.additionalParameters = []
-        }
-        dx.additionalParameters += '--multi-dex'
-        // 设置multidex.keep文件中class为第一个dex文件中包含的class，如果没有下一项设置此项无作用
-        dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
-        //此项添加后第一个classes.dex文件只能包含-main-dex-list列表中class
-        dx.additionalParameters += '--minimal-main-dex'
+
+
+    implementation ("com.github.hotchemi:permissionsdispatcher:3.3.1") {
+        exclude group: 'com.android.support'
     }
+
+    implementation 'com.android.support:cardview-v7:26+'
+    implementation 'com.android.support:multidex:1.0.1'
 }
+
+//afterEvaluate {
+//    tasks.matching {
+//        it.name.startsWith('dex')
+//    }.each { dx ->
+//        if (dx.additionalParameters == null) {
+//            dx.additionalParameters = []
+//        }
+//        dx.additionalParameters += '--multi-dex'
+//        // 设置multidex.keep文件中class为第一个dex文件中包含的class，如果没有下一项设置此项无作用
+//        dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
+//        //此项添加后第一个classes.dex文件只能包含-main-dex-list列表中class
+//        dx.additionalParameters += '--minimal-main-dex'
+//    }
+//}

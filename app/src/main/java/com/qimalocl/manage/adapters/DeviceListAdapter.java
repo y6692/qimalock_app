@@ -1,5 +1,6 @@
 package com.qimalocl.manage.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -25,10 +26,12 @@ import butterknife.OnClick;
  * Created by Hawk on 2016/9/1.
  */
 public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.DeviceViewHolder> implements Comparator<SearchResult> {
+    private Activity mActivity;
     private Context mContext;
     private List<SearchResult> mDataList;
 
-    public DeviceListAdapter(Context context, List<SearchResult> datas) {
+    public DeviceListAdapter(Activity activity, Context context, List<SearchResult> datas) {
+        mActivity = activity;
         mContext = context;
         mDataList = datas;
     }
@@ -92,6 +95,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
             intent.putExtra("mac", result.getAddress());
             intent.putExtra("name", result.getName());
             mContext.startActivity(intent);
+            mActivity.finish();
         }
     }
 }

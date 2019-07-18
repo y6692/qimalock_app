@@ -17,13 +17,19 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -78,6 +84,7 @@ import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.Main2Activity;
 import com.qimalocl.manage.activity.MainActivity;
+import com.qimalocl.manage.activity.TestXiaoanActivity;
 import com.qimalocl.manage.base.BaseActivity;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.core.common.AppManager;
@@ -134,6 +141,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_scanCode_endLayout) LinearLayout endLayout;
     @BindView(R.id.mainUI_myLocationLayout) LinearLayout myLocationLayout;
     @BindView(R.id.mainUI_getDotLayout) LinearLayout getDotLayout;
+    @BindView(R.id.mainUI_testXALayout) LinearLayout testXALayout;
 
     private AMap aMap;
     private MapView mapView;
@@ -169,6 +177,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private String quantity;
     Marker curMarker;
 
+    LocationManager locationManager;
+    String provider = LocationManager.GPS_PROVIDER;
+    private static final int PRIVATE_CODE = 1315;//开启GPS权限
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
         unbinder = ButterKnife.bind(this, v);
@@ -185,15 +197,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 		IntentFilter filter = new IntentFilter("data.broadcast.action");
 		context.registerReceiver(mReceiver, filter);
 
+//        filter = new IntentFilter("data.broadcast.action");
+//        activity.registerReceiver(broadcastReceiver, filter);
+
         mapView = v.findViewById(R.id.mainUI_map);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         bikeMarkerList = new ArrayList<>();
         initView();
-
-
     }
-
-
 
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -203,19 +214,93 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
 
-//            Log.e("scan===mReceiver", "==="+action);
+            Log.e("scan===mReceiver", "==="+action);
 
             if ("data.broadcast.action".equals(action)) {
                 if(tvMsg!=null){
-                    tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
+                    if(intent.getIntExtra("count", 0)!=0){
+                        tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
+                    }else{
+                        tvMsg.setText("");
+                    }
+
                 }
 
             }
         }
     };
 
+    private void openGPSSettings() {
+        if (checkGPSIsOpen()) {
+        } else {
+            CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+            customBuilder.setTitle("温馨提示").setMessage("请在手机设置打开应用的位置权限并选择最精准的定位模式")
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            activity.finish();
+                        }
+                    })
+                    .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivityForResult(intent, PRIVATE_CODE);
+                        }
+                    });
+            customBuilder.create().show();
+        }
+    }
+
+    private boolean checkGPSIsOpen() {
+        boolean isOpen;
+        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE); // 高精度
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setCostAllowed(true);
+        criteria.setPowerRequirement(Criteria.POWER_LOW); // 低功耗
+        provider = locationManager.getBestProvider(criteria, true);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        locationManager.requestLocationUpdates(provider, 2000, 500, locationListener);
+
+        isOpen = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
+        return isOpen;
+    }
+
+
+    private final LocationListener locationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String arg0) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String arg0) {
+
+        }
+
+        @Override
+        public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+
+        }
+
+    };
+
+
 
     private void initView(){
+        openGPSSettings();
 
         if (Build.VERSION.SDK_INT >= 23) {
             int checkPermission = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -266,15 +351,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 quantity = marker.getTitle().split("-")[1];
 
                 initmPopupWindowView();
-
-//                LatLng position = marker.getPosition();
-//                double x = position.latitude;
-//                double y = position.longitude;
-//
-//                Toast.makeText(getActivity(), codenum+"==="+quantity, Toast.LENGTH_SHORT).show();
-//                Log.i("banjing",x+"");
-//                Log.i("banjing",y+"");
-                //返回false为点击变为中心点  true是不用
                 return true;
             }
         });
@@ -296,6 +372,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         endLayout.setOnClickListener(this);
         myLocationLayout.setOnClickListener(this);
         getDotLayout.setOnClickListener(this);
+        testXALayout.setOnClickListener(this);
     }
 
 
@@ -754,6 +831,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 UIHelper.goToAct(context, DotSelectActivity.class);
                 break;
 
+            case R.id.mainUI_testXALayout:
+                UIHelper.goToAct(context, TestXiaoanActivity.class);
+                break;
+
             case R.id.mainUI_scanCode_lock:
                 if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
                     UIHelper.goToAct(context,LoginActivity.class);
@@ -974,10 +1055,57 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 Log.e("requestCode===2", "==="+resultCode);
                 break;
 
+            case PRIVATE_CODE:
+                openGPSSettings();
+                break;
+
             default:
                 break;
 
         }
+
+
+//        if (resultCode == RESULT_OK) {
+//            switch (requestCode) {
+//                case 188:
+//
+//                    BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//                    mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//                    if (mBluetoothAdapter == null) {
+//                        ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                        activity.finish();
+//                        return;
+//                    }
+//                    if (!mBluetoothAdapter.isEnabled()) {
+//                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                        startActivityForResult(enableBtIntent, 188);
+//                    }else{
+//                    }
+//
+//
+//                    break;
+//
+//                default:
+//                    break;
+//
+//            }
+//        } else {
+//            switch (requestCode) {
+//                case PRIVATE_CODE:
+//                    openGPSSettings();
+//                    break;
+//
+//                case 188:
+//                    ToastUtil.showMessageApp(context, "需要打开蓝牙");
+//                    AppManager.getAppManager().AppExit(context);
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+
+
     }
 
     private void upcarmap(String result){

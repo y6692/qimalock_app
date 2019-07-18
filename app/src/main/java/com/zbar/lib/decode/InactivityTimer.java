@@ -26,12 +26,14 @@ public final class InactivityTimer {
 
 	public InactivityTimer(Activity activity) {
 		this.activity = activity;
-		onActivity();
+//		onActivity();
 	}
 
 	public void onActivity() {
 		cancel();
-		inactivityFuture = inactivityTimer.schedule(new FinishListener(activity), INACTIVITY_DELAY_SECONDS, TimeUnit.SECONDS);
+//		inactivityFuture = inactivityTimer.schedule(new FinishListener(activity), INACTIVITY_DELAY_SECONDS, TimeUnit.SECONDS);
+
+//		inactivityFuture = inactivityTimer.schedule(new FinishListener(activity), 10 * INACTIVITY_DELAY_SECONDS, TimeUnit.SECONDS);
 	}
 
 	private void cancel() {

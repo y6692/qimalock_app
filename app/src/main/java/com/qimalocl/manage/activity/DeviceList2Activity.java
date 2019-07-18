@@ -90,7 +90,7 @@ public class DeviceList2Activity extends Activity {
 
     protected void bindData() {
         mDevices = new ArrayList<>();
-        mAdapter = new DeviceListAdapter(this, mDevices);
+        mAdapter = new DeviceListAdapter(this,this, mDevices);
         ClientManager.getClient().registerBluetoothStateListener(mBluetoothStateListener);
     }
 

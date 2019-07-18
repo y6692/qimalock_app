@@ -5,6 +5,7 @@
     android:fitsSystemWindows="true"
     android:clipToPadding="true"
     android:orientation="vertical"
+    android:background="@color/white"
     >
 
     <!--<include layout="@layout/include_toolbar" />-->

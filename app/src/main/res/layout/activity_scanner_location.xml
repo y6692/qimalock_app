@@ -99,14 +99,12 @@
 
 
         <LinearLayout
-            android:id="@+id/ll_scan"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_alignParentLeft="true"
             android:layout_below="@id/activity_qr_scan_warn"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
-            android:onClick="btn"
             android:weightSum="2">
             <TextView
                 android:id="@+id/loca_show_btnBikeNum"
