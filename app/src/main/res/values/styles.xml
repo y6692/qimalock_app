@@ -1,22 +1,53 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:textSize">42dp</item>-->
+        <!--<item name="android:textColor">#FF333333</item>-->
+        <!--<item name="colorButtonNormal">#FFCCCCCC</item>-->
+
+        <!--<item name="android:switchStyle">@color/colorAccent</item>-->
     </style>
 
-    <style name="AppBaseTheme" parent="android:Theme.Light">
+    <style name="AppBaseTheme" >
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="AppBaseTheme2" parent="android:Theme.Light">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
     </style>
     <!-- Application theme. -->
-    <style name="Theme.AppCompat.Light.NoActionBar" parent="AppBaseTheme">
+    <style name="Theme.AppCompat.Light.NoActionBar2" parent="Theme.AppCompat.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowTitleSize">45dp</item>
     </style>
+
+    <style name="Theme.AppCompat.NoActionBar" parent="android:Theme.Light">
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+        <!--<item name="android:windowTitleSize">45dp</item>-->
+
+
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!--<style name="Widget.CompoundButton.Switch">-->
+        <!--<item name="textOn">@string/capital_on</item>-->
+        <!--<item name="textOff">@string/capital_off</item>-->
+    <!--</style>-->
+
+    <!--<style name="Theme.AppCompat.Light.NoActionBar" parent="AppBaseTheme2">-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+        <!--<item name="android:windowTitleSize">45dp</item>-->
+    <!--</style>-->
 
     <!-- 加载对话框样式 -->
     <style name="CustomDialog" parent="@android:style/Theme.Dialog">

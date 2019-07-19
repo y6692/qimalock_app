@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.xiaoantech.sdk.XiaoanBleApiClient;
 import com.xiaoantech.sdk.ble.model.Response;
 import com.xiaoantech.sdk.ble.scanner.ScanResult;
@@ -28,15 +29,20 @@ import permissions.dispatcher.RuntimePermissions;
 
 
 @RuntimePermissions
-public class TestXiaoanActivity extends AppCompatActivity implements BleStateChangeListener,
+public class TestXiaoanActivity extends SwipeBackActivity implements BleStateChangeListener,
         ScanResultCallback {
 
     @BindView(R.id.mainUI_title_titleText)
     TextView titleText;
 
+
     private XiaoanBleApiClient apiClient;
     private boolean isConnect = false;
-    private TextView statusTxt;
+
+    @BindView(R.id.statusTxt)
+    TextView statusTxt;
+    @BindView(R.id.imeiTxt)
+    TextView imeiTxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +50,7 @@ public class TestXiaoanActivity extends AppCompatActivity implements BleStateCha
         setContentView(R.layout.activity_test_xiaoan);
         ButterKnife.bind(this);
 
-        statusTxt = findViewById(R.id.statusTxt);
+//        statusTxt = findViewById(R.id.statusTxt);
 //        titleText = findViewById(R.id.mainUI_title_titleText);
 //
         titleText.setText("锁的信息");
@@ -158,7 +164,7 @@ public class TestXiaoanActivity extends AppCompatActivity implements BleStateCha
     }
 
     public void connectClick(View v) {
-        TextView imeiTxt = findViewById(R.id.imeiTxt);
+//        TextView imeiTxt = findViewById(R.id.imeiTxt);
         String imei = imeiTxt.getText().toString();
         if (TextUtils.isEmpty(imei) || imei.trim().length() != 15) {
             Toast.makeText(this, "imei号错误", Toast.LENGTH_SHORT).show();

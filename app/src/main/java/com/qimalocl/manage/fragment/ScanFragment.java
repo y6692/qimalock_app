@@ -204,6 +204,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         bikeMarkerList = new ArrayList<>();
         initView();
+
+        Toast.makeText(context,"发送寻车指令成功", Toast.LENGTH_SHORT).show();
     }
 
 
