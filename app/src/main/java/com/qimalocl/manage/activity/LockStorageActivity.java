@@ -57,7 +57,7 @@ import com.sunshine.blelibrary.inter.OnConnectionListener;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
 import com.sunshine.blelibrary.mode.Order;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
-import com.zbar.lib.AddCarCaptureAct;
+import com.zxing.lib.scaner.activity.AddCarCaptureAct;
 
 import org.apache.http.Header;
 

@@ -24,8 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.fitsleep.sunshinelibrary.utils.DialogUtils;
-import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.http.OkHttpClientManager;
 import com.http.ResultCallback;
 import com.http.rdata.RGetUserTradeStatus;
@@ -59,7 +57,8 @@ import com.sofi.blelocker.library.search.SearchResult;
 import com.sofi.blelocker.library.search.response.SearchResponse;
 import com.sofi.blelocker.library.utils.BluetoothLog;
 import com.sofi.blelocker.library.utils.StringUtils;
-import com.zbar.lib.AddCarCaptureAct;
+import com.zxing.lib.scaner.activity.ActivityScanerCode;
+import com.zxing.lib.scaner.activity.AddCarCaptureAct;
 
 import org.apache.http.Header;
 
@@ -144,7 +143,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         Log.e("DD===onCreate", "==="+type);
 
 
-        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
+//        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
 //        loadingDialog.show();
 
         layLock = findViewById(R.id.layLock);
@@ -220,9 +219,10 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             }
             try {
                 Intent intent = new Intent();
-                intent.setClass(context, AddCarCaptureAct.class);
+                intent.setClass(context, ActivityScanerCode.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("isChangeKey",false);
+                intent.putExtra("isAdd",true);
                 startActivityForResult(intent, 1);
 
             } catch (Exception e) {

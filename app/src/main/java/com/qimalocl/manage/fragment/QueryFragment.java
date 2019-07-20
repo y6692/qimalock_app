@@ -65,7 +65,6 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
-import com.zbar.lib.ScanCaptureAct;
 
 import org.apache.http.Header;
 import org.json.JSONArray;

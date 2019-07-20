@@ -34,7 +34,6 @@ import com.qimalocl.manage.utils.ByteUtil;
 import com.qimalocl.manage.utils.IoBuffer;
 import com.qimalocl.manage.utils.SharePreUtil;
 import com.qimalocl.manage.utils.ToastUtil;
-import com.zbar.lib.ScanCaptureAct;
 
 import org.apache.http.Header;
 import org.json.JSONObject;

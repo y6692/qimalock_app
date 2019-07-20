@@ -85,7 +85,7 @@ import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TabEntity;
 import com.qimalocl.manage.utils.Globals;
-import com.zbar.lib.ScanCaptureAct;
+import com.zxing.lib.scaner.CaptureActivityHandler2;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -133,6 +133,8 @@ public class MainActivity extends BaseActivity{
     LocationManager locationManager;
     String provider = LocationManager.GPS_PROVIDER;
 
+    private CaptureActivityHandler2 handler;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -179,8 +181,6 @@ public class MainActivity extends BaseActivity{
         public void onReceive(Context context, Intent intent) {
             action = intent.getAction();
 
-
-
             if ("data.broadcast.action".equals(action)) {
                 int count = intent.getIntExtra("count", 0);
 
@@ -211,6 +211,8 @@ public class MainActivity extends BaseActivity{
             mTabEntities.add(new TabEntity(mTitles[i], mIconSelectIds[i], mIconUnselectIds[i]));
         }
     }
+
+
 
     private final LocationListener locationListener = new LocationListener() {
 

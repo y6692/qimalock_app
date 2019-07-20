@@ -19,6 +19,7 @@ android {
         versionCode 15
         versionName "2.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
 
         multiDexEnabled true
 
@@ -69,14 +70,17 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
-    
+
     repositories{
         flatDir {
             dirs 'libs'
         }
     }
-
 }
+
+
+
+
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
@@ -84,15 +88,20 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    implementation 'com.android.support:design:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     implementation files('libs/fastjson-1.1.34.android.jar')
-    implementation 'com.android.support:multidex:1.0.0'
+    implementation files('libs/ZBarDecoder.jar')
+    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.google.zxing:core:3.3.0'
     implementation files('libs/glide-3.7.0.jar')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.0.1'
     implementation 'com.jakewharton:butterknife:8.0.1'
     implementation project(':blelibrary')
     implementation project(':flowlayout-lib')
+    implementation project(':sunshinelibrary')
+    implementation project(':RxTools-library')
     implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
@@ -102,15 +111,11 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation files('libs/Android_Map3D_SDK_V6.9.0_20190530.jar')
     implementation files('libs/AMap_Location_V4.6.0_20190423.jar')
-    implementation files('libs/AMap_Search_V6.1.0_20180330.jar')
-
 
     implementation ("com.github.hotchemi:permissionsdispatcher:3.3.1") {
         exclude group: 'com.android.support'
     }
 
-    implementation 'com.android.support:cardview-v7:26+'
-    implementation 'com.android.support:multidex:1.0.1'
 }
 
 //afterEvaluate {

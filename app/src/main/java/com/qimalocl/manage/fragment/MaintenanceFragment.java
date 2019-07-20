@@ -1,5 +1,6 @@
 package com.qimalocl.manage.fragment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -10,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.media.AudioManager;
@@ -20,10 +22,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -42,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.google.zxing.Result;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -50,6 +57,7 @@ import com.qimalocl.manage.activity.LockManageActivity;
 import com.qimalocl.manage.activity.LockManageAlterActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.Main2Activity;
+import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.ble.BLEService;
@@ -69,13 +77,17 @@ import com.qimalocl.manage.utils.ByteUtil;
 import com.qimalocl.manage.utils.IoBuffer;
 import com.qimalocl.manage.utils.SharePreUtil;
 import com.qimalocl.manage.utils.ToastUtil;
-import com.zbar.lib.ScanCaptureAct;
-import com.zbar.lib.camera.CameraManager;
-import com.zbar.lib.camera.CameraPreview;
-import com.zbar.lib.decode.InactivityTimer;
+import com.vondear.rxtools.RxAnimationTool;
+import com.vondear.rxtools.RxBeepTool;
+import com.vondear.rxtools.interfaces.OnRxScanerListener;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
+import com.zxing.lib.scaner.CameraManager;
+import com.zxing.lib.scaner.CaptureActivityHandler;
+import com.zxing.lib.scaner.CaptureActivityHandler2;
+import com.zxing.lib.scaner.activity.ActivityScanerCode;
+import com.zxing.lib.scaner.decoding.InactivityTimer;
 
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
@@ -91,6 +103,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -106,7 +119,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     Unbinder unbinder;
     private View v;
 
-    @BindView(R.id.capture_preview) FrameLayout scanPreview;
+    @BindView(R.id.capture_preview) SurfaceView scanPreview;
     @BindView(R.id.capture_container) RelativeLayout scanContainer;
     @BindView(R.id.capture_crop_view) RelativeLayout scanCropView;
     @BindView(R.id.capture_scan_line) ImageView scanLine;
@@ -115,7 +128,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     @BindView(R.id.loca_show_btnBikeNum) TextView bikeNunBtn;
 
     private Camera mCamera;
-    private CameraPreview mPreview;
+//    private CameraPreview mPreview;
     private Handler autoFocusHandler;
     private CameraManager mCameraManager;
 
@@ -131,7 +144,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private static final float BEEP_VOLUME = 0.50f;
     private boolean vibrate;
     private Context context;
-    private Activity activity;
+    private MainActivity activity;
 
 //    private LoadingDialog loadingDialog;
     private Dialog dialog, dialogRemark;
@@ -180,9 +193,14 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     String codenum_bad="";
     String totalnum="";
 
-    static {
-        System.loadLibrary("iconv");
-    }
+    private boolean hasSurface;
+    SurfaceHolder surfaceHolder;
+    private int mCropWidth = 0;
+    private int mCropHeight = 0;
+
+    private CaptureActivityHandler2 handler;
+    private static OnRxScanerListener mScanerListener;
+    SurfaceHolder.Callback sf;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -196,7 +214,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = getActivity();
-        activity = getActivity();
+        activity = (MainActivity) getActivity();
 
         tagDatas = new ArrayList<>();
         for (int i = 0; i < 5;i++){
@@ -251,9 +269,38 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }
 
         initView();
+        //权限初始化
+        initPermission();
+        //扫描动画初始化
+        initScanerAnimation();
+
+
+        CameraManager.init(context);
+        hasSurface = false;
+        inactivityTimer = new InactivityTimer(activity);
+
+        mCameraManager = CameraManager.get();
+
+        autoFocusHandler = new Handler();
+        autoFocusCB = new Camera.AutoFocusCallback() {
+            public void onAutoFocus(boolean success, Camera camera) {
+                autoFocusHandler.postDelayed(doAutoFocus, 1000);
+            }
+        };
     }
 
+    private void initPermission() {
+        //请求Camera权限 与 文件读写 权限
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+    }
 
+    private void initScanerAnimation() {
+        ImageView mQrLineView = (ImageView) activity.findViewById(R.id.capture_scan_line);
+        RxAnimationTool.ScaleUpDowm(mQrLineView);
+    }
 
 
     private void initView() {
@@ -360,8 +407,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     UIHelper.goToAct(context, LoginActivity.class);
                 }else {
                     //关闭相机
-                    releaseCamera();
-                    mCameraManager.closeDriver();
+//                    releaseCamera();
+//                    mCameraManager.closeDriver();
 
                     bikeNumEdit.setText("");
 
@@ -421,7 +468,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     dialog.dismiss();
                 }
 
-                resetCamera();
+                initCamera(surfaceHolder);
             }
         });
 
@@ -453,7 +500,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                 tagFlowLayout.setAdapter(tagAdapter);
                                 tagFlowLayout2.setAdapter(tagAdapter2);
-                                resetCamera();
+                                initCamera(surfaceHolder);
                             }
                         }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -512,12 +559,12 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                 tagFlowLayout.setAdapter(tagAdapter);
                 tagFlowLayout2.setAdapter(tagAdapter2);
-                resetCamera();
+                initCamera(surfaceHolder);
             }
         });
 
 
-        initViews();
+//        initViews();
         playBeep = true;
         AudioManager audioService = (AudioManager) context.getSystemService(AUDIO_SERVICE);
         if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
@@ -528,132 +575,132 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
     }
 
-    private void initViews() {
-        inactivityTimer = new InactivityTimer(activity);
-
-        mImageScanner = new ImageScanner();
-        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
-        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
-
-        autoFocusHandler = new Handler();
-
-        mCameraManager = new CameraManager(context);
-        try {
-            mCameraManager.openDriver();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //调整扫描框大小,自适应屏幕
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
-        int height = display.getHeight();
-
-        RelativeLayout.LayoutParams linearParams = (RelativeLayout.LayoutParams) scanCropView.getLayoutParams();
-        linearParams.height = (int) (width * 0.65);
-        linearParams.width = (int) (width * 0.65);
-        scanCropView.setLayoutParams(linearParams);
-
-        mCamera = mCameraManager.getCamera();
-        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
-        scanPreview.addView(mPreview);
-
-        TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,
-                TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 0.9f);
-        mAnimation.setDuration(1500);
-        mAnimation.setRepeatCount(-1);
-        mAnimation.setRepeatMode(Animation.REVERSE);
-        mAnimation.setInterpolator(new LinearInterpolator());
-        scanLine.setAnimation(mAnimation);
-
-        autoFocusCB = new Camera.AutoFocusCallback() {
-            public void onAutoFocus(boolean success, Camera camera) {
-                autoFocusHandler.postDelayed(doAutoFocus, 1000);
-            }
-        };
-
-        previewCb = new Camera.PreviewCallback() {
-            public void onPreviewFrame(final byte[] data, final Camera camera) {
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(!previewing) return;
-
-                        Camera.Size size = null;
-                        if(camera!=null){
-                            size = camera.getParameters().getPreviewSize();
-                        }
-
-                        if(size == null) return;
-
-//                        Log.e("0===preview", "===");
-
-                        // 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
-                        byte[] rotatedData = new byte[data.length];
-                        for (int y = 0; y < size.height; y++) {
-                            for (int x = 0; x < size.width; x++)
-                                rotatedData[x * size.height + size.height - y - 1] = data[x + y * size.width];
-                        }
-
-                        // 宽高也要调整
-                        int tmp = size.width;
-                        size.width = size.height;
-                        size.height = tmp;
-
-                        initCrop();
-
-//                        Log.e("1===preview", "===");
-
-                        Image barcode = new Image(size.width, size.height, "Y800");
-                        barcode.setData(rotatedData);
-                        barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
-
-                        int result = mImageScanner.scanImage(barcode);
-                        String resultStr = null;
-
-                        if (result != 0) {
-                            SymbolSet syms = mImageScanner.getResults();
-                            for (Symbol sym : syms) {
-                                resultStr = sym.getData();
-                            }
-                        }
-                        if (!TextUtils.isEmpty(resultStr)) {
-                            inactivityTimer.onActivity();
-                            playBeepSoundAndVibrate();
-
-                            previewing = false;
-                            mCamera.setPreviewCallback(null);
-                            mCamera.stopPreview();
-
-                            releaseCamera();
-                            barcodeScanned = true;
-
-                            bikeNum = resultStr;
-
-//                          Intent rIntent = new Intent();
-//                          rIntent.putExtra("QR_CODE", resultStr);
-//                          activity.setResult(RESULT_OK, rIntent);
-//                          activity.scrollToFinishActivity();
-
-                            Log.e("Maint===preview", "===");
-
-                            isHand = false;
-                            lockInfo(resultStr);
-
-//                          WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
-//                          params1.width = LinearLayout.LayoutParams.MATCH_PARENT;
-//                          params1.height = LinearLayout.LayoutParams.MATCH_PARENT;
-
-
-                        }
-                    }
-                });
-
-            }
-        };
-
-    }
+//    private void initViews() {
+//        inactivityTimer = new InactivityTimer(activity);
+//
+//        mImageScanner = new ImageScanner();
+//        mImageScanner.setConfig(0, Config.X_DENSITY, 3);
+//        mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
+//
+//        autoFocusHandler = new Handler();
+//
+//        mCameraManager = CameraManager.get();
+//        try {
+//            mCameraManager.openDriver();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        //调整扫描框大小,自适应屏幕
+//        Display display = activity.getWindowManager().getDefaultDisplay();
+//        int width = display.getWidth();
+//        int height = display.getHeight();
+//
+//        RelativeLayout.LayoutParams linearParams = (RelativeLayout.LayoutParams) scanCropView.getLayoutParams();
+//        linearParams.height = (int) (width * 0.65);
+//        linearParams.width = (int) (width * 0.65);
+//        scanCropView.setLayoutParams(linearParams);
+//
+//        mCamera = mCameraManager.getCamera();
+//        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
+//        scanPreview.addView(mPreview);
+//
+//        TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,
+//                TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
+//                TranslateAnimation.RELATIVE_TO_PARENT, 0.9f);
+//        mAnimation.setDuration(1500);
+//        mAnimation.setRepeatCount(-1);
+//        mAnimation.setRepeatMode(Animation.REVERSE);
+//        mAnimation.setInterpolator(new LinearInterpolator());
+//        scanLine.setAnimation(mAnimation);
+//
+//        autoFocusCB = new Camera.AutoFocusCallback() {
+//            public void onAutoFocus(boolean success, Camera camera) {
+//                autoFocusHandler.postDelayed(doAutoFocus, 1000);
+//            }
+//        };
+//
+//        previewCb = new Camera.PreviewCallback() {
+//            public void onPreviewFrame(final byte[] data, final Camera camera) {
+//                m_myHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if(!previewing) return;
+//
+//                        Camera.Size size = null;
+//                        if(camera!=null){
+//                            size = camera.getParameters().getPreviewSize();
+//                        }
+//
+//                        if(size == null) return;
+//
+////                        Log.e("0===preview", "===");
+//
+//                        // 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
+//                        byte[] rotatedData = new byte[data.length];
+//                        for (int y = 0; y < size.height; y++) {
+//                            for (int x = 0; x < size.width; x++)
+//                                rotatedData[x * size.height + size.height - y - 1] = data[x + y * size.width];
+//                        }
+//
+//                        // 宽高也要调整
+//                        int tmp = size.width;
+//                        size.width = size.height;
+//                        size.height = tmp;
+//
+//                        initCrop();
+//
+////                        Log.e("1===preview", "===");
+//
+//                        Image barcode = new Image(size.width, size.height, "Y800");
+//                        barcode.setData(rotatedData);
+//                        barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(), mCropRect.height());
+//
+//                        int result = mImageScanner.scanImage(barcode);
+//                        String resultStr = null;
+//
+//                        if (result != 0) {
+//                            SymbolSet syms = mImageScanner.getResults();
+//                            for (Symbol sym : syms) {
+//                                resultStr = sym.getData();
+//                            }
+//                        }
+//                        if (!TextUtils.isEmpty(resultStr)) {
+//                            inactivityTimer.onActivity();
+//                            playBeepSoundAndVibrate();
+//
+//                            previewing = false;
+//                            mCamera.setPreviewCallback(null);
+//                            mCamera.stopPreview();
+//
+//                            releaseCamera();
+//                            barcodeScanned = true;
+//
+//                            bikeNum = resultStr;
+//
+////                          Intent rIntent = new Intent();
+////                          rIntent.putExtra("QR_CODE", resultStr);
+////                          activity.setResult(RESULT_OK, rIntent);
+////                          activity.scrollToFinishActivity();
+//
+//                            Log.e("Maint===preview", "===");
+//
+//                            isHand = false;
+//                            lockInfo(resultStr);
+//
+////                          WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
+////                          params1.width = LinearLayout.LayoutParams.MATCH_PARENT;
+////                          params1.height = LinearLayout.LayoutParams.MATCH_PARENT;
+//
+//
+//                        }
+//                    }
+//                });
+//
+//            }
+//        };
+//
+//    }
 
 
     private void lockInfo(String result){
@@ -750,27 +797,36 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
         Log.e("onResume===Maintenance", isHidden+"==="+first);
 
-        if(!first){
-            resetCamera();
-        }
+//        if(!first){
+//            initCamera(surfaceHolder);
+//        }
     }
 
     @Override
     public void onPause() {
         Log.e("onPause===Maintenance", isHidden+"==="+first);
 
-        if(!first && !isHidden){
-            releaseCamera();
-        }
+//        if(!first && !isHidden){
+//            releaseCamera();
+//        }
 
         super.onPause();
+
+        if (handler != null) {
+            handler.quitSynchronously();
+            handler = null;
+        }
+
+
+//        releaseCamera();
+        mCameraManager.closeDriver();
 
     }
 
     @Override
     public void onDestroy() {
         inactivityTimer.shutdown();
-//        mScanerListener = null;
+        mScanerListener = null;
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
@@ -801,34 +857,157 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
         isHidden = hidden;
 
+        Log.e("onHiddenChanged===MF", first+"==="+isHidden);
+
         if(hidden){
+            previewing = false;
+            if(surfaceHolder!=null){
+//                initCamera(surfaceHolder);
+                surfaceHolder.removeCallback(sf);
+                surfaceHolder = null;
+            }
+
 
             if(!first){
-                releaseCamera();
-                if(mCameraManager!=null){
-                    mCameraManager.closeDriver();
-                }
-
-//                if(inactivityTimer!=null){
-//                    inactivityTimer.shutdown();
+//                releaseCamera();
+//                if(mCameraManager!=null){
+//                    mCameraManager.closeDriver();
 //                }
+
+//                Log.e("onHiddenChanged===MF1", mCameraManager+"==="+handler);
+//
+//                if (handler != null) {
+//                    handler.quitSynchronously();
+//                    handler = null;
+//                }
+//
+//                Log.e("onHiddenChanged===MF2", mCameraManager+"==="+handler);
+//
+////               releaseCamera();
+//                mCameraManager.closeDriver();
+
+                hasSurface = false;
+
             }else{
                 first = false;
             }
 
         }else{
+            previewing = true;
+
+            Log.e("surface===MF0", first+"==="+surfaceHolder+"==="+hasSurface);
+
+            if(surfaceHolder!=null){
+                surfaceHolder.addCallback(sf);
+            }
+
 
             if(!first){
-                resetCamera();
+
+
+                if (!hasSurface) {
+                    //Camera初始化
+
+                    if(surfaceHolder==null){
+                        Log.e("surface===MF&", first+"==="+surfaceHolder+"==="+hasSurface);
+
+                        surfaceHolder = scanPreview.getHolder();
+
+                        sf = new SurfaceHolder.Callback() {
+                            @Override
+                            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+                            }
+
+                            @Override
+                            public void surfaceCreated(SurfaceHolder holder) {
+                                Log.e("surface===MF1", "==="+hasSurface);
+
+                                if (!hasSurface) {
+                                    hasSurface = true;
+
+                                    initCamera(holder);
+                                }
+                            }
+
+                            @Override
+                            public void surfaceDestroyed(SurfaceHolder holder) {
+                                Log.e("surface===MF2", "==="+hasSurface);
+
+                                hasSurface = false;
+
+                            }
+                        };
+
+                        surfaceHolder.addCallback(sf);
+                        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+
+                        if (mCamera != null) {
+                            initCamera(surfaceHolder);
+//                            mCamera.startPreview();
+                        }
+                    }
+
+
+
+                } else {
+                    initCamera(surfaceHolder);
+                }
             }else{
                 first = false;
+
+                if(surfaceHolder==null){
+                    surfaceHolder = scanPreview.getHolder();
+
+                    surfaceHolder.addCallback(sf);
+                    surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+                }
             }
+        }
+    }
+
+
+
+    private void initCamera(SurfaceHolder surfaceHolder) {
+        Log.e("initCamera===", "====");
+
+//        releaseCamera();
+//        mCameraManager.closeDriver();
+
+        previewing = true;
+
+        try {
+//            mCameraManager = CameraManager.get();
+
+            this.surfaceHolder = scanPreview.getHolder();
+
+            mCameraManager.openDriver(this.surfaceHolder);
+            mCamera = mCameraManager.getCamera();
+
+
+
+            Point point = mCameraManager.getCameraResolution();
+            AtomicInteger width = new AtomicInteger(point.y);
+            AtomicInteger height = new AtomicInteger(point.x);
+            int cropWidth = scanCropView.getWidth() * width.get() / scanContainer.getWidth();
+            int cropHeight = scanCropView.getHeight() * height.get() / scanContainer.getHeight();
+            setCropWidth(cropWidth);
+            setCropHeight(cropHeight);
+
+            mCamera.startPreview();
+            mCamera.autoFocus(autoFocusCB);
+        } catch (IOException | RuntimeException ioe) {
+            return;
+        }
+        if (handler == null) {
+            handler = new CaptureActivityHandler2(this);
         }
     }
 
     private void releaseCamera() {
         if (mCamera != null) {
-
+            mCamera.stopPreview();
             Log.e("0===releaseCamera", "==="+mCamera);
 
             previewing = false;
@@ -840,31 +1019,82 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }
     }
 
+    private void resetCamera(){
+//        Log.e("===resetCamera", "==="+mCamera);
+//
+//        previewing = true;
+//
+//        mCameraManager = CameraManager.get();
+//        try {
+//            mCameraManager.openDriver();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        mCamera = mCameraManager.getCamera();
+//
+//
+//        Log.e("111====resetCamera", mCamera+"==="+previewCb+"==="+autoFocusCB);
+//
+//        scanPreview.removeAllViews();
+//        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
+//        scanPreview.addView(mPreview);
+    }
+
+    public void handleDecode(Result result) {
+        if(!previewing) return;
+
+        inactivityTimer.onActivity();
+        //扫描成功之后的振动与声音提示
+        RxBeepTool.playBeep(activity, vibrate);
+
+//        mCamera.setPreviewCallback(null);
+//        mCamera.stopPreview();
+//
+//        releaseCamera();
+
+        Log.e("===", "====");
+
+        String result1 = result.getText();
+        if (mScanerListener == null) {
+            initDialogResult(result);
+        } else {
+            mScanerListener.onSuccess("From to Camera", result);
+        }
+    }
+
+    private void initDialogResult(Result result) {
+//		useBike(result.toString());
+
+        isHand = false;
+        lockInfo(result.toString());
+
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setCropWidth(int cropWidth) {
+        mCropWidth = cropWidth;
+        CameraManager.FRAME_WIDTH = mCropWidth;
+
+    }
+
+    public void setCropHeight(int cropHeight) {
+        this.mCropHeight = cropHeight;
+        CameraManager.FRAME_HEIGHT = mCropHeight;
+    }
+
+
+
+
+
 
     Camera.AutoFocusCallback autoFocusCB;
     Camera.PreviewCallback previewCb;
 
-    private void resetCamera(){
-        Log.e("===resetCamera", "==="+mCamera);
 
-        previewing = true;
-
-        mCameraManager = new CameraManager(context);
-        try {
-            mCameraManager.openDriver();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        mCamera = mCameraManager.getCamera();
-
-
-        Log.e("111====resetCamera", mCamera+"==="+previewCb+"==="+autoFocusCB);
-
-        scanPreview.removeAllViews();
-        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
-        scanPreview.addView(mPreview);
-    }
 
 
 
@@ -879,7 +1109,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 }
 
                 tagFlowLayout.setAdapter(tagAdapter);
-                resetCamera();
+                initCamera(surfaceHolder);
 
                 break;
             case R.id.dialog_maintenance_affirmLayout:
@@ -899,8 +1129,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 Log.e("affirmLayout===", "==="+type);
 
                 if(type==1 || type==4 || type==5){
-                    releaseCamera();
-                    mCameraManager.closeDriver();
+//                    releaseCamera();
+//                    mCameraManager.closeDriver();
 
                     remarkEdit.setText("");
 
@@ -924,7 +1154,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     dialog.cancel();
 
                                     tagFlowLayout.setAdapter(tagAdapter);
-                                    resetCamera();
+                                    initCamera(surfaceHolder);
                                 }
                             }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -978,7 +1208,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 }
 
                 tagFlowLayout2.setAdapter(tagAdapter2);
-                resetCamera();
+                initCamera(surfaceHolder);
 
                 break;
             case R.id.dialog_maintenance_hand_affirmLayout:
@@ -996,8 +1226,8 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 }
 
                 if(type==5) {
-                    releaseCamera();
-                    mCameraManager.closeDriver();
+//                    releaseCamera();
+//                    mCameraManager.closeDriver();
 
                     remarkEdit.setText("");
 
@@ -1021,7 +1251,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     dialog.cancel();
 
                                     tagFlowLayout2.setAdapter(tagAdapter2);
-                                    resetCamera();
+                                    initCamera(surfaceHolder);
                                 }
                             }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -1101,7 +1331,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                 initHttp();
 
-                                resetCamera();
+                                initCamera(surfaceHolder);
                             } catch (Exception e) {
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1149,7 +1379,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                                 }
 
-                                resetCamera();
+                                initCamera(surfaceHolder);
                             } catch (Exception e) {
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1218,14 +1448,14 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     if("4".equals(carType)){
                                         closeEbikeTemp();
                                     }else{
-                                        resetCamera();
+                                        initCamera(surfaceHolder);
                                     }
 
 
                                 }else {
                                     Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
 
-                                    resetCamera();
+                                    initCamera(surfaceHolder);
                                 }
 
 
@@ -1279,7 +1509,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                 initHttp();
 
-                                resetCamera();
+                                initCamera(surfaceHolder);
                             } catch (Exception e) {
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1329,7 +1559,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                 initHttp();
 
-                                resetCamera();
+                                initCamera(surfaceHolder);
                             } catch (Exception e) {
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1470,7 +1700,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                 if ("0".equals(result.getData())){
                                     ToastUtil.showMessageApp(context,"关锁成功");
 
-                                    resetCamera();
+                                    initCamera(surfaceHolder);
                                 } else {
                                     ToastUtil.showMessageApp(context,"关锁失败");
 
@@ -1496,7 +1726,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                             } else {
                                 ToastUtil.showMessageApp(context,result.getMsg());
 
-                                resetCamera();
+                                initCamera(surfaceHolder);
                             }
                         } catch (Exception e) {
                         }
@@ -1524,7 +1754,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     }else{
 //                        customDialog6.show();
                         ToastUtil.showMessageApp(context,"连接失败，请重试");
-                        resetCamera();
+                        initCamera(surfaceHolder);
                         return;
                     }
 
@@ -1573,7 +1803,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     loadingDialog.dismiss();
                 }
 
-                resetCamera();
+                initCamera(surfaceHolder);
                 Log.e("temporaryLock===4_6", "==="+bleService.cc);
 
             }
@@ -1690,14 +1920,15 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private Runnable doAutoFocus = new Runnable() {
         public void run() {
 
-            Log.e("0===doAutoFocus", "==="+previewing);
+//            Log.e("0===doAutoFocus", "==="+previewing);
 
             if (previewing){
 
                 Log.e("1===doAutoFocus", "==="+previewing);
+
                 mCamera.autoFocus(autoFocusCB);
 
-                Log.e("2===doAutoFocus", "==="+previewing);
+//                Log.e("2===doAutoFocus", "==="+previewing);
             }
 
         }

@@ -24,7 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.fitsleep.sunshinelibrary.utils.DialogUtils;
 import com.http.OkHttpClientManager;
 import com.http.ResultCallback;
 import com.http.rdata.RGetUserTradeStatus;
@@ -58,7 +57,6 @@ import com.sofi.blelocker.library.search.SearchResult;
 import com.sofi.blelocker.library.search.response.SearchResponse;
 import com.sofi.blelocker.library.utils.BluetoothLog;
 import com.sofi.blelocker.library.utils.StringUtils;
-import com.zbar.lib.AddCarCaptureAct;
 
 import org.apache.http.Header;
 
@@ -144,7 +142,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         Log.e("DD===onCreate", "==="+type);
 
 
-        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
+//        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
 //        loadingDialog.show();
 
         layLock = findViewById(R.id.layLock);

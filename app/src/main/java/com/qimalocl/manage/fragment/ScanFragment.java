@@ -99,7 +99,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.UtilAnim;
 import com.qimalocl.manage.utils.UtilBitmap;
 import com.qimalocl.manage.utils.UtilScreenCapture;
-import com.zbar.lib.ScanCaptureAct;
+import com.zxing.lib.scaner.activity.ActivityScanerCode;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -205,7 +205,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         bikeMarkerList = new ArrayList<>();
         initView();
 
-        Toast.makeText(context,"发送寻车指令成功", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context,"发送寻车指令成功", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -620,7 +620,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
 
-        Log.e("onHiddenChanged===Scan", "==="+hidden);
+        Log.e("onHiddenChanged===Scan", mapView+"==="+hidden);
 
         if(hidden){
             //pause
@@ -869,7 +869,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     }
                     try {
                         Intent intent = new Intent();
-                        intent.setClass(context, ScanCaptureAct.class);
+                        intent.setClass(context, ActivityScanerCode.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtra("isChangeKey",false);
                         startActivityForResult(intent, 101);
@@ -1378,7 +1378,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     if (permissions[0].equals(Manifest.permission.CAMERA)){
                         try {
                             Intent intent = new Intent();
-                            intent.setClass(context, ScanCaptureAct.class);
+                            intent.setClass(context, ActivityScanerCode.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("isChangeKey",false);
                             startActivityForResult(intent, 101);
