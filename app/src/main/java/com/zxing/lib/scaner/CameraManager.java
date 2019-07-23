@@ -118,25 +118,31 @@ public final class CameraManager {
     public void openDriver(SurfaceHolder holder) throws IOException {
         Log.e("openDriver===", "===="+camera);
 
-
-
-        if (camera == null) {
-            camera = Camera.open();
-
-            Log.e("openDriver===2", "===="+camera);
-
+        try{
             if (camera == null) {
-                throw new IOException();
-            }
-            camera.setPreviewDisplay(holder);
+                camera = Camera.open();
 
-            if (!initialized) {
-                initialized = true;
-                configManager.initFromCameraParameters(camera);
+                Log.e("openDriver===2", "===="+camera);
+
+                if (camera == null) {
+                    throw new IOException();
+                }
+                camera.setPreviewDisplay(holder);
+
+                if (!initialized) {
+                    initialized = true;
+                    configManager.initFromCameraParameters(camera);
+                }
+                configManager.setDesiredCameraParameters(camera);
+                FlashlightManager.enableFlashlight();
+
+                Log.e("openDriver===3", "===="+camera);
             }
-            configManager.setDesiredCameraParameters(camera);
-            FlashlightManager.enableFlashlight();
+        }catch (Exception e){
+            Log.e("openDriver===e", "===="+e);
         }
+
+
 //        else {
 //            System.out.println("wanggsx openDriver camera != null");
 //            camera.setPreviewDisplay(holder);//此处为新增方法
@@ -148,6 +154,8 @@ public final class CameraManager {
      * Closes the camera driver if still in use.
      */
     public void closeDriver() {
+        Log.e("closeDriver===", "==="+camera);
+
         if (camera != null) {
             FlashlightManager.disableFlashlight();
             camera.release();

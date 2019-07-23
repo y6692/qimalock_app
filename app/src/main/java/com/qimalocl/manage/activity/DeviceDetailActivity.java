@@ -140,7 +140,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
         type = SharedPreferencesUrls.getInstance().getString("type", "");
 
-        Log.e("DD===onCreate", "==="+type);
+        Log.e("DDA===onCreate", "==="+type);
 
 
 //        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
@@ -174,6 +174,13 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //            }
 //        });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Log.e("DDA===onResume", "==="+type);
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
@@ -236,15 +243,21 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         m_myHandler.post(new Runnable() {
             @Override
             public void run() {
+
+                Log.e("DDA===onActivityResult",data+"==="+requestCode);
+
                 switch (requestCode) {
                     case 1:
-                        if (resultCode == RESULT_OK) {
-                            String result = data.getStringExtra("QR_CODE");
-//                    codenum = edbikeNum.getText().toString().trim();
-                            addCar(result);
-                        } else {
-                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
+                        if (data != null) {
+                            if (resultCode == RESULT_OK) {
+                                String result = data.getStringExtra("QR_CODE");
+//                              codenum = edbikeNum.getText().toString().trim();
+                                addCar(result);
+                            } else {
+                                Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
+                            }
                         }
+
                         break;
 
                     default:
@@ -1272,6 +1285,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         ClientManager.getClient().unnotifyClose(mac, mCloseListener);
         ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
         super.onDestroy();
+
+        Log.e("DDA===onDestroy", "===");
     }
 
 }

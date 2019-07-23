@@ -136,6 +136,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private CaptureActivityHandler handler;
 	private static OnRxScanerListener mScanerListener;
 
+	SurfaceHolder.Callback sf;
+
 
 //	static {
 //		System.loadLibrary("iconv");
@@ -157,13 +159,13 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		initScanerAnimation();
 
 //		initViews();
-		playBeep = true;
-		AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
-		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
-			playBeep = false;
-		}
-		initBeepSound();
-		vibrate = true;
+//		playBeep = true;
+//		AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
+//		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+//			playBeep = false;
+//		}
+//		initBeepSound();
+//		vibrate = true;
 
 		bikeNumEdit.setText("");
 
@@ -192,7 +194,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		super.onResume();
 
 
-		Log.e("surface===0", "==="+hasSurface);
+		Log.e("surface===0", surfaceHolder+"==="+hasSurface);
 
 		if (!hasSurface) {
 			//Camera初始化
@@ -202,7 +204,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			if(surfaceHolder==null){
 				surfaceHolder = scanPreview.getHolder();
 
-				surfaceHolder.addCallback(new SurfaceHolder.Callback() {
+				sf = new SurfaceHolder.Callback() {
 					@Override
 					public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
@@ -226,7 +228,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 						hasSurface = false;
 
 					}
-				});
+				};
+
+				surfaceHolder.addCallback(sf);
 				surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 			}
 
@@ -272,6 +276,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	}
 
 	private void initCamera(SurfaceHolder surfaceHolder) {
+		Log.e("initCamera===", "===="+handler);
+
 		try {
 			mCameraManager = CameraManager.get();
 			mCameraManager.openDriver(surfaceHolder);
@@ -283,16 +289,108 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			int cropHeight = scanCropView.getHeight() * height.get() / scanContainer.getHeight();
 			setCropWidth(cropWidth);
 			setCropHeight(cropHeight);
-		} catch (IOException | RuntimeException ioe) {
-			return;
-		}
-		if (handler == null) {
+
+//			mCamera.autoFocus(new Camera.AutoFocusCallback() {
+//				@Override
+//				public void onAutoFocus(boolean success, Camera camera) {
+////					camera.cancelAutoFocus();
+//				}
+//			});
+//			mCamera.autoFocus(autoFocusCB);
+//			mCamera.startPreview();
+
+//			if (handler == null) {
+//				handler = new CaptureActivityHandler(this);
+//			}
+
 			handler = new CaptureActivityHandler(this);
+		} catch (Exception ioe) {
+			Log.e("initCamera===e", "===="+ioe);
+//			return;
 		}
+
 	}
 
+	AutoFocusCallback autoFocusCB = new AutoFocusCallback() {
+		public void onAutoFocus(boolean success, Camera camera) {
+			autoFocusHandler.postDelayed(doAutoFocus, 1000);
+		}
+	};
+
+	private Runnable doAutoFocus = new Runnable() {
+		public void run() {
+			if (previewing)
+				mCamera.autoFocus(autoFocusCB);
+		}
+	};
+
+
+	public void onPause() {
+		if (loadingDialog != null && loadingDialog.isShowing()) {
+			loadingDialog.dismiss();
+		}
+
+//        hasSurface = false;
+
+		Log.e("ASC===onPause", surfaceHolder+"==="+hasSurface+"==="+handler);
+
+
+		//		surfaceHolder.removeCallback(sf);
+
+		if (handler != null) {
+			handler.quitSynchronously();
+//			handler = null;
+		}
+////		inactivityTimer.onPause();
+//
+		mCameraManager.closeDriver();
+
+		if (!hasSurface) {
+//			SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+//			SurfaceHolder surfaceHolder = surfaceView.getHolder();
+			surfaceHolder.removeCallback(sf);
+		}
+
+//		surfaceHolder.removeCallback(sf);
+
+		Log.e("ASC===onPause2", "==="+hasSurface);
+
+		super.onPause();
+
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		Log.e("onDestroy===ASC1", "===="+inactivityTimer);
+
+		inactivityTimer.shutdown();
+//		mScanerListener = null;
+		super.onDestroy();
+
+		Log.e("onDestroy===ASC2", "===="+inactivityTimer);
+
+//		previewing = false;
+//
+//		if (handler != null) {
+//			handler.quitSynchronously();
+//			handler = null;
+//		}
+//
+//		Log.e("onDestroy===ASC2", "===="+mCameraManager);
+//
+//		releaseCamera();
+//		mCameraManager.closeDriver();
+
+
+
+//		m_myHandler.removeCallbacksAndMessages(null);
+//		resetCamera();
+	}
+
+
 	public void handleDecode(Result result) {
-		if(!previewing) return;
+//		if(!previewing) return;
 
 		inactivityTimer.onActivity();
 		//扫描成功之后的振动与声音提示
@@ -490,7 +588,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 //	private void initViews() {
 //
-//
 //		mImageScanner = new ImageScanner();
 //		mImageScanner.setConfig(0, Config.X_DENSITY, 3);
 //		mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
@@ -528,17 +625,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //		scanLine.setAnimation(mAnimation);
 //	}
 
-	public void onPause() {
-		super.onPause();
-		if (handler != null) {
-			handler.quitSynchronously();
-			handler = null;
-		}
 
-
-        releaseCamera();
-		mCameraManager.closeDriver();
-	}
 
 	private void releaseCamera() {
 		if (mCamera != null) {
@@ -551,36 +638,10 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		}
 	}
 
-	@Override
-	protected void onDestroy() {
-		inactivityTimer.shutdown();
-		mScanerListener = null;
-		super.onDestroy();
-
-		previewing = false;
-
-		if (handler != null) {
-			handler.quitSynchronously();
-			handler = null;
-		}
 
 
-		releaseCamera();
-		mCameraManager.closeDriver();
-
-		Log.e("Destroy===ASC", "====");
-
-		m_myHandler.removeCallbacksAndMessages(null);
-//		resetCamera();
-	}
 
 
-//	private Runnable doAutoFocus = new Runnable() {
-//		public void run() {
-//			if (previewing)
-//				mCamera.autoFocus(autoFocusCB);
-//		}
-//	};
 
 
 
@@ -866,11 +927,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		}
 	}
 
-//	AutoFocusCallback autoFocusCB = new AutoFocusCallback() {
-//		public void onAutoFocus(boolean success, Camera camera) {
-//			autoFocusHandler.postDelayed(doAutoFocus, 1000);
-//		}
-//	};
+
 
 	/**
 	 * 初始化截取的矩形区域

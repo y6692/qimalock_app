@@ -742,7 +742,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                     if ("1".equals(carType)){      //机械锁
                                     }else {
-                                        codenum = jsonObject.getString("codenum");
+                                        bikeNum = jsonObject.getString("codenum");
                                         mac = jsonObject.getString("macinfo");
 
                                         if ("2".equals(carType)){          //蓝牙锁
@@ -764,7 +764,6 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //                                      dialog.getWindow().setAttributes(params1);
                                         dialog2.show();
                                     }
-
 
                                 } else {
                                     Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
@@ -814,7 +813,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
         if (handler != null) {
             handler.quitSynchronously();
-            handler = null;
+//            handler = null;
         }
 
 
@@ -997,12 +996,17 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
             mCamera.startPreview();
             mCamera.autoFocus(autoFocusCB);
-        } catch (IOException | RuntimeException ioe) {
-            return;
-        }
-        if (handler == null) {
+
+//            if (handler == null) {
+//                handler = new CaptureActivityHandler2(this);
+//            }
+
             handler = new CaptureActivityHandler2(this);
+        } catch (Exception ioe) {
+            Log.e("initCamera===MF_e", "===="+ioe);
+//            return;
         }
+
     }
 
     private void releaseCamera() {

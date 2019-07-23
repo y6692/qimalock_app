@@ -19,7 +19,7 @@
     <LinearLayout
         android:id="@+id/layBottom"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="120dp"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:orientation="horizontal"
