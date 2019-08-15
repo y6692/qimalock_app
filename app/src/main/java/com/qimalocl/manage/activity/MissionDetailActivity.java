@@ -70,7 +70,7 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
     TextView tvTime;
 
     private Context context;
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
 
     private double latitude;
     private double longitude;

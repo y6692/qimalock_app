@@ -70,6 +70,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.flyco.tablayout.CommonTabLayout;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -96,6 +97,7 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.UserIndexBean;
 import com.qimalocl.manage.utils.UtilAnim;
 import com.qimalocl.manage.utils.UtilBitmap;
 import com.qimalocl.manage.utils.UtilScreenCapture;
@@ -126,7 +128,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private Context context;
     private Activity activity;
 
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
     @BindView(R.id.msg) TextView tvMsg;
     @BindView(R.id.mainUI_msg) LinearLayout llMsg;
     @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
@@ -181,6 +183,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     String provider = LocationManager.GPS_PROVIDER;
     private static final int PRIVATE_CODE = 1315;//开启GPS权限
 
+    private int type = 1;
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
         unbinder = ButterKnife.bind(this, v);
@@ -199,6 +203,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
 //        filter = new IntentFilter("data.broadcast.action");
 //        activity.registerReceiver(broadcastReceiver, filter);
+
+        initHttp();
 
         mapView = v.findViewById(R.id.mainUI_map);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
@@ -537,75 +543,205 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         }
     }
 
-    private void initNearby(double latitude, double longitude){
+    private void initHttp(){
 
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid != null && !"".equals(uid) && access_token != null && !"".equals(access_token)){
+            RequestParams params = new RequestParams();
+            params.put("uid",uid);
+            params.put("access_token",access_token);
+            HttpHelper.get(context, Urls.userIndex, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在加载");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+
+
+                            UserIndexBean bean = JSON.parseObject(result.getData(), UserIndexBean.class);
+//                            nameEdit.setText(bean.getRealname());
+//                            phoneNum.setText(bean.getTelphone());
+//                            nickNameEdit.setText(bean.getNickname());
+//                            sexText.setText(bean.getSex());
+//                            schoolText.setText(bean.getSchool());
+//                            classEdit.setText(bean.getGrade());
+//                            stuNumEdit.setText(bean.getStunum());
+//
+//                            sex = bean.getSex();
+                            String school = bean.getSchool();
+
+                            Log.e("initHttp===", "==="+school);
+
+                            if("江苏理工学院".equals(school) || "泰山医学院".equals(school)){
+                                type = 2;
+                            }else{
+                                type = 1;
+                            }
+
+                        } else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }else {
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+        }
+    }
+
+    private void initNearby(double latitude, double longitude){
         RequestParams params = new RequestParams();
         params.put("latitude",latitude);
         params.put("longitude",longitude);
-        HttpHelper.get(context, Urls.nearbyEbike, params, new TextHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
-            }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-                        JSONArray array = new JSONArray(result.getData());
-
-                        if (curMarker != null){
-                            curMarker.remove();
-                        }
-
-                        for (Marker marker : bikeMarkerList){
-                            if (marker != null){
-                                marker.remove();
-                            }
-                        }
-                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                            bikeMarkerList.clear();
-                        }
-                        if (0 == array.length()){
-                            Toast.makeText(context,"附近没有自行车",Toast.LENGTH_SHORT).show();
-                        }else {
-                            for (int i = 0; i < array.length(); i++){
-                                NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
-                                // 加入自定义标签
-                                MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                        Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                        .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
-                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                bikeMarkerList.add(bikeMarker);
-
-                                if("80001651".equals(bean.getCodenum())){
-                                    Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
-                                }
-
-                            }
-                        }
-                    } else {
-                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+        if(type==1){
+            params.put("type", 1);
+            HttpHelper.get(context, Urls.nearby, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在加载");
+                        loadingDialog.show();
                     }
-                } catch (Exception e) {
                 }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
                 }
-            }
-        });
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            JSONArray array = new JSONArray(result.getData());
+
+                            Log.e("initNearby===Bike", "==="+array.length());
+
+                            for (Marker marker : bikeMarkerList){
+                                if (marker != null){
+                                    marker.remove();
+                                }
+                            }
+                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                                bikeMarkerList.clear();
+                            }
+                            if (0 == array.length()){
+                                ToastUtils.showMessage("附近没有单车");
+                            }else {
+                                for (int i = 0; i < array.length(); i++){
+                                    NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
+                                    // 加入自定义标签
+                                    MarkerOptions bikeMarkerOption = new MarkerOptions().position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
+                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                    bikeMarkerList.add(bikeMarker);
+                                }
+                            }
+                        } else {
+                            ToastUtils.showMessage(result.getMsg());
+                        }
+                    } catch (Exception e) {
+
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }else{
+            HttpHelper.get(context, Urls.nearbyEbike, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在加载");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            JSONArray array = new JSONArray(result.getData());
+
+                            if (curMarker != null){
+                                curMarker.remove();
+                            }
+
+                            for (Marker marker : bikeMarkerList){
+                                if (marker != null){
+                                    marker.remove();
+                                }
+                            }
+                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                                bikeMarkerList.clear();
+                            }
+                            if (0 == array.length()){
+                                Toast.makeText(context,"附近没有电单车",Toast.LENGTH_SHORT).show();
+                            }else {
+                                for (int i = 0; i < array.length(); i++){
+                                    NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
+                                    // 加入自定义标签
+                                    MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
+                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                    bikeMarkerList.add(bikeMarker);
+
+//                                    if("80001651".equals(bean.getCodenum())){
+//                                        Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
+//                                    }
+
+                                }
+                            }
+                        } else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }
+
+
     }
 
     private void setUpMap() {
@@ -695,8 +831,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         super.onDestroyView();
         unbinder.unbind();
         if (mapView != null) mapView.onDestroy();
-
-
     }
 
 

@@ -15,6 +15,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.qimalocl.manage.base.BaseFragmentActivity;
+import com.qimalocl.manage.core.common.UIHelper;
+import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.swipebacklayout.SwipeBackLayout;
 
 
@@ -26,6 +28,8 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 	private static final int VIBRATE_DURATION = 10;
 	private SwipeBackActivityHelper mHelper;
 	private SwipeBackLayout mSwipeBackLayout;
+
+//	protected LoadingDialog loadingDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +134,32 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 	protected void onResume() {
 		super.onResume();
 //		RefreshLogin();
+	}
+
+	public void onStartCommon(final String title) {
+		m_myHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				if (loadingDialog != null && !loadingDialog.isShowing()) {
+					loadingDialog.setTitle(title);
+					loadingDialog.show();
+				}
+			}
+		});
+
+	}
+
+	public void onFailureCommon(final String s) {
+		m_myHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				if (loadingDialog != null && loadingDialog.isShowing()){
+					loadingDialog.dismiss();
+				}
+				UIHelper.ToastError(context, s);
+			}
+		});
+
 	}
 
 //	// 用户已经登录过没有退出刷新登录

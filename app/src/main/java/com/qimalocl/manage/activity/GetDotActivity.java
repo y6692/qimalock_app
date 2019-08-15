@@ -129,7 +129,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     static private final int REQUEST_CODE_ASK_PERMISSIONS = 101;
     private final static int SCANNIN_GREQUEST_CODE = 1;
 //    private LoadingDialog lockLoading;
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
     private LoadingDialog loadingDialog1;
     public static boolean isForeground = false;
 

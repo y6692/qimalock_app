@@ -431,10 +431,16 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //        mac = "A4:34:F1:7B:BF:9A";
 //        name = "GpDTxe7<a";
 
-        connectDevice();
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                connectDevice();
 
-        ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-        ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+                ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+                ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+
+            }
+        }, 2 * 1000);
 
         OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
             @Override

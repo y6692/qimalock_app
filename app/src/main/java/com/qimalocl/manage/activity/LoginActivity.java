@@ -44,7 +44,7 @@ import org.apache.http.Header;
 public class LoginActivity extends SwipeBackActivity implements View.OnClickListener{
 
     private Context context;
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
     private ImageView backImg;
     private TextView title;
 

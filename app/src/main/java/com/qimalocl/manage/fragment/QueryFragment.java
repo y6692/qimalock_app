@@ -56,6 +56,7 @@ import com.qimalocl.manage.activity.BikeLocationActivity;
 import com.qimalocl.manage.activity.DeviceListActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
+import com.qimalocl.manage.activity.MerchantAddressMapActivity;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
@@ -89,6 +90,8 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
     RelativeLayout historyLayout;
     @BindView(R.id.locationLayout)
     RelativeLayout locationLayout;
+//    @BindView(R.id.locationLayout2)
+//    RelativeLayout locationLayout2;
 
 
     private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
@@ -130,6 +133,7 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
 
         historyLayout.setOnClickListener(this);
         locationLayout.setOnClickListener(this);
+//        locationLayout2.setOnClickListener(this);
     }
 
     @Override
@@ -161,8 +165,12 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
                 break;
 
             case R.id.locationLayout:
-                UIHelper.goToAct(context, BikeLocationActivity.class);
+                UIHelper.goToAct(context, MerchantAddressMapActivity.class);
                 break;
+
+//            case R.id.locationLayout2:
+//                UIHelper.goToAct(context, BikeLocationActivity.class);
+//                break;
 
             default:
                 break;

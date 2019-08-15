@@ -101,7 +101,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     private int isLock = 0;
     private View v;
 
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
     private Dialog dialog;
     private List<BadCarBean> datas;
     private MyAdapter myAdapter;

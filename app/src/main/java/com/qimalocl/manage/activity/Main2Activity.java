@@ -56,7 +56,7 @@ public class Main2Activity extends SwipeBackActivity {
 
     private String tel = "13188888888";
 
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
 //    private CustomDialog customDialog6;
 //    private CustomDialog customDialog7;
 

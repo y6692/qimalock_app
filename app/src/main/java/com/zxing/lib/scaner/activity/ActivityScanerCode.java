@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -59,6 +60,7 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
@@ -115,7 +117,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private boolean vibrate;
 	private ImageView cancle;
 	private TextView bikeNunBtn;
-	private LoadingDialog loadingDialog;
+//	private LoadingDialog loadingDialog;
 
 	private String codenum = "";
 	// 输入法
@@ -273,10 +275,21 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		positiveButton.setOnClickListener(this);
 		negativeButton.setOnClickListener(this);
 		lightBtn.setOnClickListener(this);
+
+//        initViews();
+		playBeep = true;
+		AudioManager audioService = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+			playBeep = false;
+		}
+		initBeepSound();
+		vibrate = true;
 	}
 
 	private void initCamera(SurfaceHolder surfaceHolder) {
 		Log.e("initCamera===", "===="+handler);
+
+		previewing = true;
 
 		try {
 			mCameraManager = CameraManager.get();
@@ -289,6 +302,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			int cropHeight = scanCropView.getHeight() * height.get() / scanContainer.getHeight();
 			setCropWidth(cropWidth);
 			setCropHeight(cropHeight);
+
+			mCamera.startPreview();
+			mCamera.autoFocus(autoFocusCB);
 
 //			mCamera.autoFocus(new Camera.AutoFocusCallback() {
 //				@Override
@@ -356,8 +372,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		Log.e("ASC===onPause2", "==="+hasSurface);
 
 		super.onPause();
-
-
 	}
 
 	@Override
@@ -414,14 +428,35 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private void initDialogResult(Result result) {
 //		useBike(result.toString());
 
+		if("7".equals(SharedPreferencesUrls.getInstance().getString("type", ""))){
+			Log.e("initDialogResult===", "===");
 
-		if(isAdd){
-			Intent rIntent = new Intent();
-			rIntent.putExtra("QR_CODE", result.toString());
-			setResult(RESULT_OK, rIntent);
-			scrollToFinishActivity();
+
+			CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+			customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
+					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+
+						}
+					}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+
+					initCamera(surfaceHolder);
+				}
+			});
+			customBuilder.create().show();
+
 		}else{
-			lockInfo(result.toString());
+			if(isAdd){
+				Intent rIntent = new Intent();
+				rIntent.putExtra("QR_CODE", result.toString());
+				setResult(RESULT_OK, rIntent);
+				scrollToFinishActivity();
+			}else{
+				lockInfo(result.toString());
+			}
 		}
 
 	}
@@ -898,7 +933,14 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 								}else if ("5".equals(jsonObject.getString("type")) || "6".equals(jsonObject.getString("type"))){    //3合1锁
 
-									Log.e("Scan===4", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
+									Log.e("Scan===5", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
+
+									if("5".equals(jsonObject.getString("type"))){
+                                        SharedPreferencesUrls.getInstance().putString("type", "5");
+                                    }else{
+                                        SharedPreferencesUrls.getInstance().putString("type", "6");
+                                    }
+
 
 									Intent intent = new Intent(ActivityScanerCode.this, DeviceDetailAlertActivity.class);
 //									intent.putExtra("lock_no", jsonObject.getString("lock_no"));

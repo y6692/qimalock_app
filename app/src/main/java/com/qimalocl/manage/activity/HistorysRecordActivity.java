@@ -74,7 +74,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
     @BindView(R.id.ui_historysRecord_msgText)
     TextView msgText;
     private Context context;
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
 
     private List<HistorysRecordBean> datas;
     private MyAdapter myAdapter;

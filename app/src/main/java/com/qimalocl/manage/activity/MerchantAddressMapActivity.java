@@ -1,14 +1,20 @@
 package com.qimalocl.manage.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -19,9 +25,32 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
+import com.fitsleep.sunshinelibrary.utils.ToastUtils;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.core.common.HttpHelper;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.core.common.UIHelper;
+import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.ClearEditText;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.model.GPSTrackBean;
+import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.ToastUtil;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,13 +63,21 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
     @BindView(R.id.mainUI_title_backBtn)
     ImageView backBtn;
+    @BindView(R.id.mainUI_title_rightBtn)
+    TextView rightBtn;
     @BindView(R.id.mainUI_title_titleText)
     TextView titleText;
     @BindView(R.id.ui_merchantAddress_map)
     MapView mapView;
+    @BindView(R.id.et_name)
+    EditText codeNumEdit;
+    @BindView(R.id.searchBtn)
+    TextView searchBtn;
+    @BindView(R.id.tv_day)
+    TextView tv_day;
 
     private Context context;
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
 
     private double latitude;
     private double longitude;
@@ -50,6 +87,22 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
     private LatLng myLocation = null;
     private Marker centerMarker;
     private BitmapDescriptor successDescripter;
+    private BitmapDescriptor bikeDescripter;
+    private BitmapDescriptor originDescripter;
+    private BitmapDescriptor terminusDescripter;
+
+    private Polyline polyline;
+    private PolylineOptions mPolyoptions;
+
+    private Marker originMarker;
+    private Marker terminusMarker;
+
+    private String begintime;
+    private String endtime;
+
+    private String type;
+
+    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +111,26 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         ButterKnife.bind(this);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         context = this;
-        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
-        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+//        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
+//        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
         init();
     }
 
     private void init(){
 
+        Date date=new Date();//取时间
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.add(calendar.DATE,1);//把日期往后增加一天.整数往后推,负数往前移动
+//        date=calendar.getTime(); //这个时间就是日期往后推一天的结果
+
+        begintime = formatter.format(date);
+        endtime = formatter.format(calendar.getTime());
+
+        tv_day.setText("日期范围："+begintime+" 到 "+endtime);
+
         titleText.setText("车辆位置");
+        rightBtn.setText("选择日期");
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
@@ -75,20 +140,232 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         }
         aMap.getUiSettings().setZoomControlsEnabled(false);
         aMap.getUiSettings().setMyLocationButtonEnabled(false);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(15);// 设置缩放监听
+        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(16);// 设置缩放监听
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
+        bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
+        originDescripter = BitmapDescriptorFactory.fromResource(R.drawable.origin_icon);
+        terminusDescripter = BitmapDescriptorFactory.fromResource(R.drawable.terminus_icon);
         aMap.moveCamera(cameraUpdate);
 
-        initListener();
-        myLocation = new LatLng(latitude,longitude);
-        addChooseMarker();
-        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
-    }
-
-    private void initListener(){
 
         backBtn.setOnClickListener(this);
+        rightBtn.setOnClickListener(this);
+        searchBtn.setOnClickListener(this);
+
+//        myLocation = new LatLng(latitude,longitude);
+//        addChooseMarker();
+//        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
+
+
     }
+
+    private void initHttp(final String codenum) {
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+            return;
+        }
+        RequestParams params = new RequestParams();
+        params.put("uid",uid);
+        params.put("access_token",access_token);
+        params.put("codenum",codenum);
+        HttpHelper.get(context, Urls.carsLocation, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                onStartCommon("正在加载");
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("Test","RRRR:"+responseString);
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                            if (result.getFlag().equals("Success")){
+                                JSONObject jsonObject = new JSONObject(result.getData());
+                                if (!"[]".equals(result.getData())){
+
+                                    type = jsonObject.getString("type");
+
+                                    if("4".equals(type)){
+                                        gpstrack(codenum);
+                                    }else{
+                                        tv_day.setText("");
+
+                                        myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
+                                        addChooseMarker();
+                                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+                                    }
+
+                                }
+                            } else {
+                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            Log.e("Test","异常:"+e);
+                        }
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void gpstrack(String codenum){
+
+        final String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        final String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            ToastUtil.showMessageApp(context,"请先登录账号");
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+
+            if (begintime == null || "".equals(begintime)){
+                Toast.makeText(context,"请选择日期",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (endtime == null || "".equals(endtime)){
+                Toast.makeText(context,"请选择日期",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            tv_day.setText("日期范围："+begintime+" 到 "+endtime);
+
+            if (polyline != null) {
+                polyline.remove();
+                polyline = null;
+            }
+
+            if(originMarker!=null){
+                originMarker.remove();
+            }
+
+            if(terminusMarker!=null){
+                terminusMarker.remove();
+            }
+
+            mPolyoptions = new PolylineOptions();
+            mPolyoptions.width(40f);
+            mPolyoptions.setCustomTexture(BitmapDescriptorFactory.fromResource(R.drawable.grasp_trace_line));
+
+            RequestParams params = new RequestParams();
+            params.put("uid", uid);
+            params.put("access_token", access_token);
+            params.put("tokencode", codenum);        //80001819、80002041
+            params.put("begintime", begintime);
+            params.put("endtime", endtime);
+            HttpHelper.get(context, Urls.gpstrack, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    onStartCommon("正在加载");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    JSONArray array = new JSONArray(result.getData());
+
+                                    Log.e("gpstrack===","==="+responseString);
+
+//                            for (Marker marker : bikeMarkerList){
+//                                if (marker != null){
+//                                    marker.remove();
+//                                }
+//                            }
+//                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+//                                bikeMarkerList.clear();
+//                            }
+                                    if (0 == array.length()){
+                                        ToastUtil.showMessageApp(context, "没有轨迹");
+                                    }else {
+                                        for (int i = 0; i < array.length(); i++){
+                                            GPSTrackBean bean = JSON.parseObject(array.getJSONObject(i).toString(), GPSTrackBean.class);
+                                            // 加入自定义标签
+
+                                            LatLng latLng = new LatLng(Double.parseDouble(bean.getLat()),Double.parseDouble(bean.getLon()));
+
+                                            if(i==0){
+                                                MarkerOptions bikeMarkerOption = new MarkerOptions().position(latLng).icon(originDescripter);
+                                                originMarker = aMap.addMarker(bikeMarkerOption);
+
+                                                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+                                            }else if(i==array.length()-1){
+                                                MarkerOptions bikeMarkerOption = new MarkerOptions().position(latLng).icon(terminusDescripter);
+                                                terminusMarker = aMap.addMarker(bikeMarkerOption);
+                                            }else{
+//                                        MarkerOptions bikeMarkerOption = new MarkerOptions().position(latLng).icon(bikeDescripter);
+//                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                            }
+
+
+                                            mPolyoptions.add(latLng);
+
+                                            Log.e("gpstrack===",polyline+"==="+mPolyoptions.getPoints().size());
+
+                                            if (mPolyoptions.getPoints().size() > 1) {
+                                                if (polyline != null) {
+                                                    polyline.setPoints(mPolyoptions.getPoints());
+                                                } else {
+                                                    polyline = aMap.addPolyline(mPolyoptions);
+                                                }
+//                                        polyline = aMap.addPolyline(mPolyoptions);
+                                            }
+
+//                                    bikeMarkerList.add(bikeMarker);
+                                        }
+                                    }
+                                } else {
+                                    ToastUtil.showMessageApp(context,result.getMsg());
+                                }
+                            } catch (Exception e) {
+
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+
+    }
+
+    protected Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                case 0:
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
+
 
     @Override
     public void onClick(View v) {
@@ -96,10 +373,51 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
             case R.id.mainUI_title_backBtn:
                 scrollToFinishActivity();
                 break;
+            case R.id.mainUI_title_rightBtn:
+                Intent intent = new Intent(context, HistoryRoadFiltateActivity.class);
+                startActivityForResult(intent,0);
+                break;
+            case R.id.searchBtn:
+                String codenum = codeNumEdit.getText().toString().trim();
+                if (codenum == null || "".equals(codenum)){
+                    Toast.makeText(context,"请输入车辆编号",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                initHttp(codenum);
+                break;
             default:
                 break;
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 0:
+                if (data != null) {
+                    begintime = data.getExtras().getString("starttime");
+                    endtime = data.getExtras().getString("endtime");
+
+                    tv_day.setText("日期范围："+begintime+" 到 "+endtime);
+
+                    Log.e("onActivityResult===",begintime+"==="+endtime);
+
+                    String codenum = codeNumEdit.getText().toString().trim();
+                    if (codenum == null || "".equals(codenum)){
+                        Toast.makeText(context,"请输入车辆编号",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    initHttp(codenum);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
     /**
      * 设置一些amap的属性
      */
@@ -170,7 +488,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                CameraUpdate update = CameraUpdateFactory.zoomTo(15);
+                CameraUpdate update = CameraUpdateFactory.zoomTo(16);
                 aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {

@@ -11,6 +11,8 @@ public class Urls {
 
 	public static String HTTP = "http://";
 	public static String host = HTTP + "app.7mate.cn";
+//	public static String host = HTTP + "uat.7mate.cn";
+
 
 	/**存入设备信息*/
 	public static String DevicePostUrl = host + "/index.php?g=App&m=Login&a=verifyDevice_info";
@@ -76,4 +78,9 @@ public class Urls {
     public static String schoolRange = host + "?g=App&m=SchoolRange&a=index";
 	/**创建电子围栏接口*/
 	public static String addSchoolRange = host + "?g=App&m=SchoolRange&a=store";
+
+	/**电单车gps轨迹接口*/
+	public static String gpstrack = host + "?g=App&m=Ebike&a=gpstrack";
+	/**用户信息*/
+	public static String userIndex = host + "/index.php?g=App&m=User&a=userIndex";
 }

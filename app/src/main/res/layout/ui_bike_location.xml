@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp45">
+
+        <ImageView
+            android:id="@+id/ui_bike_location_backBtn"
+            android:layout_width="@dimen/dp40"
+            android:layout_height="@dimen/dp40"
+            android:padding="8dp"
+            android:src="@drawable/back_image"
+            android:scaleType="centerInside"
+            android:background="@null"/>
+
+        <com.qimalocl.manage.core.widget.ClearEditText
+            android:id="@+id/ui_bike_location_codeNumEdit"
+            android:layout_width="200dp"
+            android:layout_height="@dimen/dp30"
+            android:layout_centerInParent="true"
+            android:background="@drawable/shape_feedback_edit"
+            android:hint="请输入车编号"
+            android:textColor="@color/tx_black"
+            android:textSize="@dimen/sp14"
+            android:paddingLeft="@dimen/dp10"
+            android:textColorHint="#999"/>
+
+        <TextView
+            android:id="@+id/ui_bike_location_searchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/ui_bike_location_codeNumEdit"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:text="搜索"
+            android:paddingLeft="@dimen/dp5"
+            android:paddingRight="@dimen/dp5"
+            android:layout_marginLeft="@dimen/dp10"/>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+        <com.amap.api.maps.MapView
+            android:id="@+id/ui_bike_location_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.amap.api.maps.MapView>
+    </RelativeLayout>
+</LinearLayout>

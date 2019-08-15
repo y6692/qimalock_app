@@ -43,6 +43,11 @@
             style="@style/button_style"
             android:text="泺平锁入库_新" />
 
+        <Button
+            android:id="@+id/bt4"
+            style="@style/button_style"
+            android:text="小安锁入库" />
+
     </LinearLayout>
 
 

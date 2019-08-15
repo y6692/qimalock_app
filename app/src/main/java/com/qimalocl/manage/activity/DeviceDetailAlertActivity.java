@@ -205,10 +205,17 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //        mac = "A4:34:F1:7B:BF:9A";
 //        name = "GpDTxe7<a";
 
-        connectDevice();
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                connectDevice();
 
-        ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-        ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+                ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+                ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+
+            }
+        }, 2 * 1000);
+
 
         OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
             @Override
@@ -506,10 +513,15 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         switch (v.getId()) {
             case R.id.layLock :
                 UIHelper.showProgress(this, "获取锁状态中");
+
+                Log.e("layLock===0", "==="+mac);
+
                 ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
                     @Override
                     public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
                         keySource = keySerial;
+
+                        Log.e("layLock===1", keySource+"==="+macKey);
 
                         m_myHandler.post(new Runnable() {
                             @Override
@@ -523,9 +535,14 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                     @Override
                     public void onResponseFail(final int code) {
 
+                        Log.e("layLock===2", "==="+code);
+
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
+
+                                getBleRecord();
+
                                 Log.e(TAG, Code.toString(code));
                                 UIHelper.dismiss();
                                 UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
@@ -914,7 +931,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        Log.e("getBleRecord===", Code.toString(code));
 //                        UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
@@ -988,7 +1005,6 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                         deleteBleRecord(bikeTradeNo);
                     }
                 });
-
             }
 
             @Override
@@ -1316,7 +1332,10 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
     @Override
     protected void onDestroy() {
-        ClientManager.getClient().stopSearch();
+
+        Log.e("onDestroy===", "==="+mac);
+
+//        ClientManager.getClient().stopSearch();
         ClientManager.getClient().disconnect(mac);
         ClientManager.getClient().unnotifyClose(mac, mCloseListener);
         ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
