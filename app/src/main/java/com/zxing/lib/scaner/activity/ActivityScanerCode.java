@@ -140,6 +140,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 	SurfaceHolder.Callback sf;
 
+	private boolean isNext = false;
+	private String deviceuuid;
 
 //	static {
 //		System.loadLibrary("iconv");
@@ -425,28 +427,104 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		}
 	}
 
-	private void initDialogResult(Result result) {
+	private void initDialogResult(final Result result) {
 //		useBike(result.toString());
 
+		Log.e("add_xiaoan_car===", result+"==="+result.toString().contains("IMEI:"));
+
 		if("7".equals(SharedPreferencesUrls.getInstance().getString("type", ""))){
-			Log.e("initDialogResult===", "===");
+
+			if(isNext){
+
+				if(!result.toString().contains("7mate.cn")){
+//					Toast.makeText(ActivityScanerCode.this, "不是7MA电单车，请重试!", Toast.LENGTH_SHORT).show();
+
+					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+					customBuilder.setTitle("温馨提示").setMessage("不是7MA电单车，请重试!")
+							.setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.cancel();
+
+									isNext = true;
+									initCamera(surfaceHolder);
+
+								}
+							});
+					customBuilder.create().show();
 
 
-			CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-			customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
-					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+				}else{
+					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+					customBuilder.setTitle("温馨提示").setMessage("扫码成功，是否入库?")
+							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.cancel();
+
+									isNext = true;
+
+									initCamera(surfaceHolder);
+								}
+							}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.cancel();
 
-						}
-					}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
+							isNext = true;
 
-					initCamera(surfaceHolder);
+							add_xiaoan_car(deviceuuid, result.toString());
+
+						}
+					});
+					customBuilder.create().show();
 				}
-			});
-			customBuilder.create().show();
+
+
+			}else{
+				if(!result.toString().contains("IMEI:")){
+//					Toast.makeText(ActivityScanerCode.this, "不是小安中控，请重试!", Toast.LENGTH_SHORT).show();
+
+					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+					customBuilder.setTitle("温馨提示").setMessage("不是小安中控，请重试!")
+							.setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+
+							isNext = false;
+							initCamera(surfaceHolder);
+
+						}
+					});
+					customBuilder.create().show();
+
+
+				}else{
+					deviceuuid = result.toString().split(" ")[0].split(":")[1];
+
+					Log.e("initDialogResult===", "==="+deviceuuid);
+
+					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+					customBuilder.setTitle("温馨提示").setMessage("imei:"+deviceuuid+"\n是否继续?")
+							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.cancel();
+
+									isNext = false;
+
+									initCamera(surfaceHolder);
+								}
+							}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+
+							isNext = true;
+
+							initCamera(surfaceHolder);
+
+						}
+					});
+					customBuilder.create().show();
+				}
+
+			}
 
 		}else{
 			if(isAdd){
@@ -459,6 +537,66 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			}
 		}
 
+	}
+
+	private void add_xiaoan_car(String deviceuuid, String result){
+		RequestParams params = new RequestParams();
+		params.put("deviceuuid", deviceuuid);
+		params.put("tokencode", result);
+		HttpHelper.post(ActivityScanerCode.this, Urls.add_xiaoan_car, params, new TextHttpResponseHandler() {
+			@Override
+			public void onStart() {
+				if (loadingDialog != null && !loadingDialog.isShowing()) {
+					loadingDialog.setTitle("正在提交");
+					loadingDialog.show();
+				}
+			}
+			@Override
+			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+				if (loadingDialog != null && loadingDialog.isShowing()){
+					loadingDialog.dismiss();
+				}
+				UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
+			}
+
+
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String responseString) {
+				try {
+					ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+					if (result.getFlag().equals("Success")) {
+						Toast.makeText(ActivityScanerCode.this, result.getMsg(), Toast.LENGTH_SHORT).show();
+
+						JSONObject jsonObject = new JSONObject(result.getData());
+
+						Log.e("add_xiaoan_car===", responseString+"===");
+//						Log.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+
+					} else {
+						Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+						if (loadingDialog != null && loadingDialog.isShowing()){
+							loadingDialog.dismiss();
+						}
+						scrollToFinishActivity();
+					}
+				} catch (Exception e) {
+					Log.e("Test","异常"+e);
+				}
+				if (loadingDialog != null && loadingDialog.isShowing()){
+					loadingDialog.dismiss();
+				}
+			}
+		});
+
+//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//		if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+//			Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
+//			UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
+//		}else {
+//
+//		}
 	}
 
 	PreviewCallback previewCb = new PreviewCallback() {
@@ -534,9 +672,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		this.mCropHeight = cropHeight;
 		CameraManager.FRAME_HEIGHT = mCropHeight;
 	}
-
-
-
 
 	@Override
 	public void onClick(View v) {

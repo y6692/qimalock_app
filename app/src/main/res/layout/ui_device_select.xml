@@ -36,9 +36,10 @@
         <Button
             android:id="@+id/bt2"
             style="@style/button_style"
-            android:text="泺平锁入库_老" />
+            android:text="LP锁入库" />
 
         <Button
+            android:visibility="gone"
             android:id="@+id/bt3"
             style="@style/button_style"
             android:text="泺平锁入库_新" />

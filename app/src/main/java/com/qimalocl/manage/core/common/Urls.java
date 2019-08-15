@@ -22,6 +22,8 @@ public class Urls {
 	public static String useCar = host + "/index.php?g=App&m=User&a=useCarDdy";
 	/**扫码获取锁信息（不开锁）*/
 	public static String lockInfo = host + "?g=App&m=UserManage&a=lock_info";
+	/**小安中控入库*/
+	public static String add_xiaoan_car = host + "?g=App&m=Test&a=add_xiaoan_car";
 
 	public static String useCar2 = host + "/index.php?g=App&m=User&a=useCar";
 	/**获取启动页图广告*/
