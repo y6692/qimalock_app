@@ -29,6 +29,7 @@
         android:orientation="vertical">
 
         <Button
+            android:visibility="gone"
             android:id="@+id/bt1"
             style="@style/button_style"
             android:text="物联锁入库" />
