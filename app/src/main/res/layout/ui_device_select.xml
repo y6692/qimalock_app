@@ -29,16 +29,19 @@
         android:orientation="vertical">
 
         <Button
+            android:visibility="gone"
             android:id="@+id/bt1"
             style="@style/button_style"
             android:text="物联锁入库" />
 
         <Button
+            android:visibility="gone"
             android:id="@+id/bt2"
             style="@style/button_style"
             android:text="泺平锁入库_老" />
 
         <Button
+            android:visibility="gone"
             android:id="@+id/bt3"
             style="@style/button_style"
             android:text="泺平锁入库_新" />
@@ -46,7 +49,7 @@
         <Button
             android:id="@+id/bt4"
             style="@style/button_style"
-            android:text="小安锁入库" />
+            android:text="小安中控入库" />
 
     </LinearLayout>
 
