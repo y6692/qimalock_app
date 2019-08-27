@@ -101,19 +101,19 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
             switch (i){
                 case 0:
                     bean.setType(3);
-                    bean.setName("举报有效，经核实有效(+1)分");
+                    bean.setName("举报有效，经核实有效(+1分)");
                     break;
                 case 1:
                     bean.setType(4);
-                    bean.setName("违停一次(-20)分");
+                    bean.setName("违停一次(-20分)");
                     break;
                 case 2:
                     bean.setType(5);
-                    bean.setName("未关锁或未复位/未拨乱密码(-20)分");
+                    bean.setName("未关锁或未复位/未拨乱密码(-20分)");
                     break;
                 case 3:
                     bean.setType(6);
-                    bean.setName("校内未关锁导致单车丢失(-20)分");
+                    bean.setName("校内未关锁导致单车丢失(-20分)");
                     break;
                 case 4:
                     bean.setType(7);
@@ -121,7 +121,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                     break;
                 case 5:
                     bean.setType(8);
-                    bean.setName("骑出校外，车辆找回，一次(-20)分");
+                    bean.setName("骑出校外，车辆找回，一次(-20分)");
                     break;
                 case 6:
                     bean.setType(9);

@@ -127,7 +127,8 @@ public class Main2Activity extends SwipeBackActivity {
 //        bleService.connect("34:03:DE:54:E6:C6");  //922
 //        Log.e("connect===", "==="+bleService.connect("34:03:DE:54:E6:C6"));
 
-        Log.e("connect===", "==="+bleService.connect(mac));   //629
+
+//        Log.e("connect===", "==="+bleService.connect(mac));   //629
 
 //        Log.e("connect===", "==="+bleService.connect("01:02:03:04:16:10"));
 
@@ -310,17 +311,30 @@ public class Main2Activity extends SwipeBackActivity {
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                    Log.e("biking===000", "openEbike===="+responseString);
+
                     if (result.getFlag().equals("Success")) {
+
+                        JSONObject jsonObject = new JSONObject(result.getData());
+
                         Log.e("biking===", "openEbike===="+result.getData());
-                        ToastUtil.showMessageApp(context,"开锁成功");
+
+                        if ("200".equals(jsonObject.getString("code"))) {
+                            ToastUtil.showMessageApp(context,"开锁成功");
+                        }else{
+                            ToastUtil.showMessageApp(context,"开锁失败");
+
+                            if(mac!=null && !"".equals(mac)){
+                                bleService.connect(mac);
+
+                                cn=0;
+
+                                openLock();
+                            }
+                        }
+
                     } else {
-                        ToastUtil.showMessageApp(context,"开锁失败");
-
-                        bleService.connect(mac);
-
-                        cn=0;
-
-                        openLock();
 
                         ToastUtil.showMessageApp(context,result.getMsg());
                     }
@@ -471,7 +485,7 @@ public class Main2Activity extends SwipeBackActivity {
                     if (result.getFlag().equals("Success")) {
                         ToastUtil.showMessage(context,"数据更新成功");
 
-                        Log.e("biking===", "closeEbike===="+result.getData());
+                        Log.e("biking===", "closeEbike===="+responseString);
 
                         if ("0".equals(result.getData())){
                             ToastUtil.showMessageApp(context,"关锁成功");
@@ -479,10 +493,13 @@ public class Main2Activity extends SwipeBackActivity {
                         } else {
                             ToastUtil.showMessageApp(context,"关锁失败");
 
-                            bleService.connect(mac);
-                            cn = 0;
+                            if(mac!=null && !"".equals(mac)){
+                                bleService.connect(mac);
+                                cn = 0;
 
-                            temporaryLock();
+                                temporaryLock();
+                            }
+
 
                         }
                     } else {

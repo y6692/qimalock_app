@@ -1002,6 +1002,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                         }
                     }
                     try {
+                        SharedPreferencesUrls.getInstance().putString("type", "");
+
                         Intent intent = new Intent();
                         intent.setClass(context, ActivityScanerCode.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1511,6 +1513,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     // Permission Granted
                     if (permissions[0].equals(Manifest.permission.CAMERA)){
                         try {
+                            SharedPreferencesUrls.getInstance().putString("type", "");
+
                             Intent intent = new Intent();
                             intent.setClass(context, ActivityScanerCode.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

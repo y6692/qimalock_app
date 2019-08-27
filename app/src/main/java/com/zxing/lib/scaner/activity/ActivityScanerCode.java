@@ -430,7 +430,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private void initDialogResult(final Result result) {
 //		useBike(result.toString());
 
-		Log.e("add_xiaoan_car===", result+"==="+result.toString().contains("IMEI:"));
+		Log.e("add_xiaoan_car===", SharedPreferencesUrls.getInstance().getString("type", "")+"==="+result+"==="+result.toString().contains("IMEI:"));
 
 		if("7".equals(SharedPreferencesUrls.getInstance().getString("type", ""))){
 
@@ -1004,9 +1004,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //									}else if ("404".equals(jsonObject.getString("code"))){
 //
 //									}
-								}else if ("4".equals(jsonObject.getString("type"))){    //3合1锁
+								}else if ("4".equals(jsonObject.getString("type"))){    //行运兔
 
-									Log.e("Scan===4", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+									Log.e("Scan===4", jsonObject.getString("macinfo")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
                                     Intent intent = new Intent(ActivityScanerCode.this, Main2Activity.class);
                                     intent.putExtra("bleid", jsonObject.getString("bleid"));
