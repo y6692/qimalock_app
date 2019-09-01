@@ -57,6 +57,7 @@ import com.sunshine.blelibrary.inter.OnConnectionListener;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
 import com.sunshine.blelibrary.mode.Order;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
+import com.zxing.lib.scaner.activity.ActivityScanerCode;
 import com.zxing.lib.scaner.activity.AddCarCaptureAct;
 
 import org.apache.http.Header;
@@ -267,9 +268,12 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     }
                     try {
                         Intent intent = new Intent();
-                        intent.setClass(LockStorageActivity.this, AddCarCaptureAct.class);
+
+                        intent.setClass(context, ActivityScanerCode.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtra("isChangeKey",false);
+                        intent.putExtra("isAdd",true);
+
                         startActivityForResult(intent, 1);
 
 //                        37===010580b015b14bb200a444f8a765f4a1===http://www.7mate.cn/app.php?randnum=bqk0008804===60008804===CB:12:F0:0C:60:33
@@ -732,8 +736,8 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                         if (result.getFlag().equals("Success")) {
                             Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
                             //修改密钥
-                            loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
-                            loadingDialog.show();
+//                            loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
+//                            loadingDialog.show();
 //                            byte[] bytes = {Config.newKey[0],
 //                                    Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
 //                                    Config.newKey[5], Config.newKey[6], Config.newKey[7]};
@@ -767,16 +771,15 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 //                            return;
                         }else {
                             Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                            if (loadingDialog != null && loadingDialog.isShowing()){
-                                loadingDialog.dismiss();
-                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         Log.e("addCar===eee", "==="+e);
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
-                        }
+
+                    }
+
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
                     }
 
                 }

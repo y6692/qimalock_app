@@ -447,7 +447,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 									isNext = true;
 									initCamera(surfaceHolder);
-
 								}
 							});
 					customBuilder.create().show();
@@ -923,6 +922,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									}else{
 										if (!isChangeKey){
 											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+												Log.e("Scan===2_1", jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
 												Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
 												intent.putExtra("name", "NokeLock");
 												intent.putExtra("codenum",codenum);
@@ -931,6 +932,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 												intent.putExtra("address", jsonObject.getString("macinfo"));
 												startActivity(intent);
 											}else {
+												Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+
 												Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
 												intent.putExtra("name", "NokeLock");
 												intent.putExtra("codenum",codenum);
@@ -940,6 +944,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 												startActivity(intent);
 											}
 										}else {
+											Log.e("Scan===2_3", jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
 											Intent intent = new Intent(ActivityScanerCode.this, ChangeKeyLockManageActivity.class);
 											intent.putExtra("name", "NokeLock");
 											intent.putExtra("codenum",codenum);

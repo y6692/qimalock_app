@@ -47,6 +47,7 @@ import com.sunshine.blelibrary.mode.UpddateVersionTxOrder;
 import com.sunshine.blelibrary.service.BLEService;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -467,6 +468,23 @@ public class AndroidBle implements IBLE {
 
         }
     };
+
+    @Override
+    public boolean refreshCache() {
+        if (mBluetoothGatt != null) {
+            try {
+                BluetoothGatt localBluetoothGatt = mBluetoothGatt;
+                Method localMethod = localBluetoothGatt.getClass().getMethod("refresh", new Class[0]);
+                if (localMethod != null) {
+                    boolean bool = ((Boolean) localMethod.invoke(localBluetoothGatt, new Object[0])).booleanValue();
+                    return bool;
+                }
+            } catch (Exception localException) {
+                localException.printStackTrace();
+            }
+        }
+        return false;
+    }
 
 //    public boolean refreshDeviceCache(){
 //        if (mBluetoothGatt != null){

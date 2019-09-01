@@ -263,7 +263,10 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         }
         isStop = true;
         m_myHandler.removeCallbacksAndMessages(null);
+        BaseApplication.getInstance().getIBLE().refreshCache();
         BaseApplication.getInstance().getIBLE().stopScan();
+        BaseApplication.getInstance().getIBLE().close();
+        BaseApplication.getInstance().getIBLE().disconnect();
     }
 
     @Override

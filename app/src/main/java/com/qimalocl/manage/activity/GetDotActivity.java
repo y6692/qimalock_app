@@ -253,7 +253,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         bikeMarkerList = new ArrayList<>();
         imageWith = (int) (getWindowManager().getDefaultDisplay().getWidth() * 0.8);
 
-        mapView = (MapView) findViewById(R.id.mainUI_map);
+        mapView = (MapView) findViewById(R.id.mainUI_map2);
         mapView.onCreate(savedInstanceState);
 
 

@@ -112,4 +112,9 @@ public interface IBLE {
 
     void close();
 
+    /**
+     * 清除缓存
+     * @return
+     */
+    boolean refreshCache();
 }

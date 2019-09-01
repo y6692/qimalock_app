@@ -275,7 +275,10 @@ public class ChangeKeyLockManageActivity extends MPermissionsActivity implements
         }
         isStop = true;
         m_myHandler.removeCallbacksAndMessages(null);
+        BaseApplication.getInstance().getIBLE().refreshCache();
         BaseApplication.getInstance().getIBLE().stopScan();
+        BaseApplication.getInstance().getIBLE().close();
+        BaseApplication.getInstance().getIBLE().disconnect();
     }
 
     @Override

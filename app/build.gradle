@@ -6,7 +6,7 @@ def static releaseTime() {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
     lintOptions {
         checkReleaseBuilds false
@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "com.qimalocl.manage"
         minSdkVersion 18
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 15
         versionName "2.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -88,8 +88,8 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
     testImplementation 'junit:junit:4.12'
     implementation files('libs/fastjson-1.1.34.android.jar')
     implementation files('libs/ZBarDecoder.jar')
@@ -108,7 +108,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.0'
     implementation(name: 'bleLocker', ext: 'aar')
     implementation(name: 'XiaoanBleSdk_V1.0.3', ext: 'aar')
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.0'
     implementation files('libs/Android_Map3D_SDK_V6.9.0_20190530.jar')
     implementation files('libs/AMap_Location_V4.6.0_20190423.jar')
 
@@ -118,17 +118,17 @@ dependencies {
 
 }
 
-//afterEvaluate {
-//    tasks.matching {
-//        it.name.startsWith('dex')
-//    }.each { dx ->
-//        if (dx.additionalParameters == null) {
-//            dx.additionalParameters = []
-//        }
-//        dx.additionalParameters += '--multi-dex'
-//        // 设置multidex.keep文件中class为第一个dex文件中包含的class，如果没有下一项设置此项无作用
-//        dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
-//        //此项添加后第一个classes.dex文件只能包含-main-dex-list列表中class
-//        dx.additionalParameters += '--minimal-main-dex'
-//    }
-//}
+afterEvaluate {
+    tasks.matching {
+        it.name.startsWith('dex')
+    }.each { dx ->
+        if (dx.additionalParameters == null) {
+            dx.additionalParameters = []
+        }
+        dx.additionalParameters += '--multi-dex'
+        // 设置multidex.keep文件中class为第一个dex文件中包含的class，如果没有下一项设置此项无作用
+        dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
+        //此项添加后第一个classes.dex文件只能包含-main-dex-list列表中class
+        dx.additionalParameters += '--minimal-main-dex'
+    }
+}

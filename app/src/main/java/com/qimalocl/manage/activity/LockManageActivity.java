@@ -322,9 +322,11 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
         }
         isStop = true;
         m_myHandler.removeCallbacksAndMessages(null);
+        BaseApplication.getInstance().getIBLE().refreshCache();
         BaseApplication.getInstance().getIBLE().stopScan();
-        BaseApplication.getInstance().getIBLE().disconnect();
         BaseApplication.getInstance().getIBLE().close();
+        BaseApplication.getInstance().getIBLE().disconnect();
+
     }
 
     @Override

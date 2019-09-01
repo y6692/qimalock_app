@@ -1,8 +1,11 @@
 package com.qimalocl.manage.activity;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.Selection;
@@ -41,10 +44,10 @@ import org.apache.http.Header;
  * Created by Administrator on 2017/2/15 0015.
  */
 
-public class LoginActivity extends SwipeBackActivity implements View.OnClickListener{
+public class LoginActivity extends SwipeBackActivity implements View.OnClickListener {
 
     private Context context;
-//    private LoadingDialog loadingDialog;
+    //    private LoadingDialog loadingDialog;
     private ImageView backImg;
     private TextView title;
 
@@ -65,7 +68,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
         initView();
     }
 
-    private void initView(){
+    private void initView() {
 
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
@@ -77,19 +80,19 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
         title.setText("登录");
 
-        headLayout = (LinearLayout)findViewById(R.id.loginUI_headLayout);
+        headLayout = (LinearLayout) findViewById(R.id.loginUI_headLayout);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) headLayout.getLayoutParams();
         params.height = (int) (getWindowManager().getDefaultDisplay().getWidth() * 0.4);
         headLayout.setLayoutParams(params);
 
-        userNameEdit = (EditText)findViewById(R.id.loginUI_userName);
-        passwordEdit = (EditText)findViewById(R.id.LoginUI_password);
-        loginBtn = (Button)findViewById(R.id.loginUI_btn);
-        checkBox = (ImageView)findViewById(R.id.LoginUI_checkBox);
+        userNameEdit = (EditText) findViewById(R.id.loginUI_userName);
+        passwordEdit = (EditText) findViewById(R.id.LoginUI_password);
+        loginBtn = (Button) findViewById(R.id.loginUI_btn);
+        checkBox = (ImageView) findViewById(R.id.LoginUI_checkBox);
 
-        if (SharedPreferencesUrls.getInstance().getString("userName","") != null &&
-                !"".equals(SharedPreferencesUrls.getInstance().getString("userName",""))){
-            userNameEdit.setText(SharedPreferencesUrls.getInstance().getString("userName",""));
+        if (SharedPreferencesUrls.getInstance().getString("userName", "") != null &&
+                !"".equals(SharedPreferencesUrls.getInstance().getString("userName", ""))) {
+            userNameEdit.setText(SharedPreferencesUrls.getInstance().getString("userName", ""));
         }
         userNameEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -104,9 +107,9 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
             @Override
             public void afterTextChanged(Editable s) {
-               if (StringUtil.isPhoner(userNameEdit.getText().toString().trim())){
-                   SharedPreferencesUrls.getInstance().putString("userName",userNameEdit.getText().toString().trim());
-               }
+                if (StringUtil.isPhoner(userNameEdit.getText().toString().trim())) {
+                    SharedPreferencesUrls.getInstance().putString("userName", userNameEdit.getText().toString().trim());
+                }
             }
         });
 
@@ -117,34 +120,34 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.mainUI_title_backBtn:
                 scrollToFinishActivity();
                 break;
             case R.id.loginUI_btn:
                 String telphone = userNameEdit.getText().toString();
                 String password = passwordEdit.getText().toString();
-                if (telphone == null || "".equals(telphone)){
-                    Toast.makeText(context,"请输入您的手机号码",Toast.LENGTH_SHORT).show();
+                if (telphone == null || "".equals(telphone)) {
+                    Toast.makeText(context, "请输入您的手机号码", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!StringUtil.isPhoner(telphone)){
-                    Toast.makeText(context,"手机号码格式不正确",Toast.LENGTH_SHORT).show();
+                if (!StringUtil.isPhoner(telphone)) {
+                    Toast.makeText(context, "手机号码格式不正确", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (password == null || "".equals(password)){
-                    Toast.makeText(context,"请输入您的密码",Toast.LENGTH_SHORT).show();
+                if (password == null || "".equals(password)) {
+                    Toast.makeText(context, "请输入您的密码", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                LoginHttp(telphone,password);
+                LoginHttp(telphone, password);
                 break;
             case R.id.LoginUI_checkBox:
-                if (isHidepsd){
+                if (isHidepsd) {
                     isHidepsd = false;
                     checkBox.setImageResource(R.drawable.checkbox_pressed);
                     // 设置EditText文本为可见的
-                    passwordEdit .setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }else {
+                    passwordEdit.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                } else {
                     isHidepsd = true;
                     checkBox.setImageResource(R.drawable.checkbox_normal);
                     passwordEdit.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -159,13 +162,16 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
         }
     }
 
-    private void LoginHttp(String telphone,String password) {
+    private void LoginHttp(String telphone, String password) {
 
         Md5Helper Md5Helper = new Md5Helper();
         String passwordmd5 = Md5Helper.encode(password);
         RequestParams params = new RequestParams();
         params.add("telphone", telphone);
         params.add("password", passwordmd5);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         params.add("UUID", tm.getDeviceId());
         params.put("device_user",Build.BOARD);
         params.put("device_model", Build.MODEL);
@@ -193,12 +199,11 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
                     if (result.getFlag().equals("Success")) {
                         UserMsgBean bean = JSON.parseObject(result.getData(), UserMsgBean.class);
                         SharedPreferencesUrls.getInstance().putString("uid", bean.getUid());
-                        SharedPreferencesUrls.getInstance().putString("access_token",
-                                bean.getAccess_token());
+                        SharedPreferencesUrls.getInstance().putString("access_token", bean.getAccess_token());
                         Toast.makeText(context,"恭喜您,登录成功",Toast.LENGTH_SHORT).show();
                         scrollToFinishActivity();
                     } else {
-                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

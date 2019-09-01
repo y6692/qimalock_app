@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 //apply plugin: 'com.jfrog.bintray'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
     defaultConfig {
@@ -32,7 +32,7 @@ dependencies {
     })
 
 //    design包
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:design:27.1.0'
 //    implementation 'com.android.support:appcompat-v7:26.1.0'
     //压缩与加密
     implementation files('libs/zip4j_1.3.2.jar')

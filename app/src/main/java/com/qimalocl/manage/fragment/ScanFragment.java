@@ -184,6 +184,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private static final int PRIVATE_CODE = 1315;//开启GPS权限
 
     private int type = 1;
+    private float accuracy = 29.0f;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
@@ -204,16 +205,73 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 //        filter = new IntentFilter("data.broadcast.action");
 //        activity.registerReceiver(broadcastReceiver, filter);
 
-        initHttp();
 
-        mapView = v.findViewById(R.id.mainUI_map);
+
+        mapView = activity.findViewById(R.id.mainUI_map);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
+
         bikeMarkerList = new ArrayList<>();
         initView();
 
+        initHttp();
 //        Toast.makeText(context,"发送寻车指令成功", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+
+        Log.e("onHiddenChanged===Scan", mapView+"==="+hidden);
+
+        if(hidden){
+            //pause
+            mapView.setVisibility(View.GONE);
+
+//            mapView.onPause();
+//            deactivate();
+        }else{
+            //resume
+            mapView.setVisibility(View.VISIBLE);
+
+//            mapView.onResume();
+//
+//            if (aMap != null) {
+//                setUpMap();
+//            }
+
+//            aMap.clear();
+//            aMap.reloadMap();
+//
+//            setUpMap();
+//
+////            m_myHandler.sendEmptyMessage(4);
+//
+//            aMap.setOnMapTouchListener(this);
+//            aMap.setOnCameraChangeListener(this);
+//
+//
+//            if(centerMarker!=null){
+//                centerMarker.remove();
+//                centerMarker=null;
+//            }
+//            if(mCircle!=null){
+//                mCircle.remove();
+//                mCircle = null;
+//            }
+//
+//
+//            if(latitude!=0 && longitude!=0){
+//                myLocation = new LatLng(latitude, longitude);
+//
+//                initNearby(latitude, longitude);
+//
+//                addChooseMarker();
+//                addCircle(myLocation, accuracy);
+//            }
+
+
+        }
+    }
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         private String action = null;
@@ -277,6 +335,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         locationManager.requestLocationUpdates(provider, 2000, 500, locationListener);
 
         isOpen = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
+
+        Log.e("checkGPSIsOpen==","==="+isOpen);
+
         return isOpen;
     }
 
@@ -752,29 +813,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
 
-        Log.e("onHiddenChanged===Scan", mapView+"==="+hidden);
-
-        if(hidden){
-            //pause
-            mapView.setVisibility(View.GONE);
-
-//            mapView.onPause();
-//            deactivate();
-        }else{
-            //resume
-            mapView.setVisibility(View.VISIBLE);
-
-//            mapView.onResume();
-//
-//            if (aMap != null) {
-//                setUpMap();
-//            }
-        }
-    }
 
     @Override
     public void onResume() {
@@ -1031,34 +1070,68 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         myLocationStyle.radiusFillColor(Color.TRANSPARENT);
         aMap.setMyLocationStyle(myLocationStyle);
     }
+
     /**
      * 定位成功后回调函数
      */
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
+
+        Log.e("onLocationChanged=0", mListener+"==="+amapLocation);
+
         if (mListener != null && amapLocation != null) {
-            if (amapLocation != null
-                    && amapLocation.getErrorCode() == 0) {
-                if (mListener != null) {
-                    mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
-                }
-                myLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
-                latitude = amapLocation.getLatitude();
-                longitude = amapLocation.getLongitude();
-                //保存位置到本地
-                SharedPreferencesUrls.getInstance().putString("latitude",""+latitude);
-                SharedPreferencesUrls.getInstance().putString("longitude",""+longitude);
-                if (mFirstFix){
-                    initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
-                    mFirstFix = false;
+
+            if ((latitude == amapLocation.getLatitude()) && (longitude == amapLocation.getLongitude())) return;
+
+            if (amapLocation != null && amapLocation.getErrorCode() == 0) {
+
+
+                if (0.0 != amapLocation.getLatitude() && 0.0 != amapLocation.getLongitude()) {
+                    if (mListener != null) {
+                        mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
+                    }
+                    myLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
+                    latitude = amapLocation.getLatitude();
+                    longitude = amapLocation.getLongitude();
+                    //保存位置到本地
+                    SharedPreferencesUrls.getInstance().putString("latitude",""+latitude);
+                    SharedPreferencesUrls.getInstance().putString("longitude",""+longitude);
+
+                    Log.e("onLocationChanged=", mFirstFix+"==="+myLocation);
+
+//                    Toast.makeText(context,"==="+myLocation, Toast.LENGTH_SHORT).show();
+
+                    if (mFirstFix){
+                        initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
+                        mFirstFix = false;
+
+
+                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18f));
+                    } else {
+                        centerMarker.remove();
+                        mCircle.remove();
+                    }
+
+                    accuracy = amapLocation.getAccuracy();
+
                     addChooseMarker();
-                } else {
-                    centerMarker.remove();
-                    mCircle.remove();
-                    addChooseMarker();
+                    addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
+                }else{
+                     CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                    activity.finish();
+                                }
+                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+                        }
+                    });
+                    customBuilder.create().show();
                 }
-                addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
-                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10f));
             }
         }
     }
@@ -1076,7 +1149,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             mlocationClient.setLocationListener(this);
             //设置为高精度定位模式
             mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);
-            mLocationOption.setInterval(1000 * 1000);
+
+            // 关闭缓存机制
+            mLocationOption.setLocationCacheEnable(false);
+            //设置是否只定位一次,默认为false
+            mLocationOption.setOnceLocation(false);
+            //设置是否强制刷新WIFI，默认为强制刷新
+            mLocationOption.setWifiActiveScan(true);
+            //设置是否允许模拟位置,默认为false，不允许模拟位置
+            mLocationOption.setMockEnable(false);
+
+//            mLocationOption.setSensorEnable(true);
+
+            mLocationOption.setInterval(2 * 1000);
             //设置定位参数
             mlocationClient.setLocationOption(mLocationOption);
             // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
@@ -1084,6 +1169,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             // 在定位结束后，在合适的生命周期调用onDestroy()方法
             // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
             mlocationClient.startLocation();
+
+//            mAMapLocationManager = LocationManagerProxy.getInstance(this);
+//            mAMapLocationManager.requestLocationData(LocationProviderProxy.AMapNetwork, 60*1000, 10, this);
         }
     }
 
@@ -1588,10 +1676,5 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         }
     }
 
-    /**
-     *
-     * 附近车接口
-     *
-     * */
 
 }

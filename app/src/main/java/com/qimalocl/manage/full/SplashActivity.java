@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -77,12 +78,13 @@ public class SplashActivity extends BaseActivity {
 	}
 
 	private void init() {
+		Log.e("init===1", "===");
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			int checkPermission = this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 			if (checkPermission != PackageManager.PERMISSION_GRANTED) {
 				if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-					requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-							101);
+					requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},101);
 				} else {
 //					CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
 //					customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
@@ -101,12 +103,14 @@ public class SplashActivity extends BaseActivity {
 //					});
 //					customBuilder.create().show();
 
-					requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-							101);
+					requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},101);
 				}
 				return;
 			}
 		}
+
+		Log.e("init===2", "===");
+
 
 		/**
 		 *
