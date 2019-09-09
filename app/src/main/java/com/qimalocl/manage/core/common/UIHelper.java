@@ -3,6 +3,7 @@ package com.qimalocl.manage.core.common;
 import android.content.Context;
 import android.content.Intent;
 
+import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseActivity;
 import com.qimalocl.manage.core.widget.ConfirmDialog;
@@ -78,11 +79,15 @@ public class UIHelper {
 		if (context == null || msg == null || "".equals(msg))
 			return;
 		if (!NetworkUtils.isNetWorkAvalible(context)) {
-			openDialogOneMsg(context, R.drawable.ic_error, "无网络连接，请先打开网络连接");
+//			openDialogOneMsg(context, R.drawable.ic_error, "无网络连接，请先打开网络连接");
+			ToastUtils.showMessage("无网络连接，请先打开网络连接");
 		} else if (msg.contains("SocketTimeoutException") || msg.contains("ConnectTimeoutException")) {
-			openDialogOneMsg(context, R.drawable.ic_error, "网速不给力哦！");
+//			openDialogOneMsg(context, R.drawable.ic_error, "网速不给力哦！");
+//			openDialogOneMsg(context, R.drawable.ic_error, "请求超时，请稍后再试");
+			ToastUtils.showMessage("请求超时，请稍后再试");
 		} else {
-			openDialogOneMsg(context, R.drawable.ic_error, "请求失败");
+//			openDialogOneMsg(context, R.drawable.ic_error, "请求失败");
+			ToastUtils.showMessage("请求失败");
 		}
 	}
 

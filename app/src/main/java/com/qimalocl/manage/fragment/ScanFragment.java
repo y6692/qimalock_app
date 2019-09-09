@@ -615,27 +615,24 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             HttpHelper.get(context, Urls.userIndex, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在加载");
-                        loadingDialog.show();
-                    }
+                    onStartCommon("正在加载");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
 
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
 
 
-                            UserIndexBean bean = JSON.parseObject(result.getData(), UserIndexBean.class);
+                                    UserIndexBean bean = JSON.parseObject(result.getData(), UserIndexBean.class);
 //                            nameEdit.setText(bean.getRealname());
 //                            phoneNum.setText(bean.getTelphone());
 //                            nickNameEdit.setText(bean.getNickname());
@@ -645,25 +642,30 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 //                            stuNumEdit.setText(bean.getStunum());
 //
 //                            sex = bean.getSex();
-                            String school = bean.getSchool();
+                                    String school = bean.getSchool();
 
-                            Log.e("initHttp===", "==="+school);
+                                    Log.e("initHttp===", "==="+school);
 
-                            if("江苏理工学院".equals(school) || "泰山医学院".equals(school)){
-                                type = 2;
-                            }else{
-                                type = 1;
+                                    if("江苏理工学院".equals(school) || "泰山医学院".equals(school)){
+                                        type = 2;
+                                    }else{
+                                        type = 1;
+                                    }
+
+                                    initNearby(latitude, longitude);
+
+                                } else {
+                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-
-                        } else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
+                    });
+
                 }
             });
         }else {
@@ -672,10 +674,27 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         }
     }
 
+    protected Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                case 0:
+                    break;
+
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
+
+
     private void initNearby(double latitude, double longitude){
         RequestParams params = new RequestParams();
         params.put("latitude",latitude);
         params.put("longitude",longitude);
+
+        Log.e("initNearby===", latitude+"==="+type);
 
         if(type==1){
             params.put("type", 1);
@@ -881,8 +900,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+
+//                CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
+//                aMap.animateCamera(update);
+
                 CameraUpdate update = CameraUpdateFactory.zoomTo(18f);
-                aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
+                aMap.animateCamera(null, 1000, new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
                         aMap.setOnCameraChangeListener(ScanFragment.this);
@@ -916,7 +939,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         if (isUp){
             initNearby(cameraPosition.target.latitude,cameraPosition.target.longitude);
             if (centerMarker != null) {
-                animMarker();
+//                animMarker();
             }
         }
     }
@@ -1064,10 +1087,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private void setUpLocationStyle() {
         // 自定义系统定位蓝点
         MyLocationStyle myLocationStyle = new MyLocationStyle();
+//        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）默认执行此种模式。
+
+        myLocationStyle.interval(2000);
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked));
         myLocationStyle.strokeWidth(0);
         myLocationStyle.strokeColor(R.color.main_theme_color);
         myLocationStyle.radiusFillColor(Color.TRANSPARENT);
+
         aMap.setMyLocationStyle(myLocationStyle);
     }
 
@@ -1105,8 +1133,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                         initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
                         mFirstFix = false;
 
-
                         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18f));
+
+
                     } else {
                         centerMarker.remove();
                         mCircle.remove();

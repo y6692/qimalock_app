@@ -218,7 +218,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     private int n=0;
     private float accuracy = 29.0f;
 
-    private boolean isHidden;
+//    private boolean isHidden;
 
     private int carType = 1;
 
@@ -294,7 +294,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
 
     private void schoolRange(){
-        if(isHidden) return;
+//        if(isHidden) return;
 
         Log.e("main===schoolRange0", "==="+carType);
 
@@ -319,7 +319,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                if(isHidden) return;
+//                if(isHidden) return;
 
                 try {
                     Log.e("main===schoolRange1", "==="+carType);
@@ -361,13 +361,10 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //                                    .strokeColor(Color.argb(255, 0, 255, 0))
 //                                    .fillColor(Color.argb(255, 0, 255, 0)));
 
-                            if(!isHidden){
-                                pOptions.add(polygon);
+                            pOptions.add(polygon);
 
-                                isContainsList.add(polygon.contains(myLocation));
-                            }else{
-                                Log.e("pOptions===Bike", isContainsList.size()+"==="+pOptions.size());
-                            }
+                            isContainsList.add(polygon.contains(myLocation));
+
 
                         }
                     }else {
@@ -386,12 +383,12 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         Log.e("main===ChangeFinish_B", isContainsList.contains(true) + "》》》" + cameraPosition.target.latitude + "===" + macList.size()+">>>"+isUp + "===" + cameraPosition.target.latitude);
 
 
-        if (isUp  && !isHidden){
+        if (isUp){
 //            initNearby(cameraPosition.target.latitude, cameraPosition.target.longitude);
 
             if (centerMarker != null) {
 //				animMarker();
-                m_myHandler.sendEmptyMessage(4);
+//                m_myHandler.sendEmptyMessage(4);
             }
         }
 
@@ -449,7 +446,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     /**附近车接口 */
     private void initNearby(double latitude, double longitude){
 
-        if(isHidden) return;
+//        if(isHidden) return;
 
         Log.e("main===initNearby0", latitude+"==="+longitude);
 
@@ -476,7 +473,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
 
-                if(isHidden) return;
+//                if(isHidden) return;
 
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
@@ -689,6 +686,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
         aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);// 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
+//        aMap.setMyLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
 //        aMap.setLoadOfflineData(true);
     }
 
@@ -759,7 +757,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     public void onLocationChanged(AMapLocation amapLocation) {
         change = true;
 
-        if(isHidden) return;
+//        if(isHidden) return;
 
         if (mListener != null && amapLocation != null) {
 
@@ -799,10 +797,11 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                         schoolRange();
 //                        initNearby(amapLocation.getLatitude(), amapLocation.getLongitude());
                         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+                        addChooseMarker();
                     } else {
-                        centerMarker.remove();
+//                        centerMarker.remove();
                         mCircle.remove();
-                        centerMarker=null;
+//                        centerMarker=null;
 
                         if (!isContainsList.isEmpty() || 0 != isContainsList.size()) {
                             isContainsList.clear();
@@ -816,7 +815,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
                     accuracy = amapLocation.getAccuracy();
 
-                    addChooseMarker();
+//                    addChooseMarker();
                     addCircle(myLocation, amapLocation.getAccuracy());
 
 
@@ -1342,6 +1341,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         // 自定义系统定位蓝点
 
         MyLocationStyle myLocationStyle = new MyLocationStyle();
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked));
         myLocationStyle.radiusFillColor(android.R.color.transparent);
         myLocationStyle.strokeColor(android.R.color.transparent);
