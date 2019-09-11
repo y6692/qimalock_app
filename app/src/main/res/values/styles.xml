@@ -14,11 +14,11 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <style name="Theme.AppCompat.Light.NoActionBar" parent="android:Theme.Light">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowTitleSize">45dp</item>
-    </style>
+    <!--<style name="Theme.AppCompat.Light.NoActionBar" parent="android:Theme.Light">-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+        <!--<item name="android:windowTitleSize">45dp</item>-->
+    <!--</style>-->
 
     <style name="AppBaseTheme" >
         <item name="android:windowIsTranslucent">true</item>

@@ -12,6 +12,7 @@
         layout="@layout/ui_main_title"/>
 
     <Button
+        android:visibility="gone"
         android:id="@+id/button"
         android:layout_width="86dp"
         android:layout_height="wrap_content"
@@ -26,6 +27,7 @@
         app:layout_constraintTop_toTopOf="@+id/button2" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/button2"
         android:layout_width="86dp"
         android:layout_height="wrap_content"
@@ -37,6 +39,7 @@
         app:layout_constraintStart_toEndOf="@+id/button" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/button3"
         android:layout_width="86dp"
         android:layout_height="wrap_content"
@@ -101,6 +104,7 @@
         app:layout_constraintTop_toBottomOf="@+id/switch2" />
 
     <Switch
+        android:visibility="gone"
         android:id="@+id/switch4"
         android:layout_width="113dp"
         android:layout_height="wrap_content"
@@ -112,16 +116,7 @@
         app:layout_constraintEnd_toEndOf="@+id/switch3"
         app:layout_constraintTop_toBottomOf="@+id/switch3" />
 
-    <TextView
-        android:id="@+id/statusTxt"
-        android:layout_width="62dp"
-        android:layout_height="31dp"
-        android:layout_marginStart="8dp"
-        android:gravity="center"
-        android:text="未连接"
-        android:textColor="#333333"
-        app:layout_constraintBaseline_toBaselineOf="@+id/imeiTxt"
-        app:layout_constraintStart_toEndOf="@+id/imeiTxt" />
+
 
     <Button
         android:id="@+id/button5"
@@ -146,19 +141,44 @@
 
     <AutoCompleteTextView
         android:id="@+id/imeiTxt"
-        android:layout_width="245dp"
+        android:layout_width="180dp"
         android:layout_height="42dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
         android:gravity="center|start"
         android:inputType="number"
-        android:text="866039040791940"
+        android:text=""
         android:textColor="#333333"
         android:hint="86"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/statusTxt"
+        android:layout_width="62dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:text="未连接"
+        android:textColor="#333333"
+        app:layout_constraintBaseline_toBaselineOf="@+id/imeiTxt"
+        app:layout_constraintStart_toEndOf="@+id/imeiTxt" />
+
     <Button
+        android:id="@+id/scan"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="15dp"
+        android:onClick="scanClick"
+        android:text="扫码"
+
+        app:layout_constraintBaseline_toBaselineOf="@+id/statusTxt"
+        app:layout_constraintStart_toEndOf="@+id/statusTxt"
+        />
+
+    <Button
+        android:visibility="gone"
         android:id="@+id/button7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

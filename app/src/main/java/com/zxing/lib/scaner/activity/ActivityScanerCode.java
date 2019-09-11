@@ -55,6 +55,8 @@ import com.qimalocl.manage.activity.LockManageActivity;
 import com.qimalocl.manage.activity.LockManageAlterActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.Main2Activity;
+import com.qimalocl.manage.activity.MainXiaoanActivity;
+import com.qimalocl.manage.activity.TestXiaoanActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
@@ -435,96 +437,147 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		if("7".equals(SharedPreferencesUrls.getInstance().getString("type", ""))){
 
-			if(isNext){
+            if(isAdd){
+                if(isNext){
 
-				if(!result.toString().contains("7mate.cn")){
+                    if(!result.toString().contains("7mate.cn")){
 //					Toast.makeText(ActivityScanerCode.this, "不是7MA电单车，请重试!", Toast.LENGTH_SHORT).show();
 
-					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-					customBuilder.setTitle("温馨提示").setMessage("不是7MA电单车，请重试!")
-							.setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int which) {
-									dialog.cancel();
+                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                        customBuilder.setTitle("温馨提示").setMessage("不是7MA电单车，请重试!")
+                                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
 
-									isNext = true;
-									initCamera(surfaceHolder);
-								}
-							});
-					customBuilder.create().show();
-
-
-				}else{
-					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-					customBuilder.setTitle("温馨提示").setMessage("扫码成功，是否入库?")
-							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int which) {
-									dialog.cancel();
-
-									isNext = true;
-
-									initCamera(surfaceHolder);
-								}
-							}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-
-							isNext = true;
-
-							add_xiaoan_car(deviceuuid, result.toString());
-
-						}
-					});
-					customBuilder.create().show();
-				}
+                                        isNext = true;
+                                        initCamera(surfaceHolder);
+                                    }
+                                });
+                        customBuilder.create().show();
 
 
-			}else{
-				if(!result.toString().contains("IMEI:")){
+                    }else{
+                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                        customBuilder.setTitle("温馨提示").setMessage("扫码成功，是否入库?")
+                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+
+                                        isNext = true;
+
+                                        initCamera(surfaceHolder);
+                                    }
+                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+
+                                isNext = true;
+
+                                add_xiaoan_car(deviceuuid, result.toString());
+
+                            }
+                        });
+                        customBuilder.create().show();
+                    }
+
+
+                }else{
+                    if(!result.toString().contains("IMEI:")){
 //					Toast.makeText(ActivityScanerCode.this, "不是小安中控，请重试!", Toast.LENGTH_SHORT).show();
 
-					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-					customBuilder.setTitle("温馨提示").setMessage("不是小安中控，请重试!")
-							.setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
+                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                        customBuilder.setTitle("温馨提示").setMessage("请先扫描中控二维码，谢谢!")
+                                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
 
-							isNext = false;
-							initCamera(surfaceHolder);
+                                        isNext = false;
+                                        initCamera(surfaceHolder);
 
-						}
-					});
-					customBuilder.create().show();
+                                    }
+                                });
+                        customBuilder.create().show();
 
 
-				}else{
-					deviceuuid = result.toString().split(" ")[0].split(":")[1];
+                    }else{
+                        deviceuuid = result.toString().split(" ")[0].split(":")[1];
 
-					Log.e("initDialogResult===", "==="+deviceuuid);
+                        Log.e("initDialogResult===", "==="+deviceuuid);
 
-					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-					customBuilder.setTitle("温馨提示").setMessage("imei:"+deviceuuid+"\n是否继续?")
-							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int which) {
-									dialog.cancel();
+                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                        customBuilder.setTitle("温馨提示").setMessage("imei:"+deviceuuid+"\n是否继续?")
+                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
 
-									isNext = false;
+                                        isNext = false;
 
-									initCamera(surfaceHolder);
-								}
-							}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
+                                        initCamera(surfaceHolder);
+                                    }
+                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+										dialog.cancel();
 
-							isNext = true;
+										isNext = true;
 
-							initCamera(surfaceHolder);
+										initCamera(surfaceHolder);
 
-						}
-					});
-					customBuilder.create().show();
-				}
+										Toast.makeText(ActivityScanerCode.this, "请继续扫描绑定车辆二维码", Toast.LENGTH_LONG).show();
+									}
+								});
+                        customBuilder.create().show();
+                    }
 
-			}
+                }
+
+
+            }else{
+                if(!result.toString().contains("IMEI:")){
+//					Toast.makeText(ActivityScanerCode.this, "不是小安中控，请重试!", Toast.LENGTH_SHORT).show();
+
+                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                    customBuilder.setTitle("温馨提示").setMessage("不是小安中控，请重试!")
+                            .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                    isNext = false;
+                                    initCamera(surfaceHolder);
+                                }
+                            });
+                    customBuilder.create().show();
+                }else{
+                    deviceuuid = result.toString().split(" ")[0].split(":")[1];
+
+                    Log.e("initDialogResult===2", "==="+deviceuuid);
+
+                    Intent rIntent = new Intent();
+                    rIntent.putExtra("QR_CODE", deviceuuid);
+                    setResult(RESULT_OK, rIntent);
+                    scrollToFinishActivity();
+
+//                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//                    customBuilder.setTitle("温馨提示").setMessage("imei:"+deviceuuid+"\n是否继续?")
+//                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.cancel();
+//
+//                                    isNext = false;
+//
+//                                    initCamera(surfaceHolder);
+//                                }
+//                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.cancel();
+//
+//                            isNext = true;
+//
+//                            initCamera(surfaceHolder);
+//
+//                        }
+//                    });
+//                    customBuilder.create().show();
+                }
+            }
 
 		}else{
 			if(isAdd){
@@ -1090,6 +1143,16 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //									intent.putExtra("address", jsonObject.getString("macinfo"));
 									intent.putExtra("mac", jsonObject.getString("macinfo"));
 									intent.putExtra("name", jsonObject.getString("lock_no"));
+									startActivity(intent);
+								}else if ("7".equals(jsonObject.getString("type"))){    //3合1锁
+
+									Log.e("Scan===7", jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("type"));
+
+
+									Intent intent = new Intent(ActivityScanerCode.this, MainXiaoanActivity.class);
+									intent.putExtra("codenum", jsonObject.getString("codenum"));
+									intent.putExtra("address", jsonObject.getString("macinfo"));
+									intent.putExtra("deviceuuid", jsonObject.getString("deviceuuid"));
 									startActivity(intent);
 								}
 							}

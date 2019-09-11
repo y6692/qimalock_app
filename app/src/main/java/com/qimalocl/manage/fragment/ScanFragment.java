@@ -820,8 +820,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 }
             });
         }
-
-
     }
 
     private void setUpMap() {

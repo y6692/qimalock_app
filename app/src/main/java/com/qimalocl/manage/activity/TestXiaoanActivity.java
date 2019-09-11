@@ -2,7 +2,10 @@ package com.qimalocl.manage.activity;
 
 import android.Manifest;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -13,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.xiaoantech.sdk.XiaoanBleApiClient;
 import com.xiaoantech.sdk.ble.model.Response;
@@ -20,6 +25,7 @@ import com.xiaoantech.sdk.ble.scanner.ScanResult;
 import com.xiaoantech.sdk.listeners.BleCallback;
 import com.xiaoantech.sdk.listeners.BleStateChangeListener;
 import com.xiaoantech.sdk.listeners.ScanResultCallback;
+import com.zxing.lib.scaner.activity.ActivityScanerCode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,6 +77,89 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
         if (apiClient != null) {
             apiClient.connectToIMEI(imei);
         }
+    }
+
+    public void scanClick(final View view){
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            com.qimalocl.manage.core.common.UIHelper.goToAct(context,LoginActivity.class);
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+        }else {
+            if (Build.VERSION.SDK_INT >= 23) {
+                int checkPermission = checkSelfPermission(Manifest.permission.CAMERA);
+                if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                        requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
+                    } else {
+                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                        customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
+                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                                requestPermissions(new String[] { Manifest.permission.CAMERA },100);
+                            }
+                        });
+                        customBuilder.create().show();
+                    }
+                    return;
+                }
+            }
+            try {
+                SharedPreferencesUrls.getInstance().putString("type", "7");
+
+                Intent intent = new Intent();
+                intent.setClass(context, ActivityScanerCode.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("isChangeKey",false);
+                intent.putExtra("isAdd",false);
+                startActivityForResult(intent, 1);
+
+            } catch (Exception e) {
+                com.qimalocl.manage.core.common.UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.e("DDA===onActivityResult",data+"==="+requestCode);
+
+                switch (requestCode) {
+                    case 1:
+                        if (data != null) {
+                            if (resultCode == RESULT_OK) {
+                                String result = data.getStringExtra("QR_CODE");
+//                              codenum = edbikeNum.getText().toString().trim();
+//                                addCar(result);
+
+                                imeiTxt.setText(result);
+
+                                if (apiClient != null) {
+                                    apiClient.connectToIMEI(result);
+                                }
+
+                            } else {
+                                Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        });
+
     }
 
     public void getStatusClick(View view){
@@ -228,13 +317,13 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
         Log.d("scanresult : ", result.toString());
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (apiClient != null) {
-            apiClient.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (apiClient != null) {
+//            apiClient.onActivityResult(requestCode, resultCode, data);
+//        }
+//    }
 
     @Override
     protected void onDestroy() {

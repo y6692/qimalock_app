@@ -68,6 +68,7 @@ public class Urls {
 
 	/**打开电池锁接口*/
 	public static String battery_unlock = host + "?g=App&m=Ebike&a=battery_unlock";
+
 	/**电单车信息接口*/
 	public static String ebikeInfo = host + "?g=App&m=Ebike&a=info";
 
