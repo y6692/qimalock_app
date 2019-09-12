@@ -86,4 +86,10 @@ public class Urls {
 	public static String gpstrack = host + "?g=App&m=Ebike&a=gpstrack";
 	/**用户信息*/
 	public static String userIndex = host + "/index.php?g=App&m=User&a=userIndex";
+
+
+	/**预警列表接口*/
+	public static String alarm_lists = host + "/index.php?g=App&m=UserManage&a=alarm_lists";
+	/**处理预警接口*/
+	public static String handle_alarm = host + "/index.php?g=App&m=UserManage&a=handle_alarm";
 }

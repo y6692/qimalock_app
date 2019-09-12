@@ -77,6 +77,7 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.fragment.AlarmFragment;
 import com.qimalocl.manage.fragment.MaintenanceFragment;
 import com.qimalocl.manage.fragment.MissionFragment;
 import com.qimalocl.manage.fragment.QueryFragment;
@@ -118,15 +119,16 @@ public class MainActivity extends BaseActivity{
     private Context mContext;
     private ArrayList<Fragment> mFragments = new ArrayList<>();
     private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
-    private String[] mTitles = { "用车", "任务", "查询", "维护" };
+    private String[] mTitles = { "用车", "任务", "报警", "查询", "维护" };
     private int[] mIconUnselectIds = {
-            R.mipmap.scan, R.mipmap.mission, R.mipmap.query,R.mipmap.maintenance
+            R.mipmap.scan, R.mipmap.mission, R.mipmap.alarm, R.mipmap.query,R.mipmap.maintenance
     };
     private int[] mIconSelectIds = {
-            R.mipmap.scan2, R.mipmap.mission2, R.mipmap.query2,R.mipmap.maintenance2
+            R.mipmap.scan2, R.mipmap.mission2, R.mipmap.alarm2, R.mipmap.query2,R.mipmap.maintenance2
     };
     private ScanFragment scanFragment;
     private MissionFragment missionFragment;
+    private AlarmFragment alarmFragment;
     private QueryFragment queryFragment;
     private MaintenanceFragment maintenanceFragment;
 
@@ -200,10 +202,12 @@ public class MainActivity extends BaseActivity{
         mContext = this;
         scanFragment = new ScanFragment();
         missionFragment = new MissionFragment();
+        alarmFragment = new AlarmFragment();
         queryFragment = new QueryFragment();
         maintenanceFragment = new MaintenanceFragment();
         mFragments.add(scanFragment);
         mFragments.add(missionFragment);
+        mFragments.add(alarmFragment);
         mFragments.add(queryFragment);
         mFragments.add(maintenanceFragment);
 

@@ -175,6 +175,9 @@ public class MainXiaoanActivity extends SwipeBackActivity {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
+
+                        Log.e("ebikeInfo===", "==="+responseString);
+
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                         if (result.getFlag().equals("Success")) {
 //                            JSONObject jsonObject = new JSONObject(result.getData());
@@ -190,7 +193,7 @@ public class MainXiaoanActivity extends SwipeBackActivity {
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
 //                                loadingDialog.dismiss();
 //                            }
-                            scrollToFinishActivity();
+//                            scrollToFinishActivity();
                         }
 
                     } catch (Exception e) {

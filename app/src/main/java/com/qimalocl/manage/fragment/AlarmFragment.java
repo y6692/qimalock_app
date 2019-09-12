@@ -1,15 +1,11 @@
 package com.qimalocl.manage.fragment;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,11 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,10 +28,10 @@ import com.amap.api.maps.model.Marker;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.AlarmDetailActivity;
 import com.qimalocl.manage.activity.BikeLocationActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
-import com.qimalocl.manage.activity.MerchantAddressMapActivity;
 import com.qimalocl.manage.activity.MissionDetailActivity;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.base.BaseViewAdapter;
@@ -47,9 +40,8 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
-import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
-import com.qimalocl.manage.core.widget.MyListView;
+import com.qimalocl.manage.model.AlarmBean;
 import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.ResultConsel;
@@ -67,7 +59,7 @@ import butterknife.Unbinder;
 import static android.app.Activity.RESULT_OK;
 
 @SuppressLint("NewApi")
-public class MissionFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+public class AlarmFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener{
 
     Unbinder unbinder;
@@ -103,7 +95,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
 //    private LoadingDialog loadingDialog;
     private Dialog dialog;
-    private List<BadCarBean> datas;
+    private List<AlarmBean> datas;
     private MyAdapter myAdapter;
     private int curPosition = 0;
     private int showPage = 1;
@@ -125,7 +117,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_mission, null);
+        v = inflater.inflate(R.layout.fragment_alarm, null);
         unbinder = ButterKnife.bind(this, v);
 
         return v;
@@ -139,25 +131,25 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
         initView();
 
-        initHttp();
+//        initHttp();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                while (true){
-
-                    try {
-                        Thread.sleep(30*1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    m_myHandler.sendEmptyMessage(1);
-                }
-
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                while (true){
+//
+//                    try {
+//                        Thread.sleep(30*1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    m_myHandler.sendEmptyMessage(1);
+//                }
+//
+//            }
+//        }).start();
 
     }
 
@@ -180,7 +172,6 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
     public void resetList(){
         showPage = 1;
-        badtime="2115-02-08 20:20";
         if (!isRefresh) {
             if(datas.size()!=0){
                 myAdapter.getDatas().clear();
@@ -196,6 +187,9 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+
+        Log.e("AF===", "==="+hidden);
+
         if(hidden){
             //pause
         }else{
@@ -252,12 +246,16 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                dialog.getWindow().setAttributes(params1);
 //                dialog.show();
 
-                Intent intent = new Intent(context, MissionDetailActivity.class);
-//                intent.putExtra("id", myAdapter.getDatas().get(position).);
+                Intent intent = new Intent(context, AlarmDetailActivity.class);
+                intent.putExtra("id", myAdapter.getDatas().get(position).getId());
                 intent.putExtra("codenum", myAdapter.getDatas().get(position).getCodenum());
-//                intent.putExtra("latitude", jsonObject.getString("latitude"));
-//                intent.putExtra("longitude", jsonObject.getString("longitude"));
+                intent.putExtra("telphone", myAdapter.getDatas().get(position).getTelphone());
+                intent.putExtra("ed_time", myAdapter.getDatas().get(position).getEd_time());
+                intent.putExtra("latitude", myAdapter.getDatas().get(position).getLatitude());
+                intent.putExtra("longitude", myAdapter.getDatas().get(position).getLongitude());
                 startActivity(intent);
+
+
             }
         });
     }
@@ -283,7 +281,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     }
 
     @SuppressLint("NewApi")
-    private class MyAdapter extends BaseViewAdapter<BadCarBean> {
+    private class MyAdapter extends BaseViewAdapter<AlarmBean> {
 
         private LayoutInflater inflater;
 
@@ -295,26 +293,28 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (null == convertView) {
-                convertView = inflater.inflate(R.layout.item_mission_record, null);
+                convertView = inflater.inflate(R.layout.item_alarm_record, null);
             }
             TextView num = BaseViewHolder.get(convertView,R.id.item_num);
             TextView status = BaseViewHolder.get(convertView,R.id.item_status);
             TextView time = BaseViewHolder.get(convertView,R.id.item_time);
-            final BadCarBean bean = getDatas().get(position);
+            TextView isHandle = BaseViewHolder.get(convertView,R.id.item_isHandle);
+            final AlarmBean bean = getDatas().get(position);
 
             num.setText(bean.getCodenum());
-            status.setText(bean.getStatus_name());
-            time.setText(bean.getBadtime());
+            status.setText(bean.getAlarm_type_desc());
+            time.setText(bean.getAdd_time());
+//            isHandle.setText("1".equals(bean.getIs_handle())?"已处理":"未处理");
 
-            if("即将超时".equals(bean.getStatus_name())){
-                num.setTextColor(getResources().getColor(R.color.red));
-                status.setTextColor(getResources().getColor(R.color.red));
-                time.setTextColor(getResources().getColor(R.color.red));
-            }else{
-                num.setTextColor(getResources().getColor(R.color.tx_black));
-                status.setTextColor(getResources().getColor(R.color.tx_black));
-                time.setTextColor(getResources().getColor(R.color.tx_black));
-            }
+//            if("即将超时".equals(bean.getStatus_name())){
+//                num.setTextColor(getResources().getColor(R.color.red));
+//                status.setTextColor(getResources().getColor(R.color.red));
+//                time.setTextColor(getResources().getColor(R.color.red));
+//            }else{
+//                num.setTextColor(getResources().getColor(R.color.tx_black));
+//                status.setTextColor(getResources().getColor(R.color.tx_black));
+//                time.setTextColor(getResources().getColor(R.color.tx_black));
+//            }
 
             return convertView;
         }
@@ -336,7 +336,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
         Log.e("badcarList===0", totalnum+"==="+codenum);
 
-        HttpHelper.get(context, Urls.badcarList, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.alarm_lists, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -364,7 +364,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("badcarList===1", "==="+responseString);
+                    Log.e("alarm_lists===1", "==="+responseString);
 
                     if (result.getFlag().equals("Success")) {
 //                        JSONArray array = new JSONArray(result.getData());
@@ -388,7 +388,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
                         JSONArray array = new JSONArray(result.getData());
 
-                        Log.e("badcarList===2", "==="+array);
+                        Log.e("alarm_lists===2", "==="+array);
 
                         if (array.length() == 0 && showPage == 1) {
                             totalnum = "0";
@@ -408,25 +408,32 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         }
 
                         for (int i = 0; i < array.length();i++){
-                            BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+                            AlarmBean bean = JSON.parseObject(array.getJSONObject(i).toString(), AlarmBean.class);
 
-                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
-                                badtime = bean.getBadtime();
-                                codenum = bean.getCodenum();
-                                totalnum = bean.getTotalnum();
+
+                            Log.e("alarm_lists===3", array.length()+"==="+bean.getId()+"==="+bean.getIs_handle()+"==="+bean.getCodenum()+"==="+bean.getAlarm_type_desc()+"==="+bean.getAdd_time());
+
+//                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
+//                                badtime = bean.get();
+//                                badtime = bean.getBadtime();
+//                                codenum = bean.getCodenum();
+//                                totalnum = bean.getTotalnum();
+//                            }
+//
+                            if("0".equals(bean.getIs_handle())){
+                                datas.add(bean);
                             }
 
-                            datas.add(bean);
                         }
 
-                        Log.e("badcarList===3", totalnum+"==="+codenum);
+                        Log.e("alarm_lists===4", totalnum+"==="+codenum);
 
-                        if(!"".equals(totalnum)){
-                            Intent intent = new Intent("data.broadcast.action");
-                            intent.putExtra("codenum", codenum);
-                            intent.putExtra("count", Integer.parseInt(totalnum));
-                            context.sendBroadcast(intent);
-                        }
+//                        if(!"".equals(totalnum)){
+//                            Intent intent = new Intent("data.broadcast.action");
+//                            intent.putExtra("codenum", codenum);
+//                            intent.putExtra("count", Integer.parseInt(totalnum));
+//                            context.sendBroadcast(intent);
+//                        }
 
 
 //                        View view = LayoutInflater.from(context).inflate(R.layout.fragment_scan, null);
@@ -517,7 +524,9 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-        isRefresh = true;
+        isRefresh = false;
+
+        resetList();
     }
 
 

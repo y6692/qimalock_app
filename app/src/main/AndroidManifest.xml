@@ -156,6 +156,10 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
         <activity
+            android:name=".activity.AlarmDetailActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+
+        <activity
         android:name=".activity.ChangeKeyLockManageActivity"
         android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
