@@ -180,7 +180,7 @@ public class AndroidBle implements IBLE {
                 }
                 break;
             case YXS:
-                miwen = Encrypt(bytes, Config.yx_key);
+//                miwen = Encrypt(bytes, Config.yx_key);
                 break;
         }
         if (miwen != null) {
@@ -310,7 +310,7 @@ public class AndroidBle implements IBLE {
                 }
                 break;
             case YXS:
-                miwen = Encrypt(ConvertUtils.hexString2Bytes(txOrder.generateString()), Config.yx_key);
+//                miwen = Encrypt(ConvertUtils.hexString2Bytes(txOrder.generateString()), Config.yx_key);
                 break;
         }
         if (miwen != null) {
@@ -443,7 +443,7 @@ public class AndroidBle implements IBLE {
                             }
                             break;
                         case YXS:
-                            mingwen = EncryptUtils.Decrypt(x, Config.yx_key);
+//                            mingwen = EncryptUtils.Decrypt(x, Config.yx_key);
                             break;
                     }
                     Logger.e(TAG, "返回：" + ConvertUtils.bytes2HexString(mingwen));

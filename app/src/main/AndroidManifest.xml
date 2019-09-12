@@ -192,6 +192,10 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
         <activity
+            android:name=".activity.LockStorage2Activity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+
+        <activity
             android:name="com.zxing.lib.scaner.activity.ActivityScanerCode"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 

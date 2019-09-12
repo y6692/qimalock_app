@@ -16,17 +16,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -68,8 +62,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 @SuppressLint("NewApi")
-public class LockStorageActivity extends MPermissionsActivity implements OnConnectionListener, OnDeviceSearchListener {
+public class LockStorage2Activity extends MPermissionsActivity implements OnConnectionListener, OnDeviceSearchListener {
     @BindView(R.id.tv_name)
     TextView tvName;
     @BindView(R.id.tv_address)
@@ -178,7 +173,6 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         address = getIntent().getStringExtra("address");
         codenum = getIntent().getStringExtra("codenum");
 
-//        BaseApplication.getInstance().getIBLE().setChangKey(true);
 //        BaseApplication.getInstance().getIBLE().setChangKey(false);
 
         Log.e("LockStorageActivity===", name+"==="+address+"==="+codenum);
@@ -200,9 +194,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
 //                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
-                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-                        Config.passwordnew[2], Config.passwordnew[3],
-                        Config.passwordnew[4], Config.passwordnew[5]};
+                byte[] bytes = {Config.password[0], Config.password[1],
+                        Config.password[2], Config.password[3],
+                        Config.password[4], Config.password[5]};
 //                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
 //                        Config.passwordnew2[2], Config.passwordnew2[3],
 //                        Config.passwordnew2[4], Config.passwordnew2[5]};
@@ -212,9 +206,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     @Override
                     public void run() {
 
-                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-                                Config.passwordnew[2], Config.passwordnew[3],
-                                Config.passwordnew[4], Config.passwordnew[5]};
+                        byte[] bytes = {Config.password[0], Config.password[1],
+                                Config.password[2], Config.password[3],
+                                Config.password[4], Config.password[5]};
 
 //                        byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
 //                                Config.passwordnew2[2], Config.passwordnew2[3],
@@ -245,12 +239,12 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                         return;
                     }
                     if (Build.VERSION.SDK_INT >= 23) {
-                        int checkPermission = LockStorageActivity.this.checkSelfPermission(Manifest.permission.CAMERA);
+                        int checkPermission = LockStorage2Activity.this.checkSelfPermission(Manifest.permission.CAMERA);
                         if (checkPermission != PackageManager.PERMISSION_GRANTED) {
                             if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                                 requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
                             } else {
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(LockStorageActivity.this);
+                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(LockStorage2Activity.this);
                                 customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
                                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
@@ -259,7 +253,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                                         }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.cancel();
-                                        LockStorageActivity.this.requestPermissions(
+                                        LockStorage2Activity.this.requestPermissions(
                                                 new String[] { Manifest.permission.CAMERA },
                                                 100);
                                     }
@@ -496,18 +490,18 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 //                        loadingDialog.setTitle("正在修改密码");
 //                        loadingDialog.show();
 
-                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-                                Config.passwordnew[2], Config.passwordnew[3],
-                                Config.passwordnew[4], Config.passwordnew[5]};
+                        byte[] bytes = {Config.password[0], Config.password[1],
+                                Config.password[2], Config.password[3],
+                                Config.password[4], Config.password[5]};
                         BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
 
                         m_myHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
 
-                                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-                                        Config.passwordnew[2], Config.passwordnew[3],
-                                        Config.passwordnew[4], Config.passwordnew[5]};
+                                byte[] bytes = {Config.password[0], Config.password[1],
+                                        Config.password[2], Config.password[3],
+                                        Config.password[4], Config.password[5]};
 
                                 BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
                             }
@@ -669,7 +663,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         public boolean handleMessage(Message mes) {
             switch (mes.what) {
                 case 0:
-                    BaseApplication.getInstance().getIBLE().connect(address, LockStorageActivity.this);
+                    BaseApplication.getInstance().getIBLE().connect(address, LockStorage2Activity.this);
                     break;
                 case 1:
                     break;
@@ -801,7 +795,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     if (permissions[0].equals(Manifest.permission.CAMERA)){
                         try {
                             Intent intent = new Intent();
-                            intent.setClass(LockStorageActivity.this, AddCarCaptureAct.class);
+                            intent.setClass(LockStorage2Activity.this, AddCarCaptureAct.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivityForResult(intent, 1);
                         } catch (Exception e) {

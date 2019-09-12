@@ -25,6 +25,8 @@ public class Config {
     public static final UUID OAD_READ_UUID = UUID.fromString("f000ffc1-0451-4000-b000-000000000000");
     public static final UUID OAD_WRITE_UUID = UUID.fromString("f000ffc2-0451-4000-b000-000000000000");
 
+
+
     /**
      * 马蹄锁
      */
@@ -32,6 +34,7 @@ public class Config {
 //    public static byte[] newkey = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};
 //    public static byte[] newKey = {74,50,90,95,30,21,61,17,80,46,99,94,4,73,1,15};
 //    public static byte[] newKey = {51,30,65,57,44,45,22,71,35,63,23,82,36,96,76,11};
+    public static byte[] password = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
 
     /**
      * 新的密钥
@@ -42,9 +45,9 @@ public class Config {
     /**
      * 圆形锁
      */
-    public static byte[] yx_key = {58,96,67,42,92,01,33,31,41,30,15,78,12,19,40,37};
+//    public static byte[] yx_key = {58,96,67,42,92,01,33,31,41,30,15,78,12,19,40,37};
 
-    public static byte[] password = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
+
 //    public static byte[] passwordnew = {0x4D, 0x47, 0x22, 0x3F, 0x38, 0x3B};
 //    public static byte[] passwordnew = {0x28, 0x5, 0x55, 0x28, 0x58, 0x49};  //40,5,85,40,88,73
     public static byte[] passwordnew = {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};    //7MA密码

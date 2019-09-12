@@ -31,7 +31,12 @@
         <Button
             android:id="@+id/bt1"
             style="@style/button_style"
-            android:text="物联锁入库" />
+            android:text="物联锁入库_已改密钥密码" />
+
+        <Button
+            android:id="@+id/bt1_2"
+            style="@style/button_style"
+            android:text="物联锁入库_未改密钥密码" />
 
         <Button
 

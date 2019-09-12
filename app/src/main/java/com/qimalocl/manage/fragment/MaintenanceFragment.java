@@ -1449,7 +1449,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                     Toast.makeText(context,"恭喜您，结束用车成功",Toast.LENGTH_SHORT).show();
 
-                                    if("4".equals(carType)){
+                                    Log.e("biking===000", "endCar===="+carType+"==="+responseString);
+
+                                    if("4".equals(carType) || "7".equals(carType)){
                                         closeEbikeTemp();
                                     }else{
                                         initCamera(surfaceHolder);
@@ -1591,7 +1593,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        Log.e("badcarList===0", totalnum+"==="+codenum);
+        Log.e("badcarList===0", totalnum+"==="+bikeNum);
 
         HttpHelper.get(context, Urls.badcarList, params, new TextHttpResponseHandler() {
             @Override
@@ -1678,7 +1680,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         RequestParams params = new RequestParams();
         params.put("uid",uid);
         params.put("access_token",access_token);
-        params.put("tokencode", codenum);
+        params.put("tokencode", bikeNum);
         HttpHelper.post(context, Urls.closeEbikeDdy, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -1696,6 +1698,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     public void run() {
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            Log.e("biking===000", "closeEbike===="+bikeNum+"==="+responseString);
+
                             if (result.getFlag().equals("Success")) {
 //                              ToastUtil.showMessage(context,"数据更新成功");
 

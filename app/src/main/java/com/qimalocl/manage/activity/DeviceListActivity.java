@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -56,6 +57,7 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
     private List<BleDevice> bleDeviceList = new ArrayList<>();
     private List<BleDevice> adapterList = new ArrayList<>();
     private BleDevice bleDevice;
+    private boolean isChange = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,9 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
         }
         setContentView(R.layout.ui_device_list);
         ButterKnife.bind(this);
+
+        isChange = getIntent().getBooleanExtra("isChange", false);
+
         initWidget();
     }
 
@@ -94,12 +99,23 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
                 } else {
                     GlobalParameterUtils.getInstance().setUpdate(false);
                 }
-                BaseApplication.getInstance().getIBLE().setChangKey(true);
-                BaseApplication.getInstance().getIBLE().setChangPsd(true);
+
                 Bundle bundle = new Bundle();
                 bundle.putString("name", name);
                 bundle.putString("address", address);
-                IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+
+                Log.e("DLA===", "==="+isChange);
+
+                if(isChange){
+                    BaseApplication.getInstance().getIBLE().setChangKey(true);
+                    BaseApplication.getInstance().getIBLE().setChangPsd(true);
+                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+                }else{
+                    BaseApplication.getInstance().getIBLE().setChangKey(false);
+                    BaseApplication.getInstance().getIBLE().setChangPsd(false);
+                    IntentUtils.startActivity(DeviceListActivity.this, LockStorage2Activity.class, bundle);
+                }
+
             }
         });
         new Thread(new DeviceThread()).start();

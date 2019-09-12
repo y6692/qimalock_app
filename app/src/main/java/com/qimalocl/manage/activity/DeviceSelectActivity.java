@@ -30,6 +30,8 @@ import butterknife.OnClick;
 public class DeviceSelectActivity extends Activity {
     @BindView(R.id.bt1)
     Button bt1;
+    @BindView(R.id.bt1_2)
+    Button bt1_2;
     @BindView(R.id.bt2)
     Button bt2;
     @BindView(R.id.bt3)
@@ -69,7 +71,20 @@ public class DeviceSelectActivity extends Activity {
 
     @OnClick(R.id.bt1)
     void bt1() {
-        UIHelper.goToAct(context, DeviceListActivity.class);
+        Intent intent = new Intent();
+        intent.setClass(context, DeviceListActivity.class);
+        intent.putExtra("isChange",true);
+        startActivity(intent);
+//        UIHelper.goToAct(context, DeviceListActivity.class);
+    }
+
+    @OnClick(R.id.bt1_2)
+    void bt1_2() {
+        Intent intent = new Intent();
+        intent.setClass(context, DeviceListActivity.class);
+        intent.putExtra("isChange",false);
+        startActivity(intent);
+//        UIHelper.goToAct(context, DeviceListActivity.class);
     }
 
     @OnClick(R.id.bt2)
