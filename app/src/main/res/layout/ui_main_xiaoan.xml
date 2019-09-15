@@ -38,24 +38,30 @@
         android:id="@+id/close"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="关锁"/>
 
-    <Button
-        android:id="@+id/b2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="撤防"/>
+
 
     <Button
         android:id="@+id/b3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="开电池锁"/>
 
     <Button
         android:id="@+id/b4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="寻车"/>
+
+    <Button
+        android:id="@+id/b2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="撤防"/>
 
 </LinearLayout>

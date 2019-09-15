@@ -257,7 +257,8 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                 MainXiaoanActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("acc : ", response.toString());
+                        Log.e("acc : ", response.toString());
+                        ToastUtil.showMessageApp(context,"撤防成功");
                     }
                 });
             }
