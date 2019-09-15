@@ -8,17 +8,18 @@ import java.lang.ref.WeakReference;
 import permissions.dispatcher.GrantableRequest;
 import permissions.dispatcher.PermissionUtils;
 
-final class MainActivityPermissionsDispatcher {
+final class MainActivityPermissionsDispatcher2 {
   private static final int REQUEST_CONNECTDEVICE = 0;
 
   private static final String[] PERMISSION_CONNECTDEVICE = new String[] {"android.permission.ACCESS_COARSE_LOCATION","android.permission.BLUETOOTH"};
 
   private static GrantableRequest PENDING_CONNECTDEVICE;
 
-  private MainActivityPermissionsDispatcher() {
+  private MainActivityPermissionsDispatcher2() {
   }
 
-  static void connectDeviceWithPermissionCheck(TestXiaoanActivity target, String imei) {
+
+  static void connectDeviceWithPermissionCheck(MainXiaoanActivity target, String imei) {
     if (PermissionUtils.hasSelfPermissions(target, PERMISSION_CONNECTDEVICE)) {
       target.connectDevice(imei);
     } else {
@@ -26,7 +27,6 @@ final class MainActivityPermissionsDispatcher {
       ActivityCompat.requestPermissions(target, PERMISSION_CONNECTDEVICE, REQUEST_CONNECTDEVICE);
     }
   }
-
 
   static void onRequestPermissionsResult(TestXiaoanActivity target, int requestCode, int[] grantResults) {
     switch (requestCode) {
@@ -44,18 +44,18 @@ final class MainActivityPermissionsDispatcher {
   }
 
   private static final class MainActivityConnectDevicePermissionRequest implements GrantableRequest {
-    private final WeakReference<TestXiaoanActivity> weakTarget;
+    private final WeakReference<MainXiaoanActivity> weakTarget;
 
     private final String imei;
 
-    private MainActivityConnectDevicePermissionRequest(TestXiaoanActivity target, String imei) {
-      this.weakTarget = new WeakReference<TestXiaoanActivity>(target);
+    private MainActivityConnectDevicePermissionRequest(MainXiaoanActivity target, String imei) {
+      this.weakTarget = new WeakReference<MainXiaoanActivity>(target);
       this.imei = imei;
     }
 
     @Override
     public void proceed() {
-      TestXiaoanActivity target = weakTarget.get();
+      MainXiaoanActivity target = weakTarget.get();
       if (target == null) return;
       ActivityCompat.requestPermissions(target, PERMISSION_CONNECTDEVICE, REQUEST_CONNECTDEVICE);
     }
@@ -66,7 +66,7 @@ final class MainActivityPermissionsDispatcher {
 
     @Override
     public void grant() {
-      TestXiaoanActivity target = weakTarget.get();
+      MainXiaoanActivity target = weakTarget.get();
       if (target == null) return;
       target.connectDevice(imei);
     }

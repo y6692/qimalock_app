@@ -1,6 +1,8 @@
 package com.qimalocl.manage.activity;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +30,12 @@ import com.qimalocl.manage.utils.ByteUtil;
 import com.qimalocl.manage.utils.IoBuffer;
 import com.qimalocl.manage.utils.SharePreUtil;
 import com.qimalocl.manage.utils.ToastUtil;
+import com.xiaoantech.sdk.XiaoanBleApiClient;
+import com.xiaoantech.sdk.ble.model.Response;
+import com.xiaoantech.sdk.ble.scanner.ScanResult;
+import com.xiaoantech.sdk.listeners.BleCallback;
+import com.xiaoantech.sdk.listeners.BleStateChangeListener;
+import com.xiaoantech.sdk.listeners.ScanResultCallback;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
@@ -35,9 +43,11 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import permissions.dispatcher.NeedsPermission;
 
 
-public class MainXiaoanActivity extends SwipeBackActivity {
+public class MainXiaoanActivity extends SwipeBackActivity implements BleStateChangeListener,
+        ScanResultCallback {
     private BluetoothAdapter mBluetoothAdapter;
     BLEService bleService = new BLEService();
 
@@ -45,6 +55,8 @@ public class MainXiaoanActivity extends SwipeBackActivity {
 
     @BindView(R.id.tv)
     TextView tv;
+    @BindView(R.id.tv2)
+    TextView tv2;
     @BindView(R.id.mainUI_title_titleText)
     TextView titleText;
 
@@ -57,6 +69,8 @@ public class MainXiaoanActivity extends SwipeBackActivity {
     private String deviceuuid = "";
     private String codenum = "";
     private String mac = "";
+
+    private XiaoanBleApiClient apiClient;
 
     private int cn = 0;
 
@@ -130,7 +144,21 @@ public class MainXiaoanActivity extends SwipeBackActivity {
 
 //        bleService.connect(this.deviceAddress);
 
+        XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(this);
+        builder.setBleStateChangeListener(this);
+        builder.setScanResultCallback(this);
+        apiClient = builder.build();
+
+        MainActivityPermissionsDispatcher2.connectDeviceWithPermissionCheck(this, deviceuuid);
+
         ebikeInfo();
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.BLUETOOTH})
+    public void connectDevice(String imei) {
+        if (apiClient != null) {
+            apiClient.connectToIMEI(imei);
+        }
     }
 
     @Override
@@ -205,6 +233,35 @@ public class MainXiaoanActivity extends SwipeBackActivity {
                 }
             });
         }
+    }
+
+
+
+    @OnClick(R.id.b2)
+    void b2() {
+//        apiClient.setDefend(false, new BleCallback() {
+//            @Override
+//            public void onResponse(final Response response) {
+//                MainXiaoanActivity.this.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Log.d("defend: ", response.toString());
+//                    }
+//                });
+//            }
+//        });
+
+        apiClient.setAcc(false, new BleCallback() {
+            @Override
+            public void onResponse(final Response response) {
+                MainXiaoanActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("acc : ", response.toString());
+                    }
+                });
+            }
+        });
     }
 
     @OnClick(R.id.b3)
@@ -743,6 +800,61 @@ public class MainXiaoanActivity extends SwipeBackActivity {
         super.onResume();
     }
 
+    @Override
+    public void onConnect(BluetoothDevice device) {
+//        isConnect = true;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                if (statusTxt != null) {
+//                    statusTxt.setText("已连接");
+//                }
+
+                tv2.setText("状态：已连接");
+            }
+        });
+    }
+
+    @Override
+    public void onDisConnect(BluetoothDevice device) {
+//        isConnect = false;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                if (statusTxt != null) {
+//                    statusTxt.setText("未连接");
+//                }
+
+                tv2.setText("状态：未连接");
+            }
+        });
+    }
+
+    @Override
+    public void onError(BluetoothDevice device, String message, int errorCode) {
+
+    }
+
+    @Override
+    public void onBleAdapterStateChanged(int state) {
+
+    }
+
+    @Override
+    public void onDeviceReady(BluetoothDevice device) {
+        //表明服务发现完毕，可以进行操作了。
+    }
+
+    @Override
+    public void onReadRemoteRssi(int rssi) {
+
+    }
+
+    @Override
+    public void onResult(ScanResult result) {
+        Log.d("scanresult : ", result.toString());
+    }
+
 //    @Override
 //    protected void onPause() {
 //        bleService.artifClose();
@@ -755,10 +867,12 @@ public class MainXiaoanActivity extends SwipeBackActivity {
 //        bleService.artifClose();
 //    }
 //
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        bleService.artifClose();
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (apiClient != null) {
+            apiClient.onDestroy();
+        }
+    }
 
 }
