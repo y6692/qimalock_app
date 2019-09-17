@@ -192,7 +192,9 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
 //                if ("1".equals(pwd)) {
                 isChangePsd = true;
 
-                /*
+
+
+                //修改密码
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
 //                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
@@ -224,22 +226,23 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
 //                }else {
 //                    Toast.makeText(context,"此设备密码已修改",Toast.LENGTH_SHORT).show();
 //                }
-                */
 
 
+
+                //修改密钥
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
                 loadingDialog.show();
-                byte[] bytes2 = {Config.key[0],
-                        Config.key[1], Config.key[2], Config.key[3], Config.key[4],
-                        Config.key[5], Config.key[6], Config.key[7]};
+//                byte[] bytes2 = {Config.key[0],
+//                        Config.key[1], Config.key[2], Config.key[3], Config.key[4],
+//                        Config.key[5], Config.key[6], Config.key[7]};
 //                byte[] bytes2 = {Config.newKey[0],
 //                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
 //                        Config.newKey[5], Config.newKey[6], Config.newKey[7], Config.newKey[8],
 //                        Config.newKey[9], Config.newKey[10], Config.newKey[11], Config.newKey[12],
 //                        Config.newKey[13], Config.newKey[14], Config.newKey[15]};
-//                byte[] bytes2 = {Config.newKey[0],
-//                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
-//                        Config.newKey[5], Config.newKey[6], Config.newKey[7]};
+                byte[] bytes2 = {Config.newKey[0],
+                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
+                        Config.newKey[5], Config.newKey[6], Config.newKey[7]};
                 BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes2);
                 m_myHandler.postDelayed(new Runnable() {
                     @Override
