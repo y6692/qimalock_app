@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.EbikeInfoBean;
 import com.qimalocl.manage.model.ResultConsel;
@@ -144,12 +146,12 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
 //        bleService.connect(this.deviceAddress);
 
-        XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(this);
-        builder.setBleStateChangeListener(this);
-        builder.setScanResultCallback(this);
-        apiClient = builder.build();
-
-        MainActivityPermissionsDispatcher2.connectDeviceWithPermissionCheck(this, deviceuuid);
+//        XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(this);
+//        builder.setBleStateChangeListener(this);
+//        builder.setScanResultCallback(this);
+//        apiClient = builder.build();
+//
+//        MainActivityPermissionsDispatcher2.connectDeviceWithPermissionCheck(this, deviceuuid);
 
         ebikeInfo();
     }
@@ -188,55 +190,133 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
             HttpHelper.get(MainXiaoanActivity.this, Urls.ebikeInfo, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                        loadingDialog.setTitle("正在提交");
-//                        loadingDialog.show();
-//                    }
+                    onStartCommon("正在加载");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
-                    UIHelper.ToastError(MainXiaoanActivity.this, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
+
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
 
-                        Log.e("ebikeInfo===", "==="+responseString);
+                                Log.e("ebikeInfo===", "==="+responseString);
 
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
 //                            JSONObject jsonObject = new JSONObject(result.getData());
 //
 
-                            EbikeInfoBean bean = JSON.parseObject(result.getData(), EbikeInfoBean.class);
+                                    EbikeInfoBean bean = JSON.parseObject(result.getData(), EbikeInfoBean.class);
 
-                            tv.setText("电量："+bean.getElectricity());
+                                    tv.setText("电量："+bean.getElectricity());
 
-                            Log.e("ebikeInfo===", responseString + "===");
-                        }else {
-                            Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+                                    Log.e("ebikeInfo===", responseString + "===");
+                                }else {
+                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
 //                                loadingDialog.dismiss();
 //                            }
 //                            scrollToFinishActivity();
-                        }
+                                }
 
-                    } catch (Exception e) {
-                        Log.e("Test","异常"+e);
-                    }
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
+                            } catch (Exception e) {
+                                Log.e("Test","异常"+e);
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
                 }
             });
         }
     }
 
+    //设防
+    @OnClick(R.id.b1)
+    void b1() {
+
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("uid",uid);
+            params.put("access_token",access_token);
+            params.put("tokencode",codenum);
+            HttpHelper.post(MainXiaoanActivity.this, Urls.open_defend, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    onStartCommon("正在提交");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    JSONObject jsonObject = new JSONObject(result.getData());
+
+                                    Log.e("b1===", responseString + "===");
+
+                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+//                            if (loadingDialog != null && loadingDialog.isShowing()){
+//                                loadingDialog.dismiss();
+//                            }
+
+                                    apiClient.setDefend(true, new BleCallback() {
+                                        @Override
+                                        public void onResponse(final Response response) {
+                                            MainXiaoanActivity.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Log.d("defend: ", response.toString());
+                                                }
+                                            });
+                                        }
+                                    });
 
 
+//                            scrollToFinishActivity();
+                                }
+
+                            } catch (Exception e) {
+                                Log.e("Test","异常"+e);
+                            }
+
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+
+
+                }
+            });
+        }
+
+    }
+
+    //撤防
     @OnClick(R.id.b2)
     void b2() {
 //        apiClient.setDefend(false, new BleCallback() {
@@ -251,18 +331,111 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 //            }
 //        });
 
-        apiClient.setAcc(false, new BleCallback() {
-            @Override
-            public void onResponse(final Response response) {
-                MainXiaoanActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e("acc : ", response.toString());
-                        ToastUtil.showMessageApp(context,"撤防成功");
-                    }
-                });
-            }
-        });
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("uid",uid);
+            params.put("access_token",access_token);
+            params.put("tokencode",codenum);
+            HttpHelper.post(MainXiaoanActivity.this, Urls.close_defend, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    onStartCommon("正在提交");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    JSONObject jsonObject = new JSONObject(result.getData());
+
+                                    Log.e("b2===", responseString + "===");
+
+                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+                                }else {
+                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+//                            if (loadingDialog != null && loadingDialog.isShowing()){
+//                                loadingDialog.dismiss();
+//                            }
+
+                                    apiClient.setAcc(true, new BleCallback() {
+                                        @Override
+                                        public void onResponse(final Response response) {
+                                            MainXiaoanActivity.this.runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Log.d("acc : ", response.toString());
+
+                                                    apiClient.setAcc(false, new BleCallback() {
+                                                        @Override
+                                                        public void onResponse(final Response response) {
+                                                            MainXiaoanActivity.this.runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    Log.e("acc : ", response.toString());
+                                                                    ToastUtil.showMessageApp(context,"撤防成功");
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+
+//                            scrollToFinishActivity();
+                                }
+
+                            } catch (Exception e) {
+                                Log.e("Test","异常"+e);
+                            }
+
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+
+
+                }
+            });
+        }
+
+//        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//        customBuilder.setTitle("温馨提示").setMessage("是否确认给该车撤防?")
+//                .setNegativeButton("否", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//
+//                    }
+//                }).setPositiveButton("是", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.cancel();
+//
+//
+//            }
+//        });
+//        customBuilder.create().show();
+
+
+
+
+
+
     }
 
     @OnClick(R.id.b3)
@@ -281,40 +454,41 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
             HttpHelper.post(MainXiaoanActivity.this, Urls.battery_unlock, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                        loadingDialog.setTitle("正在提交");
-//                        loadingDialog.show();
-//                    }
+                    onStartCommon("正在提交");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
-                    UIHelper.ToastError(MainXiaoanActivity.this, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            JSONObject jsonObject = new JSONObject(result.getData());
 
-                            Log.e("b3===", responseString + "===");
-                        }else {
-                            Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    JSONObject jsonObject = new JSONObject(result.getData());
+
+                                    Log.e("b3===", responseString + "===");
+                                }else {
+                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
 //                                loadingDialog.dismiss();
 //                            }
-                            scrollToFinishActivity();
-                        }
+                                    scrollToFinishActivity();
+                                }
 
-                    } catch (Exception e) {
-                        Log.e("Test","异常"+e);
-                    }
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
+                            } catch (Exception e) {
+                                Log.e("Test","异常"+e);
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
                 }
             });
         }
@@ -336,40 +510,41 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
             HttpHelper.post(MainXiaoanActivity.this, Urls.ddSearch, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                        loadingDialog.setTitle("正在提交");
-//                        loadingDialog.show();
-//                    }
+                    onStartCommon("正在加载");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
-                    UIHelper.ToastError(MainXiaoanActivity.this, throwable.toString());
+                    onFailureCommon(throwable.toString());
                 }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            JSONObject jsonObject = new JSONObject(result.getData());
 
-                            Log.e("b4===", responseString + "===");
-                        }else {
-                            Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                if (result.getFlag().equals("Success")) {
+                                    JSONObject jsonObject = new JSONObject(result.getData());
+
+                                    Log.e("b4===", responseString + "===");
+                                }else {
+                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
 //                                loadingDialog.dismiss();
 //                            }
-                            scrollToFinishActivity();
-                        }
+                                    scrollToFinishActivity();
+                                }
 
-                    } catch (Exception e) {
-                        Log.e("Test","异常"+e);
-                    }
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
+                            } catch (Exception e) {
+                                Log.e("Test","异常"+e);
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
                 }
             });
         }
@@ -403,36 +578,33 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
         HttpHelper.post(this, Urls.useCar, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
+                onStartCommon("正在加载");
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
+                onFailureCommon(throwable.toString());
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("biking===000", "openEbike===="+responseString);
+                            Log.e("biking===000", "openEbike===="+responseString);
 
-                    if (result.getFlag().equals("Success")) {
+                            if (result.getFlag().equals("Success")) {
 
-                        JSONObject jsonObject = new JSONObject(result.getData());
+                                JSONObject jsonObject = new JSONObject(result.getData());
 
-                        Log.e("biking===", "openEbike===="+result.getData());
+                                Log.e("biking===", "openEbike===="+result.getData());
 
-                        if ("200".equals(jsonObject.getString("code"))) {
-                            ToastUtil.showMessageApp(context,"开锁成功");
-                        }else{
-                            ToastUtil.showMessageApp(context,"开锁失败");
+                                if ("200".equals(jsonObject.getString("code"))) {
+                                    ToastUtil.showMessageApp(context,"开锁成功");
+                                }else{
+                                    ToastUtil.showMessageApp(context,"开锁失败");
 
 //                            if(mac!=null && !"".equals(mac)){
 //                                bleService.connect(mac);
@@ -441,17 +613,20 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 //
 //                                openLock();
 //                            }
+                                }
+
+                            } else {
+
+                                ToastUtil.showMessageApp(context,result.getMsg());
+                            }
+                        } catch (Exception e) {
                         }
-
-                    } else {
-
-                        ToastUtil.showMessageApp(context,result.getMsg());
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
                     }
-                } catch (Exception e) {
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
+                });
+
             }
         });
     }
@@ -553,10 +728,10 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 //        ioBuffer.writeBytes(cmd);
 //        bleService.write(toBody(ioBuffer.readableBytes()));
 
-        if (loadingDialog != null && !loadingDialog.isShowing()) {
-            loadingDialog.setTitle("正在加载");
-            loadingDialog.show();
-        }
+//        if (loadingDialog != null && !loadingDialog.isShowing()) {
+//            loadingDialog.setTitle("正在加载");
+//            loadingDialog.show();
+//        }
 
         closeEbikeTemp();
 
@@ -574,33 +749,30 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
         HttpHelper.post(this, Urls.closeEbikeDdy, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
+                onStartCommon("正在提交");
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
+                onFailureCommon(throwable.toString());
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-                        ToastUtil.showMessage(context,"数据更新成功");
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                            if (result.getFlag().equals("Success")) {
+                                ToastUtil.showMessage(context,"数据更新成功");
 
-                        Log.e("biking===", "closeEbike===="+responseString);
+                                Log.e("biking===", "closeEbike===="+responseString);
 
-                        if ("0".equals(result.getData())){
-                            ToastUtil.showMessageApp(context,"关锁成功");
+                                if ("0".equals(result.getData())){
+                                    ToastUtil.showMessageApp(context,"关锁成功");
 
-                        } else {
-                            ToastUtil.showMessageApp(context,"关锁失败");
+                                } else {
+                                    ToastUtil.showMessageApp(context,"关锁失败");
 
 //                            if(mac!=null && !"".equals(mac)){
 //                                bleService.connect(mac);
@@ -610,15 +782,18 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 //                            }
 
 
+                                }
+                            } else {
+                                ToastUtil.showMessageApp(context,result.getMsg());
+                            }
+                        } catch (Exception e) {
                         }
-                    } else {
-                        ToastUtil.showMessageApp(context,result.getMsg());
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
                     }
-                } catch (Exception e) {
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
+                });
+
             }
         });
     }

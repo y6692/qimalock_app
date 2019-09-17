@@ -191,12 +191,14 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                 //修改密码
 //                if ("1".equals(pwd)) {
                 isChangePsd = true;
+
+                /*
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
 //                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
-                byte[] bytes = {Config.password[0], Config.password[1],
-                        Config.password[2], Config.password[3],
-                        Config.password[4], Config.password[5]};
+                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+                        Config.passwordnew[2], Config.passwordnew[3],
+                        Config.passwordnew[4], Config.passwordnew[5]};
 //                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
 //                        Config.passwordnew2[2], Config.passwordnew2[3],
 //                        Config.passwordnew2[4], Config.passwordnew2[5]};
@@ -206,9 +208,9 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                     @Override
                     public void run() {
 
-                        byte[] bytes = {Config.password[0], Config.password[1],
-                                Config.password[2], Config.password[3],
-                                Config.password[4], Config.password[5]};
+                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+                                Config.passwordnew[2], Config.passwordnew[3],
+                                Config.passwordnew[4], Config.passwordnew[5]};
 
 //                        byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
 //                                Config.passwordnew2[2], Config.passwordnew2[3],
@@ -222,6 +224,33 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
 //                }else {
 //                    Toast.makeText(context,"此设备密码已修改",Toast.LENGTH_SHORT).show();
 //                }
+                */
+
+
+                loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
+                loadingDialog.show();
+                byte[] bytes2 = {Config.key[0],
+                        Config.key[1], Config.key[2], Config.key[3], Config.key[4],
+                        Config.key[5], Config.key[6], Config.key[7]};
+//                byte[] bytes2 = {Config.newKey[0],
+//                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
+//                        Config.newKey[5], Config.newKey[6], Config.newKey[7], Config.newKey[8],
+//                        Config.newKey[9], Config.newKey[10], Config.newKey[11], Config.newKey[12],
+//                        Config.newKey[13], Config.newKey[14], Config.newKey[15]};
+//                byte[] bytes2 = {Config.newKey[0],
+//                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
+//                        Config.newKey[5], Config.newKey[6], Config.newKey[7]};
+                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes2);
+                m_myHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] bytes1 = {Config.newKey[8],
+                                Config.newKey[9], Config.newKey[10], Config.newKey[11], Config.newKey[12],
+                                Config.newKey[13], Config.newKey[14], Config.newKey[15]};
+                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
+                    }
+                }, 2000);
+
             }
         });
         btWx.setOnClickListener(new View.OnClickListener() {
@@ -405,6 +434,9 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                     }
                     break;
                 case Config.KEY_ACTION:
+
+                    Log.e("KEY_ACTION===", "===");
+
                     if (TextUtils.isEmpty(data)) {
                         Toast.makeText(context, "密钥修改失败", Toast.LENGTH_LONG).show();
                     } else {
@@ -446,6 +478,15 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             UIHelper.goToAct(context, LoginActivity.class);
             return;
         }
+
+
+        codenum = edbikeNum.getText().toString().trim();
+
+        if (codenum  == null || "".equals(codenum)) {
+            Toast.makeText(context, "请输入车辆编号", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         RequestParams params = new RequestParams();
 
         Log.e("changKey===", uid+"==="+access_token+"==="+codenum);
@@ -483,29 +524,27 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
 
 
 
-                        isChangePsd = true;
-                        loadingDialog2 = DialogUtils.getLoadingDialog(context, "正在修改密码");
-                        loadingDialog2.show();
-
-//                        loadingDialog.setTitle("正在修改密码");
-//                        loadingDialog.show();
-
-                        byte[] bytes = {Config.password[0], Config.password[1],
-                                Config.password[2], Config.password[3],
-                                Config.password[4], Config.password[5]};
-                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
-
-                        m_myHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                byte[] bytes = {Config.password[0], Config.password[1],
-                                        Config.password[2], Config.password[3],
-                                        Config.password[4], Config.password[5]};
-
-                                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
-                            }
-                        }, 2000);
+//                        isChangePsd = true;
+//                        loadingDialog2 = DialogUtils.getLoadingDialog(context, "正在修改密码");
+//                        loadingDialog2.show();
+//
+//
+//                        byte[] bytes = {Config.password[0], Config.password[1],
+//                                Config.password[2], Config.password[3],
+//                                Config.password[4], Config.password[5]};
+//                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
+//
+//                        m_myHandler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                                byte[] bytes = {Config.password[0], Config.password[1],
+//                                        Config.password[2], Config.password[3],
+//                                        Config.password[4], Config.password[5]};
+//
+//                                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
+//                            }
+//                        }, 2000);
 
                     } else {
                         Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();
@@ -530,6 +569,15 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             UIHelper.goToAct(context, LoginActivity.class);
             return;
         }
+
+        codenum = edbikeNum.getText().toString().trim();
+
+        if (codenum  == null || "".equals(codenum)) {
+            Toast.makeText(context, "请输入车辆编号", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
         RequestParams params = new RequestParams();
         params.put("uid", uid);
         params.put("access_token", access_token);
@@ -565,6 +613,9 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()) {
+                    loadingDialog.dismiss();
                 }
                 if (loadingDialog2 != null && loadingDialog2.isShowing()) {
                     loadingDialog2.dismiss();
@@ -748,7 +799,6 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
 //                                    BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
 //                                }
 //                            }, 2000);
-
 
 //                            byte[] bytes = {Config.newKey2[0],
 //                                    Config.newKey2[1], Config.newKey2[2], Config.newKey2[3], Config.newKey2[4],

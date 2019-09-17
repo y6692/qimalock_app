@@ -92,4 +92,8 @@ public class Urls {
 	public static String alarm_lists = host + "/index.php?g=App&m=UserManage&a=alarm_lists";
 	/**处理预警接口*/
 	public static String handle_alarm = host + "/index.php?g=App&m=UserManage&a=handle_alarm";
+	/**电单车撤防接口*/
+	public static String close_defend = host + "/index.php?g=App&m=Ebike&a=close_defend";
+	/**电单车设防接口*/
+	public static String open_defend = host + "/index.php?g=App&m=Ebike&a=open_defend";
 }
