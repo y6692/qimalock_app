@@ -275,6 +275,14 @@ public class Main2Activity extends SwipeBackActivity {
 //
 //        button31();
 
+//        if(mac!=null && !"".equals(mac)){
+//            bleService.connect(mac);
+//
+//            cn=0;
+//
+//            openLock();
+//        }
+
         if (loadingDialog != null && !loadingDialog.isShowing()) {
             loadingDialog.setTitle("正在加载");
             loadingDialog.show();

@@ -11,6 +11,7 @@ public class NearbyBean {
     private String codenum;
     private String quantity;
     private String quantity_level;
+    private String type;
 
     public String getLatitude() {
         return latitude;
@@ -50,5 +51,13 @@ public class NearbyBean {
 
     public void setQuantity_level(String quantity_level) {
         this.quantity_level = quantity_level;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

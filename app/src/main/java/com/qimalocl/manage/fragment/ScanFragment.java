@@ -163,6 +163,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private BitmapDescriptor bikeDescripter_green;
     private BitmapDescriptor bikeDescripter_blue;
     private BitmapDescriptor bikeDescripter_brown;
+    private BitmapDescriptor bikeDescripter_xa_red;
+    private BitmapDescriptor bikeDescripter_xa_yellow;
+    private BitmapDescriptor bikeDescripter_xa_green;
+    private BitmapDescriptor bikeDescripter_xa_blue;
+    private BitmapDescriptor bikeDescripter_xa_brown;
     private Handler handler = new Handler();
     private Marker centerMarker;
     private boolean isMovingMarker = false;
@@ -404,6 +409,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         bikeDescripter_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_green_icon);
         bikeDescripter_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_blue_icon);
         bikeDescripter_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_brown_icon);
+        bikeDescripter_xa_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_red_icon);
+        bikeDescripter_xa_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_yellow_icon);
+        bikeDescripter_xa_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_green_icon);
+        bikeDescripter_xa_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_blue_icon);
+        bikeDescripter_xa_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_brown_icon);
 
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
@@ -646,7 +656,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
                                     Log.e("initHttp===", "==="+school);
 
-                                    if("江苏理工学院".equals(school) || "泰山医学院".equals(school)){
+                                    if("江苏理工学院".equals(school) || "泰山医学院".equals(school) || "中国矿业大学（南湖校区）".equals(school) || "河南财经政法大学".equals(school)){
                                         type = 2;
                                     }else{
                                         type = 1;
@@ -797,11 +807,23 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                                 for (int i = 0; i < array.length(); i++){
                                     NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
                                     // 加入自定义标签
-                                    MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
-                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                    bikeMarkerList.add(bikeMarker);
+
+                                    if("4".equals(bean.getType())){
+                                        MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+                                                Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
+                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                        bikeMarkerList.add(bikeMarker);
+                                    }else{
+                                        MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+                                                Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                        bikeMarkerList.add(bikeMarker);
+                                    }
+
+
+                                    Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
 
 //                                    if("80001651".equals(bean.getCodenum())){
 //                                        Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());

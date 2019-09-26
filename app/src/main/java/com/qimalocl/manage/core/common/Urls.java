@@ -21,9 +21,9 @@ public class Urls {
 	/**扫码用车*/
 	public static String useCar = host + "/index.php?g=App&m=User&a=useCarDdy";
 	/**扫码获取锁信息（不开锁）*/
-	public static String lockInfo = host + "?g=App&m=UserManage&a=lock_info";
+	public static String lockInfo = host + "/index.php?g=App&m=UserManage&a=lock_info";
 	/**小安中控入库*/
-	public static String add_xiaoan_car = host + "?g=App&m=Test&a=add_xiaoan_car";
+	public static String add_xiaoan_car = host + "/index.php?g=App&m=Test&a=add_xiaoan_car";
 
 	public static String useCar2 = host + "/index.php?g=App&m=User&a=useCar";
 	/**获取启动页图广告*/
@@ -33,7 +33,7 @@ public class Urls {
 	/**附近车接口*/
 	public static String nearby = host + "/index.php?g=App&m=Index&a=nearby";
 	/**附近的电单车接口*/
-	public static String nearbyEbike = host + "?g=App&m=Index&a=nearbyEbike";
+	public static String nearbyEbike = host + "/index.php?g=App&m=Index&a=nearbyEbike";
 	/**坏车列表*/
 	public static String badcarList = host + "/index.php?g=App&m=UserManage&a=badcar_list";
 	/**坏车详情*/
@@ -49,7 +49,7 @@ public class Urls {
 	/**提交密码*/
 	public static String changePsd = host + "/index.php?g=App&m=UserManage&a=pwd";
 	/**泺平锁加密接口*/
-	public static String rent = host + "?g=App&m=Index&a=rent";
+	public static String rent = host + "/index.php?g=App&m=Index&a=rent";
 	/**入库*/
 	public static String addCar = host + "/index.php?g=App&m=Index&a=addblueCar";
 	/**回收*/
@@ -61,29 +61,29 @@ public class Urls {
 	/**已修好*/
 	public static String hasRepaired = host + "/index.php?g=App&m=UserManage&a=update_edit_bad";
 	/**车辆报废接口*/
-	public static String set_car_scrapped = host + "?g=App&m=UserManage&a=set_car_scrapped";
+	public static String set_car_scrapped = host + "/index.php?g=App&m=UserManage&a=set_car_scrapped";
 
 	/**锁定*/
 	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";
 
 	/**打开电池锁接口*/
-	public static String battery_unlock = host + "?g=App&m=Ebike&a=battery_unlock";
+	public static String battery_unlock = host + "/index.php?g=App&m=Ebike&a=battery_unlock";
 
 	/**电单车信息接口*/
-	public static String ebikeInfo = host + "?g=App&m=Ebike&a=info";
+	public static String ebikeInfo = host + "/index.php?g=App&m=Ebike&a=info";
 
 	/**电单车关锁*/
-	public static String closeEbikeDdy = host + "?g=App&m=User&a=closeEbikeDdy";
+	public static String closeEbikeDdy = host + "/index.php?g=App&m=User&a=closeEbikeDdy";
 	/**电单车寻车接口*/
-	public static String ddSearch = host + "?g=App&m=Ebike&a=ddSearch";
+	public static String ddSearch = host + "/index.php?g=App&m=Ebike&a=ddSearch";
 
     /**学校范围电子栅栏*/
-    public static String schoolRange = host + "?g=App&m=SchoolRange&a=index";
+    public static String schoolRange = host + "/index.php?g=App&m=SchoolRange&a=index";
 	/**创建电子围栏接口*/
-	public static String addSchoolRange = host + "?g=App&m=SchoolRange&a=store";
+	public static String addSchoolRange = host + "/index.php?g=App&m=SchoolRange&a=store";
 
 	/**电单车gps轨迹接口*/
-	public static String gpstrack = host + "?g=App&m=Ebike&a=gpstrack";
+	public static String gpstrack = host + "/index.php?g=App&m=Ebike&a=gpstrack";
 	/**用户信息*/
 	public static String userIndex = host + "/index.php?g=App&m=User&a=userIndex";
 
