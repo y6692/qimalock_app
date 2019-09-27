@@ -12,6 +12,9 @@ public class NearbyBean {
     private String quantity;
     private String quantity_level;
     private String type;
+    private String quantity_level_2_count;
+    private String quantity_level_3_count;
+//    "quantity_level_3_count":33,"quantity_level_2_count":32
 
     public String getLatitude() {
         return latitude;
@@ -59,5 +62,21 @@ public class NearbyBean {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getQuantity_level_2_count() {
+        return quantity_level_2_count;
+    }
+
+    public void setQuantity_level_2_count(String quantity_level_2_count) {
+        this.quantity_level_2_count = quantity_level_2_count;
+    }
+
+    public String getQuantity_level_3_count() {
+        return quantity_level_3_count;
+    }
+
+    public void setQuantity_level_3_count(String quantity_level_3_count) {
+        this.quantity_level_3_count = quantity_level_3_count;
     }
 }

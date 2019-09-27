@@ -255,6 +255,9 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
     public void connectClick(View v) {
 //        TextView imeiTxt = findViewById(R.id.imeiTxt);
         String imei = imeiTxt.getText().toString();
+
+        Log.e("connectClick===", "==="+imei);
+
         if (TextUtils.isEmpty(imei) || imei.trim().length() != 15) {
             Toast.makeText(this, "imei号错误", Toast.LENGTH_SHORT).show();
             return;

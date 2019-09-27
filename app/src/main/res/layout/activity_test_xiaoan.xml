@@ -147,7 +147,7 @@
         android:layout_marginTop="30dp"
         android:gravity="center|start"
         android:inputType="number"
-        android:text=""
+        android:text="865532045872401"
         android:textColor="#333333"
         android:hint="86"
         app:layout_constraintStart_toStartOf="parent"

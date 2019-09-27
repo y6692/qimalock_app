@@ -144,6 +144,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_myLocationLayout) LinearLayout myLocationLayout;
     @BindView(R.id.mainUI_getDotLayout) LinearLayout getDotLayout;
     @BindView(R.id.mainUI_testXALayout) LinearLayout testXALayout;
+    @BindView(R.id.mainUI_yellow) TextView tvYellow;
+    @BindView(R.id.mainUI_red) TextView tvRed;
 
     private AMap aMap;
     private MapView mapView;
@@ -765,82 +767,103 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 }
             });
         }else{
-            HttpHelper.get(context, Urls.nearbyEbike, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在加载");
-                        loadingDialog.show();
+            String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+            String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+            if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+                Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+                UIHelper.goToAct(context, LoginActivity.class);
+            }else {
+                params.put("uid",uid);
+                params.put("access_token",access_token);
+
+                HttpHelper.get(context, Urls.nearbyEbikeScool, params, new TextHttpResponseHandler() {
+                    @Override
+                    public void onStart() {
+                        if (loadingDialog != null && !loadingDialog.isShowing()) {
+                            loadingDialog.setTitle("正在加载");
+                            loadingDialog.show();
+                        }
                     }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                        UIHelper.ToastError(context, throwable.toString());
                     }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
 
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            JSONArray array = new JSONArray(result.getData());
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            if (curMarker != null){
-                                curMarker.remove();
-                            }
+                            Log.e("nearbyEbikeScool===", "==="+responseString);
 
-                            for (Marker marker : bikeMarkerList){
-                                if (marker != null){
-                                    marker.remove();
+                            if (result.getFlag().equals("Success")) {
+                                JSONArray array = new JSONArray(result.getData());
+
+                                if (curMarker != null){
+                                    curMarker.remove();
                                 }
-                            }
-                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                                bikeMarkerList.clear();
-                            }
-                            if (0 == array.length()){
-                                Toast.makeText(context,"附近没有电单车",Toast.LENGTH_SHORT).show();
-                            }else {
-                                for (int i = 0; i < array.length(); i++){
-                                    NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
-                                    // 加入自定义标签
 
-                                    if("4".equals(bean.getType())){
-                                        MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                                Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
-                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                        bikeMarkerList.add(bikeMarker);
-                                    }else{
-                                        MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                                Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
-                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                        bikeMarkerList.add(bikeMarker);
+                                for (Marker marker : bikeMarkerList){
+                                    if (marker != null){
+                                        marker.remove();
                                     }
+                                }
+                                if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                                    bikeMarkerList.clear();
+                                }
+                                if (0 == array.length()){
+                                    Toast.makeText(context,"附近没有电单车",Toast.LENGTH_SHORT).show();
+                                }else {
+                                    for (int i = 0; i < array.length(); i++){
+                                        NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
+                                        // 加入自定义标签
+
+                                        if("4".equals(bean.getType())){
+                                            MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                    .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
+                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                            bikeMarkerList.add(bikeMarker);
+                                        }else{
+                                            MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                    .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                            bikeMarkerList.add(bikeMarker);
+                                        }
+
+                                        if(bean.getQuantity_level_2_count() != null){
+                                            tvYellow.setText("黄色："+bean.getQuantity_level_2_count());
+                                        }
+                                        if(bean.getQuantity_level_3_count() != null){
+                                            tvRed.setText("红色："+bean.getQuantity_level_3_count());
+                                        }
 
 
-                                    Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
+                                        Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
 
 //                                    if("80001651".equals(bean.getCodenum())){
 //                                        Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
 //                                    }
 
+                                    }
                                 }
+                            } else {
+                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
                         }
-                    } catch (Exception e) {
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
                     }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
+                });
+            }
+
         }
     }
 
@@ -874,7 +897,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     public void onPause() {
         super.onPause();
 //        mapView.onPause();
-        deactivate();
+//        deactivate();
 //		mFirstFix = false;
     }
     /**
@@ -902,6 +925,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             mReceiver = null;
         }
 
+        deactivate();
     }
 
     @Override
@@ -1106,16 +1130,23 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
     private void setUpLocationStyle() {
         // 自定义系统定位蓝点
-        MyLocationStyle myLocationStyle = new MyLocationStyle();
-//        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）默认执行此种模式。
+//        MyLocationStyle myLocationStyle = new MyLocationStyle();
+////        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）默认执行此种模式。
+//
+//        myLocationStyle.interval(2000);
+//        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
+//        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked));
+//        myLocationStyle.strokeWidth(0);
+//        myLocationStyle.strokeColor(R.color.main_theme_color);
+//        myLocationStyle.radiusFillColor(Color.TRANSPARENT);
+//
+//        aMap.setMyLocationStyle(myLocationStyle);
 
-        myLocationStyle.interval(2000);
+        MyLocationStyle myLocationStyle = new MyLocationStyle();
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked));
-        myLocationStyle.strokeWidth(0);
-        myLocationStyle.strokeColor(R.color.main_theme_color);
-        myLocationStyle.radiusFillColor(Color.TRANSPARENT);
-
+        myLocationStyle.radiusFillColor(android.R.color.transparent);
+        myLocationStyle.strokeColor(android.R.color.transparent);
         aMap.setMyLocationStyle(myLocationStyle);
     }
 
@@ -1191,6 +1222,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @Override
     public void activate(OnLocationChangedListener listener) {
         mListener = listener;
+
+        if (mlocationClient != null) {
+
+            mlocationClient.setLocationListener(this);
+            mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);
+            mLocationOption.setInterval(2 * 1000);
+            mlocationClient.setLocationOption(mLocationOption);
+            mlocationClient.startLocation();
+
+//			mListener.onLocationChanged(amapLocation);
+        }
+
         if (mlocationClient == null) {
             mlocationClient = new AMapLocationClient(context);
             mLocationOption = new AMapLocationClientOption();

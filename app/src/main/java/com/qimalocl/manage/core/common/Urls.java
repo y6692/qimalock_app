@@ -34,6 +34,8 @@ public class Urls {
 	public static String nearby = host + "/index.php?g=App&m=Index&a=nearby";
 	/**附近的电单车接口*/
 	public static String nearbyEbike = host + "/index.php?g=App&m=Index&a=nearbyEbike";
+    /**附近的电单车接口2*/
+    public static String nearbyEbikeScool = host + "/index.php?g=App&m=Index&a=nearbyEbikeScool";
 	/**坏车列表*/
 	public static String badcarList = host + "/index.php?g=App&m=UserManage&a=badcar_list";
 	/**坏车详情*/
