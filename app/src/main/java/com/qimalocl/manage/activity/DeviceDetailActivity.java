@@ -440,7 +440,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
 
             }
-        }, 2 * 1000);
+        }, 0 * 1000);
 
         OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
             @Override

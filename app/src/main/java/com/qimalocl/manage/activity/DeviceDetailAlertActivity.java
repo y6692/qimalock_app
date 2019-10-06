@@ -516,6 +516,8 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
                 Log.e("layLock===0", "==="+mac);
 
+//                ClientManager.getClient().
+
                 ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
                     @Override
                     public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
@@ -827,7 +829,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e(TAG, code+"==="+Code.toString(code));
+                                Log.e("openLock===Fail", code+"==="+Code.toString(code));
                                 UIHelper.dismiss();
                                 UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                                 getBleRecord();
@@ -841,6 +843,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
+                                Log.e("openLock===Success", "===");
                                 UIHelper.dismiss();
                                 getBleRecord();
 
@@ -906,6 +909,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        Log.e("getBleRecord===Success", "===");
 //                        UIHelper.dismiss();
 //                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
                         deleteBleRecord(bikeTradeNo);
@@ -919,6 +923,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        Log.e("getBleRecord===SuccessE", "===");
 //                        UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, "record empty");
                     }
@@ -931,7 +936,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===", Code.toString(code));
+                        Log.e("getBleRecord===Fail", Code.toString(code));
 //                        UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
@@ -997,6 +1002,9 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         ClientManager.getClient().deleteRecord(mac, tradeNo, new IGetRecordResponse() {
             @Override
             public void onResponseSuccess(String phone, final String bikeTradeNo, String timestamp, String transType, String mackey, String index, final int Major, final int Minor, String vol) {
+
+                Log.e("deleteBleRecord=Success", "===");
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1009,6 +1017,8 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
             @Override
             public void onResponseSuccessEmpty() {
+                Log.e("deleteBleRecord=SucE", "===");
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1034,7 +1044,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        Log.e("deleteBleRecord===Fail", Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }

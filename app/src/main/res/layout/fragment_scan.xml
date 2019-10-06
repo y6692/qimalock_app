@@ -224,18 +224,29 @@
                 android:text="定位"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="180dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dp"
+            android:layout_marginBottom="150dp"
+            android:layout_marginLeft="90dp"
+            android:textSize="@dimen/sp16"
+            android:textColor="@color/black"
+            android:text="xyt_ebike："/>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="130dp"
             android:layout_marginLeft="@dimen/dp80"
             android:orientation="horizontal"
             android:background="@drawable/back_bd2"
             android:gravity="center">
 
+
             <TextView
-                android:id="@+id/mainUI_yellow"
+                android:id="@+id/mainUI_yellow_xyt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -245,7 +256,48 @@
                 android:text="黄色："/>
 
             <TextView
-                android:id="@+id/mainUI_red"
+                android:id="@+id/mainUI_red_xyt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/sp16"
+                android:textColor="@color/red"
+                android:text="红色："/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="100dp"
+            android:layout_marginLeft="@dimen/dp90"
+            android:textSize="@dimen/sp16"
+            android:textColor="@color/black"
+            android:text="xa_ebike："/>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="80dp"
+            android:layout_marginLeft="@dimen/dp80"
+            android:orientation="horizontal"
+            android:background="@drawable/back_bd2"
+            android:gravity="center">
+
+
+            <TextView
+                android:id="@+id/mainUI_yellow_xa"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/dp10"
+                android:textSize="@dimen/sp16"
+                android:textColor="@color/yellow"
+                android:text="黄色："/>
+
+            <TextView
+                android:id="@+id/mainUI_red_xa"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

@@ -12,9 +12,10 @@ public class NearbyBean {
     private String quantity;
     private String quantity_level;
     private String type;
-    private String quantity_level_2_count;
-    private String quantity_level_3_count;
-//    "quantity_level_3_count":33,"quantity_level_2_count":32
+    private String quantity_level_2_count_xyt;
+    private String quantity_level_2_count_xa;
+    private String quantity_level_3_count_xyt;
+    private String quantity_level_3_count_xa;
 
     public String getLatitude() {
         return latitude;
@@ -64,19 +65,35 @@ public class NearbyBean {
         this.type = type;
     }
 
-    public String getQuantity_level_2_count() {
-        return quantity_level_2_count;
+    public String getQuantity_level_2_count_xyt() {
+        return quantity_level_2_count_xyt;
     }
 
-    public void setQuantity_level_2_count(String quantity_level_2_count) {
-        this.quantity_level_2_count = quantity_level_2_count;
+    public void setQuantity_level_2_count_xyt(String quantity_level_2_count_xyt) {
+        this.quantity_level_2_count_xyt = quantity_level_2_count_xyt;
     }
 
-    public String getQuantity_level_3_count() {
-        return quantity_level_3_count;
+    public String getQuantity_level_2_count_xa() {
+        return quantity_level_2_count_xa;
     }
 
-    public void setQuantity_level_3_count(String quantity_level_3_count) {
-        this.quantity_level_3_count = quantity_level_3_count;
+    public void setQuantity_level_2_count_xa(String quantity_level_2_count_xa) {
+        this.quantity_level_2_count_xa = quantity_level_2_count_xa;
+    }
+
+    public String getQuantity_level_3_count_xyt() {
+        return quantity_level_3_count_xyt;
+    }
+
+    public void setQuantity_level_3_count_xyt(String quantity_level_3_count_xyt) {
+        this.quantity_level_3_count_xyt = quantity_level_3_count_xyt;
+    }
+
+    public String getQuantity_level_3_count_xa() {
+        return quantity_level_3_count_xa;
+    }
+
+    public void setQuantity_level_3_count_xa(String quantity_level_3_count_xa) {
+        this.quantity_level_3_count_xa = quantity_level_3_count_xa;
     }
 }

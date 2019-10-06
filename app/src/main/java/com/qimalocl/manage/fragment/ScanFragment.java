@@ -144,8 +144,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_myLocationLayout) LinearLayout myLocationLayout;
     @BindView(R.id.mainUI_getDotLayout) LinearLayout getDotLayout;
     @BindView(R.id.mainUI_testXALayout) LinearLayout testXALayout;
-    @BindView(R.id.mainUI_yellow) TextView tvYellow;
-    @BindView(R.id.mainUI_red) TextView tvRed;
+    @BindView(R.id.mainUI_yellow_xyt) TextView tvYellow_xyt;
+    @BindView(R.id.mainUI_red_xyt) TextView tvRed_xyt;
+    @BindView(R.id.mainUI_yellow_xa) TextView tvYellow_xa;
+    @BindView(R.id.mainUI_red_xa) TextView tvRed_xa;
 
     private AMap aMap;
     private MapView mapView;
@@ -222,6 +224,24 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
         initHttp();
 //        Toast.makeText(context,"发送寻车指令成功", Toast.LENGTH_SHORT).show();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (true){
+
+                    try {
+                        Thread.sleep(60 * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    m_myHandler.sendEmptyMessage(1);
+                }
+
+            }
+        }).start();
     }
 
     @Override
@@ -693,6 +713,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 case 0:
                     break;
 
+                case 1:
+                    initNearby(latitude, longitude);
+                    break;
+
                 default:
                     break;
             }
@@ -745,7 +769,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                             }
                             if (0 == array.length()){
                                 ToastUtils.showMessage("附近没有单车");
-                            }else {
+                            } else {
                                 for (int i = 0; i < array.length(); i++){
                                     NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
                                     // 加入自定义标签
@@ -779,87 +803,109 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 HttpHelper.get(context, Urls.nearbyEbikeScool, params, new TextHttpResponseHandler() {
                     @Override
                     public void onStart() {
-                        if (loadingDialog != null && !loadingDialog.isShowing()) {
-                            loadingDialog.setTitle("正在加载");
-                            loadingDialog.show();
-                        }
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                                    loadingDialog.setTitle("正在加载");
+                                    loadingDialog.show();
+                                }
+                            }
+                        });
                     }
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
-                        }
-                        UIHelper.ToastError(context, throwable.toString());
+                    public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                                UIHelper.ToastError(context, throwable.toString());
+                            }
+                        });
                     }
 
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        try {
-                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                    Log.e("nearbyEbikeScool===", "==="+responseString);
 
-                            Log.e("nearbyEbikeScool===", "==="+responseString);
+                                    if (result.getFlag().equals("Success")) {
+                                        JSONArray array = new JSONArray(result.getData());
 
-                            if (result.getFlag().equals("Success")) {
-                                JSONArray array = new JSONArray(result.getData());
-
-                                if (curMarker != null){
-                                    curMarker.remove();
-                                }
-
-                                for (Marker marker : bikeMarkerList){
-                                    if (marker != null){
-                                        marker.remove();
-                                    }
-                                }
-                                if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                                    bikeMarkerList.clear();
-                                }
-                                if (0 == array.length()){
-                                    Toast.makeText(context,"附近没有电单车",Toast.LENGTH_SHORT).show();
-                                }else {
-                                    for (int i = 0; i < array.length(); i++){
-                                        NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
-                                        // 加入自定义标签
-
-                                        if("4".equals(bean.getType())){
-                                            MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                    .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
-                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                            bikeMarkerList.add(bikeMarker);
-                                        }else{
-                                            MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                    .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
-                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                            bikeMarkerList.add(bikeMarker);
+                                        if (curMarker != null){
+                                            curMarker.remove();
                                         }
 
-                                        if(bean.getQuantity_level_2_count() != null){
-                                            tvYellow.setText("黄色："+bean.getQuantity_level_2_count());
+                                        for (Marker marker : bikeMarkerList){
+                                            if (marker != null){
+                                                marker.remove();
+                                            }
                                         }
-                                        if(bean.getQuantity_level_3_count() != null){
-                                            tvRed.setText("红色："+bean.getQuantity_level_3_count());
+                                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                                            bikeMarkerList.clear();
                                         }
+                                        if (0 == array.length()){
+                                            Toast.makeText(context,"附近没有电单车",Toast.LENGTH_SHORT).show();
+                                        }else {
+                                            for (int i = 0; i < array.length(); i++){
+                                                NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
+                                                // 加入自定义标签
 
+                                                if("4".equals(bean.getType())){
+                                                    MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
+                                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                                    bikeMarkerList.add(bikeMarker);
+                                                }else{
+                                                    MarkerOptions bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+                                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                                    bikeMarkerList.add(bikeMarker);
+                                                }
 
-                                        Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
+                                                if(bean.getQuantity_level_2_count_xyt() != null){
+                                                    tvYellow_xyt.setText("黄色："+bean.getQuantity_level_2_count_xyt());
+                                                }
+                                                if(bean.getQuantity_level_3_count_xyt() != null){
+                                                    tvRed_xyt.setText("红色："+bean.getQuantity_level_3_count_xyt());
+                                                }
+
+                                                if(bean.getQuantity_level_2_count_xa() != null){
+                                                    tvYellow_xa.setText("黄色："+bean.getQuantity_level_2_count_xa());
+                                                }
+                                                if(bean.getQuantity_level_3_count_xa() != null){
+                                                    tvRed_xa.setText("红色："+bean.getQuantity_level_3_count_xa());
+                                                }
+
+                                                Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
 
 //                                    if("80001651".equals(bean.getCodenum())){
 //                                        Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
 //                                    }
 
+                                            }
+                                        }
+                                    } else {
+                                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                                     }
+                                } catch (Exception e) {
                                 }
-                            } else {
-                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
                             }
-                        } catch (Exception e) {
-                        }
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
-                        }
+                        });
+
                     }
                 });
             }
@@ -980,8 +1026,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        Log.e("onCameraChangeF===", isUp+"==="+cameraPosition.target.latitude);
         if (isUp){
-            initNearby(cameraPosition.target.latitude,cameraPosition.target.longitude);
+
+            initNearby(cameraPosition.target.latitude, cameraPosition.target.longitude);
             if (centerMarker != null) {
 //                animMarker();
             }

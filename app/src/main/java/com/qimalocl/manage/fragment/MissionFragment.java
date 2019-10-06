@@ -344,29 +344,45 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                    loadingDialog.show();
 //                }
 
-                setFooterType(1);
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setFooterType(1);
+                    }
+                });
+
+
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
 //                if (loadingDialog != null && loadingDialog.isShowing()){
 //                    loadingDialog.dismiss();
 //                }
-                UIHelper.ToastError(context, throwable.toString());
-                swipeRefreshLayout.setRefreshing(false);
-                isRefresh = false;
-                setFooterType(3);
-                setFooterVisibility();
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.ToastError(context, throwable.toString());
+                        swipeRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                        setFooterType(3);
+                        setFooterVisibility();
+                    }
+                });
+
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("badcarList===1", "==="+responseString);
+                            Log.e("badcarList===1", "==="+responseString);
 
-                    if (result.getFlag().equals("Success")) {
+                            if (result.getFlag().equals("Success")) {
 //                        JSONArray array = new JSONArray(result.getData());
 //                        if (0 == array.length()) {
 //                            msgText.setVisibility(View.VISIBLE);
@@ -386,63 +402,66 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                        }
 
 
-                        JSONArray array = new JSONArray(result.getData());
+                                JSONArray array = new JSONArray(result.getData());
 
-                        Log.e("badcarList===2", "==="+array);
+                                Log.e("badcarList===2", "==="+array);
 
-                        if (array.length() == 0 && showPage == 1) {
-                            totalnum = "0";
-                            codenum = "";
+                                if (array.length() == 0 && showPage == 1) {
+                                    totalnum = "0";
+                                    codenum = "";
 
-                            footerLayout.setVisibility(View.VISIBLE);
-                            setFooterType(4);
-                        } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
-                            footerLayout.setVisibility(View.GONE);
-                            setFooterType(5);
-                        } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-                            footerLayout.setVisibility(View.VISIBLE);
-                            setFooterType(2);
-                        } else if (array.length() >= 10) {
-                            footerLayout.setVisibility(View.VISIBLE);
-                            setFooterType(0);
-                        }
+                                    footerLayout.setVisibility(View.VISIBLE);
+                                    setFooterType(4);
+                                } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+                                    footerLayout.setVisibility(View.GONE);
+                                    setFooterType(5);
+                                } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+                                    footerLayout.setVisibility(View.VISIBLE);
+                                    setFooterType(2);
+                                } else if (array.length() >= 10) {
+                                    footerLayout.setVisibility(View.VISIBLE);
+                                    setFooterType(0);
+                                }
 
-                        for (int i = 0; i < array.length();i++){
-                            BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+                                for (int i = 0; i < array.length();i++){
+                                    BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
 
-                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
-                                badtime = bean.getBadtime();
-                                codenum = bean.getCodenum();
-                                totalnum = bean.getTotalnum();
-                            }
+                                    if(i==0 && bean.getBadtime().compareTo(badtime)<0){
+                                        badtime = bean.getBadtime();
+                                        codenum = bean.getCodenum();
+                                        totalnum = bean.getTotalnum();
+                                    }
 
-                            datas.add(bean);
-                        }
+                                    datas.add(bean);
+                                }
 
-                        Log.e("badcarList===3", totalnum+"==="+codenum);
+                                Log.e("badcarList===3", totalnum+"==="+codenum);
 
-                        if(!"".equals(totalnum)){
-                            Intent intent = new Intent("data.broadcast.action");
-                            intent.putExtra("codenum", codenum);
-                            intent.putExtra("count", Integer.parseInt(totalnum));
-                            context.sendBroadcast(intent);
-                        }
+                                if(!"".equals(totalnum)){
+                                    Intent intent = new Intent("data.broadcast.action");
+                                    intent.putExtra("codenum", codenum);
+                                    intent.putExtra("count", Integer.parseInt(totalnum));
+                                    context.sendBroadcast(intent);
+                                }
 
 
 //                        View view = LayoutInflater.from(context).inflate(R.layout.fragment_scan, null);
 //                        TextView tvMsg = view.findViewById(R.id.msg);
 //                        tvMsg.setText("456");
 
-                    } else {
-                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            swipeRefreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                            setFooterVisibility();
+                        }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    swipeRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                    setFooterVisibility();
-                }
+                });
+
 //                if (loadingDialog != null && loadingDialog.isShowing()){
 //                    loadingDialog.dismiss();
 //                }
