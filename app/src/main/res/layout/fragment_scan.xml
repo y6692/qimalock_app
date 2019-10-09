@@ -198,6 +198,35 @@
 
 
         <LinearLayout
+            android:id="@+id/mainUI_showLowPowerLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="150dp"
+            android:layout_marginLeft="@dimen/dp10"
+            android:orientation="vertical"
+            android:background="@drawable/back_bd"
+            android:gravity="center">
+
+
+            <Switch
+                android:id="@+id/switcher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOn="是"
+                android:textOff="否"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp12"
+                android:textColor="@color/tx_black"
+                android:text="只看低电"/>
+        </LinearLayout>
+
+
+        <LinearLayout
             android:id="@+id/mainUI_myLocationLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
