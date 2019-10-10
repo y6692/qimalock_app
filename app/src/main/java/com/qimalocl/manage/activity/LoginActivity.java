@@ -39,6 +39,8 @@ import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 
 import org.apache.http.Header;
 
+import java.util.UUID;
+
 
 /**
  * Created by Administrator on 2017/2/15 0015.
@@ -172,7 +174,15 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        params.add("UUID", tm.getDeviceId());
+
+//        String uuid = UUID.randomUUID().toString();
+
+//        params.add("UUID", tm.getDeviceId());
+        params.add("UUID", UUID.randomUUID().toString());
+
+
+
+
         params.put("device_user",Build.BOARD);
         params.put("device_model", Build.MODEL);
         HttpHelper.post(context, Urls.loginNormal, params, new TextHttpResponseHandler() {

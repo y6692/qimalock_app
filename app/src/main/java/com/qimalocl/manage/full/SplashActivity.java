@@ -46,6 +46,8 @@ import com.qimalocl.manage.model.ResultConsel;
 import org.apache.http.Header;
 import org.json.JSONArray;
 
+import java.util.UUID;
+
 @SuppressLint("NewApi")
 public class SplashActivity extends BaseActivity {
 
@@ -529,18 +531,19 @@ public class SplashActivity extends BaseActivity {
 				if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 					return;
 				}
-				String UUID = tm.getDeviceId();
+//				String UUID = tm.getDeviceId();
+				String uuid = UUID.randomUUID().toString();
 				String system_version = Build.VERSION.RELEASE;
 				String device_model = new Build().MODEL;
 				RequestParams params = new RequestParams();
 				Md5Helper Md5Helper = new Md5Helper();
-				String verify = Md5Helper.encode("7mateapp" + UUID);
+				String verify = Md5Helper.encode("7mateapp" + uuid);
 				params.put("verify", verify);
 				params.put("system_name", "Android");
 				params.put("system_version", system_version);
 				params.put("device_model", device_model);
 				params.put("device_user", new Build().MANUFACTURER + device_model);
-				params.put("UUID", UUID);
+				params.put("UUID", uuid);
 				params.put("longitude", longitude);
 				params.put("latitude", latitude);
 				HttpHelper.post(context, Urls.DevicePostUrl, params, new TextHttpResponseHandler() {
