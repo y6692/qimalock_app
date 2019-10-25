@@ -6,6 +6,7 @@ public class ResultConsel {
 	public int errcode;
 	public String msg;
 	public String data;
+	public String info;
 	
 	public String getFlag() {
 		return flag;
@@ -31,6 +32,12 @@ public class ResultConsel {
 	public void setData(String data) {
 		this.data = data;
 	}
-	
-	
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
 }

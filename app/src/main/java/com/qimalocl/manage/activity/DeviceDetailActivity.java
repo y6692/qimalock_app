@@ -36,6 +36,7 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
+import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.Globals;
@@ -118,7 +119,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     long serverTime;
 
     String type = "5";
-
+    private boolean isStop = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,6 +143,9 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
         Log.e("DDA===onCreate", "==="+type);
 
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
 
 //        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
 //        loadingDialog.show();
@@ -278,6 +282,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         HttpHelper.get(this, Urls.rent, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
+                Log.e("rent===1",mac+"==="+name+"==="+keySource);
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -291,6 +297,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+                Log.e("rent===2",mac+"==="+name+"==="+keySource);
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -305,6 +313,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             }
             @Override
             public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                Log.e("rent===3",mac+"==="+name+"==="+keySource);
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -431,16 +441,92 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //        mac = "A4:34:F1:7B:BF:9A";
 //        name = "GpDTxe7<a";
 
-        m_myHandler.postDelayed(new Runnable() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+
+        if (loadingDialog != null && !loadingDialog.isShowing()) {
+            loadingDialog.setTitle("正在唤醒车锁");
+            loadingDialog.show();
+        }
+
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                connectDevice();
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
-                ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-                ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+                            ClientManager.getClient().stopSearch();
+                            ClientManager.getClient().disconnect(mac);
+                            ClientManager.getClient().disconnect(mac);
+                            ClientManager.getClient().disconnect(mac);
+                            ClientManager.getClient().disconnect(mac);
+                            ClientManager.getClient().disconnect(mac);
+                            ClientManager.getClient().disconnect(mac);
+                            ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
 
+//                            SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
+//                                    .searchBluetoothLeDevice(0)
+//                                    .build();
+//
+//                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                                Log.e("usecar===1", "===");
+//
+//                                return;
+//                            }
+
+                            Log.e("usecar===2", "===");
+
+//                            m_myHandler.sendEmptyMessage(0x98);
+//                            ClientManager.getClient().search(request, mSearchResponse);
+
+                            m_myHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    connectDevice();
+                                    ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
+
+                                    Log.e("0x98===", "==="+isStop);
+
+                                    m_myHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (!isStop){
+                                                if (loadingDialog != null && loadingDialog.isShowing()) {
+                                                    loadingDialog.dismiss();
+                                                }
+
+                                                Toast.makeText(context,"扫码唤醒失败，重启手机蓝牙换辆车试试吧！",Toast.LENGTH_LONG).show();
+
+                                                ClientManager.getClient().stopSearch();
+                                                ClientManager.getClient().disconnect(mac);
+                                                ClientManager.getClient().disconnect(mac);
+                                                ClientManager.getClient().disconnect(mac);
+                                                ClientManager.getClient().disconnect(mac);
+                                                ClientManager.getClient().disconnect(mac);
+                                                ClientManager.getClient().disconnect(mac);
+                                                ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
+
+                                                finish();
+                                            }
+                                        }
+                                    }, 15 * 1000);
+
+                                }
+                            }, 0 * 1000);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }, 0 * 1000);
+        }).start();
+
+
 
         OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
             @Override
@@ -616,6 +702,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         ClientManager.getClient().connect(mac, options, new IConnectResponse() {
             @Override
             public void onResponseFail(final int code) {
+                isStop = false;
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -628,6 +716,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
             @Override
             public void onResponseSuccess(BleGattProfile profile) {
+                isStop = true;
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -782,7 +872,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e(TAG, code+"=>="+Code.toString(code));
+                                Log.e("scan===openBleLock1", code+"==="+Code.toString(code));
                                 UIHelper.dismiss();
                                 UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                                 getBleRecord();
@@ -793,6 +883,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
                     @Override
                     public void onResponseSuccess() {
+                        Log.e("scan===openBleLock2", "===");
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -1275,6 +1366,15 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
                     Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
 
+                    if(status == STATUS_CONNECTED){
+                        refreshData(true);
+
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+
+
 //                    Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
 //                    refreshData(mConnected);
 //                    connectDeviceIfNeeded();
@@ -1287,6 +1387,11 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     @Override
     protected void onDestroy() {
         ClientManager.getClient().stopSearch();
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
         ClientManager.getClient().disconnect(mac);
         ClientManager.getClient().unnotifyClose(mac, mCloseListener);
         ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);

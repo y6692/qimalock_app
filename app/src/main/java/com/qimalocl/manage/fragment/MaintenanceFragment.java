@@ -168,7 +168,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private Button positiveButton, negativeButton, positiveButton2, negativeButton2;
     private boolean notShow = false;
     private int type = 0;
-    private String bikeNum;
+    public static String bikeNum;
     private String remark;
 
     boolean first=true;
@@ -197,6 +197,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     SurfaceHolder surfaceHolder;
     private int mCropWidth = 0;
     private int mCropHeight = 0;
+    public static int ff = 0;
 
     private CaptureActivityHandler2 handler;
     private static OnRxScanerListener mScanerListener;
@@ -507,7 +508,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     dialog.cancel();
         //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
 
-                                    Log.e("Maintenance===onC", "==="+type);
+                                    Log.e("Maintenance===onC", bikeNum+"==="+type);
 
                                     tagFlowLayout.setAdapter(tagAdapter);
                                     tagFlowLayout2.setAdapter(tagAdapter2);
@@ -572,6 +573,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }
         initBeepSound();
         vibrate = true;
+
+
+
 
     }
 
@@ -894,6 +898,15 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }else{
             previewing = true;
 
+            if(ff==1){
+                ff=0;
+
+                dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                dialog2.show();
+
+            }
+
+
             Log.e("surface===MF0", first+"==="+surfaceHolder+"==="+hasSurface);
 
             if(surfaceHolder!=null){
@@ -1165,7 +1178,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                             dialog.cancel();
 //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
 
-                            Log.e("Maintenance===onC", "==="+type);
+                            Log.e("Maintenance===onC2", bikeNum+"==="+type);
 
                             tagFlowLayout.setAdapter(tagAdapter);
 //                            tagAdapter.unSelected(0, tagFlowLayout);

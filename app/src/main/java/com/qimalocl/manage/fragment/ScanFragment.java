@@ -458,9 +458,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             }
         });
 
+
         aMap.setOnMapTouchListener(ScanFragment.this);
         setUpLocationStyle();
 
+        Log.e("zoom==", "=="+aMap.getCameraPosition().zoom);
 
         llMsg.setOnClickListener(this);
         rightBtn.setOnClickListener(this);
@@ -1001,9 +1003,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
     private void addChooseMarker() {
         // 加入自定义标签
+        Log.e("addChooseMarker===", mapView+"==="+myLocation);
+
         MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter);
         centerMarker = aMap.addMarker(centerMarkerOption);
-        centerMarker.setPositionByPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
+//        centerMarker.setPositionByPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1011,10 +1015,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 //                CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
 //                aMap.animateCamera(update);
 
-                CameraUpdate update = CameraUpdateFactory.zoomTo(18f);
-                aMap.animateCamera(null, 1000, new AMap.CancelableCallback() {
+//                CameraUpdate update = CameraUpdateFactory.zoomTo(18f);
+//                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, aMap.getCameraPosition().zoom));
+                CameraUpdate update = CameraUpdateFactory.zoomTo(aMap.getCameraPosition().zoom);
+                aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
+                        Log.e("animateCamera===", "===");
                         aMap.setOnCameraChangeListener(ScanFragment.this);
                     }
 
@@ -1031,6 +1038,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             return;
 
         isMovingMarker = true;
+        centerMarker.setPositionByPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
         centerMarker.setIcon(successDescripter);
     }
 
@@ -1048,7 +1056,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
             initNearby(cameraPosition.target.latitude, cameraPosition.target.longitude);
             if (centerMarker != null) {
-//                animMarker();
+                animMarker();
             }
         }
     }
@@ -1092,7 +1100,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 //    }
 
 
-
     @Override
     public void onClick(View v) {
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
@@ -1104,7 +1111,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 }else {
                     ((MainActivity)getActivity()).changeTab(1);
+
+//                    MainActivity.changeTab(4);
                 }
+
+
                 break;
 
             case R.id.mainUI_leftBtn:
@@ -1262,7 +1273,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                         initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
                         mFirstFix = false;
 
-                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18f));
+                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, aMap.getCameraPosition().zoom));
 
 
                     } else {
@@ -1275,7 +1286,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     addChooseMarker();
                     addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
                 }else{
-                     CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
                     customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
                             .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -1405,7 +1416,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("requestCode===", "==="+requestCode);
+        Log.e("sf===requestCode", requestCode+"==="+resultCode);
 
         switch (requestCode) {
 
@@ -1453,6 +1464,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
             case PRIVATE_CODE:
                 openGPSSettings();
+                break;
+
+            case 101:
+                ((MainActivity)getActivity()).changeTab(4);
                 break;
 
             default:

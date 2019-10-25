@@ -3,6 +3,8 @@ package com.qimalocl.manage.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,6 +38,7 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
+import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.Globals;
@@ -117,7 +120,9 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
     long serverTime;
 
     String type = "5";
+    private boolean isStop = false;
 
+    BluetoothAdapter mBluetoothAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,6 +146,9 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
         Log.e("DD===onCreate", "==="+type);
 
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
 
 //        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
 //        loadingDialog.show();
@@ -205,16 +213,87 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //        mac = "A4:34:F1:7B:BF:9A";
 //        name = "GpDTxe7<a";
 
-        m_myHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                connectDevice();
 
-                ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-                ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+            finish();
+        }
+        //蓝牙锁
+        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+
+        if (mBluetoothAdapter == null) {
+            ToastUtil.showMessageApp(context, "获取蓝牙失败");
+            finish();
+            return;
+        }
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 188);
+        } else {
+            if (loadingDialog != null && loadingDialog.isShowing()) {
+                loadingDialog.dismiss();
             }
-        }, 2 * 1000);
+
+            if (loadingDialog != null && !loadingDialog.isShowing()) {
+                loadingDialog.setTitle("正在唤醒车锁");
+                loadingDialog.show();
+            }
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                ClientManager.getClient().stopSearch();
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
+
+                                SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
+                                        .searchBluetoothLeDevice(0)
+                                        .build();
+
+                                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    Log.e("usecar===1", "===");
+
+                                    return;
+                                }
+
+                                Log.e("usecar===2", "===");
+
+//                                                                ClientManager.getClient().stopSearch();
+                                m_myHandler.sendEmptyMessage(0x98);
+                                ClientManager.getClient().search(request, mSearchResponse);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+        }
+
+//        m_myHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                connectDevice();
+//
+//                ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+//                ClientManager.getClient().notifyClose(mac, mCloseListener); //监听锁关闭事件
+//
+//            }
+//        }, 2 * 1000);
 
 
         OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
@@ -594,11 +673,82 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
         }
     }
 
+    private void connectDeviceLP() {
+        BleConnectOptions options = new BleConnectOptions.Builder()
+                .setConnectRetry(3)
+                .setConnectTimeout(20000)
+                .setServiceDiscoverRetry(1)
+                .setServiceDiscoverTimeout(10000)
+                .setEnableNotifyRetry(1)
+                .setEnableNotifyTimeout(10000)
+                .build();
+
+        ClientManager.getClient().connect(mac, options, new IConnectResponse() {
+            @Override
+            public void onResponseFail(int code) {
+                isStop = false;
+
+                Log.e("connectDevice===", "Fail==="+Code.toString(code));
+//                ToastUtil.showMessageApp(context, Code.toString(code));
+            }
+
+            @Override
+            public void onResponseSuccess(BleGattProfile profile) {
+//                BluetoothLog.v(String.format("profile:\n%s", profile));
+//                refreshData(true);
+
+                isStop = true;
+
+                Log.e("connectDevice===", "Success==="+profile);
+
+//                if (Globals.bType == 1) {
+//                    ToastUtil.showMessageApp(context, "正在关锁中");
+////                    getBleRecord();
+//                }
+            }
+        });
+    }
+
+
     protected Handler m_myHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message mes) {
             switch (mes.what) {
                 case 0:
+                    break;
+                case 0x98://搜索超时
+//                    BaseApplication.getInstance().getIBLE().connect(m_nowMac, ActivityScanerCode.this);
+
+                    connectDeviceLP();
+                    ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+
+
+                    Log.e("0x98===", "==="+isStop);
+
+                    m_myHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!isStop){
+                                if (loadingDialog != null && loadingDialog.isShowing()) {
+                                    loadingDialog.dismiss();
+                                }
+
+//                                Toast.makeText(context,"请重启软件，开启定位服务,输编号用车",5 * 1000).show();
+                                Toast.makeText(context,"扫码唤醒失败，重启手机蓝牙换辆车试试吧！",Toast.LENGTH_LONG).show();
+
+                                ClientManager.getClient().stopSearch();
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().disconnect(mac);
+                                ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
+
+                                finish();
+                            }
+                        }
+                    }, 15 * 1000);
                     break;
                 default:
                     break;
@@ -712,10 +862,15 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("===","DeviceDetailActivity.onDeviceFounded " + device.device.getAddress());
+                    Log.e("onDeviceFounded===",mac + "=== " + device.device.getAddress());
                     if (device.getAddress().contains(mac)) {
                         ClientManager.getClient().stopSearch();
-                        connectDeviceIfNeeded();
+
+                        connectDeviceLP();
+
+                        ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+
+//                        connectDeviceIfNeeded();
                     }
                 }
             });
@@ -1323,13 +1478,26 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
     //监听当前连接状态
     private final BleConnectStatusListener mConnectStatusListener = new BleConnectStatusListener() {
         @Override
-        public void onConnectStatusChanged(String mac, final int status) {
+        public void onConnectStatusChanged(final String mac, final int status) {
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
 //                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onConnectStatusChanged %d in %s", status, Thread.currentThread().getName()));
 
-                    Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
+                    Log.e("ConnectStatus===", mac+"===="+(status == STATUS_CONNECTED));
+
+
+                    if(status != STATUS_CONNECTED){
+                        return;
+                    }
+
+                    ClientManager.getClient().stopSearch();
+
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+
+                    refreshData(true);
 
 //                    Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
 //                    refreshData(mConnected);
@@ -1345,7 +1513,12 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
         Log.e("onDestroy===", "==="+mac);
 
-//        ClientManager.getClient().stopSearch();
+        ClientManager.getClient().stopSearch();
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
+        ClientManager.getClient().disconnect(mac);
         ClientManager.getClient().disconnect(mac);
         ClientManager.getClient().unnotifyClose(mac, mCloseListener);
         ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);

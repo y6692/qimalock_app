@@ -296,32 +296,41 @@ public class MainActivity extends BaseActivity{
             }
         }
 
-//        tab = findViewById(R.id.tab);
+        tab = findViewById(R.id.tab);
 
         tab.setTabData(mTabEntities, MainActivity.this, R.id.fl_change, mFragments);
         tab.setCurrentTab(0);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                default:
-                    break;
-
-            }
-        } else {
-            switch (requestCode) {
-                case PRIVATE_CODE:
-                    openGPSSettings();
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//
+//        Log.e("main==result", requestCode+"==="+resultCode);
+//
+//        if (resultCode == RESULT_OK) {
+//
+//
+//
+//            switch (requestCode) {
+//                case 101:
+//                    changeTab(4);
+//                    break;
+//
+//                default:
+//                    break;
+//
+//            }
+//        } else {
+//            switch (requestCode) {
+//                case PRIVATE_CODE:
+//                    openGPSSettings();
+//                    break;
+//
+//                default:
+//                    break;
+//            }
+//        }
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -387,8 +396,6 @@ public class MainActivity extends BaseActivity{
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-
-
 
     public void changeTab(int index) {
         tab.setCurrentTab(index);

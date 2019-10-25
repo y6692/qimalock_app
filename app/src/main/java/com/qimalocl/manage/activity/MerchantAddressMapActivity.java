@@ -195,7 +195,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
                                     type = jsonObject.getString("type");
 
-                                    if("4".equals(type)){
+                                    if("4".equals(type) || "7".equals(type)){
                                         gpstrack(codenum);
                                     }else{
                                         tv_day.setText("");

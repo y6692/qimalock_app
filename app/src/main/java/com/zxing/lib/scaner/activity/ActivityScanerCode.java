@@ -25,6 +25,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -55,6 +57,7 @@ import com.qimalocl.manage.activity.LockManageActivity;
 import com.qimalocl.manage.activity.LockManageAlterActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.Main2Activity;
+import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.MainXiaoanActivity;
 import com.qimalocl.manage.activity.TestXiaoanActivity;
 import com.qimalocl.manage.base.BaseApplication;
@@ -64,6 +67,7 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.fragment.MaintenanceFragment;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.vondear.rxtools.RxAnimationTool;
@@ -155,6 +159,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 //		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+//		FragmentManager fm = getSupportFragmentManager();
+//		Fragment fragment = fm.findFragmentById(R.id.fr);
+
 		context = this;
 
 		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey");
@@ -200,7 +207,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	protected void onResume() {
 		super.onResume();
 
-
 		Log.e("surface===0", surfaceHolder+"==="+hasSurface);
 
 		if (!hasSurface) {
@@ -214,7 +220,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				sf = new SurfaceHolder.Callback() {
 					@Override
 					public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
 					}
 
 					@Override
@@ -223,7 +228,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 						if (!hasSurface) {
 							hasSurface = true;
-
 							initCamera(holder);
 						}
 					}
@@ -233,15 +237,12 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 						Log.e("surface===2", "==="+hasSurface);
 
 						hasSurface = false;
-
 					}
 				};
 
 				surfaceHolder.addCallback(sf);
 				surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 			}
-
-
 
 		} else {
 			initCamera(surfaceHolder);
@@ -863,11 +864,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 
 
-
-
-
-
-
 	public Handler getHandler() {
 		return handler;
 	}
@@ -897,6 +893,178 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //
 //		previewing = true;
 //	}
+
+	private void info(JSONObject jsonObject){
+		try {
+
+
+			if ("1".equals(jsonObject.getString("type"))){
+				//机械锁
+				scrollToFinishActivity();
+			}else if ("4".equals(jsonObject.getString("type"))){    //行运兔
+
+				Log.e("Scan===4", jsonObject.getString("macinfo")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+				Intent intent = new Intent(ActivityScanerCode.this, Main2Activity.class);
+				intent.putExtra("bleid", jsonObject.getString("bleid"));
+				intent.putExtra("codenum", jsonObject.getString("codenum"));
+				intent.putExtra("address", jsonObject.getString("macinfo"));
+				startActivity(intent);
+
+
+			}else if ("5".equals(jsonObject.getString("type")) || "6".equals(jsonObject.getString("type"))){    //3合1锁
+
+				Log.e("Scan===5", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
+
+				if("5".equals(jsonObject.getString("type"))){
+					SharedPreferencesUrls.getInstance().putString("type", "5");
+				}else{
+					SharedPreferencesUrls.getInstance().putString("type", "6");
+				}
+
+
+				Intent intent = new Intent(ActivityScanerCode.this, DeviceDetailAlertActivity.class);
+				//									intent.putExtra("lock_no", jsonObject.getString("lock_no"));
+				//									intent.putExtra("codenum", jsonObject.getString("codenum"));
+				//									intent.putExtra("address", jsonObject.getString("macinfo"));
+				intent.putExtra("mac", jsonObject.getString("macinfo"));
+				intent.putExtra("name", jsonObject.getString("lock_no"));
+				startActivity(intent);
+			}else if ("7".equals(jsonObject.getString("type"))){    //3合1锁
+
+				Log.e("Scan===7", jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("type"));
+
+
+				Intent intent = new Intent(ActivityScanerCode.this, MainXiaoanActivity.class);
+				intent.putExtra("codenum", jsonObject.getString("codenum"));
+				intent.putExtra("address", jsonObject.getString("macinfo"));
+				intent.putExtra("deviceuuid", jsonObject.getString("deviceuuid"));
+				startActivity(intent);
+			}else {
+
+
+				if (!isChangeKey){
+					if ("2".equals(jsonObject.getString("pdk"))){
+						BaseApplication.getInstance().getIBLE().setChangKey(true);
+					}else {
+						BaseApplication.getInstance().getIBLE().setChangKey(false);
+					}
+					if ("2".equals(jsonObject.getString("pwd"))){
+						BaseApplication.getInstance().getIBLE().setChangPsd(true);
+					}else {
+						BaseApplication.getInstance().getIBLE().setChangPsd(false);
+					}
+				}else {
+					BaseApplication.getInstance().getIBLE().setChangKey(false);
+					BaseApplication.getInstance().getIBLE().setChangPsd(false);
+				}
+
+				if ("2".equals(jsonObject.getString("type"))){
+					if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+						Toast.makeText(ActivityScanerCode.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
+						scrollToFinishActivity();
+					}
+					//蓝牙锁
+					BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+					mBluetoothAdapter = bluetoothManager.getAdapter();
+
+					if (mBluetoothAdapter == null) {
+						Toast.makeText(ActivityScanerCode.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
+						scrollToFinishActivity();
+						return;
+					}
+					if (!mBluetoothAdapter.isEnabled()) {
+						Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+						startActivityForResult(enableBtIntent, 188);
+					}else{
+						if (!isChangeKey){
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+								Log.e("Scan===2_1", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+								Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+								intent.putExtra("name", "NokeLock");
+								intent.putExtra("codenum",codenum);
+								intent.putExtra("pdk",jsonObject.getString("pdk"));
+								intent.putExtra("pwd",jsonObject.getString("pwd"));
+								intent.putExtra("address", jsonObject.getString("macinfo"));
+								startActivity(intent);
+							}else {
+								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+
+								Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
+								intent.putExtra("name", "NokeLock");
+								intent.putExtra("codenum",codenum);
+								intent.putExtra("pdk",jsonObject.getString("pdk"));
+								intent.putExtra("pwd",jsonObject.getString("pwd"));
+								intent.putExtra("address", jsonObject.getString("macinfo"));
+								startActivity(intent);
+							}
+						}else {
+							Log.e("Scan===2_3", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+							Intent intent = new Intent(ActivityScanerCode.this, ChangeKeyLockManageActivity.class);
+							intent.putExtra("name", "NokeLock");
+							intent.putExtra("codenum",codenum);
+							intent.putExtra("address", jsonObject.getString("macinfo"));
+							startActivity(intent);
+						}
+						scrollToFinishActivity();
+					}
+				}else if ("3".equals(jsonObject.getString("type"))){    //3合1锁
+
+					Log.e("Scan===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+					if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+						Toast.makeText(ActivityScanerCode.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
+						scrollToFinishActivity();
+					}
+					BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+					mBluetoothAdapter = bluetoothManager.getAdapter();
+
+					if (mBluetoothAdapter == null) {
+						Toast.makeText(ActivityScanerCode.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
+						scrollToFinishActivity();
+						return;
+					}
+					if (!mBluetoothAdapter.isEnabled()) {
+						Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+						startActivityForResult(enableBtIntent, 188);
+					}else{
+						if (!isChangeKey){
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+								Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+								intent.putExtra("name", "NokeLock");
+								intent.putExtra("codenum",codenum);
+								intent.putExtra("pdk",jsonObject.getString("pdk"));
+								intent.putExtra("pwd",jsonObject.getString("pwd"));
+								intent.putExtra("address", jsonObject.getString("macinfo"));
+								startActivity(intent);
+							}else {
+								Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
+								intent.putExtra("name", "NokeLock");
+								intent.putExtra("codenum",codenum);
+								intent.putExtra("pdk",jsonObject.getString("pdk"));
+								intent.putExtra("pwd",jsonObject.getString("pwd"));
+								intent.putExtra("address", jsonObject.getString("macinfo"));
+								startActivity(intent);
+							}
+						}else {
+							Intent intent = new Intent(ActivityScanerCode.this, ChangeKeyLockManageActivity.class);
+							intent.putExtra("name", "NokeLock");
+							intent.putExtra("codenum",codenum);
+							intent.putExtra("address", jsonObject.getString("macinfo"));
+							startActivity(intent);
+						}
+						scrollToFinishActivity();
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			Log.e("Test","异常"+e);
+		}
+	}
 
 	private void lockInfo(String result){
 
@@ -929,239 +1097,62 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				public void onSuccess(int statusCode, Header[] headers, String responseString) {
 					try {
 						ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+						Log.e("Scan===00", "==="+responseString);
+
 						if (result.getFlag().equals("Success")) {
-							JSONObject jsonObject = new JSONObject(result.getData());
+							final JSONObject jsonObject = new JSONObject(result.getData());
 
-							Log.e("Scan===", jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+							codenum = jsonObject.getString("codenum");
 
-							if ("1".equals(jsonObject.getString("type"))){
-								//机械锁
-								scrollToFinishActivity();
-							}else {
-								codenum = jsonObject.getString("codenum");
+							Log.e("Scan===", codenum+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
-								if (!isChangeKey){
-									if ("2".equals(jsonObject.getString("pdk"))){
-										BaseApplication.getInstance().getIBLE().setChangKey(true);
-									}else {
-										BaseApplication.getInstance().getIBLE().setChangKey(false);
-									}
-									if ("2".equals(jsonObject.getString("pwd"))){
-										BaseApplication.getInstance().getIBLE().setChangPsd(true);
-									}else {
-										BaseApplication.getInstance().getIBLE().setChangPsd(false);
-									}
-								}else {
-									BaseApplication.getInstance().getIBLE().setChangKey(false);
-									BaseApplication.getInstance().getIBLE().setChangPsd(false);
-								}
+							if (result.getInfo().equals("2")) {
+								CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+								customBuilder.setTitle("温馨提示").setMessage("该车被设为坏车，用户无法使用，请及时回收维修")
+										.setPositiveButton("去维护", new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog, int which) {
+												dialog.cancel();
 
-								if ("2".equals(jsonObject.getString("type"))){
-									if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-										Toast.makeText(ActivityScanerCode.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
-										scrollToFinishActivity();
-									}
-									//蓝牙锁
-									BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-									mBluetoothAdapter = bluetoothManager.getAdapter();
+												MaintenanceFragment.bikeNum=codenum;
+												MaintenanceFragment.ff=1;
 
-									if (mBluetoothAdapter == null) {
-										Toast.makeText(ActivityScanerCode.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
-										scrollToFinishActivity();
-										return;
-									}
-									if (!mBluetoothAdapter.isEnabled()) {
-										Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-										startActivityForResult(enableBtIntent, 188);
-									}else{
-										if (!isChangeKey){
-											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-												Log.e("Scan===2_1", jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+												setResult(RESULT_OK);
+//												finish();
 
-												Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
-												intent.putExtra("name", "NokeLock");
-												intent.putExtra("codenum",codenum);
-												intent.putExtra("pdk",jsonObject.getString("pdk"));
-												intent.putExtra("pwd",jsonObject.getString("pwd"));
-												intent.putExtra("address", jsonObject.getString("macinfo"));
-												startActivity(intent);
-											}else {
-												Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-
-
-												Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
-												intent.putExtra("name", "NokeLock");
-												intent.putExtra("codenum",codenum);
-												intent.putExtra("pdk",jsonObject.getString("pdk"));
-												intent.putExtra("pwd",jsonObject.getString("pwd"));
-												intent.putExtra("address", jsonObject.getString("macinfo"));
-												startActivity(intent);
+												scrollToFinishActivity();
+//												MainActivity.changeTab(4);
 											}
-										}else {
-											Log.e("Scan===2_3", jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+										})
+										.setNegativeButton("开锁", new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog, int which) {
+												dialog.cancel();
 
-											Intent intent = new Intent(ActivityScanerCode.this, ChangeKeyLockManageActivity.class);
-											intent.putExtra("name", "NokeLock");
-											intent.putExtra("codenum",codenum);
-											intent.putExtra("address", jsonObject.getString("macinfo"));
-											startActivity(intent);
-										}
-										scrollToFinishActivity();
-									}
-								}else if ("3".equals(jsonObject.getString("type"))){    //3合1锁
+												info(jsonObject);
 
-									Log.e("Scan===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-
-                                    if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-                                        Toast.makeText(ActivityScanerCode.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
-                                        scrollToFinishActivity();
-                                    }
-                                    BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-                                    mBluetoothAdapter = bluetoothManager.getAdapter();
-
-                                    if (mBluetoothAdapter == null) {
-                                        Toast.makeText(ActivityScanerCode.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
-                                        scrollToFinishActivity();
-                                        return;
-                                    }
-                                    if (!mBluetoothAdapter.isEnabled()) {
-                                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                                        startActivityForResult(enableBtIntent, 188);
-                                    }else{
-                                        if (!isChangeKey){
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-                                                Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
-                                                intent.putExtra("name", "NokeLock");
-                                                intent.putExtra("codenum",codenum);
-                                                intent.putExtra("pdk",jsonObject.getString("pdk"));
-                                                intent.putExtra("pwd",jsonObject.getString("pwd"));
-                                                intent.putExtra("address", jsonObject.getString("macinfo"));
-                                                startActivity(intent);
-                                            }else {
-                                                Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
-                                                intent.putExtra("name", "NokeLock");
-                                                intent.putExtra("codenum",codenum);
-                                                intent.putExtra("pdk",jsonObject.getString("pdk"));
-                                                intent.putExtra("pwd",jsonObject.getString("pwd"));
-                                                intent.putExtra("address", jsonObject.getString("macinfo"));
-                                                startActivity(intent);
-                                            }
-                                        }else {
-                                            Intent intent = new Intent(ActivityScanerCode.this, ChangeKeyLockManageActivity.class);
-                                            intent.putExtra("name", "NokeLock");
-                                            intent.putExtra("codenum",codenum);
-                                            intent.putExtra("address", jsonObject.getString("macinfo"));
-                                            startActivity(intent);
-                                        }
-                                        scrollToFinishActivity();
-                                    }
-
-//									if ("200".equals(jsonObject.getString("code"))){
-//										Log.e("useBike===", "===="+jsonObject);
-//
-//										scrollToFinishActivity();
-////										getCurrentorder(uid, access_token);
-//									}else if ("404".equals(jsonObject.getString("code"))){
-//
-//									}
-								}else if ("4".equals(jsonObject.getString("type"))){    //行运兔
-
-									Log.e("Scan===4", jsonObject.getString("macinfo")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-
-                                    Intent intent = new Intent(ActivityScanerCode.this, Main2Activity.class);
-                                    intent.putExtra("bleid", jsonObject.getString("bleid"));
-                                    intent.putExtra("codenum", jsonObject.getString("codenum"));
-                                    intent.putExtra("address", jsonObject.getString("macinfo"));
-                                    startActivity(intent);
-
-//                                    if ("200".equals(jsonObject.getString("code"))){
-//										Log.e("useBike===4", "===="+jsonObject);
-//
-//
-////										scrollToFinishActivity();
-////										getCurrentorder(uid, access_token);
-//									}else if ("404".equals(jsonObject.getString("code"))){
-////										if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-////											Toast.makeText(ScanCaptureAct.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
-////											scrollToFinishActivity();
-////										}
-////										BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-////										mBluetoothAdapter = bluetoothManager.getAdapter();
-////
-////										if (mBluetoothAdapter == null) {
-////											Toast.makeText(ScanCaptureAct.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
-////											scrollToFinishActivity();
-////											return;
-////										}
-////										if (!mBluetoothAdapter.isEnabled()) {
-////											Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-////											startActivityForResult(enableBtIntent, 188);
-////										}else{
-////											if (!isChangeKey){
-////												if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-////													Intent intent = new Intent(ScanCaptureAct.this, LockManageAlterActivity.class);
-////													intent.putExtra("name", "NokeLock");
-////													intent.putExtra("codenum",codenum);
-////													intent.putExtra("pdk",jsonObject.getString("pdk"));
-////													intent.putExtra("pwd",jsonObject.getString("pwd"));
-////													intent.putExtra("address", jsonObject.getString("macinfo"));
-////													startActivity(intent);
-////												}else {
-////													Intent intent = new Intent(ScanCaptureAct.this, LockManageActivity.class);
-////													intent.putExtra("name", "NokeLock");
-////													intent.putExtra("codenum",codenum);
-////													intent.putExtra("pdk",jsonObject.getString("pdk"));
-////													intent.putExtra("pwd",jsonObject.getString("pwd"));
-////													intent.putExtra("address", jsonObject.getString("macinfo"));
-////													startActivity(intent);
-////												}
-////											}else {
-////												Intent intent = new Intent(ScanCaptureAct.this, ChangeKeyLockManageActivity.class);
-////												intent.putExtra("name", "NokeLock");
-////												intent.putExtra("codenum",codenum);
-////												intent.putExtra("address", jsonObject.getString("macinfo"));
-////												startActivity(intent);
-////											}
-////											scrollToFinishActivity();
-////										}
-//									}
-
-								}else if ("5".equals(jsonObject.getString("type")) || "6".equals(jsonObject.getString("type"))){    //3合1锁
-
-									Log.e("Scan===5", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
-
-									if("5".equals(jsonObject.getString("type"))){
-                                        SharedPreferencesUrls.getInstance().putString("type", "5");
-                                    }else{
-                                        SharedPreferencesUrls.getInstance().putString("type", "6");
-                                    }
-
-
-									Intent intent = new Intent(ActivityScanerCode.this, DeviceDetailAlertActivity.class);
-//									intent.putExtra("lock_no", jsonObject.getString("lock_no"));
-//									intent.putExtra("codenum", jsonObject.getString("codenum"));
-//									intent.putExtra("address", jsonObject.getString("macinfo"));
-									intent.putExtra("mac", jsonObject.getString("macinfo"));
-									intent.putExtra("name", jsonObject.getString("lock_no"));
-									startActivity(intent);
-								}else if ("7".equals(jsonObject.getString("type"))){    //3合1锁
-
-									Log.e("Scan===7", jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("type"));
-
-
-									Intent intent = new Intent(ActivityScanerCode.this, MainXiaoanActivity.class);
-									intent.putExtra("codenum", jsonObject.getString("codenum"));
-									intent.putExtra("address", jsonObject.getString("macinfo"));
-									intent.putExtra("deviceuuid", jsonObject.getString("deviceuuid"));
-									startActivity(intent);
-								}
+											}
+										});
+								customBuilder.create().show();
+							}else{
+								info(jsonObject);
 							}
+
 						} else {
+							Log.e("lockinfo===error","==="+result.getInfo());
+
+//							if (result.getInfo().equals("1")) {
+//
+//							}else{
+//
+//							}
+
 							Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
 							if (loadingDialog != null && loadingDialog.isShowing()){
 								loadingDialog.dismiss();
 							}
 							scrollToFinishActivity();
+
+
 						}
 					} catch (Exception e) {
 						Log.e("Test","异常"+e);

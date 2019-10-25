@@ -314,7 +314,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                             if (datas.size() != 0){
                                 datas.clear();
                             }
-                            for (int i = 0; i < 4;i++){
+                            for (int i = 0; i < array.length();i++){
                                 HistorysRecordBean bean = JSON.parseObject(array.getJSONObject(i).toString(),HistorysRecordBean.class);
                                 datas.add(bean);
                             }
@@ -398,11 +398,13 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
             if (null == convertView) {
                 convertView = inflater.inflate(R.layout.item_history_record, null);
             }
+            TextView orderType = BaseViewHolder.get(convertView,R.id.item_order_type);
             TextView realName = BaseViewHolder.get(convertView,R.id.item_historyRecord_realName);
             TextView tel = BaseViewHolder.get(convertView,R.id.item_historyRecord_tel);
             TextView codeNum = BaseViewHolder.get(convertView,R.id.item_historyRecord_codeNum);
             TextView money = BaseViewHolder.get(convertView,R.id.item_historyRecord_money);
             final HistorysRecordBean bean = getDatas().get(position);
+            orderType.setText("订单类型："+("0".equals(bean.getOrder_type())?"当前行程":"历史行程"));
             realName.setText("姓名："+bean.getUsername());
             tel.setText("联系电话:"+ bean.getTelphone());
             codeNum.setText(bean.getStart_end_date());

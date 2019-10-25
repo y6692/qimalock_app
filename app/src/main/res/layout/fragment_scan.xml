@@ -281,7 +281,7 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="@dimen/dp10"
                 android:textSize="@dimen/sp16"
-                android:textColor="@color/yellow"
+                android:textColor="@color/black"
                 android:text="黄色："/>
 
             <TextView
@@ -322,7 +322,7 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="@dimen/dp10"
                 android:textSize="@dimen/sp16"
-                android:textColor="@color/yellow"
+                android:textColor="@color/black"
                 android:text="黄色："/>
 
             <TextView

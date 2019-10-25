@@ -12,6 +12,7 @@ public class HistorysRecordBean {
     private String codenum;
     private String prices;
     private String start_end_date;
+    private String order_type;
 
     public String getStart_end_date() {
         return start_end_date;
@@ -59,5 +60,13 @@ public class HistorysRecordBean {
 
     public void setPrices(String prices) {
         this.prices = prices;
+    }
+
+    public String getOrder_type() {
+        return order_type;
+    }
+
+    public void setOrder_type(String order_type) {
+        this.order_type = order_type;
     }
 }
