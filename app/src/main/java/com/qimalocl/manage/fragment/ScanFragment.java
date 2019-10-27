@@ -1467,7 +1467,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 break;
 
             case 101:
-                ((MainActivity)getActivity()).changeTab(4);
+                if (resultCode == RESULT_OK) {
+                    String tz = data.getStringExtra("tz");
+                    if(tz!=null && "1".equals(tz)){
+                        ((MainActivity)getActivity()).changeTab(4);
+                    }
+
+                }
+
                 break;
 
             default:

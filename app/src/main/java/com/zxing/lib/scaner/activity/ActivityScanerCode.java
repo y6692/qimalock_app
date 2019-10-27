@@ -1117,8 +1117,10 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 												MaintenanceFragment.bikeNum=codenum;
 												MaintenanceFragment.ff=1;
 
-												setResult(RESULT_OK);
-//												finish();
+												Intent rIntent = new Intent();
+												rIntent.putExtra("tz", "1");
+												setResult(RESULT_OK, rIntent);
+//												setResult(RESULT_OK);
 
 												scrollToFinishActivity();
 //												MainActivity.changeTab(4);
