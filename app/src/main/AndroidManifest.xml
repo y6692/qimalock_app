@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qimalocl.manage"
     android:versionCode="5"
-    android:versionName="1.1.0" >
+    android:versionName="1.1.0"
+    android:installLocation="auto">
 
     <uses-sdk
         android:minSdkVersion="18"
-        android:targetSdkVersion="27" />
+        android:targetSdkVersion="28" />
 
     <!--lance-->
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -222,10 +223,6 @@
         <!--<meta-data-->
             <!--android:name="com.amap.api.v2.apikey"-->
             <!--android:value="368945fd36e6e4497c27371eb4c5d8df" />-->
-
-        <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
-        <!--<service android:name="com.amap.api.location.APSService" >-->
-        <!--</service>-->
 
         <service android:name="com.amap.api.location.APSService" />
 

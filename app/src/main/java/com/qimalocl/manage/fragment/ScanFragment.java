@@ -150,6 +150,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_yellow_xa) TextView tvYellow_xa;
     @BindView(R.id.mainUI_red_xa) TextView tvRed_xa;
     @BindView(R.id.switcher) Switch switcher;
+    @BindView(R.id.switcher_bad) Switch switcher_bad;
 
     private AMap aMap;
     private MapView mapView;
@@ -196,6 +197,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
     private int type = 1;
     private float accuracy = 29.0f;
+    float leveltemp = 18f;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
@@ -225,7 +227,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         initView();
 
         initHttp();
-//        Toast.makeText(context,"发送寻车指令成功", Toast.LENGTH_SHORT).show();
 
         new Thread(new Runnable() {
             @Override
@@ -426,6 +427,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
         CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(18f);// 设置缩放监听
         aMap.moveCamera(cameraUpdate);
+
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
         bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
         bikeDescripter_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_red_icon);
@@ -433,6 +435,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         bikeDescripter_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_green_icon);
         bikeDescripter_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_blue_icon);
         bikeDescripter_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_brown_icon);
+
         bikeDescripter_xa_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_red_icon);
         bikeDescripter_xa_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_yellow_icon);
         bikeDescripter_xa_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_green_icon);
@@ -462,7 +465,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         aMap.setOnMapTouchListener(ScanFragment.this);
         setUpLocationStyle();
 
-        Log.e("zoom==", "=="+aMap.getCameraPosition().zoom);
+//        Log.e("zoom==", "=="+aMap.getCameraPosition().zoom);
 
         llMsg.setOnClickListener(this);
         rightBtn.setOnClickListener(this);
@@ -479,6 +482,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         getDotLayout.setOnClickListener(this);
         testXALayout.setOnClickListener(this);
         switcher.setOnClickListener(this);
+        switcher_bad.setOnClickListener(this);
     }
 
 
@@ -874,19 +878,23 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                                                     bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
                                                             Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
                                                             .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
-
-
                                                 }
 
-                                                if(switcher.isChecked()){
-                                                    if("2".equals(bean.getQuantity_level()) || "3".equals(bean.getQuantity_level())){
-                                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                                        bikeMarkerList.add(bikeMarker);
+                                                if(switcher.isChecked() || switcher_bad.isChecked()){
+                                                    if(switcher.isChecked()){
+                                                        if("2".equals(bean.getQuantity_level()) || "3".equals(bean.getQuantity_level()) || "4".equals(bean.getQuantity_level())){
+                                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                                            bikeMarkerList.add(bikeMarker);
+                                                        }
+                                                    }
+
+                                                    if(switcher_bad.isChecked()){
+                                                        if("6".equals(bean.getQuantity_level())){
+                                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                                            bikeMarkerList.add(bikeMarker);
+                                                        }
                                                     }
                                                 }else{
-//                                                    if("3".equals(bean.getQuantity_level()) || "4".equals(bean.getQuantity_level())  || "5".equals(bean.getQuantity_level())){
-//
-//                                                    }
 
                                                     Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
                                                     bikeMarkerList.add(bikeMarker);
@@ -947,7 +955,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         super.onResume();
         Log.e("onResume===Scan", "===");
 
-        mapView.onResume();
+//        mapView.onResume();
 
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -1005,8 +1013,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         // 加入自定义标签
         Log.e("addChooseMarker===", mapView+"==="+myLocation);
 
-        MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter);
-        centerMarker = aMap.addMarker(centerMarkerOption);
+//        MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter);
+//        centerMarker = aMap.addMarker(centerMarkerOption);
 //        centerMarker.setPositionByPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
         handler.postDelayed(new Runnable() {
             @Override
@@ -1017,7 +1025,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
 //                CameraUpdate update = CameraUpdateFactory.zoomTo(18f);
 //                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, aMap.getCameraPosition().zoom));
-                CameraUpdate update = CameraUpdateFactory.zoomTo(aMap.getCameraPosition().zoom);
+                CameraUpdate update = CameraUpdateFactory.zoomTo(leveltemp);
                 aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
@@ -1038,8 +1046,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             return;
 
         isMovingMarker = true;
-        centerMarker.setPositionByPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
-        centerMarker.setIcon(successDescripter);
+//        centerMarker.setPositionByPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
+//        centerMarker.setIcon(successDescripter);
     }
 
     @Override
@@ -1051,6 +1059,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        leveltemp = aMap.getCameraPosition().zoom;
+
         Log.e("onCameraChangeF===", isUp+"==="+cameraPosition.target.latitude);
         if (isUp){
 
@@ -1151,11 +1161,31 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
                 break;
 
+            case R.id.switcher_bad:
+//                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
+
+                if(switcher_bad.isChecked()){
+                    Log.e("biking===switcher_bad1", "onClick==="+switcher_bad.isChecked());
+                }else{
+                    Log.e("biking===switcher_bad2", "onClick==="+switcher_bad.isChecked());
+                }
+
+                initNearby(latitude, longitude);
+
+                break;
+
             case R.id.mainUI_myLocationLayout:
                 if (myLocation != null) {
                     CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
                     aMap.animateCamera(update);
                 }
+//
+//                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, aMap.getCameraPosition().zoom));
+
+//                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18f));
+
+//                aMap.moveCamera(CameraUpdateFactory.zoomTo(18f));
+
                 break;
 
             case R.id.mainUI_getDotLayout:
@@ -1273,11 +1303,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                         initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
                         mFirstFix = false;
 
-                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, aMap.getCameraPosition().zoom));
+//                        Toast.makeText(context,"==="+leveltemp, Toast.LENGTH_SHORT).show();
 
+                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
 
+//                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18f));
                     } else {
-                        centerMarker.remove();
+//                        centerMarker.remove();
                         mCircle.remove();
                     }
 
@@ -1400,14 +1432,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                Float value = (Float) animation.getAnimatedValue();
-                centerMarker.setPositionByPixels(mapView.getWidth() / 2, Math.round(value));
+//                Float value = (Float) animation.getAnimatedValue();
+//                centerMarker.setPositionByPixels(mapView.getWidth() / 2, Math.round(value));
             }
         });
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                centerMarker.setIcon(successDescripter);
+//                centerMarker.setIcon(successDescripter);
             }
         });
         animator.start();
