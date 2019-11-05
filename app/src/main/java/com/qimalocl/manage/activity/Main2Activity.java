@@ -142,13 +142,26 @@ public class Main2Activity extends SwipeBackActivity {
 
     @Override
     public void onBackPressed() {
+        Log.e("xyt===back2",  "===");
+
         bleService.artifClose();
+
+        Intent rIntent = new Intent();
+        rIntent.putExtra("sx", "1");
+        setResult(RESULT_OK, rIntent);
+
         super.onBackPressed();
         //Toast.makeText(FDQControlAct.this, "onBackPessed", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
     void back() {
+        Log.e("xyt===back",  "===");
+
+        Intent rIntent = new Intent();
+        rIntent.putExtra("sx", "1");
+        setResult(RESULT_OK, rIntent);
+
         scrollToFinishActivity();
     }
 

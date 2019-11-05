@@ -910,8 +910,17 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				intent.putExtra("codenum", jsonObject.getString("codenum"));
 				intent.putExtra("address", jsonObject.getString("macinfo"));
 				startActivity(intent);
+//
+//				Intent intent = new Intent();
+//				intent.setClass(context, ActivityScanerCode.class);
+//				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//				intent.putExtra("isChangeKey",false);
+//				startActivityForResult(intent, 101);
 
+				intent.putExtra("sx", "1");
+				setResult(RESULT_OK, intent);
 
+				scrollToFinishActivity();
 			}else if ("5".equals(jsonObject.getString("type")) || "6".equals(jsonObject.getString("type"))){    //3合1锁
 
 				Log.e("Scan===5", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
@@ -939,7 +948,17 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				intent.putExtra("codenum", jsonObject.getString("codenum"));
 				intent.putExtra("address", jsonObject.getString("macinfo"));
 				intent.putExtra("deviceuuid", jsonObject.getString("deviceuuid"));
+//				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 				startActivity(intent);
+//				startActivityForResult(intent, 101);
+
+
+//				Intent intent2 = new Intent();
+				intent.putExtra("sx", "1");
+				setResult(RESULT_OK, intent);
+
+				scrollToFinishActivity();
 			}else {
 
 

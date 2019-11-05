@@ -418,6 +418,13 @@ public class MainActivity extends BaseActivity{
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Log.e("main==onBackPressed", "===");
+        super.onBackPressed();
+        //Toast.makeText(FDQControlAct.this, "onBackPessed", Toast.LENGTH_SHORT).show();
+    }
+
 //    @Override
 //    protected void handleReceiver(Context context, Intent intent) {
 //        if (intent == null || TextUtils.isEmpty(intent.getAction())) {

@@ -17,6 +17,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -182,8 +183,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private List<Marker> bikeMarkerList;
     private boolean isUp = false;
 
-    private double latitude = 0.0;
-    private double longitude = 0.0;
+    private static double latitude = 0.0;
+    private static double longitude = 0.0;
     private int isLock = 0;
     private View v;
 
@@ -198,6 +199,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     private int type = 1;
     private float accuracy = 29.0f;
     float leveltemp = 18f;
+
+    PopupWindow popupwindow;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
@@ -245,6 +248,24 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
             }
         }).start();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("onResume===Scan", latitude + "===" + longitude);
+
+//        initNearby(latitude, longitude);
+
+//        mapView.onResume();
+
+        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (uid != null && !"".equals(uid) && access_token != null && !"".equals(access_token)){
+            rightBtn.setText("退出登录");
+        }else {
+            rightBtn.setText("登录");
+        }
     }
 
     @Override
@@ -413,6 +434,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
             }
         }
 
+
+
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
@@ -489,9 +512,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     public void initmPopupWindowView(){
 
         // 获取自定义布局文件的视图
-        View customView = getLayoutInflater().inflate(R.layout.pop_menu, null, false);
+//        View customView = getLayoutInflater().inflate(R.layout.pop_menu, null, false);
+
+        View customView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu, null, false);
+
         // 创建PopupWindow宽度和高度
         RelativeLayout pop_win_bg = (RelativeLayout) customView.findViewById(R.id.pop_win_bg);
+        LinearLayout pop_win_bg2 = (LinearLayout) customView.findViewById(R.id.pop_win_bg2);
         ImageView iv_popup_window_back = (ImageView) customView.findViewById(R.id.popupWindow_back);
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
@@ -507,13 +534,44 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         // 打开弹窗
         UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
         // 创建PopupWindow宽度和高度
-        final PopupWindow popupwindow = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT, true);
+//        popupwindow = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
+        popupwindow = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
         /**
          * 设置动画效果 ,从上到下加载方式等，不设置自动的下拉，最好 [动画效果不好，不加实现下拉效果，不错]
          */
+        popupwindow.setContentView(customView);
         popupwindow.setAnimationStyle(R.style.PopupAnimation);
-        popupwindow.setOutsideTouchable(false);
+        popupwindow.setFocusable(true);
+        popupwindow.setOutsideTouchable(true);
+        popupwindow.setBackgroundDrawable(new BitmapDrawable());
+
+//        customView.setFocusable(true);
+//        customView.setFocusableInTouchMode(true);
+
+
+
+//        customView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                Log.e("customView===Touch", v+"==="+event);
+//                return false;
+//            }
+//
+//        });
+//
+//        popupwindow.setTouchInterceptor(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Log.e("Touch===", v+"==="+event);
+//
+//                if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+//                    popupwindow.dismiss();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
         TextView tv_codenum = (TextView)customView.findViewById(R.id.pop_menu_codenum);
         TextView tv_quantity = (TextView)customView.findViewById(R.id.pop_menu_quantity);
@@ -538,6 +596,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                         break;
                     case R.id.pop_menu_cancleBtn:
                         popupwindow.dismiss();
+
+                        initNearby(latitude, longitude);
+
                         break;
                 }
 
@@ -549,7 +610,58 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         cancleBtn.setOnClickListener(listener);
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+
+        popupwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                // 改变显示的按钮图片为正常状态
+                Log.e("onDismiss===", "===");
+
+                initNearby(latitude, longitude);
+            }
+        });
+
+//        customView.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//
+//                Log.e("customView===", v+"==="+keyCode);
+//
+//                if (keyCode == KeyEvent.KEYCODE_BACK) {
+//
+//                    popupwindow.dismiss();
+//
+//                    initNearby(latitude, longitude);
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
     }
+
+//    @Override
+//    public boolean onKey(View v, int keyCode, KeyEvent event) {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            if (popupWindow != null && popupWindow .isShowing()) {
+//                popupWindow.dismiss();
+//                return true;
+//            }
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+//
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        return super.onKeyDown(keyCode, event);
+//    }
+//
+//    @Override
+//    public void onBackPressed() {
+//        bleService.artifClose();
+//        super.onBackPressed();
+//        //Toast.makeText(FDQControlAct.this, "onBackPessed", Toast.LENGTH_SHORT).show();
+//    }
 
     private void ddSearch(){
 
@@ -723,7 +835,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     break;
 
                 case 1:
-                    initNearby(latitude, longitude);
+                    if (popupwindow == null || (popupwindow != null && !popupwindow.isShowing())) {
+                        initNearby(latitude, longitude);
+                    }
+
                     break;
 
                 default:
@@ -950,21 +1065,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.e("onResume===Scan", "===");
 
-//        mapView.onResume();
-
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid != null && !"".equals(uid) && access_token != null && !"".equals(access_token)){
-            rightBtn.setText("退出登录");
-        }else {
-            rightBtn.setText("登录");
-        }
-    }
 
     @Override
     public void onPause() {
@@ -1499,10 +1600,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 break;
 
             case 101:
+
+//                Log.e("requestCode===101", requestCode+"==="+data.getStringExtra("sx"));
+
                 if (resultCode == RESULT_OK) {
                     String tz = data.getStringExtra("tz");
                     if(tz!=null && "1".equals(tz)){
                         ((MainActivity)getActivity()).changeTab(4);
+                    }
+
+                    String sx = data.getStringExtra("sx");
+                    if(sx!=null && "1".equals(sx)){
+                        initNearby(latitude, longitude);
                     }
 
                 }
@@ -1510,6 +1619,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 break;
 
             default:
+
+//                Log.e("requestCode===0", resultCode+"==="+data.getStringExtra("sx"));
+
+
+
                 break;
 
         }
@@ -1899,6 +2013,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
 
 
 }

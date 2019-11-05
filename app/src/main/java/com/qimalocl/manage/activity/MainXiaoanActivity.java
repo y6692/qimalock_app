@@ -165,13 +165,32 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
     @Override
     public void onBackPressed() {
+        Log.e("xa===back2",  "===");
+
         bleService.artifClose();
+
+
+//
+//        scrollToFinishActivity();
+
         super.onBackPressed();
+
+//        Intent rIntent = new Intent();
+//        rIntent.putExtra("sx", "1");
+//        setResult(RESULT_OK, rIntent);
+
         //Toast.makeText(FDQControlAct.this, "onBackPessed", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
     void back() {
+
+        Log.e("xa===back",  "===");
+
+//        Intent rIntent = new Intent();
+//        rIntent.putExtra("sx", "1");
+//        setResult(RESULT_OK, rIntent);
+
         scrollToFinishActivity();
     }
 
