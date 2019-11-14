@@ -85,7 +85,6 @@ import com.qimalocl.manage.activity.DotSelectActivity;
 import com.qimalocl.manage.activity.GetDotActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
-import com.qimalocl.manage.activity.Main2Activity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.TestXiaoanActivity;
 import com.qimalocl.manage.base.BaseActivity;
@@ -385,7 +384,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         }
         locationManager.requestLocationUpdates(provider, 2000, 500, locationListener);
 
-        isOpen = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
+        isOpen = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         Log.e("checkGPSIsOpen==","==="+isOpen);
 

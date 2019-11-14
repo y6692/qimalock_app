@@ -56,7 +56,6 @@ import com.qimalocl.manage.activity.ChangeKeyLockManageActivity;
 import com.qimalocl.manage.activity.LockManageActivity;
 import com.qimalocl.manage.activity.LockManageAlterActivity;
 import com.qimalocl.manage.activity.LoginActivity;
-import com.qimalocl.manage.activity.Main2Activity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
