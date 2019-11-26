@@ -103,6 +103,11 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
         <activity
+            android:name=".activity.Main3Activity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+
+        <activity
             android:name=".activity.MainXiaoanActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />

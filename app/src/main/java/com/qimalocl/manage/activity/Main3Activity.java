@@ -3,15 +3,11 @@ package com.qimalocl.manage.activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +15,11 @@ import com.alibaba.fastjson.JSON;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
-import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.ble.BLEService;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
-import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.EbikeInfoBean;
 import com.qimalocl.manage.model.ResultConsel;
@@ -43,7 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class Main2Activity extends SwipeBackActivity {
+public class Main3Activity extends SwipeBackActivity {
     private BluetoothAdapter mBluetoothAdapter;
     BLEService bleService = new BLEService();
 
@@ -69,7 +63,7 @@ public class Main2Activity extends SwipeBackActivity {
     @Override
     public  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ui_main2);
+        setContentView(R.layout.ui_main3);
         ButterKnife.bind(this);
         context = this;
 //        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -83,7 +77,7 @@ public class Main2Activity extends SwipeBackActivity {
         titleText.setText("锁的信息");
 
         final Intent intent = getIntent();
-        bleid = intent.getStringExtra("bleid");
+//        bleid = intent.getStringExtra("bleid");
         codenum = intent.getStringExtra("codenum");
         mac = intent.getStringExtra("address");
 
@@ -91,65 +85,39 @@ public class Main2Activity extends SwipeBackActivity {
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
-//        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-//        customBuilder.setTitle("温馨提示").setMessage("连接失败，请重试")
-//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
-//        customDialog6 = customBuilder.create();
-//
-//        customBuilder = new CustomDialog.Builder(context);
-//        customBuilder.setTitle("温馨提示").setMessage("关锁失败，请重试")
-//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
-//        customDialog7 = customBuilder.create();
 
         // 初始化 Bluetooth adapter, 通过蓝牙管理器得到一个参考蓝牙适配器(API必须在以上android4.3或以上和版本)
-        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
+//        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+//        mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//        // 检查设备上是否支持蓝牙
+//        if (mBluetoothAdapter == null) {
+//            Toast.makeText(this, "不支持蓝牙", Toast.LENGTH_SHORT).show();
+//            finish();
+//            return;
+//        }
+//        BLEService.bluetoothAdapter = mBluetoothAdapter;
+//
+//        bleService.view = this;
+//        bleService.showValue = true;
 
-        // 检查设备上是否支持蓝牙
-        if (mBluetoothAdapter == null) {
-            Toast.makeText(this, "不支持蓝牙", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-        BLEService.bluetoothAdapter = mBluetoothAdapter;
-
-        bleService.view = this;
-        bleService.showValue = true;
-
-//        bleService.connect("34:03:DE:54:E6:C6");  //922
-//        Log.e("connect===", "==="+bleService.connect("34:03:DE:54:E6:C6"));
 
 
         Log.e("connect===", bleid+"==="+mac);
-//        Log.e("connect===", bleid+"==="+bleService.connect(mac));   //629
-
-//        Log.e("connect===", "==="+bleService.connect("01:02:03:04:16:10"));
-
-//        bleService.artifClose();
-
-//        bleService.connect(this.deviceAddress);
 
 
-        ebikeInfo();
+//        ebikeInfo();
     }
 
     @Override
     public void onBackPressed() {
         Log.e("xyt===back2",  "===");
 
-        bleService.artifClose();
-
-        Intent rIntent = new Intent();
-        rIntent.putExtra("sx", "1");
-        setResult(RESULT_OK, rIntent);
+//        bleService.artifClose();
+//
+//        Intent rIntent = new Intent();
+//        rIntent.putExtra("sx", "1");
+//        setResult(RESULT_OK, rIntent);
 
         super.onBackPressed();
         //Toast.makeText(FDQControlAct.this, "onBackPessed", Toast.LENGTH_SHORT).show();
@@ -159,9 +127,9 @@ public class Main2Activity extends SwipeBackActivity {
     void back() {
         Log.e("xyt===back",  "===");
 
-        Intent rIntent = new Intent();
-        rIntent.putExtra("sx", "1");
-        setResult(RESULT_OK, rIntent);
+//        Intent rIntent = new Intent();
+//        rIntent.putExtra("sx", "1");
+//        setResult(RESULT_OK, rIntent);
 
         scrollToFinishActivity();
     }
@@ -178,7 +146,7 @@ public class Main2Activity extends SwipeBackActivity {
             params.put("uid",uid);
             params.put("access_token",access_token);
             params.put("tokencode",codenum);
-            HttpHelper.get(Main2Activity.this, Urls.ebikeInfo, params, new TextHttpResponseHandler() {
+            HttpHelper.get(Main3Activity.this, Urls.ebikeInfo, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -191,7 +159,7 @@ public class Main2Activity extends SwipeBackActivity {
 //                    if (loadingDialog != null && loadingDialog.isShowing()){
 //                        loadingDialog.dismiss();
 //                    }
-                    UIHelper.ToastError(Main2Activity.this, throwable.toString());
+                    UIHelper.ToastError(Main3Activity.this, throwable.toString());
                 }
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
@@ -207,7 +175,7 @@ public class Main2Activity extends SwipeBackActivity {
 
                             Log.e("ebikeInfo===", responseString + "===");
                         }else {
-                            Toast.makeText(Main2Activity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Main3Activity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
 //                                loadingDialog.dismiss();
 //                            }
@@ -238,7 +206,7 @@ public class Main2Activity extends SwipeBackActivity {
             params.put("uid",uid);
             params.put("access_token",access_token);
             params.put("tokencode",codenum);
-            HttpHelper.post(Main2Activity.this, Urls.battery_unlock, params, new TextHttpResponseHandler() {
+            HttpHelper.post(Main3Activity.this, Urls.battery_unlock, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -251,7 +219,7 @@ public class Main2Activity extends SwipeBackActivity {
 //                    if (loadingDialog != null && loadingDialog.isShowing()){
 //                        loadingDialog.dismiss();
 //                    }
-                    UIHelper.ToastError(Main2Activity.this, throwable.toString());
+                    UIHelper.ToastError(Main3Activity.this, throwable.toString());
                 }
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
@@ -262,7 +230,7 @@ public class Main2Activity extends SwipeBackActivity {
 
                             Log.e("b3===", responseString + "===");
                         }else {
-                            Toast.makeText(Main2Activity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Main3Activity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
 //                                loadingDialog.dismiss();
 //                            }
@@ -282,25 +250,11 @@ public class Main2Activity extends SwipeBackActivity {
 
     @OnClick(R.id.open)
     void open() {
-//        bleService.write(new byte[]{0x03, (byte) 0x81, 0x01, (byte) 0x82});
-//
-//        button8();
-//        button9();
-//
-//        button31();
 
-//        if(mac!=null && !"".equals(mac)){
-//            bleService.connect(mac);
-//
-//            cn=0;
-//
-//            openLock();
+//        if (loadingDialog != null && !loadingDialog.isShowing()) {
+//            loadingDialog.setTitle("正在加载");
+//            loadingDialog.show();
 //        }
-
-        if (loadingDialog != null && !loadingDialog.isShowing()) {
-            loadingDialog.setTitle("正在加载");
-            loadingDialog.show();
-        }
 
         useCar();
 
@@ -340,13 +294,13 @@ public class Main2Activity extends SwipeBackActivity {
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("biking===000", "openEbike===="+responseString);
+                    Log.e("main3===1", "useCar===="+responseString);
 
                     if (result.getFlag().equals("Success")) {
 
                         JSONObject jsonObject = new JSONObject(result.getData());
 
-                        Log.e("biking===", "openEbike===="+result.getData());
+                        Log.e("main3===2", "useCar===="+result.getData());
 
 //                        if ("200".equals(jsonObject.getString("code"))) {
 //                            ToastUtil.showMessageApp(context,"开锁成功");

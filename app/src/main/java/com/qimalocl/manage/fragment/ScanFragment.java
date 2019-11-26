@@ -467,11 +467,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-
                 curMarker = marker;
 
                 marker.setTitle(marker.getTitle());
-
 
                 Log.e("onMarkerClick===", marker.getTitle()+"==="+marker.getTitle().split("-")[0]);
 
@@ -782,7 +780,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                                 if (result.getFlag().equals("Success")) {
-
 
                                     UserIndexBean bean = JSON.parseObject(result.getData(), UserIndexBean.class);
 //                            nameEdit.setText(bean.getRealname());
