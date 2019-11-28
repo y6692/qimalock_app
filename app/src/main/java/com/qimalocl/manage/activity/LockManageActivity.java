@@ -353,7 +353,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                     tvVersion.setText(getText(R.string.device_version) + GlobalParameterUtils.getInstance().getVersion());
                     //修改密钥
 
-                    Log.e("LockManageActivity===", "==="+pdk);
+                    Log.e("LockManageActivity===b", "==="+pdk);
 
                     if ("1".equals(pdk)) {
                         loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");

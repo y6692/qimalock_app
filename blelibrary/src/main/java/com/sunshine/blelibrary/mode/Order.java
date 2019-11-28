@@ -34,9 +34,11 @@ public class Order {
         RESET_PASSWORD2(0X0504),
         RESET_AQ(0x0a01),
         UPDATE_VERSION(0x0301),
+        XINBIAO(0x0585),
         //修改密钥
         RESET_KEY(0x0701),
         RESET_KEY2(0x0702);
+
 
         final int value;
 

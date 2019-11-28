@@ -199,10 +199,10 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 isChangePsd = true;
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
-//                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
-                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-                        Config.passwordnew[2], Config.passwordnew[3],
-                        Config.passwordnew[4], Config.passwordnew[5]};
+                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
+//                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+//                        Config.passwordnew[2], Config.passwordnew[3],
+//                        Config.passwordnew[4], Config.passwordnew[5]};
 //                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
 //                        Config.passwordnew2[2], Config.passwordnew2[3],
 //                        Config.passwordnew2[4], Config.passwordnew2[5]};

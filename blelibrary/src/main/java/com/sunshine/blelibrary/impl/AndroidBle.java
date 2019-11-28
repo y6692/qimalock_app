@@ -30,6 +30,7 @@ import com.sunshine.blelibrary.dispose.impl.Password;
 import com.sunshine.blelibrary.dispose.impl.TY;
 import com.sunshine.blelibrary.dispose.impl.Token;
 import com.sunshine.blelibrary.dispose.impl.UpdateVersion;
+import com.sunshine.blelibrary.dispose.impl.Xinbiao;
 import com.sunshine.blelibrary.inter.IBLE;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
@@ -44,6 +45,7 @@ import com.sunshine.blelibrary.mode.ResetAQTxOrder;
 import com.sunshine.blelibrary.mode.ResetLockTxOrder;
 import com.sunshine.blelibrary.mode.TxOrder;
 import com.sunshine.blelibrary.mode.UpddateVersionTxOrder;
+import com.sunshine.blelibrary.mode.XinbiaoTxOrder;
 import com.sunshine.blelibrary.service.BLEService;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
 
@@ -97,6 +99,7 @@ public class AndroidBle implements IBLE {
         LockResult lockResult = new LockResult();
         AQ aq = new AQ();
         UpdateVersion updateVersion = new UpdateVersion();
+        Xinbiao xinbiao = new Xinbiao();
 
         mToken.nextHandler = battery;
         battery.nextHandler = openLock;
@@ -108,6 +111,7 @@ public class AndroidBle implements IBLE {
         key.nextHandler = lockResult;
         lockResult.nextHandler = aq;
         aq.nextHandler = updateVersion;
+        updateVersion.nextHandler = xinbiao;
     }
 
     @Override
@@ -210,6 +214,9 @@ public class AndroidBle implements IBLE {
     public boolean resetLock() {
         return writeObject(new ResetLockTxOrder());
     }
+
+    @Override
+    public boolean xinbiao() { return writeObject(new XinbiaoTxOrder()); }
 
     @Override
     public boolean getLockStatus() {

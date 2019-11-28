@@ -96,6 +96,8 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
     Button changePsdBtn;
     @BindView(R.id.update_version_btn)
     Button updateVersionBtn;
+    @BindView(R.id.bt_xinbiao)
+    Button btXinbiao;
 
     private int count = 0;
     private String name;
@@ -382,6 +384,16 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
                         loadingDialog.dismiss();
                     }
                     break;
+
+                case Config.XINBIAO_ACTION:        //搜索信标
+
+//                    else if (decryptString.startsWith("0585")){
+
+                    tvCz.setText("当前操作：搜索信标成功"+data.substring(2*10, 2*10+2)+"==="+data.substring(2*11, 2*11+2)+"==="+data);
+
+//                    Log.e("parseData===", "==="+decryptString);
+
+                    break;
                 //固件升级
                 case Config.UPDATE_VERSION_ACTION:
                     if (TextUtils.isEmpty(data)) {
@@ -557,6 +569,10 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         BaseApplication.getInstance().getIBLE().resetLock();
     }
 
+    @OnClick(R.id.bt_xinbiao)
+    void xinbiao() {
+        BaseApplication.getInstance().getIBLE().xinbiao();
+    }
 
     @OnClick(R.id.bt_status)
     void status() {

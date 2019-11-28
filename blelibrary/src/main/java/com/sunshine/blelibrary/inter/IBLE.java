@@ -65,6 +65,14 @@ public interface IBLE {
      * @return
      */
     boolean resetLock();
+
+    /**
+     * 复位
+     * @return
+     */
+    boolean xinbiao();
+
+
     /**
      * 获取锁状态
      * @return

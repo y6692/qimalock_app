@@ -107,6 +107,12 @@
                     android:id="@+id/bt_close"
                     style="@style/button_style"
                     android:text="@string/reset_lock" />
+
+                <Button
+                    android:id="@+id/bt_xinbiao"
+                    style="@style/button_style"
+                    android:text="搜索信标" />
+
                 <Button
                     android:visibility="gone"
                     android:id="@+id/bt_wx"
