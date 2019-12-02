@@ -151,6 +151,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
     @BindView(R.id.mainUI_red_xa) TextView tvRed_xa;
     @BindView(R.id.switcher) Switch switcher;
     @BindView(R.id.switcher_bad) Switch switcher_bad;
+    @BindView(R.id.switcher_type) Switch switcher_type;
 
     private AMap aMap;
     private MapView mapView;
@@ -503,6 +504,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
         testXALayout.setOnClickListener(this);
         switcher.setOnClickListener(this);
         switcher_bad.setOnClickListener(this);
+        switcher_type.setOnClickListener(this);
     }
 
 
@@ -797,8 +799,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 
                                     if("江苏理工学院".equals(school) || "泰山医学院".equals(school) || "中国矿业大学（南湖校区）".equals(school) || "河南财经政法大学".equals(school)){
                                         type = 2;
+                                        switcher_type.setChecked(true);
                                     }else{
                                         type = 1;
+                                        switcher_type.setChecked(false);
                                     }
 
                                     initNearby(latitude, longitude);
@@ -1265,6 +1269,23 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                     Log.e("biking===switcher_bad1", "onClick==="+switcher_bad.isChecked());
                 }else{
                     Log.e("biking===switcher_bad2", "onClick==="+switcher_bad.isChecked());
+                }
+
+                initNearby(latitude, longitude);
+
+                break;
+
+            case R.id.switcher_type:
+//                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
+
+                if(switcher_type.isChecked()){
+                    Log.e("biking===switcher_type1", "onClick==="+switcher_type.isChecked());
+
+                    type = 2;
+                }else{
+                    Log.e("biking===switcher_type2", "onClick==="+switcher_type.isChecked());
+
+                    type = 1;
                 }
 
                 initNearby(latitude, longitude);
