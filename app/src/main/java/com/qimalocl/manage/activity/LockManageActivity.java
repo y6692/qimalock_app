@@ -585,7 +585,6 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
         BleManager.getInstance().destroy();
 
         Log.e("onDestroy===", "===");
-
     }
 
     @OnClick(R.id.bt_open)
