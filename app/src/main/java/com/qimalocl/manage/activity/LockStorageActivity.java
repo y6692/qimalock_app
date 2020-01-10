@@ -125,11 +125,29 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     private BleDevice bleDevice;
 
     private boolean isStop = false;
+    private boolean isPwd = false;
 
     private Context context = this;
     private String codenum = "";
 
     private boolean isChangePsd = false;
+
+    public static byte[] hexStringToByteArray(String str) {
+        if(str == null || str.trim().equals("")) {
+            return new byte[0];
+        }
+
+        byte[] bytes = new byte[str.length() / 2];
+        for(int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 16);
+        }
+
+        Log.e("StringToByte===1", bytes+"==="+bytes[0]);
+
+        return bytes;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +156,10 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         ButterKnife.bind(this);
         registerReceiver(broadcastReceiver, Config.initFilter());
         appVersion.setText("Version:" + ToolsUtils.getVersion(getApplicationContext()));
+
+
+        hexStringToByteArray("566C230035BBE3827CE40778567B3A7A");
+
         btAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -191,40 +213,81 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
         titleText.setText("锁的信息");
 
+
+
+
         changePsdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //修改密码
 //                if ("1".equals(pwd)) {
-                isChangePsd = true;
+
+                Log.e("lsa===changePsdBtn", "===");
+
+                codenum = "40002000";
+
+//                isChangePsd = true;
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
-                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
-//                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-//                        Config.passwordnew[2], Config.passwordnew[3],
-//                        Config.passwordnew[4], Config.passwordnew[5]};
-//                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
-//                        Config.passwordnew2[2], Config.passwordnew2[3],
-//                        Config.passwordnew2[4], Config.passwordnew2[5]};
-                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
+
+                byte[] bytes = {Config.key[0],
+                        Config.key[1], Config.key[2], Config.key[3], Config.key[4],
+                        Config.key[5], Config.key[6], Config.key[7]};
+                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
 
                 m_myHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        byte[] bytes1 = {Config.key[8],
+                                Config.key[9], Config.key[10], Config.key[11], Config.key[12],
+                                Config.key[13], Config.key[14], Config.key[15]};
+                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
 
-                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-                                Config.passwordnew[2], Config.passwordnew[3],
-                                Config.passwordnew[4], Config.passwordnew[5]};
-
-//                        byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
-//                                Config.passwordnew2[2], Config.passwordnew2[3],
-//                                Config.passwordnew2[4], Config.passwordnew2[5]};
-
-//                        BaseApplication.getInstance().getIBLE().setChangKey(false);
-
-                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
+                        BaseApplication.getInstance().getIBLE().setChangKey(false);
                     }
                 }, 2000);
+
+//                byte[] bytes = {Config.newKey[0],
+//                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
+//                        Config.newKey[5], Config.newKey[6], Config.newKey[7]};
+//                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
+//                m_myHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        byte[] bytes1 = {Config.newKey[8],
+//                                Config.newKey[9], Config.newKey[10], Config.newKey[11], Config.newKey[12],
+//                                Config.newKey[13], Config.newKey[14], Config.newKey[15]};
+//                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
+//                    }
+//                }, 2000);
+
+
+//                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
+////                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+////                        Config.passwordnew[2], Config.passwordnew[3],
+////                        Config.passwordnew[4], Config.passwordnew[5]};
+////                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
+////                        Config.passwordnew2[2], Config.passwordnew2[3],
+////                        Config.passwordnew2[4], Config.passwordnew2[5]};
+//                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
+//
+//                m_myHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+//                                Config.passwordnew[2], Config.passwordnew[3],
+//                                Config.passwordnew[4], Config.passwordnew[5]};
+//
+////                        byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
+////                                Config.passwordnew2[2], Config.passwordnew2[3],
+////                                Config.passwordnew2[4], Config.passwordnew2[5]};
+//
+////                        BaseApplication.getInstance().getIBLE().setChangKey(false);
+//
+//                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
+//                    }
+//                }, 2000);
 //                }else {
 //                    Toast.makeText(context,"此设备密码已修改",Toast.LENGTH_SHORT).show();
 //                }
@@ -424,10 +487,11 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     if (TextUtils.isEmpty(data)) {
                         Toast.makeText(context, "密码修改失败", Toast.LENGTH_SHORT).show();
                     } else {
-                        if (isChangePsd) {
+                        if (isPwd) {
                             Toast.makeText(context, "密码修改成功", Toast.LENGTH_SHORT).show();
                             changPsd();
                         }
+
                     }
                     if (loadingDialog2 != null && loadingDialog2.isShowing()) {
                         loadingDialog2.dismiss();
@@ -485,16 +549,18 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                     if (result.getFlag().equals("Success")) {
                         Toast.makeText(context, "恭喜您，数据提交成功", Toast.LENGTH_SHORT).show();
-                        BaseApplication.getInstance().getIBLE().setChangKey(true);
+                        BaseApplication.getInstance().getIBLE().setChangKey(false);
 
 
 
-                        isChangePsd = true;
+//                        isChangePsd = true;
                         loadingDialog2 = DialogUtils.getLoadingDialog(context, "正在修改密码");
                         loadingDialog2.show();
 
 //                        loadingDialog.setTitle("正在修改密码");
 //                        loadingDialog.show();
+
+                        isPwd = false;
 
                         byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
                                 Config.passwordnew[2], Config.passwordnew[3],
@@ -505,13 +571,18 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                             @Override
                             public void run() {
 
-                                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-                                        Config.passwordnew[2], Config.passwordnew[3],
-                                        Config.passwordnew[4], Config.passwordnew[5]};
+//                                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+//                                        Config.passwordnew[2], Config.passwordnew[3],
+//                                        Config.passwordnew[4], Config.passwordnew[5]};
+                                byte[] bytes = {Config.password[0], Config.password[1],
+                                        Config.password[2], Config.password[3],
+                                        Config.password[4], Config.password[5]};
 
                                 BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
                             }
                         }, 2000);
+
+                        isPwd = true;
 
                     } else {
                         Toast.makeText(context, result.getMsg(), Toast.LENGTH_SHORT).show();

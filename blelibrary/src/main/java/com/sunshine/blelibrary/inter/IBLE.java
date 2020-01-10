@@ -67,7 +67,7 @@ public interface IBLE {
     boolean resetLock();
 
     /**
-     * 复位
+     * 信标
      * @return
      */
     boolean xinbiao();

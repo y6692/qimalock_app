@@ -113,6 +113,12 @@
                     android:text="@string/lock_status"
                     android:visibility="visible"/>
                 <Button
+                    android:visibility="gone"
+                    android:id="@+id/change_key_btn"
+                    style="@style/button_style"
+                    android:text="修改开锁密钥" />
+                <Button
+                    android:visibility="gone"
                     android:id="@+id/change_psd_btn"
                     style="@style/button_style"
                     android:text="修改开锁密码" />

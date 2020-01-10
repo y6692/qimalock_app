@@ -1,5 +1,7 @@
 package com.sunshine.blelibrary.mode;
 
+import android.util.Log;
+
 import java.util.Random;
 
 /**
@@ -41,6 +43,9 @@ public class GetTokenTxOrder extends TxOrder {
         }
         // 生成字符串形式的指令
         String orderStr = builder.toString();
+
+        Log.e("getToken=generateString", "==="+orderStr);
+
         return orderStr;
     }
 }

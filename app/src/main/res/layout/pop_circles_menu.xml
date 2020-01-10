@@ -37,6 +37,7 @@
             android:layout_marginRight="@dimen/dp5"
             android:background="@drawable/shape_change_phone"
             android:drawableRight="@drawable/delete_selector"
+            android:inputType="number"
             android:gravity="center_vertical"
             android:hint="请输入车辆编号"
             android:lineSpacingExtra="@dimen/dp5"

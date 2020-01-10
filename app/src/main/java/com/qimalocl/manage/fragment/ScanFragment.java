@@ -221,8 +221,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
 //        filter = new IntentFilter("data.broadcast.action");
 //        activity.registerReceiver(broadcastReceiver, filter);
 
-
-
         mapView = activity.findViewById(R.id.mainUI_map);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
 

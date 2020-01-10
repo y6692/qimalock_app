@@ -47,6 +47,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.clj.fastble.BleManager;
+import com.clj.fastble.callback.BleScanCallback;
+import com.clj.fastble.data.BleDevice;
+import com.clj.fastble.scan.BleScanRuleConfig;
 import com.google.zxing.Result;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -88,6 +92,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -189,6 +194,154 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		inactivityTimer = new InactivityTimer(this);
 
 		mCameraManager = CameraManager.get();
+
+		Log.e("ActivityScanerCode===", "===");
+
+//		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//			Toast.makeText(ActivityScanerCode.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
+//			scrollToFinishActivity();
+//		}
+//		//蓝牙锁
+//		BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+//		mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//		if (mBluetoothAdapter == null) {
+//			Toast.makeText(ActivityScanerCode.this, "获取蓝牙失败", Toast.LENGTH_SHORT).show();
+//			scrollToFinishActivity();
+//			return;
+//		}
+//		if (!mBluetoothAdapter.isEnabled()) {
+//			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//			startActivityForResult(enableBtIntent, 188);
+//		}else{
+//			;
+//		}
+
+		BleManager.getInstance().init(getApplication());
+		BleManager.getInstance()
+				.enableLog(true)
+				.setReConnectCount(1, 5000)
+				.setConnectOverTime(20000)
+				.setOperateTimeout(5000);
+
+		setScanRule();
+		scan();
+
+	}
+
+	private void setScanRule() {
+//        String[] uuids;
+//        String str_uuid = et_uuid.getText().toString();
+//        if (TextUtils.isEmpty(str_uuid)) {
+//            uuids = null;
+//        } else {
+//            uuids = str_uuid.split(",");
+//        }
+//        UUID[] serviceUuids = null;
+//        if (uuids != null && uuids.length > 0) {
+//            serviceUuids = new UUID[uuids.length];
+//            for (int i = 0; i < uuids.length; i++) {
+//                String name = uuids[i];
+//                String[] components = name.split("-");
+//                if (components.length != 5) {
+//                    serviceUuids[i] = null;
+//                } else {
+//                    serviceUuids[i] = UUID.fromString(uuids[i]);
+//                }
+//            }
+//        }
+
+//        String[] names;
+//        String str_name = et_name.getText().toString();
+//        if (TextUtils.isEmpty(str_name)) {
+//            names = null;
+//        } else {
+//            names = str_name.split(",");
+//        }
+//
+//        String mac = et_mac.getText().toString();
+//
+//        boolean isAutoConnect = sw_auto.isChecked();
+
+		BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
+//                .setServiceUuids(serviceUuids)      // 只扫描指定的服务的设备，可选
+//                .setDeviceName(true, names)   // 只扫描指定广播名的设备，可选
+//				.setDeviceMac(address)                  // 只扫描指定mac的设备，可选
+//                .setAutoConnect(true)                 // 连接时的autoConnect参数，可选，默认false
+//                .setScanTimeOut(10000)              // 扫描超时时间，可选，默认10秒
+				.build();
+		BleManager.getInstance().initScanRule(scanRuleConfig);
+	}
+
+	void scan(){
+//        loadingDialog = DialogUtils.getLoadingDialog(context, "正在搜索...");
+//		loadingDialog.setTitle("正在搜索");
+//		loadingDialog.show();
+
+		BleManager.getInstance().scan(new BleScanCallback() {
+			@Override
+			public void onScanStarted(boolean success) {
+//                mDeviceAdapter.clearScanDevice();
+//                mDeviceAdapter.notifyDataSetChanged();
+//                img_loading.startAnimation(operatingAnim);
+//                img_loading.setVisibility(View.VISIBLE);
+//                btn_scan.setText(getString(R.string.stop_scan));
+				Log.e("onScanStarted===", "==="+success);
+
+			}
+
+			@Override
+			public void onLeScan(BleDevice bleDevice) {
+				super.onLeScan(bleDevice);
+
+				Log.e("onLeScan===", bleDevice+"==="+bleDevice.getMac());
+			}
+
+			@Override
+			public void onScanning(final BleDevice bleDevice) {
+//                mDeviceAdapter.addDevice(bleDevice);
+//                mDeviceAdapter.notifyDataSetChanged();
+
+				Log.e("onScanning===", bleDevice+"==="+bleDevice.getMac());
+
+//				m_myHandler.post(new Runnable() {
+//					@Override
+//					public void run() {
+//						if(address.equals(bleDevice.getMac())){
+//							//                            if (loadingDialog != null && loadingDialog.isShowing()) {
+////                                loadingDialog.dismiss();
+////                            }
+//
+//							BleManager.getInstance().cancelScan();
+//
+//							Log.e("onScanning===2", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
+//
+//							Toast.makeText(context, "搜索成功", Toast.LENGTH_LONG).show();
+//
+//							connect();
+//
+////                            m_myHandler.postDelayed(new Runnable() {
+////                                @Override
+////                                public void run() {
+////                                    if(!isConnect)
+////                                        connect();
+////                                }
+////                            }, 5 * 1000);
+//						}
+//					}
+//				});
+
+			}
+
+			@Override
+			public void onScanFinished(List<BleDevice> scanResultList) {
+//                img_loading.clearAnimation();
+//                img_loading.setVisibility(View.INVISIBLE);
+//                btn_scan.setText(getString(R.string.start_scan));
+
+				Log.e("onScanFinished===", scanResultList+"==="+scanResultList.size());
+			}
+		});
 	}
 
 	private void initPermission() {
@@ -999,7 +1152,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					}else{
 						if (!isChangeKey){
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-								Log.e("Scan===2_1", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								Log.e("Scan===2_1", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
 								intent.putExtra("name", "NokeLock");
@@ -1009,7 +1162,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								intent.putExtra("address", jsonObject.getString("macinfo"));
 								startActivity(intent);
 							}else {
-								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 
 								Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);

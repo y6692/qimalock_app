@@ -174,6 +174,8 @@ public class AndroidBle implements IBLE {
             return;
         }
 
+        Log.e("writeByte===", "==="+isChangeKey);
+
         byte[] miwen = null;
         switch (GlobalParameterUtils.getInstance().getLockType()) {
             case MTS:
@@ -435,10 +437,14 @@ public class AndroidBle implements IBLE {
                 mBLEService.updateBroadcast(ConvertUtils.bytes2HexString(characteristic.getValue()));
                 Logger.e(TAG, "onCharacteristicChanged:" + ConvertUtils.bytes2HexString(characteristic.getValue()));
             } else {
+
+
                 try {
                     byte[] values = characteristic.getValue();
                     byte[] x = new byte[16];
                     System.arraycopy(values, 0, x, 0, 16);
+
+                    Log.e("onCharacteristicChanged", "==="+isChangeKey);
 
                     byte mingwen[] = null;
                     switch (GlobalParameterUtils.getInstance().getLockType()) {
@@ -456,6 +462,8 @@ public class AndroidBle implements IBLE {
                     Logger.e(TAG, "返回：" + ConvertUtils.bytes2HexString(mingwen));
                     mToken.handlerRequest(ConvertUtils.bytes2HexString(mingwen), 0);
                 } catch (Exception e) {
+                    Log.e("onCharacteristicChanged", "2==="+isChangeKey);
+
                     byte[] values = characteristic.getValue();
                     byte[] x = new byte[16];
                     System.arraycopy(values, 0, x, 0, 16);
