@@ -435,6 +435,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
         }
 
+        mac = "50:F1:4A:B6:7F:82";
+
         Log.e("bindData===", name+"==="+mac);
 
 //        mac = "A4:34:F1:7B:BF:A9";
@@ -458,14 +460,14 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                         @Override
                         public void run() {
 
-                            ClientManager.getClient().stopSearch();
-                            ClientManager.getClient().disconnect(mac);
-                            ClientManager.getClient().disconnect(mac);
-                            ClientManager.getClient().disconnect(mac);
-                            ClientManager.getClient().disconnect(mac);
-                            ClientManager.getClient().disconnect(mac);
-                            ClientManager.getClient().disconnect(mac);
-                            ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
+//                            ClientManager.getClient().stopSearch();
+//                            ClientManager.getClient().disconnect(mac);
+//                            ClientManager.getClient().disconnect(mac);
+//                            ClientManager.getClient().disconnect(mac);
+//                            ClientManager.getClient().disconnect(mac);
+//                            ClientManager.getClient().disconnect(mac);
+//                            ClientManager.getClient().disconnect(mac);
+//                            ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
 
 //                            SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
 //                                    .searchBluetoothLeDevice(0)
@@ -488,33 +490,33 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
                                     connectDevice();
                                     ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
+//                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
 
-                                    Log.e("0x98===", "==="+isStop);
-
-                                    m_myHandler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (!isStop){
-                                                if (loadingDialog != null && loadingDialog.isShowing()) {
-                                                    loadingDialog.dismiss();
-                                                }
-
-                                                Toast.makeText(context,"扫码唤醒失败，重启手机蓝牙换辆车试试吧！",Toast.LENGTH_LONG).show();
-
-                                                ClientManager.getClient().stopSearch();
-                                                ClientManager.getClient().disconnect(mac);
-                                                ClientManager.getClient().disconnect(mac);
-                                                ClientManager.getClient().disconnect(mac);
-                                                ClientManager.getClient().disconnect(mac);
-                                                ClientManager.getClient().disconnect(mac);
-                                                ClientManager.getClient().disconnect(mac);
-                                                ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
-
-                                                finish();
-                                            }
-                                        }
-                                    }, 15 * 1000);
+//                                    Log.e("0x98===", "==="+isStop);
+//
+//                                    m_myHandler.postDelayed(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            if (!isStop){
+//                                                if (loadingDialog != null && loadingDialog.isShowing()) {
+//                                                    loadingDialog.dismiss();
+//                                                }
+//
+//                                                Toast.makeText(context,"扫码唤醒失败，重启手机蓝牙换辆车试试吧！",Toast.LENGTH_LONG).show();
+//
+//                                                ClientManager.getClient().stopSearch();
+//                                                ClientManager.getClient().disconnect(mac);
+//                                                ClientManager.getClient().disconnect(mac);
+//                                                ClientManager.getClient().disconnect(mac);
+//                                                ClientManager.getClient().disconnect(mac);
+//                                                ClientManager.getClient().disconnect(mac);
+//                                                ClientManager.getClient().disconnect(mac);
+//                                                ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
+//
+//                                                finish();
+//                                            }
+//                                        }
+//                                    }, 15 * 1000);
 
                                 }
                             }, 0 * 1000);
@@ -528,43 +530,43 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
 
 
-        OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
-            @Override
-            public void onResponse(final RGetUserTradeStatus rGetUserTradeStatus) {
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rGetUserTradeStatus.getResult() < 0) {
-                            UIHelper.showToast(DeviceDetailActivity.this, ""+rGetUserTradeStatus.getResult());
-                        } else {
-                            RGetUserTradeStatus.ResultBean resultBean = rGetUserTradeStatus.getInfo();
-
-                            Globals.bType = resultBean.getUserTradeStatus();
-                            Globals.bikeNo = resultBean.getBikeNo();
-                            if (Globals.bType == 1) {
-                                tvOpen.setText("已开锁");
-//                                returnCar();
-                            } else {
-                                tvOpen.setText("开锁");
-//                                rentCar();
-                            }
-                        }
-                    }
-                });
-
-            }
-
-            @Override
-            public void onError(Request request, final Exception e) {
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
-                    }
-                });
-
-            }
-        });
+//        OkHttpClientManager.getInstance().GetUserTradeStatus(new ResultCallback<RGetUserTradeStatus>() {
+//            @Override
+//            public void onResponse(final RGetUserTradeStatus rGetUserTradeStatus) {
+//                m_myHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (rGetUserTradeStatus.getResult() < 0) {
+//                            UIHelper.showToast(DeviceDetailActivity.this, ""+rGetUserTradeStatus.getResult());
+//                        } else {
+//                            RGetUserTradeStatus.ResultBean resultBean = rGetUserTradeStatus.getInfo();
+//
+//                            Globals.bType = resultBean.getUserTradeStatus();
+//                            Globals.bikeNo = resultBean.getBikeNo();
+//                            if (Globals.bType == 1) {
+//                                tvOpen.setText("已开锁");
+////                                returnCar();
+//                            } else {
+//                                tvOpen.setText("开锁");
+////                                rentCar();
+//                            }
+//                        }
+//                    }
+//                });
+//
+//            }
+//
+//            @Override
+//            public void onError(Request request, final Exception e) {
+//                m_myHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        UIHelper.showToast(DeviceDetailActivity.this, e.getMessage());
+//                    }
+//                });
+//
+//            }
+//        });
     }
 
 //    @Override

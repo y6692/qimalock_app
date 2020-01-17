@@ -478,7 +478,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                         Toast.makeText(context, "密钥修改失败", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context, "密钥修改成功", Toast.LENGTH_LONG).show();
-                        changKey();
+//                        changKey();
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()) {
                         loadingDialog.dismiss();

@@ -90,6 +90,7 @@ public class DeviceSelectActivity extends Activity {
     @OnClick(R.id.bt2)
     void bt2() {
         SharedPreferencesUrls.getInstance().putString("type", "5");
+//        UIHelper.goToAct(context, DeviceDetailActivity.class);
         UIHelper.goToAct(context, DeviceList2Activity.class);
     }
 

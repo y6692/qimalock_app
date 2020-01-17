@@ -92,6 +92,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -154,6 +155,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 	private boolean isNext = false;
 	private String deviceuuid;
+
+	private List<String> macList = new ArrayList<String>();
+	private int n = 0;
 
 //	static {
 //		System.loadLibrary("iconv");
@@ -218,11 +222,16 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //		}
 
 		BleManager.getInstance().init(getApplication());
+//		BleManager.getInstance()
+//				.enableLog(true)
+//				.setReConnectCount(1, 5000)
+//				.setConnectOverTime(20000)
+//				.setOperateTimeout(5000);
 		BleManager.getInstance()
 				.enableLog(true)
-				.setReConnectCount(1, 5000)
+				.setReConnectCount(10, 5000)
 				.setConnectOverTime(20000)
-				.setOperateTimeout(5000);
+				.setOperateTimeout(10000);
 
 		setScanRule();
 		scan();
@@ -286,7 +295,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //                img_loading.startAnimation(operatingAnim);
 //                img_loading.setVisibility(View.VISIBLE);
 //                btn_scan.setText(getString(R.string.stop_scan));
-				Log.e("onScanStarted===", "==="+success);
+				Log.e("asc===onScanStarted", "==="+success);
 
 			}
 
@@ -294,7 +303,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			public void onLeScan(BleDevice bleDevice) {
 				super.onLeScan(bleDevice);
 
-				Log.e("onLeScan===", bleDevice+"==="+bleDevice.getMac());
+				Log.e("asc===onLeScan", bleDevice+"==="+bleDevice.getMac());
 			}
 
 			@Override
@@ -302,7 +311,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //                mDeviceAdapter.addDevice(bleDevice);
 //                mDeviceAdapter.notifyDataSetChanged();
 
-				Log.e("onScanning===", bleDevice+"==="+bleDevice.getMac());
+				Log.e("asc===onScanning", bleDevice+"==="+bleDevice.getMac());
+
+				macList.add(bleDevice.getMac());
 
 //				m_myHandler.post(new Runnable() {
 //					@Override
@@ -339,7 +350,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //                img_loading.setVisibility(View.INVISIBLE);
 //                btn_scan.setText(getString(R.string.start_scan));
 
-				Log.e("onScanFinished===", scanResultList+"==="+scanResultList.size());
+				Log.e("asc===onScanFinished", scanResultList+"==="+scanResultList.size());
 			}
 		});
 	}
@@ -541,6 +552,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		inactivityTimer.shutdown();
 //		mScanerListener = null;
 		super.onDestroy();
+
+        BleManager.getInstance().cancelScan();
 
 		Log.e("onDestroy===ASC2", "===="+inactivityTimer);
 
@@ -1048,7 +1061,65 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //		previewing = true;
 //	}
 
-	private void info(JSONObject jsonObject){
+	void macLoop(final JSONObject jsonObject){
+
+
+		try {
+
+			final String macinfo = jsonObject.getString("macinfo");
+			boolean is = macList.contains(macinfo);
+
+			if(n<5){
+				n++;
+
+				Log.e("macLoop===", is+"==="+n);
+
+				if(is){
+					BleManager.getInstance().cancelScan();
+
+					Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+					intent.putExtra("name", "NokeLock");
+					intent.putExtra("codenum",codenum);
+					intent.putExtra("pdk",jsonObject.getString("pdk"));
+					intent.putExtra("pwd",jsonObject.getString("pwd"));
+					intent.putExtra("address", macinfo);
+					intent.putExtra("isMac",true);
+					startActivity(intent);
+					scrollToFinishActivity();
+				}else{
+					m_myHandler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							Log.e("macLoop===1", "==="+n);
+
+							macLoop(jsonObject);
+
+						}
+					}, 1 * 1000);
+				}
+
+			}else{
+				Log.e("macLoop===finish", "===");
+				BleManager.getInstance().cancelScan();
+
+				Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+				intent.putExtra("name", "NokeLock");
+				intent.putExtra("codenum",codenum);
+				intent.putExtra("pdk",jsonObject.getString("pdk"));
+				intent.putExtra("pwd",jsonObject.getString("pwd"));
+				intent.putExtra("address", macinfo);
+				intent.putExtra("isMac",is);
+				startActivity(intent);
+				scrollToFinishActivity();
+			}
+
+
+		}catch (Exception e){
+
+		}
+	}
+
+	private void info(final JSONObject jsonObject){
 		try {
 
 
@@ -1152,15 +1223,40 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					}else{
 						if (!isChangeKey){
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-								Log.e("Scan===2_1", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								Log.e("Scan===2_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
-								Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
-								intent.putExtra("name", "NokeLock");
-								intent.putExtra("codenum",codenum);
-								intent.putExtra("pdk",jsonObject.getString("pdk"));
-								intent.putExtra("pwd",jsonObject.getString("pwd"));
-								intent.putExtra("address", jsonObject.getString("macinfo"));
-								startActivity(intent);
+								n=0;
+								macLoop(jsonObject);
+
+//								boolean is = macList.contains(macinfo);
+//								int n = is?0:1;
+//								m_myHandler.postDelayed(new Runnable() {
+//									@Override
+//									public void run() {
+//										boolean is = macList.contains(macinfo);
+//										int n = is?0:1;
+//										m_myHandler.postDelayed(new Runnable() {
+//											@Override
+//											public void run() {
+//												try {
+//													Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+//													intent.putExtra("name", "NokeLock");
+//													intent.putExtra("codenum",codenum);
+//													intent.putExtra("pdk",jsonObject.getString("pdk"));
+//													intent.putExtra("pwd",jsonObject.getString("pwd"));
+//													intent.putExtra("address", macinfo);
+//													intent.putExtra("isMac", macList.contains(jsonObject.getString("macinfo")));
+//													startActivity(intent);
+//													scrollToFinishActivity();
+//												}catch (Exception e){
+//
+//												}
+//											}
+//										}, n * 1000);
+//									}
+//								}, n * 1000);
+
+
 							}else {
 								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
@@ -1172,6 +1268,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								intent.putExtra("pwd",jsonObject.getString("pwd"));
 								intent.putExtra("address", jsonObject.getString("macinfo"));
 								startActivity(intent);
+								scrollToFinishActivity();
 							}
 						}else {
 							Log.e("Scan===2_3", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
@@ -1181,13 +1278,13 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 							intent.putExtra("codenum",codenum);
 							intent.putExtra("address", jsonObject.getString("macinfo"));
 							startActivity(intent);
+							scrollToFinishActivity();
 						}
-						scrollToFinishActivity();
+
 					}
 				}else if ("3".equals(jsonObject.getString("type"))){    //3合1锁
 
 					Log.e("Scan===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
-
 
 //					Intent intent = new Intent(ActivityScanerCode.this, Main3Activity.class);
 //					intent.putExtra("codenum", jsonObject.getString("codenum"));
@@ -1213,12 +1310,16 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					}else{
 						if (!isChangeKey){
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+
+								Log.e("Scan===3_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
 								Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
 								intent.putExtra("name", "NokeLock");
 								intent.putExtra("codenum",codenum);
 								intent.putExtra("pdk",jsonObject.getString("pdk"));
 								intent.putExtra("pwd",jsonObject.getString("pwd"));
 								intent.putExtra("address", jsonObject.getString("macinfo"));
+								intent.putExtra("isMac", macList.contains(jsonObject.getString("macinfo")));
 								startActivity(intent);
 							}else {
 								Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
@@ -1304,6 +1405,10 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 												scrollToFinishActivity();
 //												MainActivity.changeTab(4);
+
+												if (loadingDialog != null && loadingDialog.isShowing()){
+													loadingDialog.dismiss();
+												}
 											}
 										})
 										.setNegativeButton("开锁", new DialogInterface.OnClickListener() {
@@ -1337,11 +1442,13 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 						}
 					} catch (Exception e) {
+
+						if (loadingDialog != null && loadingDialog.isShowing()){
+							loadingDialog.dismiss();
+						}
 						Log.e("Test","异常"+e);
 					}
-					if (loadingDialog != null && loadingDialog.isShowing()){
-						loadingDialog.dismiss();
-					}
+
 				}
 			});
 		}

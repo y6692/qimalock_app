@@ -51,6 +51,7 @@ public class Config {
         keyMap.put("FEFD7A3FADD3", "EE23772DBCAFFA4BEA7BFBC6779327EC");
         keyMap.put("F30EFB1774DE", "53780914EAF4FFD47EFFFF76FFD76F8B");
         keyMap.put("CB2F2D360B8D", "3cb15c022babfd8b0ce87d4d2fd63841");
+        keyMap.put("022101165243", "551222121B5249436A781366577E5368");     //02:21:01:16:52:43
     }
 
 //    1106 022102423925    56 0D 23 00 34 3D 46 04 7D 46 06 79 56 7F 3B 7B
@@ -78,8 +79,11 @@ public class Config {
 //    public static byte[] key = {(byte)0x56, (byte)0x51, (byte)0x23, 0x21, (byte)0x46, (byte)0x77, (byte)0x2A, (byte)0x57, (byte)0x62, (byte)0xB1, (byte)0x1B, (byte)0x5E, (byte)0x77, 0x7F, 0x29, (byte)0x60};
 //    public static byte[] key = {(byte)0x55, (byte)0x11, (byte)0x22, 0x01, (byte)0x2A, (byte)0x73, (byte)0x29, (byte)0x32, (byte)0x5A, (byte)0x69, (byte)0x23, (byte)0x56, (byte)0x54, 0x7F, 0x44, (byte)0x58};
 //    public static byte[] key = {(byte)0x56, (byte)0x55, (byte)0x23, 0x21, (byte)0x48, (byte)0x7D, (byte)0x26, (byte)0x59, (byte)0x60, (byte)0xB3, (byte)0x1B, (byte)0x5C, (byte)0x77, 0x7B, 0x27, (byte)0x5E};
-    public static byte[] key = {(byte)0x56, (byte)0x6C, (byte)0x23, 0x00, (byte)0x35, (byte)0xBB, (byte)0xE3, (byte)0x82, (byte)0x7C, (byte)0xE4, (byte)0x07, (byte)0x78, (byte)0x56, 0x7B, 0x3A, (byte)0x7A};
+//    public static byte[] key = {(byte)0x56, (byte)0x6C, (byte)0x23, 0x00, (byte)0x35, (byte)0xBB, (byte)0xE3, (byte)0x82, (byte)0x7C, (byte)0xE4, (byte)0x07, (byte)0x78, (byte)0x56, 0x7B, 0x3A, (byte)0x7A};
+    public static byte[] key = {(byte)0x80, (byte)0xD7, (byte)0xCC, 0x01, (byte)0x6B, (byte)0xFB, (byte)0xEF, (byte)0x70, (byte)0xF7, (byte)0x3F, (byte)0xEF, (byte)0x36, (byte)0x7F, (byte)0xD3, 0x6A, (byte)0xFC};
 
+
+//    80 D7 CC 01 6B FB EF 70 F7 3F EF 36 7F D3 6A FC
 
 //    public static byte[] key = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};   //物联锁原始密钥
 //    十六进制：20 57 2f 52 36 4b 3f 47 30 50 41 58 11 63 2d 2b

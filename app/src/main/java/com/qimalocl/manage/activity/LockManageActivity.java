@@ -162,10 +162,11 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 
         BleManager.getInstance()
                 .enableLog(true)
-                .setReConnectCount(1, 5000)
+                .setReConnectCount(10, 5000)
                 .setConnectOverTime(20000)
-                .setOperateTimeout(5000);
+                .setOperateTimeout(10000);
 
+        BleManager.getInstance().cancelScan();
 
         ButterKnife.bind(this);
         registerReceiver(broadcastReceiver, Config.initFilter());
@@ -653,7 +654,6 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
     void back() {
         scrollToFinishActivity();
     }
-
 
     @Override
     protected void onResume() {

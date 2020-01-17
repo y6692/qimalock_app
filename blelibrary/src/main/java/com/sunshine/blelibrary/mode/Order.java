@@ -28,7 +28,7 @@ public class Order {
         GET_TOKEN(0x0601),
         OPEN_LOCK(0x0501),
         GET_BATTERY(0x0201),
-        LOCK_STATUS(0x050e),
+        LOCK_STATUS(0x050E),
         RESET_LOCK(0x050c),
         RESET_PASSWORD(0x0503),
         RESET_PASSWORD2(0X0504),

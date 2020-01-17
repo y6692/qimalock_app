@@ -271,6 +271,9 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
     @Override
     public void onConnect(BluetoothDevice device) {
+
+        Log.e("onConnect===", isConnect+"==="+device);
+
         isConnect = true;
         runOnUiThread(new Runnable() {
             @Override
@@ -284,6 +287,8 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
     @Override
     public void onDisConnect(BluetoothDevice device) {
+        Log.e("onDisConnect===", isConnect+"==="+device);
+
         isConnect = false;
         runOnUiThread(new Runnable() {
             @Override

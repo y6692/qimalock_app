@@ -57,9 +57,11 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
+import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
 import com.sunshine.blelibrary.mode.GetTokenTxOrder;
 import com.sunshine.blelibrary.mode.OpenLockTxOrder;
 import com.sunshine.blelibrary.mode.Order;
+import com.sunshine.blelibrary.mode.XinbiaoTxOrder;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
 
 import org.apache.http.Header;
@@ -144,6 +146,9 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
     BleDevice bleDevice;
     String token;
 
+    private boolean isMac = false;
+    private boolean isFind = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,9 +163,9 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 
         BleManager.getInstance()
                 .enableLog(true)
-                .setReConnectCount(1, 5000)
+                .setReConnectCount(10, 5000)
                 .setConnectOverTime(20000)
-                .setOperateTimeout(5000);
+                .setOperateTimeout(10000);
 
 //        BleManager.getInstance().disconnectAllDevice();
 //        BleManager.getInstance().destroy();
@@ -209,8 +214,9 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         codenum = getIntent().getStringExtra("codenum");
         pdk = getIntent().getStringExtra("pdk");
         pwd = getIntent().getStringExtra("pwd");
+        isMac = getIntent().getBooleanExtra("isMac", false);
 
-        Log.e("LockManageAlert===", pdk+"==="+address);
+        Log.e("LockManageAlert===", isMac+"==="+pdk+"==="+address);
 
         loadingDialog = new LoadingDialog(this);
         loadingDialog.setCancelable(false);
@@ -220,15 +226,36 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 
         if (!TextUtils.isEmpty(address)) {
 //            BaseApplication.getInstance().getIBLE().connect(address, this);
-            setScanRule();
-            m_myHandler.post(new Runnable() {
+
+//            m_myHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    BleManager.getInstance().cancelScan();
+//
+//
+//                    if(isMac){
+//                        connect();
+//                    }else{
+//
+//                        setScanRule();
+//                        scan();
+//                    }
+//                }
+//            });
+
+
+            m_myHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if(isMac){
+                        connect();
+                    }else{
 
-//                    scan();
-                    connect();
+                        setScanRule();
+                        scan();
+                    }
                 }
-            });
+            }, 0 * 1000);
 
         }
 
@@ -338,9 +365,9 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
 //                .setServiceUuids(serviceUuids)      // 只扫描指定的服务的设备，可选
 //                .setDeviceName(true, names)   // 只扫描指定广播名的设备，可选
-                .setDeviceMac(address)                  // 只扫描指定mac的设备，可选
+//                .setDeviceMac(address)                  // 只扫描指定mac的设备，可选
 //                .setAutoConnect(true)                 // 连接时的autoConnect参数，可选，默认false
-//                .setScanTimeOut(10000)              // 扫描超时时间，可选，默认10秒
+                .setScanTimeOut(10000)              // 扫描超时时间，可选，默认10秒
                 .build();
         BleManager.getInstance().initScanRule(scanRuleConfig);
     }
@@ -350,6 +377,8 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         loadingDialog.setTitle("正在搜索");
         loadingDialog.show();
 
+        isFind = false;
+        BleManager.getInstance().cancelScan();
         BleManager.getInstance().scan(new BleScanCallback() {
             @Override
             public void onScanStarted(boolean success) {
@@ -374,12 +403,14 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 //                mDeviceAdapter.addDevice(bleDevice);
 //                mDeviceAdapter.notifyDataSetChanged();
 
-                Log.e("onScanning===", bleDevice+"==="+bleDevice.getMac());
+                Log.e("onScanning===", bleDevice+"===");
+                Log.e("onScanning===1", bleDevice+"==="+bleDevice.getMac());
 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         if(address.equals(bleDevice.getMac())){
+                            isFind = true;
                             //                            if (loadingDialog != null && loadingDialog.isShowing()) {
 //                                loadingDialog.dismiss();
 //                            }
@@ -411,7 +442,20 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 //                img_loading.setVisibility(View.INVISIBLE);
 //                btn_scan.setText(getString(R.string.start_scan));
 
-                Log.e("onScanFinished===", scanResultList+"==="+scanResultList.size());
+                Log.e("onScanFinished===", isFind+"==="+scanResultList.size());
+
+                if(!isFind){
+                    Toast.makeText(context, "搜索失败", Toast.LENGTH_LONG).show();
+
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+
+                    connect();
+                }
+
+
+
             }
         });
     }
@@ -499,8 +543,11 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 
                             if(isOpen){
                                 openLock();
+                            }else{
+                                getLockStatus();
                             }
 
+                            Toast.makeText(context, "token获取成功", Toast.LENGTH_LONG).show();
                         }else if(s1.startsWith("0502")){
                             Log.e("openLock===", "==="+s1);
 
@@ -519,7 +566,17 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 
                             if("01".equals(s1.substring(6, 8))){
                                 Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
                             }
+                        }else if(s1.startsWith("058502")){
+                            Log.e("xiaobiao===", "==="+s1);        //050F0101017A0020782400200F690300
+
+//                            if("01".equals(s1.substring(6, 8))){
+//                                Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
+//                            }else{
+//                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
+//                            }
                         }
 
                     }
@@ -562,6 +619,46 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
             @Override
             public void onWriteFailure(BleException exception) {
                 Log.e("getBleToken=onWriteFail", "==="+exception);
+            }
+        });
+    }
+
+    void getLockStatus(){
+        String s = new GetLockStatusTxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("getLockStatus===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("getLockStatus==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("getLockStatus=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
+    void getXinbiao(){
+        String s = new XinbiaoTxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("getXinbiao===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("getXinbiao==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("getXinbiao=onWriteFa", "==="+exception);
             }
         });
     }
@@ -617,11 +714,26 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 
     @OnClick(R.id.bt_xinbiao)
     void xinbiao() {
+        getXinbiao();
 //        BaseApplication.getInstance().getIBLE().xinbiao();
     }
 
     @OnClick(R.id.bt_status)
     void status() {
+//        BaseApplication.getInstance().getIBLE().getToken();
+
+//        getBleToken();
+
+        Log.e("status===", "==="+isConnect);
+
+
+        if(isConnect){
+            getLockStatus();
+        }else{
+            isOpen = false;
+            connect();
+        }
+
 //        BaseApplication.getInstance().getIBLE().getLockStatus();
     }
 
@@ -659,20 +771,20 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 
 //        byte[] bb = {30,85,45,80,52,73,60,70,45,75,60,86,10,90,40,42};
 
-        byte[] bb=new byte[3];
-
-        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb",
-                bb, true, new BleWriteCallback() {
-            @Override
-            public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("onWriteSuccess===", current+"==="+total+"==="+justWrite);
-            }
-
-            @Override
-            public void onWriteFailure(BleException exception) {
-                Log.e("onWriteFailure===", "==="+exception);
-            }
-        });
+//        byte[] bb=new byte[3];
+//
+//        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb",
+//                bb, true, new BleWriteCallback() {
+//            @Override
+//            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+//                Log.e("onWriteSuccess===", current+"==="+total+"==="+justWrite);
+//            }
+//
+//            @Override
+//            public void onWriteFailure(BleException exception) {
+//                Log.e("onWriteFailure===", "==="+exception);
+//            }
+//        });
 
         BleManager.getInstance().disconnectAllDevice();
         BleManager.getInstance().destroy();
