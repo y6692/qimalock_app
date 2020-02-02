@@ -596,34 +596,43 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         switch (v.getId()) {
             case R.id.layLock :
                 UIHelper.showProgress(this, "获取锁状态中");
-                ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
-                    @Override
-                    public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
-                        keySource = keySerial;
 
-                        m_myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                UIHelper.dismiss();
-                                rent();
-                            }
-                        });
-                    }
+                Log.e("onClick===layLock", "==="+mConnected);
 
-                    @Override
-                    public void onResponseFail(final int code) {
+                if(mConnected){
+                    ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
+                        @Override
+                        public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
+                            keySource = keySerial;
 
-                        m_myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.e(TAG, Code.toString(code));
-                                UIHelper.dismiss();
-                                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
-                            }
-                        });
-                    }
+                            m_myHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    UIHelper.dismiss();
+                                    rent();
+                                }
+                            });
+                        }
 
-                });
+                        @Override
+                        public void onResponseFail(final int code) {
+
+                            m_myHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.e(TAG, Code.toString(code));
+                                    UIHelper.dismiss();
+                                    UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
+                                }
+                            });
+                        }
+
+                    });
+                }else{
+                    connectDevice();
+                }
+
+
                 break;
 
             case R.id.btnQueryState:
@@ -693,8 +702,8 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     //连接设备
     private void connectDevice() {
         BleConnectOptions options = new BleConnectOptions.Builder()
-                .setConnectRetry(3)
-                .setConnectTimeout(20000)
+                .setConnectRetry(1)
+                .setConnectTimeout(10000)
                 .setServiceDiscoverRetry(1)
                 .setServiceDiscoverTimeout(10000)
                 .setEnableNotifyRetry(1)
@@ -706,10 +715,12 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             public void onResponseFail(final int code) {
                 isStop = false;
 
+                UIHelper.dismiss();
+
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        Log.e("connect===fail", Code.toString(code));
                         UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                     }
                 });
@@ -719,6 +730,10 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             @Override
             public void onResponseSuccess(BleGattProfile profile) {
                 isStop = true;
+
+                UIHelper.dismiss();
+
+                Log.e("connect===Success", "===");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -1123,11 +1138,9 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     public void run() {
                         UIHelper.dismiss();
 
-                        Log.e("queryOpenState===", "===="+open);
+                        Log.e("queryOpenState===", "===="+open);    //false==关闭     true==打开
                     }
                 });
-
-
             }
 
             @Override
@@ -1140,7 +1153,6 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                         UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                     }
                 });
-
             }
         });
     }
@@ -1377,9 +1389,9 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     }
 
 
-//                    Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
+                    Globals.isBleConnected = mConnected = (status == STATUS_CONNECTED);
 //                    refreshData(mConnected);
-//                    connectDeviceIfNeeded();
+                    connectDeviceIfNeeded();
                 }
             });
 

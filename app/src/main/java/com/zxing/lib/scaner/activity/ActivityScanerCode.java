@@ -1260,15 +1260,17 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 							}else {
 								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
+								n=0;
+								macLoop(jsonObject);
 
-								Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
-								intent.putExtra("name", "NokeLock");
-								intent.putExtra("codenum",codenum);
-								intent.putExtra("pdk",jsonObject.getString("pdk"));
-								intent.putExtra("pwd",jsonObject.getString("pwd"));
-								intent.putExtra("address", jsonObject.getString("macinfo"));
-								startActivity(intent);
-								scrollToFinishActivity();
+//								Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
+//								intent.putExtra("name", "NokeLock");
+//								intent.putExtra("codenum",codenum);
+//								intent.putExtra("pdk",jsonObject.getString("pdk"));
+//								intent.putExtra("pwd",jsonObject.getString("pwd"));
+//								intent.putExtra("address", jsonObject.getString("macinfo"));
+//								startActivity(intent);
+//								scrollToFinishActivity();
 							}
 						}else {
 							Log.e("Scan===2_3", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
