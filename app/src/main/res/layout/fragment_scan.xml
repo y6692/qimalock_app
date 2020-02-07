@@ -11,9 +11,7 @@
         android:id="@+id/mainUI_titleLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp40"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:background="@drawable/bcg_title_home">
 
         <!--<ImageView-->
             <!--android:id="@+id/mainUI_leftBtn"-->
@@ -24,6 +22,7 @@
             <!--android:padding="@dimen/dp5"/>-->
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/mainUI_leftBtn"
             android:layout_width="@dimen/dp90"
             android:layout_height="match_parent"
@@ -33,23 +32,24 @@
             android:text="扫码入库"
             android:gravity="center"/>
 
-        <ImageView
-            android:layout_width="@dimen/dp100"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/title"
-            android:scaleType="centerInside"/>
-
-        <!--<TextView-->
-            <!--android:id="@+id/mainUI_title"-->
-            <!--android:layout_width="wrap_content"-->
+        <!--<ImageView-->
+            <!--android:layout_width="@dimen/dp100"-->
             <!--android:layout_height="wrap_content"-->
             <!--android:layout_centerInParent="true"-->
-            <!--android:text="7MA出行"-->
-            <!--android:textColor="@color/white"-->
-            <!--android:textSize="@dimen/sp16"/>-->
+            <!--android:src="@drawable/title"-->
+            <!--android:scaleType="centerInside"/>-->
 
         <TextView
+            android:id="@+id/mainUI_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="首页"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp18"/>
+
+        <TextView
+            android:visibility="gone"
             android:id="@+id/mainUI_rightBtn"
             android:layout_width="@dimen/dp90"
             android:layout_height="match_parent"
@@ -80,9 +80,9 @@
             android:id="@+id/mainUI_msg"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="0dp"
             android:orientation="horizontal"
             android:background="@drawable/btn_bcg_mission"
             android:gravity="center_vertical"
@@ -90,9 +90,9 @@
             >
             <ImageView
                 android:id="@+id/ib2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="23dp"
                 android:src="@drawable/msg"
                 android:background="#00000000"
                 />
@@ -100,10 +100,10 @@
                 android:id="@+id/msg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text=""
-                android:textSize="@dimen/sp16"
-                android:textColor="@color/white"
+                android:layout_marginLeft="12dp"
+                android:text="123"
+                android:textSize="@dimen/sp12"
+                android:textColor="@color/tx_black"
                 android:layout_centerInParent="true"
                 />
         </LinearLayout>
@@ -201,10 +201,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="220dp"
-            android:layout_marginLeft="@dimen/dp10"
+            android:layout_marginBottom="168dp"
+            android:layout_marginLeft="@dimen/dp30"
             android:orientation="vertical"
-            android:background="@drawable/back_bd"
             android:gravity="center">
 
             <Switch
@@ -228,10 +227,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="150dp"
-            android:layout_marginLeft="@dimen/dp10"
+            android:layout_marginBottom="107dp"
+            android:layout_marginLeft="@dimen/dp30"
             android:orientation="vertical"
-            android:background="@drawable/back_bd"
             android:gravity="center">
 
 
@@ -257,29 +255,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dp"
-            android:layout_marginLeft="@dimen/dp10"
+            android:layout_marginBottom="39dp"
+            android:layout_marginLeft="@dimen/dp30"
             android:orientation="vertical"
-            android:background="@drawable/back_bd"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/mainUI_myLocation"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:background="@null"
                 android:src="@drawable/btn_location"
                 android:layout_alignParentLeft="true"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/sp12"
-                android:textColor="@color/tx_black"
-                android:text="定位"/>
         </LinearLayout>
 
         <TextView
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -290,6 +282,7 @@
             android:text="xyt_ebike："/>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -321,6 +314,7 @@
         </LinearLayout>
 
         <TextView
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -331,6 +325,7 @@
             android:text="xa_ebike："/>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -362,22 +357,20 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/mainUI_getDotLayout"
+            android:id="@+id/mainUI_bindLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="80dp"
-            android:layout_marginRight="@dimen/dp10"
+            android:layout_marginBottom="227dp"
+            android:layout_marginRight="28dp"
             android:orientation="vertical"
-            android:background="@drawable/back_bd"
             android:gravity="center">
 
             <ImageView
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:background="@null"
-                android:src="@drawable/getdot"
+                android:src="@drawable/bind_icon"
                 android:layout_alignParentLeft="true"/>
 
             <TextView
@@ -385,10 +378,86 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/sp12"
                 android:textColor="@color/tx_black"
-                android:text="取点"/>
+                android:text="车绑学校"/>
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/mainUI_cameraLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="168dp"
+            android:layout_marginRight="@dimen/dp35"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/camera_icon"
+                android:layout_alignParentLeft="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp12"
+                android:textColor="@color/tx_black"
+                android:text="拍照"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/mainUI_inStorageLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="106dp"
+            android:layout_marginRight="@dimen/dp35"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/in_storage_icon"
+                android:layout_alignParentLeft="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp12"
+                android:textColor="@color/tx_black"
+                android:text="入库"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/mainUI_getDotLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="42dp"
+            android:layout_marginRight="@dimen/dp35"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/fence"
+                android:layout_alignParentLeft="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp12"
+                android:textColor="@color/tx_black"
+                android:text="围栏"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
             android:id="@+id/mainUI_typeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -417,6 +486,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/mainUI_testXALayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -443,22 +513,23 @@
                 android:text="小安测试"/>
         </LinearLayout>
 
+
+
+
         <LinearLayout
             android:id="@+id/mainUI_scanCode_lock"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp60"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal"
-            android:background="@drawable/btn_bcg_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="66dp"
+            android:orientation="vertical"
             android:gravity="center"
+            android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
             >
             <ImageView
                 android:id="@+id/ib"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:src="@drawable/scan3"
                 android:background="#00000000"
                 android:layout_centerInParent="true"
@@ -467,10 +538,10 @@
                 android:id="@+id/tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:text="扫码开锁"
-                android:textSize="@dimen/sp20"
-                android:textColor="@color/white"
+                android:layout_marginTop="1dp"
+                android:text="扫码"
+                android:textSize="@dimen/sp12"
+                android:textColor="@color/tx_black"
                 android:layout_centerInParent="true"
                 />
         </LinearLayout>

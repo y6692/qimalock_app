@@ -2,6 +2,7 @@ package com.zxing.lib.scaner.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -75,6 +76,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.fragment.MaintenanceFragment;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.ToastUtil;
 import com.vondear.rxtools.RxAnimationTool;
 import com.vondear.rxtools.RxBeepTool;
 import com.vondear.rxtools.interfaces.OnRxScanerListener;
@@ -103,6 +105,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ActivityScanerCode extends SwipeBackActivity implements View.OnClickListener{
 
 	private Context context;
+	private Activity mActivity = this;
 
 	BluetoothAdapter mBluetoothAdapter;
 
@@ -117,7 +120,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private RelativeLayout scanContainer;
 	private RelativeLayout scanCropView;
 	private ImageView scanLine;
-	private ImageView ivLight;
+	private ImageView ivHand, ivLight;
 
 	private Rect mCropRect = null;
 	private boolean barcodeScanned = false;
@@ -129,7 +132,10 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private static final float BEEP_VOLUME = 0.50f;
 	private boolean vibrate;
 	private ImageView cancle;
-	private TextView bikeNunBtn;
+	private LinearLayout bikeNunBtn;
+
+	private RelativeLayout mCropLayout, mCropLayout2;
+	private LinearLayout ll_input;
 //	private LoadingDialog loadingDialog;
 
 	private String codenum = "";
@@ -138,7 +144,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private EditText bikeNumEdit;
 	private Button positiveButton,negativeButton;
 	private LinearLayout lightBtn;
-	private boolean flag = true;
 	private int Tag = 0;
 	private boolean isChangeKey = false;
 	private boolean isAdd = false;
@@ -159,6 +164,14 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private List<String> macList = new ArrayList<String>();
 	private int n = 0;
 
+	private boolean isHide = false;
+	private boolean isHand = false;
+	private boolean isLight = false;
+
+	private boolean isPermission = false;
+
+	private InputMethodManager inputMethodManager;
+
 //	static {
 //		System.loadLibrary("iconv");
 //	}
@@ -173,6 +186,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //		Fragment fragment = fm.findFragmentById(R.id.fr);
 
 		context = this;
+
+		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
 		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey");
 		isAdd = getIntent().getExtras().getBoolean("isAdd", false);
@@ -236,6 +251,348 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		setScanRule();
 		scan();
 
+	}
+
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		Log.e("surface===0", surfaceHolder+"==="+hasSurface);
+
+		if(!isPermission){
+			if (!hasSurface) {
+
+				if(surfaceHolder==null){
+					surfaceHolder = scanPreview.getHolder();
+
+					Log.e("surface===0_1", isPermission+"==="+hasSurface+"==="+surfaceHolder);
+
+					surfaceHolder.addCallback(new SurfaceHolder.Callback() {
+						@Override
+						public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+						}
+
+						@Override
+						public void surfaceCreated(SurfaceHolder holder) {
+							Log.e("surface===1", "==="+hasSurface);
+
+							if (!hasSurface) {
+								hasSurface = true;
+								initCamera(holder);
+
+								if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+									ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+								}
+								//蓝牙锁
+								if (mBluetoothAdapter == null) {
+									BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+									mBluetoothAdapter = bluetoothManager.getAdapter();
+								}
+
+								if (mBluetoothAdapter == null) {
+									ToastUtil.showMessageApp(context, "获取蓝牙失败");
+									return;
+								}
+
+								if (!mBluetoothAdapter.isEnabled()) {
+									isPermission = true;
+
+									previewing = false;
+									mCropLayout2.setVisibility(View.GONE);
+
+									Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+									startActivityForResult(enableBtIntent, 188);
+								} else {
+
+									BleManager.getInstance().init(getApplication());
+									BleManager.getInstance()
+											.enableLog(true)
+											.setReConnectCount(10, 5000)
+											.setConnectOverTime(20000)
+											.setOperateTimeout(10000);
+
+									setScanRule();
+									scan();
+
+									Log.e("asc===onCreate", "==="+mCamera);
+
+									if (mCamera!=null){
+
+									}
+
+
+								}
+
+
+							}
+						}
+
+						@Override
+						public void surfaceDestroyed(SurfaceHolder holder) {
+							Log.e("surface===2", "==="+hasSurface);
+
+							hasSurface = false;
+
+							if (loadingDialog != null && loadingDialog.isShowing()) {
+								loadingDialog.dismiss();
+							}
+						}
+					});
+					surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+				}
+
+			} else {
+				Log.e("surface===3", "==="+hasSurface);
+
+				initCamera(surfaceHolder);
+			}
+
+		}
+
+//		if (!hasSurface) {
+//			//Camera初始化
+////            initCamera(surfaceHolder);
+////            resetCamera(surfaceHolder);
+//
+//			if(surfaceHolder==null){
+//				surfaceHolder = scanPreview.getHolder();
+//
+//				sf = new SurfaceHolder.Callback() {
+//					@Override
+//					public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+//					}
+//
+//					@Override
+//					public void surfaceCreated(SurfaceHolder holder) {
+//						Log.e("surface===1", "==="+hasSurface);
+//
+//						if (!hasSurface) {
+//							hasSurface = true;
+//							initCamera(holder);
+//						}
+//					}
+//
+//					@Override
+//					public void surfaceDestroyed(SurfaceHolder holder) {
+//						Log.e("surface===2", "==="+hasSurface);
+//
+//						hasSurface = false;
+//					}
+//				};
+//
+//				surfaceHolder.addCallback(sf);
+//				surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+//			}
+//
+//		} else {
+//			initCamera(surfaceHolder);
+//		}
+
+
+	}
+
+	private void findViewById() {
+
+		loadingDialog = new LoadingDialog(ActivityScanerCode.this);
+		loadingDialog.setCancelable(false);
+		loadingDialog.setCanceledOnTouchOutside(false);
+
+//		scanPreview =  (FrameLayout) findViewById(R.id.capture_preview);
+		scanPreview =  (SurfaceView) findViewById(R.id.capture_preview);
+		scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
+		scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
+		scanLine = (ImageView) findViewById(R.id.capture_scan_line);
+		ivHand = (ImageView) findViewById(R.id.iv_hand);
+		ivLight = (ImageView) findViewById(R.id.iv_light);
+		cancle = (ImageView)findViewById(R.id.iv_cancle);
+		bikeNunBtn = (LinearLayout)findViewById(R.id.loca_show_btnBikeNum);
+		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
+
+		mCropLayout = (RelativeLayout) findViewById(R.id.capture_crop_layout);
+		mCropLayout2 = (RelativeLayout) findViewById(R.id.capture_crop_layout2);
+		ll_input = (LinearLayout) findViewById(R.id.ll_input);
+
+		dialog = new Dialog(this, R.style.Theme_AppCompat_Dialog);
+		View dialogView = LayoutInflater.from(this).inflate(R.layout.pop_circles_menu, null);
+		dialog.setContentView(dialogView);
+		dialog.setCanceledOnTouchOutside(false);
+
+		bikeNumEdit = (EditText)findViewById(R.id.pop_circlesMenu_bikeNumEdit);
+		positiveButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_positiveButton);
+		negativeButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_negativeButton);
+
+		cancle.setOnClickListener(this);
+		positiveButton.setOnClickListener(this);
+		negativeButton.setOnClickListener(this);
+		bikeNunBtn.setOnClickListener(this);
+		lightBtn.setOnClickListener(this);
+		findViewById(R.id.top_back).setOnClickListener(this);
+		findViewById(R.id.top_mask_bcg).setOnClickListener(this);
+		findViewById(R.id.left_mask).setOnClickListener(this);
+		findViewById(R.id.right_mask).setOnClickListener(this);
+		findViewById(R.id.bottom_mask).setOnClickListener(this);
+
+//        initViews();
+		playBeep = true;
+		AudioManager audioService = (AudioManager) context.getSystemService(AUDIO_SERVICE);
+		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+			playBeep = false;
+		}
+		initBeepSound();
+		vibrate = true;
+	}
+
+	@Override
+	public void onClick(View v) {
+		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+		switch (v.getId()){
+//			case R.id.iv_cancle:
+//				scrollToFinishActivity();
+//				break;
+
+			case R.id.top_back:
+				inputMethodManager.hideSoftInputFromWindow(bikeNumEdit.getWindowToken(), 0);
+				scrollToFinishActivity();
+				break;
+
+			case R.id.top_mask_bcg:
+			case R.id.left_mask:
+			case R.id.right_mask:
+			case R.id.bottom_mask:
+				Log.e("onClick===1", "===");
+				isHand = false;
+				ivHand.setImageResource(R.drawable.top_hand);
+//				btnBikeNum.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.top_hand), null, null);
+
+				previewing = true;
+				initCamera(surfaceHolder);
+
+				mCropLayout2.setVisibility(View.VISIBLE);
+				ll_input.setVisibility(View.GONE);
+
+				inputMethodManager.hideSoftInputFromWindow(bikeNumEdit.getWindowToken(), 0);
+				break;
+
+			case R.id.loca_show_btnBikeNum:
+				if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+					Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
+					UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
+				}else {
+					//关闭相机
+//					releaseCamera();
+//					mCameraManager.closeDriver();
+
+					Log.e("asc===btnBikeNum", isHand+"==="+mCamera);
+
+					if(isHand){
+						isHand = false;
+						ivHand.setImageResource(R.drawable.top_hand);
+//						btnBikeNum.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.top_hand), null, null);
+
+						previewing = true;
+						initCamera(surfaceHolder);
+//                		mCamera.startPreview();
+
+						mCropLayout2.setVisibility(View.VISIBLE);
+						ll_input.setVisibility(View.GONE);
+
+						inputMethodManager.hideSoftInputFromWindow(bikeNumEdit.getWindowToken(), 0);
+					}else{
+						isHand = true;
+						ivHand.setImageResource(R.drawable.top_hand2);
+//						btnBikeNum.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.top_hand2), null, null);
+
+						bikeNumEdit.setText("");
+
+						if (mCamera!=null){
+							previewing = false;
+						}
+
+						isHide = true;
+
+						mCropLayout2.setVisibility(View.GONE);
+						ll_input.setVisibility(View.VISIBLE);
+
+
+						bikeNumEdit.requestFocus();
+
+						inputMethodManager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
+						inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
+//						InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//						manager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
+//						manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
+
+					}
+
+//					bikeNumEdit.setText("");
+//
+//					WindowManager windowManager = getWindowManager();
+//					Display display = windowManager.getDefaultDisplay();
+//					WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+//					lp.width = (int) (display.getWidth() * 0.8); // 设置宽度0.6
+//					lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//					dialog.getWindow().setAttributes(lp);
+//					dialog.getWindow().setWindowAnimations(R.style.dialogWindowAnim);
+//					dialog.show();
+//
+//					InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//					manager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
+//					manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+				}
+				break;
+
+			case R.id.pop_circlesMenu_positiveButton:
+				String bikeNum = bikeNumEdit.getText().toString().trim();
+				if (bikeNum == null || "".equals(bikeNum)){
+					Toast.makeText(this,"请输入单车编号",Toast.LENGTH_SHORT).show();
+					return;
+				}
+				InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+				manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+				if (dialog.isShowing()) {
+					dialog.dismiss();
+				}
+				Tag = 1;
+				lockInfo(bikeNum);
+				break;
+
+			case R.id.pop_circlesMenu_negativeButton:
+				InputMethodManager manager1= (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+				manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+				if (dialog.isShowing()) {
+					dialog.dismiss();
+				}
+
+				initCamera(surfaceHolder);
+
+				break;
+
+			case R.id.activity_qr_scan_lightBtn:
+
+				if (isLight) {
+					isLight = false;
+					// 打开
+					ivLight.setImageResource(R.drawable.top_light2);
+
+					mCameraManager.openLight();
+				} else {
+					isLight = true;
+					// 关闭
+					ivLight.setImageResource(R.drawable.top_light);
+					mCameraManager.offLight();
+				}
+
+
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	private void setScanRule() {
@@ -368,99 +725,10 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		RxAnimationTool.ScaleUpDowm(mQrLineView);
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		Log.e("surface===0", surfaceHolder+"==="+hasSurface);
-
-		if (!hasSurface) {
-			//Camera初始化
-//            initCamera(surfaceHolder);
-//            resetCamera(surfaceHolder);
-
-			if(surfaceHolder==null){
-				surfaceHolder = scanPreview.getHolder();
-
-				sf = new SurfaceHolder.Callback() {
-					@Override
-					public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-					}
-
-					@Override
-					public void surfaceCreated(SurfaceHolder holder) {
-						Log.e("surface===1", "==="+hasSurface);
-
-						if (!hasSurface) {
-							hasSurface = true;
-							initCamera(holder);
-						}
-					}
-
-					@Override
-					public void surfaceDestroyed(SurfaceHolder holder) {
-						Log.e("surface===2", "==="+hasSurface);
-
-						hasSurface = false;
-					}
-				};
-
-				surfaceHolder.addCallback(sf);
-				surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-			}
-
-		} else {
-			initCamera(surfaceHolder);
-		}
-
-
-	}
-
-	private void findViewById() {
-
-		loadingDialog = new LoadingDialog(ActivityScanerCode.this);
-		loadingDialog.setCancelable(false);
-		loadingDialog.setCanceledOnTouchOutside(false);
-
-//		scanPreview =  (FrameLayout) findViewById(R.id.capture_preview);
-		scanPreview =  (SurfaceView) findViewById(R.id.capture_preview);
-		scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
-		scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
-		scanLine = (ImageView) findViewById(R.id.capture_scan_line);
-		ivLight = (ImageView) findViewById(R.id.iv_light);
-		cancle = (ImageView)findViewById(R.id.iv_cancle);
-		bikeNunBtn = (TextView)findViewById(R.id.loca_show_btnBikeNum);
-		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
-
-		dialog = new Dialog(this, R.style.Theme_AppCompat_Dialog);
-		View dialogView = LayoutInflater.from(this).inflate(R.layout.pop_circles_menu, null);
-		dialog.setContentView(dialogView);
-		dialog.setCanceledOnTouchOutside(false);
-
-		bikeNumEdit = (EditText)dialogView.findViewById(R.id.pop_circlesMenu_bikeNumEdit);
-		positiveButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_positiveButton);
-		negativeButton = (Button)dialogView.findViewById(R.id.pop_circlesMenu_negativeButton);
-
-		cancle.setOnClickListener(this);
-		bikeNunBtn.setOnClickListener(this);
-		positiveButton.setOnClickListener(this);
-		negativeButton.setOnClickListener(this);
-		lightBtn.setOnClickListener(this);
-
-//        initViews();
-		playBeep = true;
-		AudioManager audioService = (AudioManager) context.getSystemService(AUDIO_SERVICE);
-		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
-			playBeep = false;
-		}
-		initBeepSound();
-		vibrate = true;
-	}
-
 	private void initCamera(SurfaceHolder surfaceHolder) {
 		Log.e("initCamera===", "===="+handler);
 
-		previewing = true;
+//		previewing = true;
 
 		try {
 			mCameraManager = CameraManager.get();
@@ -474,8 +742,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			setCropWidth(cropWidth);
 			setCropHeight(cropHeight);
 
-			mCamera.startPreview();
-			mCamera.autoFocus(autoFocusCB);
+//			mCamera.startPreview();
+//			mCamera.autoFocus(autoFocusCB);
 
 //			mCamera.autoFocus(new Camera.AutoFocusCallback() {
 //				@Override
@@ -545,57 +813,98 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		super.onPause();
 	}
 
+//	@Override
+//	protected void onDestroy() {
+//		Log.e("onDestroy===ASC1", "===="+inactivityTimer);
+//
+//		inactivityTimer.shutdown();
+////		mScanerListener = null;
+//		super.onDestroy();
+//
+//        BleManager.getInstance().cancelScan();
+//
+//		Log.e("onDestroy===ASC2", "===="+inactivityTimer);
+//
+////		previewing = false;
+////
+////		if (handler != null) {
+////			handler.quitSynchronously();
+////			handler = null;
+////		}
+////
+////		Log.e("onDestroy===ASC2", "===="+mCameraManager);
+////
+////		releaseCamera();
+////		mCameraManager.closeDriver();
+//
+//
+//
+////		m_myHandler.removeCallbacksAndMessages(null);
+////		resetCamera();
+//	}
+
 	@Override
 	protected void onDestroy() {
-		Log.e("onDestroy===ASC1", "===="+inactivityTimer);
-
-		inactivityTimer.shutdown();
-//		mScanerListener = null;
 		super.onDestroy();
 
-        BleManager.getInstance().cancelScan();
+		try{
+			if(isPermission){
+				inactivityTimer.shutdown();
+				mScanerListener = null;
+				if (loadingDialog != null && loadingDialog.isShowing()) {
+					loadingDialog.dismiss();
+				}
 
-		Log.e("onDestroy===ASC2", "===="+inactivityTimer);
+				Log.e("scan===onDestroy", "===");
 
-//		previewing = false;
-//
-//		if (handler != null) {
-//			handler.quitSynchronously();
-//			handler = null;
-//		}
-//
-//		Log.e("onDestroy===ASC2", "===="+mCameraManager);
-//
-//		releaseCamera();
-//		mCameraManager.closeDriver();
+				inputMethodManager.hideSoftInputFromWindow(bikeNumEdit.getWindowToken(), 0);
+
+				m_myHandler.removeCallbacksAndMessages(null);
+			}
+
+		}catch (Exception e){
+//            memberEvent(context.getClass().getName()+"_"+e.getStackTrace()[0].getLineNumber()+"_"+e.getMessage());
+		}
 
 
 
-//		m_myHandler.removeCallbacksAndMessages(null);
-//		resetCamera();
 	}
 
 
-	public void handleDecode(Result result) {
-//		if(!previewing) return;
+	public void handleDecode(final Result result) {
+		m_myHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				try{
+					Log.e("handleDecode===", "==="+previewing);
 
-		inactivityTimer.onActivity();
-		//扫描成功之后的振动与声音提示
-		RxBeepTool.playBeep(this, vibrate);
+					if(!previewing) return;
 
-//        mCamera.setPreviewCallback(null);
-//        mCamera.stopPreview();
-//
-//        releaseCamera();
+					if(previewing)
+						inactivityTimer.onActivity();
 
-		Log.e("===", "====");
+					//扫描成功之后的振动与声音提示
+					if(previewing)
+						RxBeepTool.playBeep(mActivity, vibrate);
 
-		String result1 = result.getText();
-		if (mScanerListener == null) {
-			initDialogResult(result);
-		} else {
-			mScanerListener.onSuccess("From to Camera", result);
-		}
+					Log.e("===", "====");
+
+					String result1 = result.getText();
+					if (mScanerListener == null) {
+						initDialogResult(result);
+					} else {
+						mScanerListener.onSuccess("From to Camera", result);
+					}
+
+				} catch (Exception e) {
+					ToastUtil.showMessageApp(context, "扫码异常，请重试");
+					scrollToFinishActivity();
+				}
+
+			}
+		});
+
+
 	}
 
 	private void initDialogResult(final Result result) {
@@ -894,86 +1203,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		CameraManager.FRAME_HEIGHT = mCropHeight;
 	}
 
-	@Override
-	public void onClick(View v) {
-		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-		switch (v.getId()){
-			case R.id.iv_cancle:
-				scrollToFinishActivity();
-				break;
-			case R.id.loca_show_btnBikeNum:
-				if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-					Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
-					UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
-				}else {
-					//关闭相机
-//					releaseCamera();
-//					mCameraManager.closeDriver();
 
-					bikeNumEdit.setText("");
-
-					WindowManager windowManager = getWindowManager();
-					Display display = windowManager.getDefaultDisplay();
-					WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-					lp.width = (int) (display.getWidth() * 0.8); // 设置宽度0.6
-					lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-					dialog.getWindow().setAttributes(lp);
-					dialog.getWindow().setWindowAnimations(R.style.dialogWindowAnim);
-					dialog.show();
-
-					InputMethodManager manager = (InputMethodManager) getSystemService(
-							INPUT_METHOD_SERVICE);
-					manager.showSoftInput(v, InputMethodManager.RESULT_SHOWN);
-					manager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-							InputMethodManager.HIDE_IMPLICIT_ONLY);
-				}
-				break;
-			case R.id.pop_circlesMenu_positiveButton:
-				String bikeNum = bikeNumEdit.getText().toString().trim();
-				if (bikeNum == null || "".equals(bikeNum)){
-					Toast.makeText(this,"请输入单车编号",Toast.LENGTH_SHORT).show();
-					return;
-				}
-				InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-				manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
-				if (dialog.isShowing()) {
-					dialog.dismiss();
-				}
-				Tag = 1;
-                lockInfo(bikeNum);
-				break;
-			case R.id.pop_circlesMenu_negativeButton:
-				InputMethodManager manager1= (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-				manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
-				if (dialog.isShowing()) {
-					dialog.dismiss();
-				}
-
-				initCamera(surfaceHolder);
-
-				break;
-			case R.id.activity_qr_scan_lightBtn:
-
-				if (flag == true) {
-					flag = false;
-					// 打开
-					ivLight.setImageResource(R.drawable.light2);
-
-					mCameraManager.openLight();
-				} else {
-					flag = true;
-					// 关闭
-					ivLight.setImageResource(R.drawable.light);
-					mCameraManager.offLight();
-				}
-
-
-				break;
-			default:
-				break;
-		}
-	}
 
 
 
@@ -1544,14 +1774,40 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			mediaPlayer.seekTo(0);
 		}
 	};
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == RESULT_OK){
+
+		Log.e("188===", isPermission+"==="+requestCode+"==="+resultCode);
+
+		if(resultCode == RESULT_OK)
+		{
 			switch (requestCode) {
 				case 288:{
 					break;
 				}
 				case 188:{
+					if (null != loadingDialog && loadingDialog.isShowing()) {
+						loadingDialog.dismiss();
+					}
+
+					isPermission = true;
+
+					Log.e("188===1", deviceuuid+"==="+hasSurface+"==="+surfaceHolder);
+
+					previewing = true;
+					initCamera(surfaceHolder);
+					mCropLayout2.setVisibility(View.VISIBLE);
+
+					BleManager.getInstance().init(getApplication());
+					BleManager.getInstance()
+							.enableLog(true)
+							.setReConnectCount(10, 5000)
+							.setConnectOverTime(20000)
+							.setOperateTimeout(10000);
+
+					setScanRule();
+					scan();
 
 					break;
 				}
@@ -1560,16 +1816,50 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				}
 			}
 		}else if( requestCode == 188){
-			Toast.makeText(this, "需要打开蓝牙", Toast.LENGTH_SHORT).show();
-			finish();
+			ToastUtil.showMessageApp(this, "需要打开蓝牙");
+
+			scrollToFinishActivity();
+
+//			if("".equals(oid)){
+////                setResult(RESULT_OK);
+//				scrollToFinishActivity();
+//			}else{
+//				if(!isFinishing()){
+//					tzEnd();
+//				}
+//			}
+
 		}
 	}
+
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
+		Log.e("onKeyDown===", "==="+keyCode);
+
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			finishMine();
+
+			inputMethodManager.hideSoftInputFromWindow(bikeNumEdit.getWindowToken(), 0);
+
+			if(isHide){
+				isHide = false;
+
+				isHand = false;
+				ivHand.setImageResource(R.drawable.top_hand);
+//				btnBikeNum.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.top_hand), null, null);
+
+				previewing = true;
+				initCamera(surfaceHolder);
+
+				mCropLayout2.setVisibility(View.VISIBLE);
+				ll_input.setVisibility(View.GONE);
+
+
+			}else{
+				finishMine();
+			}
+
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);

@@ -7,6 +7,10 @@ public class ResultConsel {
 	public String msg;
 	public String data;
 	public String info;
+
+	public int status_code;
+	public String message;
+	public String extra;
 	
 	public String getFlag() {
 		return flag;
@@ -39,5 +43,29 @@ public class ResultConsel {
 
 	public void setInfo(String info) {
 		this.info = info;
+	}
+
+	public int getStatus_code() {
+		return status_code;
+	}
+
+	public void setStatus_code(int status_code) {
+		this.status_code = status_code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getExtra() {
+		return extra;
+	}
+
+	public void setExtra(String extra) {
+		this.extra = extra;
 	}
 }

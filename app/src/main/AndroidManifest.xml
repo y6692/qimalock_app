@@ -94,6 +94,21 @@
         </activity>
 
         <activity
+            android:name=".activity.LoginActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+
+        </activity>
+
+        <activity
+            android:name=".activity.NoteLoginActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
             android:name=".activity.MainActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" >
@@ -117,10 +132,6 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
-        <activity
-            android:name=".activity.LoginActivity"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
         <activity
             android:name=".activity.TestXiaoanActivity"
@@ -213,7 +224,7 @@
 
         <activity
             android:name="com.zxing.lib.scaner.activity.ActivityScanerCode"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+            android:windowSoftInputMode="adjustResize" />
 
         <!--<activity-->
             <!--android:name="com.zbar.lib.UpLocationScanCaptureAct"-->

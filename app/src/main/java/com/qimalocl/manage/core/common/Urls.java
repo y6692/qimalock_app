@@ -9,10 +9,23 @@ package com.qimalocl.manage.core.common;
  */
 public class Urls {
 
-	public static String HTTP = "http://";
+	public static String HTTP = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
+	public static String host2 = HTTP + "newmapi.7mate.cn/api";
 
+	//获取验证码接口
+	public static String verificationcode = host2 + "/verificationcode";
+	//注册登录接口、退出登录接口delete
+	public static String authorizations = host2 + "/authorizations";
+	//用户信息接口
+	public static String user = host2 + "/user";
+
+
+
+
+	/**上传头像*/
+	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";
 
 	/**存入设备信息*/
 	public static String DevicePostUrl = host + "/index.php?g=App&m=Login&a=verifyDevice_info";

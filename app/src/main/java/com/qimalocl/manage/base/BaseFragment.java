@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.qimalocl.manage.core.common.AppManager;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 
@@ -69,4 +70,8 @@ public class BaseFragment extends Fragment {
 			return false;
 		}
 	});
+
+	public void finishMine() {
+		AppManager.getAppManager().finishActivity(getActivity());
+	}
 }

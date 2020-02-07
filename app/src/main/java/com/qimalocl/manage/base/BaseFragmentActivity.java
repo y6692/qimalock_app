@@ -31,6 +31,8 @@ public class BaseFragmentActivity extends FragmentActivity {
 
 	private TelephonyManager tm;
 
+	protected boolean isRefresh;
+
 	protected Handler m_myHandler = new MainHandler(this);
 
 	@Override

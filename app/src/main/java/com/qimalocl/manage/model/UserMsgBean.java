@@ -17,6 +17,8 @@ public class UserMsgBean {
     private String bikenum;
     private String iscert;
 
+    private String token;
+
     public String getUid() {
         return uid;
     }
@@ -95,5 +97,13 @@ public class UserMsgBean {
 
     public void setIscert(String iscert) {
         this.iscert = iscert;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

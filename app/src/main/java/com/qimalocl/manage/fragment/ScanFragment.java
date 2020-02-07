@@ -1305,7 +1305,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                 break;
 
             case R.id.mainUI_getDotLayout:
-                UIHelper.goToAct(context, DotSelectActivity.class);
+//                UIHelper.goToAct(context, DotSelectActivity.class);
                 break;
 
             case R.id.mainUI_testXALayout:

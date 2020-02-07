@@ -27,7 +27,7 @@ import java.io.File;
  *
  */
 public class BaseApplication extends Application {
-
+	public  static Context context;
 	private static BaseApplication app;
 	private BLEService mBleService;
 
