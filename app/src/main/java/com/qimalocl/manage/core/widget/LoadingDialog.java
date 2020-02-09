@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.qimalocl.manage.R;
 
+import pl.droidsonroids.gif.GifDrawable;
+
 public class LoadingDialog extends Dialog {
 
 	private static final int CHANGE_TITLE_WHAT = 1;
@@ -22,6 +24,8 @@ public class LoadingDialog extends Dialog {
 	private TextView detail_tv;
 	private TextView tv_point;
 	private RotateAnimation mAnim;
+
+	private GifDrawable gifDrawable;
 
 	private Handler handler = new Handler() {
 		private int num = 0;
@@ -54,29 +58,35 @@ public class LoadingDialog extends Dialog {
 	private void init() {
 		setContentView(R.layout.common_dialog_loading_layout);
 		iv_route = (ImageView) findViewById(R.id.iv_route);
+
+		gifDrawable = (GifDrawable) iv_route.getDrawable();
+
 		detail_tv = (TextView) findViewById(R.id.detail_tv);
 		tv_point = (TextView) findViewById(R.id.tv_point);
-		initAnim();
+//		initAnim();
 	}
 
-	private void initAnim() {
-		mAnim = new RotateAnimation(0, 360, Animation.RESTART, 0.5f, Animation.RESTART, 0.5f);
-		mAnim.setDuration(2000);
-		mAnim.setRepeatCount(Animation.INFINITE);
-		mAnim.setRepeatMode(Animation.RESTART);
-		mAnim.setStartTime(Animation.START_ON_FIRST_FRAME);
-	}
+//	private void initAnim() {
+//		mAnim = new RotateAnimation(0, 360, Animation.RESTART, 0.5f, Animation.RESTART, 0.5f);
+//		mAnim.setDuration(2000);
+//		mAnim.setRepeatCount(Animation.INFINITE);
+//		mAnim.setRepeatMode(Animation.RESTART);
+//		mAnim.setStartTime(Animation.START_ON_FIRST_FRAME);
+//	}
 
 	@Override
 	public void show() {// 在要用到的地方调用这个方法
-		iv_route.startAnimation(mAnim);
+//		iv_route.startAnimation(mAnim);
+
+		gifDrawable.start();
+
 		handler.sendEmptyMessage(CHANGE_TITLE_WHAT);
 		super.show();
 	}
 
 	@Override
 	public void dismiss() {
-		mAnim.cancel();
+//		mAnim.cancel();
 		super.dismiss();
 	}
 

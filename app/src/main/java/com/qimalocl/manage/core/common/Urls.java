@@ -9,10 +9,11 @@ package com.qimalocl.manage.core.common;
  */
 public class Urls {
 
-	public static String HTTP = "https://";
+	public static String HTTP = "http://";
+	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-	public static String host2 = HTTP + "newmapi.7mate.cn/api";
+	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
 
 	//获取验证码接口
 	public static String verificationcode = host2 + "/verificationcode";
@@ -21,7 +22,10 @@ public class Urls {
 	//用户信息接口
 	public static String user = host2 + "/user";
 
-
+	//上锁接口
+	public static String lock = host2 + "/car/lock";
+	//开锁接口
+	public static String unlock = host2 + "/car/unlock";
 
 
 	/**上传头像*/
@@ -79,7 +83,7 @@ public class Urls {
 	public static String set_car_scrapped = host + "/index.php?g=App&m=UserManage&a=set_car_scrapped";
 
 	/**锁定*/
-	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";
+//	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";		//TODO
 
 	/**打开电池锁接口*/
 	public static String battery_unlock = host + "/index.php?g=App&m=Ebike&a=battery_unlock";

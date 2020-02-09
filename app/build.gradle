@@ -119,6 +119,8 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.7'
+
 }
 
 afterEvaluate {

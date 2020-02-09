@@ -10,6 +10,16 @@ import com.sunshine.blelibrary.config.Config;
  */
 
 public class OpenLockTxOrder extends TxOrder {
+
+    public OpenLockTxOrder() {
+        super(TYPE.OPEN_LOCK);
+
+        byte[] bytes = {0x06, Config.passwordnew[0], Config.passwordnew[1], Config.passwordnew[2], Config.passwordnew[3], Config.passwordnew[4], Config.passwordnew[5]};
+
+        add(bytes);
+
+    }
+
     public OpenLockTxOrder(boolean isChangePsd) {
         super(TYPE.OPEN_LOCK);
 

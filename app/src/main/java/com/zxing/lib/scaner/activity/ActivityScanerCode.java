@@ -433,6 +433,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		findViewById(R.id.left_mask).setOnClickListener(this);
 		findViewById(R.id.right_mask).setOnClickListener(this);
 		findViewById(R.id.bottom_mask).setOnClickListener(this);
+		findViewById(R.id.ll_confirm).setOnClickListener(this);
 
 //        initViews();
 		playBeep = true;
@@ -546,31 +547,31 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				}
 				break;
 
-			case R.id.pop_circlesMenu_positiveButton:
-				String bikeNum = bikeNumEdit.getText().toString().trim();
-				if (bikeNum == null || "".equals(bikeNum)){
-					Toast.makeText(this,"请输入单车编号",Toast.LENGTH_SHORT).show();
-					return;
-				}
-				InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-				manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
-				if (dialog.isShowing()) {
-					dialog.dismiss();
-				}
-				Tag = 1;
-				lockInfo(bikeNum);
-				break;
-
-			case R.id.pop_circlesMenu_negativeButton:
-				InputMethodManager manager1= (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-				manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
-				if (dialog.isShowing()) {
-					dialog.dismiss();
-				}
-
-				initCamera(surfaceHolder);
-
-				break;
+//			case R.id.pop_circlesMenu_positiveButton:
+//				String bikeNum = bikeNumEdit.getText().toString().trim();
+//				if (bikeNum == null || "".equals(bikeNum)){
+//					Toast.makeText(this,"请输入单车编号",Toast.LENGTH_SHORT).show();
+//					return;
+//				}
+//				InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//				manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+//				if (dialog.isShowing()) {
+//					dialog.dismiss();
+//				}
+//				Tag = 1;
+//				lockInfo(bikeNum);
+//				break;
+//
+//			case R.id.pop_circlesMenu_negativeButton:
+//				InputMethodManager manager1= (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//				manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+//				if (dialog.isShowing()) {
+//					dialog.dismiss();
+//				}
+//
+//				initCamera(surfaceHolder);
+//
+//				break;
 
 			case R.id.activity_qr_scan_lightBtn:
 
@@ -587,6 +588,35 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					mCameraManager.offLight();
 				}
 
+
+				break;
+
+			case R.id.ll_confirm:
+
+				String bikeNum = bikeNumEdit.getText().toString().trim();
+
+				Log.e("ll_confirm===", "==="+bikeNum);
+
+
+
+				if (bikeNum == null || "".equals(bikeNum)) {
+
+					ToastUtil.showMessageApp(context, "请输入单车编号");
+
+					return;
+				}
+
+				mCropLayout.setVisibility(View.VISIBLE);
+				ll_input.setVisibility(View.GONE);
+
+//				InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+				inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+				if (dialog!=null && dialog.isShowing()) {
+					dialog.dismiss();
+				}
+				Tag = 1;
+				lockInfo(bikeNum);
+//				order_authority(bikeNum);
 
 				break;
 
@@ -1307,14 +1337,22 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				if(is){
 					BleManager.getInstance().cancelScan();
 
-					Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+//					Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+					Intent intent = new Intent();
 					intent.putExtra("name", "NokeLock");
 					intent.putExtra("codenum",codenum);
 					intent.putExtra("pdk",jsonObject.getString("pdk"));
 					intent.putExtra("pwd",jsonObject.getString("pwd"));
 					intent.putExtra("address", macinfo);
 					intent.putExtra("isMac",true);
-					startActivity(intent);
+
+					if (loadingDialog != null && loadingDialog.isShowing()){
+						loadingDialog.dismiss();
+					}
+
+					BleManager.getInstance().cancelScan();
+
+					setResult(RESULT_OK, intent);
 					scrollToFinishActivity();
 				}else{
 					m_myHandler.postDelayed(new Runnable() {
@@ -1332,14 +1370,42 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				Log.e("macLoop===finish", "===");
 				BleManager.getInstance().cancelScan();
 
-				Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+//				Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+				Intent intent = new Intent();
 				intent.putExtra("name", "NokeLock");
 				intent.putExtra("codenum",codenum);
 				intent.putExtra("pdk",jsonObject.getString("pdk"));
 				intent.putExtra("pwd",jsonObject.getString("pwd"));
 				intent.putExtra("address", macinfo);
 				intent.putExtra("isMac",is);
-				startActivity(intent);
+//				startActivity(intent);
+//				scrollToFinishActivity();
+
+//				rIntent.putExtra("codenum", codenum);
+//				rIntent.putExtra("m_nowMac", m_nowMac);
+//				rIntent.putExtra("carmodel_id", carmodel_id);
+//				rIntent.putExtra("type", type);
+//				rIntent.putExtra("lock_no", lock_no);
+//				rIntent.putExtra("bleid", bleid);
+//				rIntent.putExtra("deviceuuid", deviceuuid);
+//				rIntent.putExtra("electricity", electricity);
+//				rIntent.putExtra("mileage", mileage);
+//				rIntent.putExtra("carmodel_name", carmodel_name);
+//				rIntent.putExtra("each_free_time", each_free_time);
+//				rIntent.putExtra("first_price", first_price);
+//				rIntent.putExtra("first_time", first_time);
+//				rIntent.putExtra("continued_price", continued_price);
+//				rIntent.putExtra("continued_time", continued_time);
+//				rIntent.putExtra("isMac",false);
+
+
+				if (loadingDialog != null && loadingDialog.isShowing()){
+					loadingDialog.dismiss();
+				}
+
+				BleManager.getInstance().cancelScan();
+
+				setResult(RESULT_OK, intent);
 				scrollToFinishActivity();
 			}
 
@@ -1457,34 +1523,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 								n=0;
 								macLoop(jsonObject);
-
-//								boolean is = macList.contains(macinfo);
-//								int n = is?0:1;
-//								m_myHandler.postDelayed(new Runnable() {
-//									@Override
-//									public void run() {
-//										boolean is = macList.contains(macinfo);
-//										int n = is?0:1;
-//										m_myHandler.postDelayed(new Runnable() {
-//											@Override
-//											public void run() {
-//												try {
-//													Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
-//													intent.putExtra("name", "NokeLock");
-//													intent.putExtra("codenum",codenum);
-//													intent.putExtra("pdk",jsonObject.getString("pdk"));
-//													intent.putExtra("pwd",jsonObject.getString("pwd"));
-//													intent.putExtra("address", macinfo);
-//													intent.putExtra("isMac", macList.contains(jsonObject.getString("macinfo")));
-//													startActivity(intent);
-//													scrollToFinishActivity();
-//												}catch (Exception e){
-//
-//												}
-//											}
-//										}, n * 1000);
-//									}
-//								}, n * 1000);
 
 
 							}else {
