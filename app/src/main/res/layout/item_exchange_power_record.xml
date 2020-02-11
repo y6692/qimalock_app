@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/dp30"
+    android:paddingRight="@dimen/dp30"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:paddingTop="19dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/item_order_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/sp18"
+            android:textColor="@color/tx_black"
+            android:text="2019-12-28"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ll_valid_power_exchange"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="500"
+                android:textSize="16sp"
+                android:textColor="#00BC27"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_centerInParent="true"
+                android:text="有效换电数"
+                android:textSize="16sp"
+                android:textColor="#666666"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="54dp"
+            android:layout_gravity="center"
+            android:background="#CCCCCC"/>
+
+        <LinearLayout
+            android:id="@+id/ll_invalid_power_exchange"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="500"
+                android:textSize="16sp"
+                android:textColor="#00BC27"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_centerInParent="true"
+                android:text="无效换电数"
+                android:textSize="16sp"
+                android:textColor="#666666"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="54dp"
+            android:layout_gravity="center"
+            android:background="#CCCCCC"/>
+
+        <LinearLayout
+            android:id="@+id/ll_power_exchanging"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="850"
+                android:textSize="16sp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_centerInParent="true"
+                android:text="换电中"
+                android:textSize="16sp"
+                android:textColor="#666666"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="10dp"-->
+        <!--android:background="@color/line_color"-->
+        <!--android:layout_marginTop="@dimen/dp5"/>-->
+
+</LinearLayout>

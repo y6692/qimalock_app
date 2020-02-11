@@ -83,6 +83,7 @@ import com.http.rdata.RRent;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.BindSchoolActivity;
 import com.qimalocl.manage.activity.ClientManager;
 import com.qimalocl.manage.activity.DeviceSelectActivity;
 import com.qimalocl.manage.activity.LoginActivity;
@@ -170,6 +171,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.mainUI_myLocationLayout) LinearLayout myLocationLayout;
     @BindView(R.id.mainUI_getDotLayout) LinearLayout getDotLayout;
     @BindView(R.id.mainUI_testXALayout) LinearLayout testXALayout;
+    @BindView(R.id.mainUI_bindSchoolLayout) LinearLayout bindSchoolLayout;
     @BindView(R.id.mainUI_yellow_xyt) TextView tvYellow_xyt;
     @BindView(R.id.mainUI_red_xyt) TextView tvRed_xyt;
     @BindView(R.id.mainUI_yellow_xa) TextView tvYellow_xa;
@@ -246,7 +248,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private XiaoanBleApiClient apiClient;
     private String token;
 
-    PopupWindow popupwindow;
+    private PopupWindow popupwindow;
 
     BluetoothAdapter mBluetoothAdapter;
 
@@ -529,6 +531,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         aMap.getUiSettings().setZoomControlsEnabled(false);
         aMap.getUiSettings().setMyLocationButtonEnabled(false);
         aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
+        aMap.getUiSettings().setLogoBottomMargin(-100);
         CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(18f);// 设置缩放监听
         aMap.moveCamera(cameraUpdate);
 
@@ -583,6 +586,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         myLocationLayout.setOnClickListener(this);
         getDotLayout.setOnClickListener(this);
         testXALayout.setOnClickListener(this);
+        bindSchoolLayout.setOnClickListener(this);
         switcher.setOnClickListener(this);
         switcher_bad.setOnClickListener(this);
         switcher_type.setOnClickListener(this);
@@ -1655,6 +1659,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.mainUI_testXALayout:
                 UIHelper.goToAct(context, TestXiaoanActivity.class);
+                break;
+
+            case R.id.mainUI_bindSchoolLayout:
+                UIHelper.goToAct(context, BindSchoolActivity.class);
                 break;
 
             case R.id.mainUI_scanCode_lock:
@@ -3409,7 +3417,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                     case 101:
 
-                        Log.e("requestCode===101", requestCode+"==="+data.getStringExtra("address"));
+
 
                         if (resultCode == RESULT_OK) {
                             String tz = data.getStringExtra("tz");
@@ -3422,6 +3430,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 initNearby(latitude, longitude);
                             }
 
+                            Log.e("requestCode===101", requestCode+"==="+data.getStringExtra("address"));
+                        } else {
+                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                         }
 
                         break;

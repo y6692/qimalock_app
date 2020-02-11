@@ -23,12 +23,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,8 +39,10 @@ import com.alibaba.fastjson.JSON;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.BuildConfig;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.ExchangePowerRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
+import com.qimalocl.manage.activity.SettingActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.core.common.BitmapUtils1;
@@ -94,8 +98,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ImageView headerImageView;
     private ImageView authState;
     private TextView userName;
-    private LinearLayout curRouteLayout, hisRouteLayout;
-    private RelativeLayout  myOrderLayout, myMsgLayout, creditLayout, serviceCenterLayout, changePhoneLayout, authLayout, inviteLayout;
+    private LinearLayout ll_1, ll_2, ll_3, ll_4, ll_5, ll_6, curRouteLayout, hisRouteLayout;
+    private RelativeLayout  myOrderLayout, exchangePowerRecordLayout, lowPowerLayout, serviceCenterLayout, changePhoneLayout, authLayout, inviteLayout;
 
     private ImageView iv_popup_window_back;
     private RelativeLayout rl_popup_window;
@@ -119,6 +123,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private String invite_h5_url;
     private String history_order_h5_title;
     private String history_order_h5_url;
+
+    private PopupWindow popupwindow;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mine, null);
@@ -220,19 +226,38 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
 //        settingLayout = getActivity().findViewById(R.id.personUI_bottom_settingLayout);
 //
+
+        ll_1 = getActivity().findViewById(R.id.ll_1);
+        ll_2 = getActivity().findViewById(R.id.ll_2);
+        ll_3 = getActivity().findViewById(R.id.ll_3);
+        ll_4 = getActivity().findViewById(R.id.ll_4);
+        ll_5 = getActivity().findViewById(R.id.ll_5);
+        ll_6 = getActivity().findViewById(R.id.ll_6);
+
         myOrderLayout = getActivity().findViewById(R.id.personUI_myOrderLayout);
-        myMsgLayout = getActivity().findViewById(R.id.personUI_myMeaaageLayout);
-        creditLayout = getActivity().findViewById(R.id.personUI_creditLayout);
+        exchangePowerRecordLayout = getActivity().findViewById(R.id.personUI_exchangePowerRecordLayout);
+        lowPowerLayout = getActivity().findViewById(R.id.personUI_lowPowerLayout);
         serviceCenterLayout = getActivity().findViewById(R.id.personUI_serviceCenterLayout);
         changePhoneLayout = getActivity().findViewById(R.id.personUI_changePhoneLayout);
         authLayout = getActivity().findViewById(R.id.personUI_authLayout);
         inviteLayout = getActivity().findViewById(R.id.personUI_inviteLayout);
 
+
+
+
         rightBtn.setOnClickListener(this);
 //        headerImageView.setOnClickListener(this);
+
+        ll_1.setOnClickListener(this);
+        ll_2.setOnClickListener(this);
+        ll_3.setOnClickListener(this);
+        ll_4.setOnClickListener(this);
+        ll_5.setOnClickListener(this);
+        ll_6.setOnClickListener(this);
+
         myOrderLayout.setOnClickListener(this);
-        myMsgLayout.setOnClickListener(this);
-        creditLayout.setOnClickListener(this);
+        exchangePowerRecordLayout.setOnClickListener(this);
+        lowPowerLayout.setOnClickListener(this);
         serviceCenterLayout.setOnClickListener(this);
         changePhoneLayout.setOnClickListener(this);
         authLayout.setOnClickListener(this);
@@ -708,8 +733,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 takeIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                             } else {
                                 // 下面这句指定调用相机拍照后的照片存储的路径
-                                takeIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                                        Uri.fromFile(new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME)));
+                                takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME)));
                             }
                             startActivityForResult(takeIntent, REQUESTCODE_TAKE);
                         } else {
@@ -759,12 +783,24 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                break;
 
             case R.id.personUI_rightBtn:
-//                UIHelper.goToAct(context, SettingActivity.class);
+                UIHelper.goToAct(context, SettingActivity.class);
 
 //                Intent intent = new Intent();
 //                intent.setClass(context, SettingActivity.class);
 //                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                startActivityForResult(intent, 10);
+                break;
+
+            case R.id.ll_1:
+                UIHelper.goToAct(context, ExchangePowerRecordActivity.class);
+                break;
+
+            case R.id.personUI_exchangePowerRecordLayout:
+                UIHelper.goToAct(context, ExchangePowerRecordActivity.class);
+                break;
+
+            case R.id.personUI_lowPowerLayout:
+                initmPopupWindowView();
                 break;
 
             case R.id.personUI_header:
@@ -778,6 +814,82 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             default:
                 break;
         }
+    }
+
+    public void initmPopupWindowView(){
+
+        // 获取自定义布局文件的视图
+        View customView = getLayoutInflater().inflate(R.layout.pop_low_power_bike, null, false);
+        // 创建PopupWindow宽度和高度
+        RelativeLayout pop_win_bg = (RelativeLayout) customView.findViewById(R.id.pop_low_power_bg);
+        ImageView iv_popup_window_back = (ImageView) customView.findViewById(R.id.popupWindow_low_power_back);
+//        ImageView iv_rent_cancelBtn = (ImageView) customView.findViewById(R.id.iv_rent_cancelBtn);
+//        TextView tv_codenum = (TextView) customView.findViewById(R.id.tv_codenum);
+//        TextView tv_carmodel_name = (TextView) customView.findViewById(R.id.tv_carmodel_name);
+//        TextView tv_each_free_time = (TextView) customView.findViewById(R.id.tv_each_free_time);
+//        TextView tv_first_price = (TextView) customView.findViewById(R.id.tv_first_price);
+//        TextView tv_first_time = (TextView) customView.findViewById(R.id.tv_first_time);
+//        TextView tv_continued_price = (TextView) customView.findViewById(R.id.tv_continued_price);
+//        TextView tv_continued_time = (TextView) customView.findViewById(R.id.tv_continued_time);
+//        TextView tv_electricity = (TextView) customView.findViewById(R.id.tv_electricity);
+//        TextView tv_mileage= (TextView) customView.findViewById(R.id.tv_mileage);
+//        LinearLayout ll_ebike = (LinearLayout) customView.findViewById(R.id.ll_ebike);
+//        LinearLayout ll_change_car = (LinearLayout) customView.findViewById(R.id.ll_change_car);
+//        LinearLayout ll_rent = (LinearLayout) customView.findViewById(R.id.ll_rent);
+//
+//        LinearLayout ll_open_lock = (LinearLayout) customView.findViewById(R.id.ll_open_lock);
+
+//        if(carmodel_id==2){
+//            ll_ebike.setVisibility(View.VISIBLE);
+//
+//            tv_electricity.setText(electricity);
+//            tv_mileage.setText(mileage);
+//        }else{
+//            ll_ebike.setVisibility(View.GONE);
+//        }
+//
+//        tv_codenum.setText(codenum);
+//        tv_carmodel_name.setText(carmodel_name);
+//        tv_first_price.setText(first_price+"元");
+//        tv_first_time.setText("/"+first_time+"分钟");
+//        tv_continued_price.setText(continued_price+"元");
+//        tv_continued_time.setText("/"+continued_time+"分钟");
+//
+//        if("0".equals(each_free_time)){
+//            tv_each_free_time.setVisibility(View.GONE);
+//        }else{
+//            tv_each_free_time.setVisibility(View.VISIBLE);
+//            tv_each_free_time.setText(each_free_time+"分钟免费");
+//        }
+
+
+//        iv_rent_cancelBtn.setOnClickListener(this);
+//        ll_change_car.setOnClickListener(this);
+//        ll_rent.setOnClickListener(this);
+
+        // 获取截图的Bitmap
+        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+        if (bitmap != null) {
+            // 将截屏Bitma放入ImageView
+            iv_popup_window_back.setImageBitmap(bitmap);
+            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
+        } else {
+            // 获取的Bitmap为null时，用半透明代替
+            iv_popup_window_back.setBackgroundColor(0x77000000);
+        }
+        // 打开弹窗
+        UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
+        // 创建PopupWindow宽度和高度
+        popupwindow = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
+        //设置动画效果 ,从上到下加载方式等，不设置自动的下拉，最好 [动画效果不好，不加实现下拉效果，不错]
+        popupwindow.setAnimationStyle(R.style.PopupAnimation);
+        popupwindow.setOutsideTouchable(false);
+
+        popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+
+        Log.e("initmPopup===", "===");
+
     }
 
     private void clickPopupWindow() {

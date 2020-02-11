@@ -109,6 +109,42 @@
         </activity>
 
         <activity
+            android:name=".activity.ExchangePowerRecordActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
+            android:name=".activity.ValidExchangePowerRecordActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
+            android:name=".activity.BindSchoolActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+
+        <activity
+            android:name=".activity.SchoolSelectActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
+            android:name=".activity.SettingActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
             android:name=".activity.MainActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" >

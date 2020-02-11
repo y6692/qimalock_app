@@ -21,11 +21,14 @@ public class Urls {
 	public static String authorizations = host2 + "/authorizations";
 	//用户信息接口
 	public static String user = host2 + "/user";
+	//学校列表接口
+	public static String schools = host2 + "/schools";
 
 	//上锁接口
 	public static String lock = host2 + "/car/lock";
 	//开锁接口
 	public static String unlock = host2 + "/car/unlock";
+
 
 
 	/**上传头像*/

@@ -15,6 +15,7 @@
         android:fitsSystemWindows="true"/>
 
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/rl_title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -22,7 +23,7 @@
         >
 
         <ImageView
-            android:id="@+id/top_back"
+            android:id="@+id/_back"
             android:layout_width="23dp"
             android:layout_height="17dp"
             android:layout_alignParentLeft="true"
@@ -202,8 +203,9 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="40dp"
-            android:onClick="btn"
-            android:weightSum="2">
+            android:onClick="btn">
+
+
 
             <!--<TextView-->
             <!--android:id="@+id/loca_show_btnBikeNum"-->
@@ -219,10 +221,30 @@
             <!--/>-->
 
             <LinearLayout
-                android:id="@+id/loca_show_btnBikeNum"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="30dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:onClick="btn"
+                android:layout_weight="0.3">
+
+                <ImageView
+                    android:id="@+id/top_back"
+                    android:layout_width="16dp"
+                    android:layout_height="8dp"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="center"
+                    android:onClick="btn"
+                    android:src="@drawable/s_down"
+                    android:layout_centerVertical="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loca_show_btnBikeNum"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:onClick="btn"
@@ -250,7 +272,7 @@
 
             <LinearLayout
                 android:id="@+id/activity_qr_scan_lightBtn"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginRight="30dp"
                 android:orientation="vertical"

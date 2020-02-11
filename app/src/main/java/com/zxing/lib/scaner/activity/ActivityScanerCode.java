@@ -145,6 +145,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private Button positiveButton,negativeButton;
 	private LinearLayout lightBtn;
 	private int Tag = 0;
+	private boolean isBindSchool = false;
 	private boolean isChangeKey = false;
 	private boolean isAdd = false;
 
@@ -189,7 +190,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
-		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey");
+		isBindSchool = getIntent().getExtras().getBoolean("isBindSchool", false);
+		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey", false);
 		isAdd = getIntent().getExtras().getBoolean("isAdd", false);
 		findViewById();
 		//权限初始化
@@ -1087,7 +1089,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
             }
 
 		}else{
-			if(isAdd){
+			if(isBindSchool){
+				Log.e("BindSchool===", "==="+result.toString());
+			}else if(isAdd){
 				Intent rIntent = new Intent();
 				rIntent.putExtra("QR_CODE", result.toString());
 				setResult(RESULT_OK, rIntent);
