@@ -53,7 +53,9 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.model.DatasBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.SchoolListBean;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UtilAnim;
@@ -97,7 +99,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ImageView settingImage;
     private ImageView headerImageView;
     private ImageView authState;
-    private TextView userName;
+    private TextView userName, schoolName, roleName, tv_delivered_cars, tv_is_using_cars, tv_longtime_not_used_cars, tv_not_recycled_cars, tv_not_fixed_cars, tv_fixed_not_used_cars;
+
     private LinearLayout ll_1, ll_2, ll_3, ll_4, ll_5, ll_6, curRouteLayout, hisRouteLayout;
     private RelativeLayout  myOrderLayout, exchangePowerRecordLayout, lowPowerLayout, serviceCenterLayout, changePhoneLayout, authLayout, inviteLayout;
 
@@ -168,7 +171,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        imageWith = (int)(getActivity().getWindowManager().getDefaultDisplay().getWidth() * 0.8);
 
         initView();
-
     }
 
     @Override
@@ -190,6 +192,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 startActivity(intent);
             }else{
                 initHttp();
+                datas();
             }
 
         }
@@ -216,6 +219,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         rightBtn = getActivity().findViewById(R.id.personUI_rightBtn);
         headerImageView = getActivity().findViewById(R.id.personUI_header);
         userName = getActivity().findViewById(R.id.personUI_userName);
+        schoolName = getActivity().findViewById(R.id.personUI_schoolName);
+        roleName = getActivity().findViewById(R.id.personUI_roleName);
 
         iv_isRead = getActivity().findViewById(R.id.iv_isRead);
 
@@ -234,6 +239,31 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         ll_5 = getActivity().findViewById(R.id.ll_5);
         ll_6 = getActivity().findViewById(R.id.ll_6);
 
+//        delivered_cars	String
+//        投放车辆数量
+//
+//        is_using_cars	String
+//        正在使用车辆数量
+//
+//        longtime_not_used_cars	String
+//        长时间未使用车辆数量
+//
+//        not_recycled_cars	String
+//        未回收车辆数量
+//
+//        not_fixed_cars	String
+//        未修好车辆数量
+//
+//        fixed_not_used_cars	String
+//        修好未使用车辆数量
+
+        tv_delivered_cars = getActivity().findViewById(R.id.tv_delivered_cars);
+        tv_is_using_cars = getActivity().findViewById(R.id.tv_is_using_cars);
+        tv_longtime_not_used_cars = getActivity().findViewById(R.id.tv_longtime_not_used_cars);
+        tv_not_recycled_cars = getActivity().findViewById(R.id.tv_not_recycled_cars);
+        tv_not_fixed_cars = getActivity().findViewById(R.id.tv_not_fixed_cars);
+        tv_fixed_not_used_cars = getActivity().findViewById(R.id.tv_fixed_not_used_cars);
+
         myOrderLayout = getActivity().findViewById(R.id.personUI_myOrderLayout);
         exchangePowerRecordLayout = getActivity().findViewById(R.id.personUI_exchangePowerRecordLayout);
         lowPowerLayout = getActivity().findViewById(R.id.personUI_lowPowerLayout);
@@ -241,8 +271,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         changePhoneLayout = getActivity().findViewById(R.id.personUI_changePhoneLayout);
         authLayout = getActivity().findViewById(R.id.personUI_authLayout);
         inviteLayout = getActivity().findViewById(R.id.personUI_inviteLayout);
-
-
 
 
         rightBtn.setOnClickListener(this);
@@ -1041,27 +1069,48 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
-                        Log.e("minef===initHttp", "==="+responseString);
+                        Log.e("minef===initHttp1", "==="+responseString);
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
                         UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
 //                            myPurse.setText(bean.getMoney());
 //                            myIntegral.setText(bean.getPoints());
-                        userName.setText(bean.getPhone());
+                        userName.setText(bean.getName());
 
-                        if(bean.getUnread_count()==0){
-                            iv_isRead.setVisibility(View.GONE);
-                        }else{
-                            iv_isRead.setVisibility(View.VISIBLE);
+                        String[] schools = bean.getSchools();
+
+                        Log.e("minef===initHttp2", schools+"===");
+
+                        if(schools!=null && schools.length>0){
+
+                            Log.e("minef===initHttp3", schools[0]+"===");
+
+                            SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+
+                            schoolName.setText(bean2.getName());
                         }
 
-                        credit_scores_h5_title = bean.getCredit_scores_h5_title();
-                        credit_scores_h5_url = bean.getCredit_scores_h5_url();
-                        invite_h5_title = bean.getInvite_h5_title();
-                        invite_h5_url = bean.getInvite_h5_url();
-                        history_order_h5_title = bean.getHistory_order_h5_title();
-                        history_order_h5_url = bean.getHistory_order_h5_url();
+                        String[] roles = bean.getRoles();
+                        if(roles!=null && roles.length>0){
+
+                            Log.e("minef===initHttp4", roles[0]+"==="+roles[1]);
+
+                            roleName.setText(roles[0]);
+                        }
+
+//                        if(bean.getUnread_count()==0){
+//                            iv_isRead.setVisibility(View.GONE);
+//                        }else{
+//                            iv_isRead.setVisibility(View.VISIBLE);
+//                        }
+//
+//                        credit_scores_h5_title = bean.getCredit_scores_h5_title();
+//                        credit_scores_h5_url = bean.getCredit_scores_h5_url();
+//                        invite_h5_title = bean.getInvite_h5_title();
+//                        invite_h5_url = bean.getInvite_h5_url();
+//                        history_order_h5_title = bean.getHistory_order_h5_title();
+//                        history_order_h5_url = bean.getHistory_order_h5_url();
 
                         //TODO  3
 //                            if (bean.getHeadimg() != null && !"".equals(bean.getHeadimg())) {
@@ -1071,6 +1120,63 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                    Glide.with(getActivity()).load(Urls.host + bean.getHeadimg()).asBitmap().centerCrop().into(headerImageView);
 //                                }
 //                            }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(context, "请先登录账号", Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }
+    }
+
+
+    public void datas() {
+        Log.e("minef===datas", "==="+isHidden());
+
+        if(isHidden()) return;
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
+        if (access_token != null && !"".equals(access_token)) {
+            HttpHelper.get(context, Urls.datas, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在加载");
+                        loadingDialog.show();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        Log.e("minef===datas1", "==="+responseString);
+
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                        DatasBean bean = JSON.parseObject(result.getData(), DatasBean.class);
+
+//                        tv_delivered_cars, tv_is_using_cars, tv_longtime_not_used_cars, tv_not_recycled_cars, tv_not_fixed_cars, tv_fixed_not_used_cars;
+
+                        tv_delivered_cars.setText(bean.getDelivered_cars());
+                        tv_is_using_cars.setText(bean.getIs_using_cars());
+                        tv_longtime_not_used_cars.setText(bean.getLongtime_not_used_cars());
+                        tv_not_recycled_cars.setText(bean.getNot_recycled_cars());
+                        tv_not_fixed_cars.setText(bean.getNot_fixed_cars());
+                        tv_fixed_not_used_cars.setText(bean.getFixed_not_used_cars());
 
                     } catch (Exception e) {
                         e.printStackTrace();

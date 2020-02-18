@@ -29,6 +29,7 @@ public class BaseFragment extends Fragment {
 //		autoHelper = new LibraryHelper(getActivity());
 
 		context = getActivity();
+		BaseApplication.context = context;
 	}
 
 

@@ -74,6 +74,7 @@ import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.fragment.MaintenanceFragment;
+import com.qimalocl.manage.model.CarBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.ToastUtil;
@@ -94,6 +95,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -139,6 +141,22 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //	private LoadingDialog loadingDialog;
 
 	private String codenum = "";
+	private String lock_name = "";
+	private String lock_title = "";
+	private String type;
+	private String deviceuuid;
+	private int lock_status;
+	private String lock_no = "";
+	private String m_nowMac = "";
+	private String bleid;
+	private String electricity = "";
+	private int carmodel_id;
+	private String carmodel_name = "";
+    private int status;
+	private int can_finish_order;
+
+	private boolean isSearch = false;
+
 	// 输入法
 	private Dialog dialog;
 	private EditText bikeNumEdit;
@@ -148,6 +166,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private boolean isBindSchool = false;
 	private boolean isChangeKey = false;
 	private boolean isAdd = false;
+	private int n = 0;
 
 	private boolean hasSurface;
 	SurfaceHolder surfaceHolder;
@@ -160,10 +179,10 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	SurfaceHolder.Callback sf;
 
 	private boolean isNext = false;
-	private String deviceuuid;
+
 
 	private List<String> macList = new ArrayList<String>();
-	private int n = 0;
+	private int school_id = 0;
 
 	private boolean isHide = false;
 	private boolean isHand = false;
@@ -191,6 +210,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
 		isBindSchool = getIntent().getExtras().getBoolean("isBindSchool", false);
+		school_id = getIntent().getExtras().getInt("school_id");
 		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey", false);
 		isAdd = getIntent().getExtras().getBoolean("isAdd", false);
 		findViewById();
@@ -238,20 +258,20 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //			;
 //		}
 
-		BleManager.getInstance().init(getApplication());
+//		BleManager.getInstance().init(getApplication());
+////		BleManager.getInstance()
+////				.enableLog(true)
+////				.setReConnectCount(1, 5000)
+////				.setConnectOverTime(20000)
+////				.setOperateTimeout(5000);
 //		BleManager.getInstance()
 //				.enableLog(true)
-//				.setReConnectCount(1, 5000)
+//				.setReConnectCount(10, 5000)
 //				.setConnectOverTime(20000)
-//				.setOperateTimeout(5000);
-		BleManager.getInstance()
-				.enableLog(true)
-				.setReConnectCount(10, 5000)
-				.setConnectOverTime(20000)
-				.setOperateTimeout(10000);
-
-		setScanRule();
-		scan();
+//				.setOperateTimeout(10000);
+//
+//		setScanRule();
+//		scan();
 
 	}
 
@@ -260,7 +280,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	protected void onResume() {
 		super.onResume();
 
-		Log.e("surface===0", surfaceHolder+"==="+hasSurface);
+		Log.e("surface===0", isPermission+"==="+surfaceHolder+"==="+hasSurface);
 
 		if(!isPermission){
 			if (!hasSurface) {
@@ -617,7 +637,20 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					dialog.dismiss();
 				}
 				Tag = 1;
-				lockInfo(bikeNum);
+
+				if(isBindSchool){
+					Log.e("BindSchool===2", "==="+bikeNum);
+
+					carschoolaction(bikeNum);
+				}else if(isAdd){
+					Intent rIntent = new Intent();
+					rIntent.putExtra("QR_CODE", bikeNum);
+					setResult(RESULT_OK, rIntent);
+					scrollToFinishActivity();
+				}else{
+					isSearch = true;
+					lockInfo(bikeNum);
+				}
 //				order_authority(bikeNum);
 
 				break;
@@ -822,7 +855,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		Log.e("ASC===onPause", surfaceHolder+"==="+hasSurface+"==="+handler);
 
 
-		//		surfaceHolder.removeCallback(sf);
+//		surfaceHolder.removeCallback(sf);
 
 		if (handler != null) {
 			handler.quitSynchronously();
@@ -1091,23 +1124,27 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		}else{
 			if(isBindSchool){
 				Log.e("BindSchool===", "==="+result.toString());
+
+				carschoolaction(result.toString());
 			}else if(isAdd){
 				Intent rIntent = new Intent();
 				rIntent.putExtra("QR_CODE", result.toString());
 				setResult(RESULT_OK, rIntent);
 				scrollToFinishActivity();
 			}else{
+				isSearch = false;
 				lockInfo(result.toString());
 			}
 		}
 
 	}
 
-	private void add_xiaoan_car(String deviceuuid, String result){
+	private void carschoolaction(String result){
 		RequestParams params = new RequestParams();
-		params.put("deviceuuid", deviceuuid);
-		params.put("tokencode", result);
-		HttpHelper.post(ActivityScanerCode.this, Urls.add_xiaoan_car, params, new TextHttpResponseHandler() {
+		params.put("car_number", URLEncoder.encode(result));
+		params.put("school_id", school_id);
+
+		HttpHelper.post(ActivityScanerCode.this, Urls.carschoolaction, params, new TextHttpResponseHandler() {
 			@Override
 			public void onStart() {
 				if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -1115,6 +1152,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					loadingDialog.show();
 				}
 			}
+
 			@Override
 			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 				if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1123,27 +1161,39 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
 			}
 
-
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, String responseString) {
 				try {
 					ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-					if (result.getFlag().equals("Success")) {
-						Toast.makeText(ActivityScanerCode.this, result.getMsg(), Toast.LENGTH_SHORT).show();
 
-						JSONObject jsonObject = new JSONObject(result.getData());
+					Log.e("carschoolaction===", responseString+"===");
 
-						Log.e("add_xiaoan_car===", responseString+"===");
-//						Log.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+					if(result.getStatus_code()==200){
 
+					}else{
 
-					} else {
-						Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
-						if (loadingDialog != null && loadingDialog.isShowing()){
-							loadingDialog.dismiss();
-						}
-						scrollToFinishActivity();
 					}
+
+					Toast.makeText(ActivityScanerCode.this,	result.getMessage(), Toast.LENGTH_SHORT).show();
+
+					initCamera(surfaceHolder);
+
+//					if (result.getFlag().equals("Success")) {
+//						Toast.makeText(ActivityScanerCode.this, result.getMsg(), Toast.LENGTH_SHORT).show();
+//
+//						JSONObject jsonObject = new JSONObject(result.getData());
+//
+//
+////						Log.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+//
+//
+//					} else {
+//						Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+//						if (loadingDialog != null && loadingDialog.isShowing()){
+//							loadingDialog.dismiss();
+//						}
+//						scrollToFinishActivity();
+//					}
 				} catch (Exception e) {
 					Log.e("Test","异常"+e);
 				}
@@ -1153,270 +1203,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			}
 		});
 
-//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-//		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-//		if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-//			Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
-//			UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
-//		}else {
-//
-//		}
-	}
-
-	PreviewCallback previewCb = new PreviewCallback() {
-		public void onPreviewFrame(final byte[] data, final Camera camera) {
-
-			m_myHandler.post(new Runnable() {
-				@Override
-				public void run() {
-					Size size = camera.getParameters().getPreviewSize();
-
-					Log.e("previewCb===", "==="+data.length);
-
-					// 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
-					byte[] rotatedData = new byte[data.length];
-					for (int y = 0; y < size.height; y++) {
-						for (int x = 0; x < size.width; x++)
-							rotatedData[x * size.height + size.height - y - 1] = data[x
-									+ y * size.width];
-					}
-
-					// 宽高也要调整
-					int tmp = size.width;
-					size.width = size.height;
-					size.height = tmp;
-
-					initCrop();
-
-					Image barcode = new Image(size.width, size.height, "Y800");
-					barcode.setData(rotatedData);
-					barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(),
-							mCropRect.height());
-
-					int result = mImageScanner.scanImage(barcode);
-					String resultStr = null;
-
-					if (result != 0) {
-						SymbolSet syms = mImageScanner.getResults();
-						for (Symbol sym : syms) {
-							resultStr = sym.getData();
-						}
-					}
-
-					if (!TextUtils.isEmpty(resultStr)) {
-						inactivityTimer.onActivity();
-						playBeepSoundAndVibrate();
-
-						previewing = false;
-						mCamera.setPreviewCallback(null);
-						mCamera.stopPreview();
-
-						releaseCamera();
-						barcodeScanned = true;
-						Tag = 0;
-						lockInfo(resultStr);
-					}
-				}
-			});
-
-		}
-	};
-
-
-
-
-	public void setCropWidth(int cropWidth) {
-		mCropWidth = cropWidth;
-		CameraManager.FRAME_WIDTH = mCropWidth;
-
-	}
-
-
-	public void setCropHeight(int cropHeight) {
-		this.mCropHeight = cropHeight;
-		CameraManager.FRAME_HEIGHT = mCropHeight;
-	}
-
-
-
-
-
-//	private void initViews() {
-//
-//		mImageScanner = new ImageScanner();
-//		mImageScanner.setConfig(0, Config.X_DENSITY, 3);
-//		mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
-//
-//		autoFocusHandler = new Handler();
-//		mCameraManager = new CameraManager(context);
-//		try {
-//			mCameraManager.openDriver();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//		//调整扫描框大小,自适应屏幕
-//		Display display = this.getWindowManager().getDefaultDisplay();
-//		int width = display.getWidth();
-//	    int height = display.getHeight();
-//
-//		RelativeLayout.LayoutParams linearParams =  (RelativeLayout.LayoutParams)scanCropView.getLayoutParams();
-//		linearParams.height = (int) (width*0.65);
-//		linearParams.width = (int) (width*0.65);
-//		scanCropView.setLayoutParams(linearParams);
-//		//**
-//
-//		mCamera = mCameraManager.getCamera();
-//		mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
-//		scanPreview.addView(mPreview);
-//
-//		TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,
-//				TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
-//				TranslateAnimation.RELATIVE_TO_PARENT, 0.9f);
-//		mAnimation.setDuration(1500);
-//		mAnimation.setRepeatCount(-1);
-//		mAnimation.setRepeatMode(Animation.REVERSE);
-//		mAnimation.setInterpolator(new LinearInterpolator());
-//		scanLine.setAnimation(mAnimation);
-//	}
-
-
-
-	private void releaseCamera() {
-		if (mCamera != null) {
-			mCamera.stopPreview();
-
-			previewing = false;
-			mCamera.setPreviewCallback(null);
-			mCamera.release();
-			mCamera = null;
-		}
-	}
-
-
-
-	public Handler getHandler() {
-		return handler;
-	}
-
-	Handler m_myHandler = new Handler(new Handler.Callback() {
-		@Override
-		public boolean handleMessage(Message mes) {
-			switch (mes.what) {
-				default:
-					break;
-			}
-			return false;
-		}
-	});
-
-//	private void resetCamera(){
-//		mCameraManager = new CameraManager(this);
-//		try {
-//			mCameraManager.openDriver();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//		mCamera = mCameraManager.getCamera();
-//		mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
-//		scanPreview.addView(mPreview);
-//
-//		previewing = true;
-//	}
-
-	void macLoop(final JSONObject jsonObject){
-
-
-		try {
-
-			final String macinfo = jsonObject.getString("macinfo");
-			boolean is = macList.contains(macinfo);
-
-			if(n<5){
-				n++;
-
-				Log.e("macLoop===", is+"==="+n);
-
-				if(is){
-					BleManager.getInstance().cancelScan();
-
-//					Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
-					Intent intent = new Intent();
-					intent.putExtra("name", "NokeLock");
-					intent.putExtra("codenum",codenum);
-					intent.putExtra("pdk",jsonObject.getString("pdk"));
-					intent.putExtra("pwd",jsonObject.getString("pwd"));
-					intent.putExtra("address", macinfo);
-					intent.putExtra("isMac",true);
-
-					if (loadingDialog != null && loadingDialog.isShowing()){
-						loadingDialog.dismiss();
-					}
-
-					BleManager.getInstance().cancelScan();
-
-					setResult(RESULT_OK, intent);
-					scrollToFinishActivity();
-				}else{
-					m_myHandler.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							Log.e("macLoop===1", "==="+n);
-
-							macLoop(jsonObject);
-
-						}
-					}, 1 * 1000);
-				}
-
-			}else{
-				Log.e("macLoop===finish", "===");
-				BleManager.getInstance().cancelScan();
-
-//				Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
-				Intent intent = new Intent();
-				intent.putExtra("name", "NokeLock");
-				intent.putExtra("codenum",codenum);
-				intent.putExtra("pdk",jsonObject.getString("pdk"));
-				intent.putExtra("pwd",jsonObject.getString("pwd"));
-				intent.putExtra("address", macinfo);
-				intent.putExtra("isMac",is);
-//				startActivity(intent);
-//				scrollToFinishActivity();
-
-//				rIntent.putExtra("codenum", codenum);
-//				rIntent.putExtra("m_nowMac", m_nowMac);
-//				rIntent.putExtra("carmodel_id", carmodel_id);
-//				rIntent.putExtra("type", type);
-//				rIntent.putExtra("lock_no", lock_no);
-//				rIntent.putExtra("bleid", bleid);
-//				rIntent.putExtra("deviceuuid", deviceuuid);
-//				rIntent.putExtra("electricity", electricity);
-//				rIntent.putExtra("mileage", mileage);
-//				rIntent.putExtra("carmodel_name", carmodel_name);
-//				rIntent.putExtra("each_free_time", each_free_time);
-//				rIntent.putExtra("first_price", first_price);
-//				rIntent.putExtra("first_time", first_time);
-//				rIntent.putExtra("continued_price", continued_price);
-//				rIntent.putExtra("continued_time", continued_time);
-//				rIntent.putExtra("isMac",false);
-
-
-				if (loadingDialog != null && loadingDialog.isShowing()){
-					loadingDialog.dismiss();
-				}
-
-				BleManager.getInstance().cancelScan();
-
-				setResult(RESULT_OK, intent);
-				scrollToFinishActivity();
-			}
-
-
-		}catch (Exception e){
-
-		}
 	}
 
 	private void info(final JSONObject jsonObject){
@@ -1526,14 +1312,14 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								Log.e("Scan===2_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								n=0;
-								macLoop(jsonObject);
+								macLoop();
 
 
 							}else {
 								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								n=0;
-								macLoop(jsonObject);
+								macLoop();
 
 //								Intent intent = new Intent(ActivityScanerCode.this, LockManageActivity.class);
 //								intent.putExtra("name", "NokeLock");
@@ -1623,17 +1409,17 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 	private void lockInfo(String result){
 
-		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+		Log.e("Scan===lockInfo", "==="+result);
+
+//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
 		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-		if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+		if (access_token == null || "".equals(access_token)){
 			Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
 			UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
 		}else {
-			RequestParams params = new RequestParams();
-			params.put("uid",uid);
-			params.put("access_token",access_token);
-			params.put("tokencode",result);
-			HttpHelper.post(ActivityScanerCode.this, Urls.lockInfo, params, new TextHttpResponseHandler() {
+//			RequestParams params = new RequestParams();
+//			params.put("tokencode",result);
+			HttpHelper.get(ActivityScanerCode.this, Urls.car+ URLEncoder.encode(result), new TextHttpResponseHandler() {
 				@Override
 				public void onStart() {
 					if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -1647,6 +1433,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 						loadingDialog.dismiss();
 					}
 					UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
+
+					initCamera(surfaceHolder);
 				}
 				@Override
 				public void onSuccess(int statusCode, Header[] headers, String responseString) {
@@ -1655,78 +1443,444 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 						Log.e("Scan===00", "==="+responseString);
 
-						if (result.getFlag().equals("Success")) {
-							final JSONObject jsonObject = new JSONObject(result.getData());
+						CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
 
-							codenum = jsonObject.getString("codenum");
+						codenum = bean.getNumber();
+						type = ""+bean.getLock_id();
+						lock_name = bean.getLock_name();	//车锁名称(英文)
+						lock_title = bean.getLock_title();	//车锁名称(中文)
+						deviceuuid = bean.getVendor_lock_id();
+						lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常
+						lock_no = bean.getLock_no();
+						m_nowMac = bean.getLock_mac();
+						bleid = bean.getLock_secretkey();
+						electricity = bean.getElectricity();
+						carmodel_id = bean.getCarmodel_id();
+						carmodel_name = bean.getCarmodel_name();
+                        status = bean.getStatus();
+						can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
 
-							Log.e("Scan===", codenum+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+						Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order);
 
-							if (result.getInfo().equals("2")) {
-								CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-								customBuilder.setTitle("温馨提示").setMessage("该车被设为坏车，用户无法使用，请及时回收维修")
-										.setPositiveButton("去维护", new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog, int which) {
-												dialog.cancel();
+						if("2".equals(type) || "3".equals(type)){
+							n=0;
+							macLoop();
+						}else{
+							Intent intent = new Intent();
+							intent.putExtra("codenum", codenum);
+							intent.putExtra("lock_name", lock_name);
+							intent.putExtra("lock_title", lock_title);
+							intent.putExtra("m_nowMac", m_nowMac);
+							intent.putExtra("carmodel_id", carmodel_id);
+							intent.putExtra("type", type);
+							intent.putExtra("lock_no", lock_no);
+							intent.putExtra("bleid", bleid);
+							intent.putExtra("deviceuuid", deviceuuid);
+							intent.putExtra("electricity", electricity);
+							intent.putExtra("carmodel_name", carmodel_name);
+							intent.putExtra("lock_status", lock_status);
+                            intent.putExtra("status", status);
+							intent.putExtra("can_finish_order", can_finish_order);
+							intent.putExtra("isMac",false);
+							intent.putExtra("isSearch",isSearch);
 
-												MaintenanceFragment.bikeNum=codenum;
-												MaintenanceFragment.ff=1;
-
-												Intent rIntent = new Intent();
-												rIntent.putExtra("tz", "1");
-												setResult(RESULT_OK, rIntent);
-//												setResult(RESULT_OK);
-
-												scrollToFinishActivity();
-//												MainActivity.changeTab(4);
-
-												if (loadingDialog != null && loadingDialog.isShowing()){
-													loadingDialog.dismiss();
-												}
-											}
-										})
-										.setNegativeButton("开锁", new DialogInterface.OnClickListener() {
-											public void onClick(DialogInterface dialog, int which) {
-												dialog.cancel();
-
-												info(jsonObject);
-
-											}
-										});
-								customBuilder.create().show();
-							}else{
-								info(jsonObject);
-							}
-
-						} else {
-							Log.e("lockinfo===error","==="+result.getInfo());
-
-//							if (result.getInfo().equals("1")) {
-//
-//							}else{
-//
-//							}
-
-							Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
 							if (loadingDialog != null && loadingDialog.isShowing()){
 								loadingDialog.dismiss();
 							}
+
+							BleManager.getInstance().cancelScan();
+
+							setResult(RESULT_OK, intent);
 							scrollToFinishActivity();
-
-
 						}
+
+//						if (result.getInfo().equals("2")) {
+//							CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//							customBuilder.setTitle("温馨提示").setMessage("该车被设为坏车，用户无法使用，请及时回收维修")
+//									.setPositiveButton("去维护", new DialogInterface.OnClickListener() {
+//										public void onClick(DialogInterface dialog, int which) {
+//											dialog.cancel();
+//
+//											MaintenanceFragment.bikeNum=codenum;
+//											MaintenanceFragment.ff=1;
+//
+//											Intent rIntent = new Intent();
+//											rIntent.putExtra("tz", "1");
+//											setResult(RESULT_OK, rIntent);
+////												setResult(RESULT_OK);
+//
+//											scrollToFinishActivity();
+////												MainActivity.changeTab(4);
+//
+//											if (loadingDialog != null && loadingDialog.isShowing()){
+//												loadingDialog.dismiss();
+//											}
+//										}
+//									})
+//									.setNegativeButton("开锁", new DialogInterface.OnClickListener() {
+//										public void onClick(DialogInterface dialog, int which) {
+//											dialog.cancel();
+//
+//											info(jsonObject);
+//
+//										}
+//									});
+//							customBuilder.create().show();
+//						}else{
+//							info(jsonObject);
+//						}
+
+//						if (result.getFlag().equals("Success")) {
+//
+//
+//						} else {
+//							Log.e("lockinfo===error","==="+result.getInfo());
+//
+//							Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+//							if (loadingDialog != null && loadingDialog.isShowing()){
+//								loadingDialog.dismiss();
+//							}
+////							scrollToFinishActivity();	//TODO
+//
+//							initCamera(surfaceHolder);
+//						}
 					} catch (Exception e) {
 
 						if (loadingDialog != null && loadingDialog.isShowing()){
 							loadingDialog.dismiss();
 						}
 						Log.e("Test","异常"+e);
+
+						initCamera(surfaceHolder);
 					}
 
 				}
 			});
 		}
 	}
+
+	private void add_xiaoan_car(String deviceuuid, String result){
+		RequestParams params = new RequestParams();
+		params.put("deviceuuid", deviceuuid);
+		params.put("tokencode", result);
+		HttpHelper.post(ActivityScanerCode.this, Urls.add_xiaoan_car, params, new TextHttpResponseHandler() {
+			@Override
+			public void onStart() {
+				if (loadingDialog != null && !loadingDialog.isShowing()) {
+					loadingDialog.setTitle("正在提交");
+					loadingDialog.show();
+				}
+			}
+			@Override
+			public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+				if (loadingDialog != null && loadingDialog.isShowing()){
+					loadingDialog.dismiss();
+				}
+				UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
+			}
+
+
+			@Override
+			public void onSuccess(int statusCode, Header[] headers, String responseString) {
+				try {
+					ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+					if (result.getFlag().equals("Success")) {
+						Toast.makeText(ActivityScanerCode.this, result.getMsg(), Toast.LENGTH_SHORT).show();
+
+						JSONObject jsonObject = new JSONObject(result.getData());
+
+						Log.e("add_xiaoan_car===", responseString+"===");
+//						Log.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+
+					} else {
+						Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+						if (loadingDialog != null && loadingDialog.isShowing()){
+							loadingDialog.dismiss();
+						}
+						scrollToFinishActivity();
+					}
+				} catch (Exception e) {
+					Log.e("Test","异常"+e);
+				}
+				if (loadingDialog != null && loadingDialog.isShowing()){
+					loadingDialog.dismiss();
+				}
+			}
+		});
+
+//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//		if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+//			Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
+//			UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
+//		}else {
+//
+//		}
+	}
+
+//	PreviewCallback previewCb = new PreviewCallback() {
+//		public void onPreviewFrame(final byte[] data, final Camera camera) {
+//
+//			m_myHandler.post(new Runnable() {
+//				@Override
+//				public void run() {
+//					Size size = camera.getParameters().getPreviewSize();
+//
+//					Log.e("previewCb===", "==="+data.length);
+//
+//					// 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
+//					byte[] rotatedData = new byte[data.length];
+//					for (int y = 0; y < size.height; y++) {
+//						for (int x = 0; x < size.width; x++)
+//							rotatedData[x * size.height + size.height - y - 1] = data[x
+//									+ y * size.width];
+//					}
+//
+//					// 宽高也要调整
+//					int tmp = size.width;
+//					size.width = size.height;
+//					size.height = tmp;
+//
+//					initCrop();
+//
+//					Image barcode = new Image(size.width, size.height, "Y800");
+//					barcode.setData(rotatedData);
+//					barcode.setCrop(mCropRect.left, mCropRect.top, mCropRect.width(),
+//							mCropRect.height());
+//
+//					int result = mImageScanner.scanImage(barcode);
+//					String resultStr = null;
+//
+//					if (result != 0) {
+//						SymbolSet syms = mImageScanner.getResults();
+//						for (Symbol sym : syms) {
+//							resultStr = sym.getData();
+//						}
+//					}
+//
+//					if (!TextUtils.isEmpty(resultStr)) {
+//						inactivityTimer.onActivity();
+//						playBeepSoundAndVibrate();
+//
+//						previewing = false;
+//						mCamera.setPreviewCallback(null);
+//						mCamera.stopPreview();
+//
+//						releaseCamera();
+//						barcodeScanned = true;
+//						Tag = 0;
+//						lockInfo(resultStr);
+//					}
+//				}
+//			});
+//
+//		}
+//	};
+
+
+
+
+	public void setCropWidth(int cropWidth) {
+		mCropWidth = cropWidth;
+		CameraManager.FRAME_WIDTH = mCropWidth;
+
+	}
+
+
+	public void setCropHeight(int cropHeight) {
+		this.mCropHeight = cropHeight;
+		CameraManager.FRAME_HEIGHT = mCropHeight;
+	}
+
+
+
+
+
+//	private void initViews() {
+//
+//		mImageScanner = new ImageScanner();
+//		mImageScanner.setConfig(0, Config.X_DENSITY, 3);
+//		mImageScanner.setConfig(0, Config.Y_DENSITY, 3);
+//
+//		autoFocusHandler = new Handler();
+//		mCameraManager = new CameraManager(context);
+//		try {
+//			mCameraManager.openDriver();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
+//		//调整扫描框大小,自适应屏幕
+//		Display display = this.getWindowManager().getDefaultDisplay();
+//		int width = display.getWidth();
+//	    int height = display.getHeight();
+//
+//		RelativeLayout.LayoutParams linearParams =  (RelativeLayout.LayoutParams)scanCropView.getLayoutParams();
+//		linearParams.height = (int) (width*0.65);
+//		linearParams.width = (int) (width*0.65);
+//		scanCropView.setLayoutParams(linearParams);
+//		//**
+//
+//		mCamera = mCameraManager.getCamera();
+//		mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+//		scanPreview.addView(mPreview);
+//
+//		TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,
+//				TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
+//				TranslateAnimation.RELATIVE_TO_PARENT, 0.9f);
+//		mAnimation.setDuration(1500);
+//		mAnimation.setRepeatCount(-1);
+//		mAnimation.setRepeatMode(Animation.REVERSE);
+//		mAnimation.setInterpolator(new LinearInterpolator());
+//		scanLine.setAnimation(mAnimation);
+//	}
+
+
+
+	private void releaseCamera() {
+		if (mCamera != null) {
+			mCamera.stopPreview();
+
+			previewing = false;
+			mCamera.setPreviewCallback(null);
+			mCamera.release();
+			mCamera = null;
+		}
+	}
+
+
+
+	public Handler getHandler() {
+		return handler;
+	}
+
+	Handler m_myHandler = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage(Message mes) {
+			switch (mes.what) {
+				default:
+					break;
+			}
+			return false;
+		}
+	});
+
+//	private void resetCamera(){
+//		mCameraManager = new CameraManager(this);
+//		try {
+//			mCameraManager.openDriver();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
+//		mCamera = mCameraManager.getCamera();
+//		mPreview = new CameraPreview(this, mCamera, previewCb, autoFocusCB);
+//		scanPreview.addView(mPreview);
+//
+//		previewing = true;
+//	}
+
+	void macLoop(){
+
+
+		try {
+
+			boolean is = macList.contains(m_nowMac);
+
+			if(n<5){
+				n++;
+
+				Log.e("macLoop===", is+"==="+n);
+
+				if(is){
+					BleManager.getInstance().cancelScan();
+
+//					Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+					Intent intent = new Intent();
+					intent.putExtra("codenum", codenum);
+					intent.putExtra("lock_name", lock_name);
+					intent.putExtra("lock_title", lock_title);
+					intent.putExtra("m_nowMac", m_nowMac);
+					intent.putExtra("carmodel_id", carmodel_id);
+					intent.putExtra("type", type);
+					intent.putExtra("lock_no", lock_no);
+					intent.putExtra("bleid", bleid);
+					intent.putExtra("deviceuuid", deviceuuid);
+					intent.putExtra("electricity", electricity);
+					intent.putExtra("carmodel_name", carmodel_name);
+                    intent.putExtra("lock_status", lock_status);
+                    intent.putExtra("status", status);
+					intent.putExtra("can_finish_order", can_finish_order);
+					intent.putExtra("isMac",true);
+					intent.putExtra("isSearch",isSearch);
+//					intent.putExtra("pdk",jsonObject.getString("pdk"));		//TODO
+//					intent.putExtra("pwd",jsonObject.getString("pwd"));		//TODO
+
+					if (loadingDialog != null && loadingDialog.isShowing()){
+						loadingDialog.dismiss();
+					}
+
+					BleManager.getInstance().cancelScan();
+
+					setResult(RESULT_OK, intent);
+					scrollToFinishActivity();
+				}else{
+					m_myHandler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							Log.e("macLoop===1", "==="+n);
+
+							macLoop();
+
+						}
+					}, 1 * 1000);
+				}
+
+			}else{
+				Log.e("macLoop===finish", "===");
+				BleManager.getInstance().cancelScan();
+
+//				Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
+				Intent intent = new Intent();
+				intent.putExtra("codenum", codenum);
+				intent.putExtra("lock_name", lock_name);
+				intent.putExtra("lock_title", lock_title);
+				intent.putExtra("m_nowMac", m_nowMac);
+				intent.putExtra("carmodel_id", carmodel_id);
+				intent.putExtra("type", type);
+				intent.putExtra("lock_no", lock_no);
+				intent.putExtra("bleid", bleid);
+				intent.putExtra("deviceuuid", deviceuuid);
+				intent.putExtra("electricity", electricity);
+				intent.putExtra("carmodel_name", carmodel_name);
+                intent.putExtra("lock_status", lock_status);
+                intent.putExtra("status", status);
+				intent.putExtra("can_finish_order", can_finish_order);
+				intent.putExtra("isMac",is);
+				intent.putExtra("isSearch",isSearch);
+//				intent.putExtra("pdk",jsonObject.getString("pdk"));
+//				intent.putExtra("pwd",jsonObject.getString("pwd"));
+//				startActivity(intent);
+//				scrollToFinishActivity();
+
+				if (loadingDialog != null && loadingDialog.isShowing()){
+					loadingDialog.dismiss();
+				}
+
+				BleManager.getInstance().cancelScan();
+
+				setResult(RESULT_OK, intent);
+				scrollToFinishActivity();
+			}
+
+
+		}catch (Exception e){
+
+		}
+	}
+
+
 
 
 

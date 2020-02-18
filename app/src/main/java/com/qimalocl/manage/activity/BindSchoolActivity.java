@@ -20,10 +20,12 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseViewAdapter;
+import com.qimalocl.manage.base.BaseViewHolder;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.model.CarSchoolBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.HistorysRecordBean;
 import com.qimalocl.manage.model.ResultConsel;
@@ -61,7 +63,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
     private View footerLayout;
 
     private MyAdapter myAdapter;
-    private List<HistorysRecordBean> data;
+    private List<CarSchoolBean> data;
     private boolean isRefresh = true;// 是否刷新中
     private boolean isLast = false;
     private int showPage = 1;
@@ -105,7 +107,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
 
         myList.setOnItemClickListener(this);
         if(data.isEmpty()){
-            initHttp();
+
         }
 
         myAdapter = new MyAdapter(context);
@@ -128,9 +130,11 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
     public void onResume() {
         super.onResume();
         isRefresh = true;
-        if(data.size()!=0){
-            myAdapter.notifyDataSetChanged();
-        }
+//        if(data.size()!=0){
+//            myAdapter.notifyDataSetChanged();
+//        }
+
+        initHttp();
     }
 
     @Override
@@ -188,19 +192,9 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
             return;
         }
         RequestParams params = new RequestParams();
-        params.put("uid", "");
-        params.put("access_token",access_token);
-        params.put("codenum", "40004690");
-        params.put("page",showPage);
-        params.put("pagesize", GlobalConfig.PAGE_SIZE);
-        if (starttime != null && !"".equals(starttime)){
-            params.put("starttime", starttime);
-        }
-        if (endtime != null && !"".equals(endtime)){
-            params.put("endtime", endtime);
-        }
+        params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        HttpHelper.get(context, Urls.historys, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.carschoolaction, params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -222,39 +216,43 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
 
                     Log.e("initHttp===", "==="+responseString);
 
-                    HistorysRecordBean bean = new HistorysRecordBean();
-                    data.add(bean);
+                    JSONArray array = new JSONArray(result.getData());
+                    if (array.length() == 0 && showPage == 1) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(4);
+                        return;
+                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+                        footerLayout.setVisibility(View.GONE);
+                        setFooterType(5);
+                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(2);
+                    } else if (array.length() >= 10) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(0);
+                    }
+
+                    if(data!=null && data.size()>0){
+                        data.clear();
+                    }
+
+                    for (int i = 0; i < array.length(); i++) {
+                        CarSchoolBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarSchoolBean.class);
+                        data.add(bean);
+                    }
 
                     myAdapter.notifyDataSetChanged();
 
-                    if ("Success".equals(result.getFlag())) {
-                        JSONArray array = new JSONArray(result.getData());
-                        if (array.length() == 0 && showPage == 1) {
-                            footerLayout.setVisibility(View.VISIBLE);
-                            setFooterType(4);
-                            return;
-                        } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
-                            footerLayout.setVisibility(View.GONE);
-                            setFooterType(5);
-                        } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-                            footerLayout.setVisibility(View.VISIBLE);
-                            setFooterType(2);
-                        } else if (array.length() >= 10) {
-                            footerLayout.setVisibility(View.VISIBLE);
-                            setFooterType(0);
-                        }
-                        for (int i = 0; i < array.length(); i++) {
-//                            HistorysRecordBean bean = JSON.parseObject(array.getJSONObject(i).toString(), HistorysRecordBean.class);
-//                            data.add(bean);
-                        }
-
-                    } else {
-                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-
-                        swipeRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                        setFooterVisibility();
-                    }
+//                    if ("Success".equals(result.getFlag())) {
+//
+//
+//                    } else {
+//                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//
+//                        swipeRefreshLayout.setRefreshing(false);
+//                        isRefresh = false;
+//                        setFooterVisibility();
+//                    }
                 } catch (Exception e) {
 
                 } finally {
@@ -351,7 +349,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
         }
     }
 
-    private class MyAdapter extends BaseViewAdapter<HistorysRecordBean> {
+    private class MyAdapter extends BaseViewAdapter<CarSchoolBean> {
 
         private LayoutInflater inflater;
 
@@ -366,17 +364,15 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
                 convertView = inflater.inflate(R.layout.item_bind_school_record, null);
             }
 
-//            TextView orderType = BaseViewHolder.get(convertView,R.id.item_order_type);
-//            TextView realName = BaseViewHolder.get(convertView,R.id.item_historyRecord_realName);
-//            TextView tel = BaseViewHolder.get(convertView,R.id.item_historyRecord_tel);
-//            TextView codeNum = BaseViewHolder.get(convertView,R.id.item_historyRecord_codeNum);
-//            TextView money = BaseViewHolder.get(convertView,R.id.item_historyRecord_money);
-//            final HistorysRecordBean bean = getDatas().get(position);
-//            orderType.setText("订单类型："+("0".equals(bean.getOrder_type())?"当前行程":"历史行程"));
-//            realName.setText("姓名："+bean.getUsername());
-//            tel.setText("联系电话:"+ bean.getTelphone());
-//            codeNum.setText(bean.getStart_end_date());
-//            money.setText("￥"+bean.getPrices());
+            TextView created_at = BaseViewHolder.get(convertView,R.id.item_created_at);
+            TextView car_number = BaseViewHolder.get(convertView,R.id.item_car_number);
+            TextView school_name = BaseViewHolder.get(convertView,R.id.item_school_name);
+
+            CarSchoolBean bean = getDatas().get(position);
+
+            created_at.setText(bean.getCreated_at());
+            car_number.setText("车辆编号："+bean.getCar_number());
+            school_name.setText(bean.getSchool_name());
 
             return convertView;
         }

@@ -13,21 +13,44 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+	public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
 
 	//获取验证码接口
 	public static String verificationcode = host2 + "/verificationcode";
 	//注册登录接口、退出登录接口delete
 	public static String authorizations = host2 + "/authorizations";
+	//换绑手机接口
+	public static String change_phone = host2 + "/user/change_phone";
+	//数据模块接口
+	public static String datas = host2 + "/user/datas";
 	//用户信息接口
 	public static String user = host2 + "/user";
 	//学校列表接口
 	public static String schools = host2 + "/schools";
+	//get车绑学校列表接口  post车绑定学校接口
+	public static String carschoolaction = host2 + "/carschoolaction";
 
-	//上锁接口
-	public static String lock = host2 + "/car/lock";
-	//开锁接口
-	public static String unlock = host2 + "/car/unlock";
+	//首页车辆（图标）接口
+	public static String cars = host2 + "/cars";
+	//车辆详情接口
+	public static String car = host2 + "/car/";
+	//获取泺平锁开锁秘钥接口
+	public static String rent = host2 + "/car/lp/rent";
+	//关闭电池锁接口（小安）
+	public static String battery_lock = host2 + "/car/battery_lock/";
+	//打开电池锁（换电）接口
+	public static String battery_unlock = host2 + "/car/battery_unlock/";
+	//寻车接口
+	public static String search = host2 + "/car/search/";
+	//设为回收 修好 报废接口
+	public static String carbadaction = host2 + "/carbadaction/operation/";
+
+	//结束订单接口
+	public static String order_finish = host2 + "/car/order_finish/";
+	//车辆上锁接口
+	public static String lock = host2 + "/car/lock/";
+	//车辆开锁接口
+	public static String unlock = host2 + "/car/unlock/";
 
 
 
@@ -70,8 +93,8 @@ public class Urls {
 	public static String changeKey = host + "/index.php?g=App&m=UserManage&a=pdk";
 	/**提交密码*/
 	public static String changePsd = host + "/index.php?g=App&m=UserManage&a=pwd";
-	/**泺平锁加密接口*/
-	public static String rent = host + "/index.php?g=App&m=Index&a=rent";
+//	/**泺平锁加密接口*/
+//	public static String rent = host + "/index.php?g=App&m=Index&a=rent";
 	/**入库*/
 	public static String addCar = host + "/index.php?g=App&m=Index&a=addblueCar";
 	/**回收*/
@@ -88,8 +111,8 @@ public class Urls {
 	/**锁定*/
 //	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";		//TODO
 
-	/**打开电池锁接口*/
-	public static String battery_unlock = host + "/index.php?g=App&m=Ebike&a=battery_unlock";
+//	/**打开电池锁接口*/
+//	public static String battery_unlock = host + "/index.php?g=App&m=Ebike&a=battery_unlock";
 
 	/**电单车信息接口*/
 	public static String ebikeInfo = host + "/index.php?g=App&m=Ebike&a=info";

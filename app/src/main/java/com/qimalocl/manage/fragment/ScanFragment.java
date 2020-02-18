@@ -31,6 +31,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -89,6 +90,7 @@ import com.qimalocl.manage.activity.DeviceSelectActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.TestXiaoanActivity;
+import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
@@ -96,9 +98,12 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.model.CarBean;
+import com.qimalocl.manage.model.CarsBean;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.model.UserIndexBean;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UtilAnim;
@@ -117,6 +122,7 @@ import com.sofi.blelocker.library.search.SearchRequest;
 import com.sofi.blelocker.library.search.SearchResult;
 import com.sofi.blelocker.library.search.response.SearchResponse;
 import com.sunshine.blelibrary.config.Config;
+import com.sunshine.blelibrary.mode.BatteryTxOrder;
 import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
 import com.sunshine.blelibrary.mode.GetTokenTxOrder;
 import com.sunshine.blelibrary.mode.OpenLockTxOrder;
@@ -180,6 +186,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.switcher_bad) Switch switcher_bad;
     @BindView(R.id.switcher_type) Switch switcher_type;
 
+    private TextView tv_electricity;
+    private TextView tv_lock_status;
+    private Switch lock_switcher;
+
     private AMap aMap;
     private MapView mapView;
     private OnLocationChangedListener mListener;
@@ -193,6 +203,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private Circle mCircle;
     private BitmapDescriptor successDescripter;
     private BitmapDescriptor bikeDescripter;
+    private BitmapDescriptor bikeDescripter_bad;
     private BitmapDescriptor bikeDescripter_red;
     private BitmapDescriptor bikeDescripter_yellow;
     private BitmapDescriptor bikeDescripter_green;
@@ -224,6 +235,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private static final int PRIVATE_CODE = 1315;//开启GPS权限
 
     public String codenum = "";
+    public String lock_name = "";
+    public String lock_title = "";
     private String m_nowMac = "";
     private int carmodel_id = 1;
     private String type = "";
@@ -231,9 +244,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private String bleid = "";
     private String deviceuuid = "";
     private String electricity = "";
-    private String mileage = "";
+    private String carmodel_name = "";
+    private int lock_status;
+    private int status;
+    private int can_finish_order;
+    private boolean isSearch = false;
     private float accuracy = 29.0f;
     float leveltemp = 18f;
+
+    private Boolean isMac;
+    private Boolean isFind;
 
     private String keySource = "";
     //密钥索引
@@ -342,9 +362,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //        mapView.onResume();
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid != null && !"".equals(uid) && access_token != null && !"".equals(access_token)){
+        if (access_token != null && !"".equals(access_token)){
             rightBtn.setText("退出登录");
         }else {
             rightBtn.setText("登录");
@@ -500,8 +520,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     };
 
-
-
     private void initView(){
         openGPSSettings();
 
@@ -537,6 +555,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
         bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
+        bikeDescripter_bad = BitmapDescriptorFactory.fromResource(R.drawable.bike_bad_icon);
         bikeDescripter_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_red_icon);
         bikeDescripter_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_yellow_icon);
         bikeDescripter_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_green_icon);
@@ -558,10 +577,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 Log.e("onMarkerClick===", marker.getTitle()+"==="+marker.getTitle().split("-")[0]);
 
-                codenum = marker.getTitle().split("-")[0];
-                quantity = marker.getTitle().split("-")[1];
+//                codenum = marker.getTitle().split("-")[0];
+//                quantity = marker.getTitle().split("-")[1];
 
-                initmPopupWindowView();
+                codenum = marker.getTitle();
+
+                lockInfo();
+
                 return true;
             }
         });
@@ -591,15 +613,87 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         switcher_bad.setOnClickListener(this);
         switcher_type.setOnClickListener(this);
 
-        BleManager.getInstance().init(activity.getApplication());
-        BleManager.getInstance()
-                .enableLog(true)
-                .setReConnectCount(10, 5000)
-                .setConnectOverTime(timeout)
-                .setOperateTimeout(10000);
+//        BleManager.getInstance().init(activity.getApplication());
+//        BleManager.getInstance()
+//                .enableLog(true)
+//                .setReConnectCount(10, 5000)
+//                .setConnectOverTime(timeout)
+//                .setOperateTimeout(10000);
+//
+//        setScanRule();
+//        scan();
+    }
 
-        setScanRule();
-        scan();
+    private void lockInfo(){
+
+//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+//			RequestParams params = new RequestParams();
+//			params.put("tokencode",result);
+            HttpHelper.get(context, Urls.car+codenum, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                        Log.e("sf===lockInfo", "==="+responseString);
+
+                        CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
+
+                        codenum = bean.getNumber();
+                        type = ""+bean.getLock_id();
+                        lock_name = bean.getLock_name();	//车锁名称(英文)
+                        lock_title = bean.getLock_title();	//车锁名称(中文)
+                        deviceuuid = bean.getVendor_lock_id();
+                        lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常
+                        lock_no = bean.getLock_no();
+                        m_nowMac = bean.getLock_mac();
+                        bleid = bean.getLock_secretkey();
+                        electricity = bean.getElectricity();
+                        carmodel_id = bean.getCarmodel_id();
+                        carmodel_name = bean.getCarmodel_name();
+                        status = bean.getStatus();
+                        can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
+
+
+                        Log.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order);
+
+                        if(carmodel_id==2){
+                            initmPopupWindowView();
+                        }
+
+
+                    } catch (Exception e) {
+
+
+                        Log.e("Test","异常"+e);
+                    }
+
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+
+                }
+            });
+        }
     }
 
     private void setScanRule() {
@@ -661,57 +755,49 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
     public void initmPopupRentWindowView(){
-
         // 获取自定义布局文件的视图
         View customView = getLayoutInflater().inflate(R.layout.pop_rent_bike, null, false);
         // 创建PopupWindow宽度和高度
-        RelativeLayout pop_win_bg = (RelativeLayout) customView.findViewById(R.id.pop_rent_bg);
-        ImageView iv_popup_window_back = (ImageView) customView.findViewById(R.id.popupWindow_rent_back);
-//        ImageView iv_rent_cancelBtn = (ImageView) customView.findViewById(R.id.iv_rent_cancelBtn);
-//        TextView tv_codenum = (TextView) customView.findViewById(R.id.tv_codenum);
-//        TextView tv_carmodel_name = (TextView) customView.findViewById(R.id.tv_carmodel_name);
-//        TextView tv_each_free_time = (TextView) customView.findViewById(R.id.tv_each_free_time);
-//        TextView tv_first_price = (TextView) customView.findViewById(R.id.tv_first_price);
-//        TextView tv_first_time = (TextView) customView.findViewById(R.id.tv_first_time);
-//        TextView tv_continued_price = (TextView) customView.findViewById(R.id.tv_continued_price);
-//        TextView tv_continued_time = (TextView) customView.findViewById(R.id.tv_continued_time);
-//        TextView tv_electricity = (TextView) customView.findViewById(R.id.tv_electricity);
-//        TextView tv_mileage= (TextView) customView.findViewById(R.id.tv_mileage);
-//        LinearLayout ll_ebike = (LinearLayout) customView.findViewById(R.id.ll_ebike);
-//        LinearLayout ll_change_car = (LinearLayout) customView.findViewById(R.id.ll_change_car);
-//        LinearLayout ll_rent = (LinearLayout) customView.findViewById(R.id.ll_rent);
+        RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
+        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_rent_back);
 
-        LinearLayout ll_open_lock = (LinearLayout) customView.findViewById(R.id.ll_open_lock);
+        TextView tv_number = customView.findViewById(R.id.tv_number);
+        TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
+        TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
+        tv_electricity = customView.findViewById(R.id.tv_electricity);
+        tv_lock_status = customView.findViewById(R.id.tv_lock_status);
+        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
-//        if(carmodel_id==2){
-//            ll_ebike.setVisibility(View.VISIBLE);
-//
-//            tv_electricity.setText(electricity);
-//            tv_mileage.setText(mileage);
-//        }else{
-//            ll_ebike.setVisibility(View.GONE);
-//        }
-//
-//        tv_codenum.setText(codenum);
-//        tv_carmodel_name.setText(carmodel_name);
-//        tv_first_price.setText(first_price+"元");
-//        tv_first_time.setText("/"+first_time+"分钟");
-//        tv_continued_price.setText(continued_price+"元");
-//        tv_continued_time.setText("/"+continued_time+"分钟");
-//
-//        if("0".equals(each_free_time)){
-//            tv_each_free_time.setVisibility(View.GONE);
-//        }else{
-//            tv_each_free_time.setVisibility(View.VISIBLE);
-//            tv_each_free_time.setText(each_free_time+"分钟免费");
-//        }
+        LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
+        LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
+        TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
 
+        tv_number.setText(codenum);
+        tv_lock_title.setText(lock_title);
+        tv_lock_mac.setText(m_nowMac);
+        tv_electricity.setText(electricity);   //TODO
+        tv_lock_status.setText("");    //TODO 已开锁/已关锁
+        if(can_finish_order==1){
+            ll_end_order.setVisibility(View.VISIBLE);
+        }else{
+            ll_end_order.setVisibility(View.GONE);
+        }
 
-//        iv_rent_cancelBtn.setOnClickListener(this);
-//        ll_change_car.setOnClickListener(this);
-//        ll_rent.setOnClickListener(this);
+        if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
+            ll_bad.setVisibility(View.VISIBLE);
+        }else{
+            ll_bad.setVisibility(View.GONE);
+        }
+
+        Log.e("initmPopup===", can_finish_order+"==="+status);
 
         ll_open_lock.setOnClickListener(this);
+        ll_end_order.setOnClickListener(this);
+        ll_set_recovered.setOnClickListener(this);
+        ll_set_ok.setOnClickListener(this);
+        tv_set_useless.setOnClickListener(this);
 
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
@@ -734,20 +820,50 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
-        Log.e("initmPopup===", "===");
 
-//        if("5".equals(type)  || "6".equals(type)){
-//            if(!SharedPreferencesUrls.getInstance().getBoolean("isKnow0", false)){
-//                WindowManager windowManager = activity.getWindowManager();
-//                Display display = windowManager.getDefaultDisplay();
-//                WindowManager.LayoutParams lp = advDialog0.getWindow().getAttributes();
-//                lp.width = (int) (display.getWidth() * 1);
-//                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-//                advDialog0.getWindow().setBackgroundDrawableResource(R.color.transparent);
-//                advDialog0.getWindow().setAttributes(lp);
-//                advDialog0.show();
-//            }
-//        }
+
+        if ("2".equals(type) || "3".equals(type)) {    //单车蓝牙锁
+
+            if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+                popupwindow.dismiss();
+            }
+            //蓝牙锁
+            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+
+            mBluetoothAdapter = bluetoothManager.getAdapter();
+
+            if (mBluetoothAdapter == null) {
+                ToastUtil.showMessageApp(context, "获取蓝牙失败");
+                popupwindow.dismiss();
+                return;
+            }
+            if (!mBluetoothAdapter.isEnabled()) {
+                isPermission = false;
+                closeLoadingDialog2();
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 188);
+            } else {
+
+                Log.e("order===2",  "===" + type);
+
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在连接");
+                    loadingDialog.show();
+                }
+
+                BleManager.getInstance().init(activity.getApplication());
+                BleManager.getInstance()
+                        .enableLog(true)
+                        .setReConnectCount(10, 5000)
+                        .setConnectOverTime(timeout)
+                        .setOperateTimeout(10000);
+
+                isOpenLock = false;
+                connect();
+            }
+        }
+
     }
 
     public void initmPopupRentWindowView2(){
@@ -755,53 +871,62 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         // 获取自定义布局文件的视图
         View customView = getLayoutInflater().inflate(R.layout.pop_rent_ebike, null, false);
         // 创建PopupWindow宽度和高度
-        RelativeLayout pop_win_bg = (RelativeLayout) customView.findViewById(R.id.pop_rent_bg);
-        ImageView iv_popup_window_back = (ImageView) customView.findViewById(R.id.popupWindow_rent_back);
-//        ImageView iv_rent_cancelBtn = (ImageView) customView.findViewById(R.id.iv_rent_cancelBtn);
-//        TextView tv_codenum = (TextView) customView.findViewById(R.id.tv_codenum);
-//        TextView tv_carmodel_name = (TextView) customView.findViewById(R.id.tv_carmodel_name);
-//        TextView tv_each_free_time = (TextView) customView.findViewById(R.id.tv_each_free_time);
-//        TextView tv_first_price = (TextView) customView.findViewById(R.id.tv_first_price);
-//        TextView tv_first_time = (TextView) customView.findViewById(R.id.tv_first_time);
-//        TextView tv_continued_price = (TextView) customView.findViewById(R.id.tv_continued_price);
-//        TextView tv_continued_time = (TextView) customView.findViewById(R.id.tv_continued_time);
-//        TextView tv_electricity = (TextView) customView.findViewById(R.id.tv_electricity);
-//        TextView tv_mileage= (TextView) customView.findViewById(R.id.tv_mileage);
-//        LinearLayout ll_ebike = (LinearLayout) customView.findViewById(R.id.ll_ebike);
-//        LinearLayout ll_change_car = (LinearLayout) customView.findViewById(R.id.ll_change_car);
-//        LinearLayout ll_rent = (LinearLayout) customView.findViewById(R.id.ll_rent);
-
-        LinearLayout ll_open_lock = (LinearLayout) customView.findViewById(R.id.ll_open_lock);
-
-//        if(carmodel_id==2){
-//            ll_ebike.setVisibility(View.VISIBLE);
-//
-//            tv_electricity.setText(electricity);
-//            tv_mileage.setText(mileage);
-//        }else{
-//            ll_ebike.setVisibility(View.GONE);
-//        }
-//
-//        tv_codenum.setText(codenum);
-//        tv_carmodel_name.setText(carmodel_name);
-//        tv_first_price.setText(first_price+"元");
-//        tv_first_time.setText("/"+first_time+"分钟");
-//        tv_continued_price.setText(continued_price+"元");
-//        tv_continued_time.setText("/"+continued_time+"分钟");
-//
-//        if("0".equals(each_free_time)){
-//            tv_each_free_time.setVisibility(View.GONE);
-//        }else{
-//            tv_each_free_time.setVisibility(View.VISIBLE);
-//            tv_each_free_time.setText(each_free_time+"分钟免费");
-//        }
+        RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
+        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_rent_back);
 
 
-//        iv_rent_cancelBtn.setOnClickListener(this);
-//        ll_change_car.setOnClickListener(this);
-//        ll_rent.setOnClickListener(this);
+        TextView tv_number = customView.findViewById(R.id.tv_number);
+        TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
+        TextView tv_deviceuuid = customView.findViewById(R.id.tv_deviceuuid);
+        tv_lock_status = customView.findViewById(R.id.tv_lock_status);
+        TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
+        tv_electricity = customView.findViewById(R.id.tv_electricity);
 
-        ll_open_lock.setOnClickListener(this);
+        lock_switcher = customView.findViewById(R.id.lock_switcher);
+        LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
+        LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
+        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+
+        LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
+        LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
+        TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
+
+        tv_number.setText(codenum);
+        tv_lock_title.setText(lock_title);
+        tv_deviceuuid.setText(deviceuuid);
+        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
+        tv_lock_mac.setText(m_nowMac);
+        tv_electricity.setText(electricity);   //TODO
+
+        if(isSearch){
+            ll_car_search.setVisibility(View.VISIBLE);
+        }else{
+            ll_car_search.setVisibility(View.GONE);
+        }
+
+        if(can_finish_order==1){
+            ll_end_order.setVisibility(View.VISIBLE);
+        }else{
+            ll_end_order.setVisibility(View.GONE);
+        }
+
+        if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
+            ll_bad.setVisibility(View.VISIBLE);
+        }else{
+            ll_bad.setVisibility(View.GONE);
+        }
+
+        Log.e("initmPopup===2", lock_status+"==="+can_finish_order+"==="+status);
+
+        lock_switcher.setOnClickListener(this);
+        ll_power_exchange.setOnClickListener(this);
+        ll_car_search.setOnClickListener(this);
+        ll_end_order.setOnClickListener(this);
+        tv_set_useless.setOnClickListener(this);
+        ll_set_recovered.setOnClickListener(this);
+        ll_set_ok.setOnClickListener(this);
+
 
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
@@ -824,7 +949,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
-        Log.e("initmPopup===", "===");
+
 
     }
 
@@ -835,9 +960,48 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         View customView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu, null, false);
 
+
+
         // 创建PopupWindow宽度和高度
-        RelativeLayout pop_win_bg = (RelativeLayout) customView.findViewById(R.id.pop_win_bg);
-        ImageView iv_popup_window_back = (ImageView) customView.findViewById(R.id.popupWindow_back);
+        RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_win_bg);
+        ImageView iv_popup_window_back =  customView.findViewById(R.id.popupWindow_back);
+
+        TextView tv_number = customView.findViewById(R.id.tv_number);
+        TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
+        TextView tv_deviceuuid = customView.findViewById(R.id.tv_deviceuuid);
+        TextView tv_lock_status = customView.findViewById(R.id.tv_lock_status);
+        TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
+        TextView tv_electricity = customView.findViewById(R.id.tv_electricity);
+
+        lock_switcher = customView.findViewById(R.id.lock_switcher);
+        LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
+        LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
+        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+
+        LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
+        LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
+        TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
+
+        tv_number.setText(codenum);
+        tv_lock_title.setText(lock_title);
+        tv_deviceuuid.setText(deviceuuid);
+        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
+        tv_lock_mac.setText(m_nowMac);
+        tv_electricity.setText(electricity);   //TODO
+
+        if(can_finish_order==1){
+            ll_end_order.setVisibility(View.VISIBLE);
+        }else{
+            ll_end_order.setVisibility(View.GONE);
+        }
+
+        if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
+            ll_bad.setVisibility(View.VISIBLE);
+        }else{
+            ll_bad.setVisibility(View.GONE);
+        }
+
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
         if (bitmap != null) {
@@ -863,44 +1027,37 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         popupwindow.setOutsideTouchable(true);
         popupwindow.setBackgroundDrawable(new BitmapDrawable());
 
-//        customView.setFocusable(true);
-//        customView.setFocusableInTouchMode(true);
 
-//        TextView tv_codenum = (TextView)customView.findViewById(R.id.pop_menu_codenum);
-//        TextView tv_quantity = (TextView)customView.findViewById(R.id.pop_menu_quantity);
-//        LinearLayout findBikeLayout = (LinearLayout)customView.findViewById(R.id.pop_menu_findBike);
-//        LinearLayout openPowerLockLayout = (LinearLayout)customView.findViewById(R.id.pop_menu_openPowerLock);
-//        TextView cancleBtn = (TextView)customView.findViewById(R.id.pop_menu_cancleBtn);
+//        View.OnClickListener listener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                switch (v.getId()){
 //
-//        Log.e("initmPopup===", codenum+"==="+quantity);
 //
-//        tv_codenum.setText(codenum);
-//        tv_quantity.setText("电量："+quantity);
+////                    case R.id.pop_menu_findBike:
+////                        ddSearch();
+////                        break;
+////                    case R.id.pop_menu_openPowerLock:
+////                        battery_unlock();
+////                        break;
+////                    case R.id.pop_menu_cancleBtn:
+////                        popupwindow.dismiss();
+////
+////                        initNearby(latitude, longitude);
+////
+////                        break;
+//                }
+//
+//            }
+//        };
 
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()){
-//                    case R.id.pop_menu_findBike:
-//                        ddSearch();
-//                        break;
-//                    case R.id.pop_menu_openPowerLock:
-//                        battery_unlock();
-//                        break;
-//                    case R.id.pop_menu_cancleBtn:
-//                        popupwindow.dismiss();
-//
-//                        initNearby(latitude, longitude);
-//
-//                        break;
-                }
-
-            }
-        };
-
-//        findBikeLayout.setOnClickListener(listener);
-//        openPowerLockLayout.setOnClickListener(listener);
-//        cancleBtn.setOnClickListener(listener);
+        lock_switcher.setOnClickListener(this);
+        ll_power_exchange.setOnClickListener(this);
+        ll_car_search.setOnClickListener(this);
+        ll_end_order.setOnClickListener(this);
+        tv_set_useless.setOnClickListener(this);
+        ll_set_recovered.setOnClickListener(this);
+        ll_set_ok.setOnClickListener(this);
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
@@ -910,7 +1067,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 // 改变显示的按钮图片为正常状态
                 Log.e("onDismiss===", "===");
 
-                initNearby(latitude, longitude);
+//                initNearby(latitude, longitude);
+                cars();
             }
         });
 
@@ -940,18 +1098,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //    }
 
     private void ddSearch(){
+        Log.e("ddSearch===", "==="+codenum);
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+        if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("tokencode",codenum);
-            HttpHelper.post(context, Urls.ddSearch, params, new TextHttpResponseHandler() {
+//            RequestParams params = new RequestParams();
+//            params.put("tokencode",codenum);
+            HttpHelper.post(context, Urls.search+codenum, null, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
                     if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -969,12 +1126,23 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
+                        Log.e("ddSearch===1", "==="+responseString);
+
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"发送寻车指令成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
+
+//                        if(result.getStatus_code()==200){
+//                            curMarker.setIcon(bikeDescripter_blue);
+//                        }else{
+//
+//                        }
+
+                        Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
+
+//                        if (result.getFlag().equals("Success")) {
+//                            Toast.makeText(context,"发送寻车指令成功",Toast.LENGTH_SHORT).show();
+//                        }else {
+//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                        }
                     } catch (Exception e) {
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()){
@@ -987,17 +1155,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     void battery_unlock() {
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        Log.e("battery_unlock===", "==="+codenum);
+
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号", Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("tokencode",codenum);
-            HttpHelper.post(context, Urls.battery_unlock, params, new TextHttpResponseHandler() {
+//            RequestParams params = new RequestParams();
+//            params.put("number", codenum);
+            HttpHelper.post(context, Urls.battery_unlock+codenum, null, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
                     if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -1016,13 +1184,84 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            curMarker.setIcon(bikeDescripter_blue);
 
-                            Toast.makeText(context,"已发送指令",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        Log.e("battery_unlock===1", "==="+responseString);
+
+                        if(result.getStatus_code()==200){
+//                            m_myHandler.sendEmptyMessage(2);
+                            curMarker.setIcon(bikeDescripter_blue);
+                        }else{
+
                         }
+
+                        Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
+
+//                        if (result.getFlag().equals("Success")) {
+//                            curMarker.setIcon(bikeDescripter_blue);
+//
+//                            Toast.makeText(context,"已发送指令",Toast.LENGTH_SHORT).show();
+//                        }else {
+//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                        }
+                    } catch (Exception e) {
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+    void carbadaction(int type) {   //
+
+        Log.e("carbadaction===", type+"==="+codenum);
+
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号", Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("type", type);  //类型 1已回收 2已修好 3报废
+            HttpHelper.post(context, Urls.carbadaction+codenum, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                        Log.e("carbadaction===1", "==="+responseString);
+
+//                        if(result.getStatus_code()==200){
+//                            curMarker.setIcon(bikeDescripter_blue);
+//                        }else{
+//
+//                        }
+
+                        Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
+
+//                        if (result.getFlag().equals("Success")) {
+//                            curMarker.setIcon(bikeDescripter_blue);
+//
+//                            Toast.makeText(context,"已发送指令",Toast.LENGTH_SHORT).show();
+//                        }else {
+//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                        }
                     } catch (Exception e) {
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1035,13 +1274,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void initHttp(){
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid != null && !"".equals(uid) && access_token != null && !"".equals(access_token)){
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            HttpHelper.get(context, Urls.userIndex, params, new TextHttpResponseHandler() {
+        if (access_token != null && !"".equals(access_token)){
+//            RequestParams params = new RequestParams();
+//            params.put("uid",uid);
+//            params.put("access_token",access_token);
+            HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
                     onStartCommon("正在加载");
@@ -1058,31 +1297,32 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         public void run() {
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                Log.e("initHttp===0", "==="+responseString);
+
+                                UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
+
+//                                String[] schools = bean.getSchools();
+//                                if(schools!=null && schools.length>0){
+//                                    Log.e("initHttp===", "==="+schools[0]);
+//
+////                                    if("江苏理工学院".equals(schools[0]) || "泰山医学院".equals(schools[0]) || "中国矿业大学（南湖校区）".equals(schools[0]) || "河南财经政法大学".equals(schools[0])){
+////                                        carmodel_id = 2;
+////                                        switcher_type.setChecked(true);
+////                                    }else{
+////                                        carmodel_id = 1;
+////                                        switcher_type.setChecked(false);
+////                                    }
+//                                }
+
+
+//                                initNearby(latitude, longitude);
+                                cars();
+
+
                                 if (result.getFlag().equals("Success")) {
 
-                                    UserIndexBean bean = JSON.parseObject(result.getData(), UserIndexBean.class);
-//                            nameEdit.setText(bean.getRealname());
-//                            phoneNum.setText(bean.getTelphone());
-//                            nickNameEdit.setText(bean.getNickname());
-//                            sexText.setText(bean.getSex());
-//                            schoolText.setText(bean.getSchool());
-//                            classEdit.setText(bean.getGrade());
-//                            stuNumEdit.setText(bean.getStunum());
-//
-//                            sex = bean.getSex();
-                                    String school = bean.getSchool();
 
-                                    Log.e("initHttp===", "==="+school);
-
-                                    if("江苏理工学院".equals(school) || "泰山医学院".equals(school) || "中国矿业大学（南湖校区）".equals(school) || "河南财经政法大学".equals(school)){
-                                        carmodel_id = 2;
-                                        switcher_type.setChecked(true);
-                                    }else{
-                                        carmodel_id = 1;
-                                        switcher_type.setChecked(false);
-                                    }
-
-                                    initNearby(latitude, longitude);
 
                                 } else {
                                     Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
@@ -1113,8 +1353,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 case 1:
                     if (popupwindow == null || (popupwindow != null && !popupwindow.isShowing())) {
-                        initNearby(latitude, longitude);
+//                        initNearby(latitude, longitude);
+                        cars();
                     }
+
+                    break;
+
+                case 2:
 
                     break;
 
@@ -1190,6 +1435,133 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     });
 
+    private void cars(){
+        RequestParams params = new RequestParams();
+
+        int type = 0;
+        if(switcher_bad.isChecked()){
+            type = 1;
+        }
+
+        if(switcher.isChecked()){
+            if(switcher_bad.isChecked()){
+                type = 3;
+            }else{
+                type = 2;
+            }
+        }
+
+
+        params.put("type", type);  //0全部 1只看坏车 2只看低电
+
+        Log.e("cars===", type+"==="+carmodel_id);
+
+        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在加载");
+                    loadingDialog.show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+                UIHelper.ToastError(context, throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                    Log.e("cars===0", "==="+responseString);
+
+                    JSONArray array = new JSONArray(result.getData());
+
+                    Log.e("cars===1", "==="+array.length());
+
+                    for (Marker marker : bikeMarkerList){
+                        if (marker != null){
+                            marker.remove();
+                        }
+                    }
+
+                    if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                        bikeMarkerList.clear();
+                    }
+
+                    if (0 == array.length()){
+                        ToastUtils.showMessage("附近没有单车");
+                    } else {
+                        for (int i = 0; i < array.length(); i++){
+
+                            CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
+
+                            Log.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
+
+                            // 加入自定义标签
+                            MarkerOptions bikeMarkerOption = null;
+
+                            int lock_id = bean.getLock_id();
+
+                            if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
+                                if(lock_id==4){
+
+                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon(bean.getLevel()==1?bikeDescripter_green:bean.getLevel()==2?bikeDescripter_yellow:bean.getLevel()==3?bikeDescripter_red:bean.getLevel()==4?bikeDescripter_blue:bikeDescripter_brown);
+
+                                }else if(lock_id==7){
+                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+
+                                }else{
+                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon(bean.getLevel()==0?bikeDescripter:bikeDescripter_bad);
+
+                                }
+
+                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                bikeMarkerList.add(bikeMarker);
+                            }
+
+//                            if("40004690".equals(bean.getNumber())){
+//                                Log.e("cars===3", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+//                            }
+//
+//                            if("30005053".equals(bean.getNumber())){
+//                                Log.e("cars===4", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+//                            }
+//
+//                            if("40001".equals(bean.getNumber())){
+//                                Log.e("cars===5", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+//                            }
+                        }
+                    }
+
+
+//                    if (result.getFlag().equals("Success")) {
+//
+//                    } else {
+//                        ToastUtils.showMessage(result.getMsg());
+//                    }
+                } catch (Exception e) {
+
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+            }
+        });
+
+
+    }
 
     private void initNearby(double latitude, double longitude){
         RequestParams params = new RequestParams();
@@ -1243,6 +1615,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                             Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
                                     Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
                                     bikeMarkerList.add(bikeMarker);
+
+
+
                                 }
                             }
                         } else {
@@ -1257,14 +1632,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 }
             });
         }else{
-            String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//            String uid = SharedPreferencesUrls.getInstance().getString("uid","");
             String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-            if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+            if (access_token == null || "".equals(access_token)){
                 Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 UIHelper.goToAct(context, LoginActivity.class);
             }else {
-                params.put("uid",uid);
-                params.put("access_token",access_token);
+//                params.put("uid",uid);
+//                params.put("access_token",access_token);
 
                 HttpHelper.get(context, Urls.nearbyEbikeScool, params, new TextHttpResponseHandler() {
                     @Override
@@ -1507,7 +1882,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         Log.e("onCameraChangeF===", isUp+"==="+cameraPosition.target.latitude);
         if (isUp){
 
-            initNearby(cameraPosition.target.latitude, cameraPosition.target.longitude);
+//            initNearby(cameraPosition.target.latitude, cameraPosition.target.longitude);
             if (centerMarker != null) {
                 animMarker();
             }
@@ -1555,11 +1930,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public void onClick(View v) {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         switch (v.getId()){
             case R.id.mainUI_msg:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+                if (access_token == null || "".equals(access_token)){
                     UIHelper.goToAct(activity, LoginActivity.class);
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 }else {
@@ -1572,7 +1947,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.mainUI_leftBtn:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+                if (access_token == null || "".equals(access_token)){
                     UIHelper.goToAct(context,LoginActivity.class);
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                     return;
@@ -1584,7 +1959,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 if ("登录".equals(rightBtn.getText().toString().trim())){
                     UIHelper.goToAct(context, LoginActivity.class);
                 }else {
-                    SharedPreferencesUrls.getInstance().putString("uid","");
                     SharedPreferencesUrls.getInstance().putString("access_token","");
                     Toast.makeText(context,"登出登录成功",Toast.LENGTH_SHORT).show();
                     rightBtn.setText("登录");
@@ -1600,7 +1974,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     Log.e("biking===switcher2", "onClick==="+switcher.isChecked());
                 }
 
-                initNearby(latitude, longitude);
+//                initNearby(latitude, longitude);
+                cars();
 
                 break;
 
@@ -1613,7 +1988,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     Log.e("biking===switcher_bad2", "onClick==="+switcher_bad.isChecked());
                 }
 
-                initNearby(latitude, longitude);
+//                initNearby(latitude, longitude);
+                cars();
 
                 break;
 
@@ -1630,7 +2006,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     carmodel_id = 1;
                 }
 
-                initNearby(latitude, longitude);
+//                initNearby(latitude, longitude);
+                cars();
 
                 break;
 
@@ -1647,7 +2024,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                aMap.moveCamera(CameraUpdateFactory.zoomTo(18f));
 
 
-                initmPopupRentWindowView();
+//                initmPopupRentWindowView();
 //                initmPopupRentWindowView2();
 //                initmPopupWindowView();
 
@@ -1666,7 +2043,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.mainUI_scanCode_lock:
-                if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+                if (access_token == null || "".equals(access_token)){
                     UIHelper.goToAct(context,LoginActivity.class);
                     Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 }else {
@@ -1698,6 +2075,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     try {
                         SharedPreferencesUrls.getInstance().putString("type", "");
 
+                        end2();
+
                         Intent intent = new Intent();
                         intent.setClass(context, ActivityScanerCode.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1710,12 +2089,40 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.ll_open_lock:
-
-
-
                 open_lock();
+                break;
 
+            case R.id.ll_end_order:
+                order_finish();
+                break;
 
+            case R.id.ll_set_recovered:
+                carbadaction(1);
+                break;
+            case R.id.ll_set_ok:
+                carbadaction(2);
+                break;
+            case R.id.tv_set_useless:
+                carbadaction(3);
+                break;
+
+            case R.id.lock_switcher:
+
+                if(lock_switcher.isChecked()){
+                    Log.e("pop===switcher1", "onClick==="+lock_switcher.isChecked());
+                    unlock();
+                }else{
+                    Log.e("pop===switcher2", "onClick==="+lock_switcher.isChecked());
+                    lock();
+                }
+                break;
+
+            case R.id.ll_car_search:
+                ddSearch();
+                break;
+
+            case R.id.ll_power_exchange:
+                battery_unlock();
                 break;
 
             default:
@@ -1723,9 +2130,37 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
+    private void end2() {
+
+        Log.e("mf==end2", type+"===");
+
+        if("5".equals(type)  || "6".equals(type)){
+            ClientManager.getClient().stopSearch();
+
+            ClientManager.getClient().disconnect(m_nowMac);
+            ClientManager.getClient().disconnect(m_nowMac);
+            ClientManager.getClient().disconnect(m_nowMac);
+            ClientManager.getClient().disconnect(m_nowMac);
+            ClientManager.getClient().disconnect(m_nowMac);
+            ClientManager.getClient().disconnect(m_nowMac);
+
+            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
+//            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener2);
+
+        }else if("4".equals(type)){
+        }else if("7".equals(type)){
+            if (apiClient != null) {
+                apiClient.onDestroy();
+            }
+        }else{
+            BleManager.getInstance().disconnectAllDevice();
+            BleManager.getInstance().destroy();
+        }
+    }
+
     private void open_lock(){
-        type = "2";
-        m_nowMac = "C8:FD:19:68:2F:90";     //40004690
+//        type = "2";
+//        m_nowMac = "C8:FD:19:68:2F:90";     //40004690
 
 //        type = "3";
 //        m_nowMac = "DF:FF:96:62:68:BB";     //60009090
@@ -1735,6 +2170,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 ////                lock_no = "LPKMIrwLD";
 //        m_nowMac = "A4:34:F1:7B:BF:9A";     //30005060
 //        lock_no = "GpDTxe7<a";
+
+        if (loadingDialog != null && !loadingDialog.isShowing()) {
+            loadingDialog.setTitle("正在唤醒车锁");
+            loadingDialog.show();
+        }
 
         if ("1".equals(type)) {          //单车机械锁
 //                    UIHelper.goToAct(context, CurRoadStartActivity.class);
@@ -1764,25 +2204,35 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 Log.e("order===2",  "===" + type);
 
-//                        if (!TextUtils.isEmpty(m_nowMac)) {
-//                            isOpenLock = true;
-//
-//                            if(isMac){
-//                                connect();
-//                            }else{
-//                                setScanRule();
-//                                scan2();
-//                            }
-//                        }
+                isOpenLock = true;
 
-                BleManager.getInstance().init(activity.getApplication());
-                BleManager.getInstance()
-                        .enableLog(true)
-                        .setReConnectCount(10, 5000)
-                        .setConnectOverTime(timeout)
-                        .setOperateTimeout(10000);
+                if(!isLookPsdBtn){   //没连上
 
-                connect();
+                    BleManager.getInstance().init(activity.getApplication());
+                    BleManager.getInstance()
+                            .enableLog(true)
+                            .setReConnectCount(10, 5000)
+                            .setConnectOverTime(timeout)
+                            .setOperateTimeout(10000);
+
+                    if(isMac){
+                        connect();
+                    }else{
+                        setScanRule();
+                        scan2();
+                    }
+                }else{
+//                    BaseApplication.getInstance().getIBLE().openLock();
+
+                    if(token==null || "".equals(token)){
+                        getBleToken();
+                    }else{
+                        openLock();
+                    }
+                }
+
+//                unlock();   //TODO 不支持该操作
+
             }
         }else if ("4".equals(type)) {
 
@@ -1908,6 +2358,123 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
+    void scan2(){
+//      loadingDialog = DialogUtils.getLoadingDialog(context, "正在搜索...");
+//		loadingDialog.setTitle("正在搜索");
+//		loadingDialog.show();
+
+        BleManager.getInstance().cancelScan();
+
+        isFind = false;
+        BleManager.getInstance().scan(new BleScanCallback() {
+            @Override
+            public void onScanStarted(boolean success) {
+                Log.e("mf===onScanStarted2", "==="+success);
+            }
+
+            @Override
+            public void onLeScan(BleDevice bleDevice) {
+                super.onLeScan(bleDevice);
+
+                Log.e("mf===onLeScan2", bleDevice+"==="+bleDevice.getMac());
+            }
+
+            @Override
+            public void onScanning(final BleDevice bleDevice) {
+
+                Log.e("mf===onScanning2", bleDevice+"==="+bleDevice.getMac());
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(m_nowMac.equals(bleDevice.getMac())){
+                            //                            if (loadingDialog != null && loadingDialog.isShowing()) {
+//                                loadingDialog.dismiss();
+//                            }
+
+                            isFind = true;
+                            BleManager.getInstance().cancelScan();
+
+                            Log.e("onScanning===2_1", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
+
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void onScanFinished(List<BleDevice> scanResultList) {
+
+                Log.e("mf===onScanFinished2", isFind+"==="+type);
+
+                if(!isFind){
+                    if("3".equals(type)){
+
+                        Log.e("mf===onScanFinished2", isAgain+"==="+isFind+"==="+type);
+
+                        unlock();
+
+                    }else{
+                        Toast.makeText(context,"蓝牙连接失败，请靠近车锁，重启软件试试吧！",Toast.LENGTH_LONG).show();
+//                        car_notification(isOpenLock?1:isAgain?2:isEndBtn?3:0, 2, 0);
+                        if(popupwindow!=null){
+                            popupwindow.dismiss();
+                        }
+                    }
+                }
+
+
+            }
+        });
+    }
+
+    private void order_finish(){
+        Log.e("mf===order_finish", "==="+codenum);
+
+//        RequestParams params = new RequestParams();
+//        params.put("number", codenum);
+
+        HttpHelper.post(context, Urls.order_finish+codenum, null, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                onStartCommon("正在加载");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.e("mf===order_finish_fail", responseString + "===" + throwable.toString());
+                onFailureCommon(throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            Log.e("mf===order_finish_1", carmodel_id + "===" + responseString + "===" + result.data);
+
+                            ToastUtil.showMessageApp(context,result.getMessage());
+
+
+                        } catch (Exception e) {
+
+//                            memberEvent(context.getClass().getName()+"_"+e.getStackTrace()[0].getLineNumber()+"_"+e.getMessage());
+                        }
+
+                        closeLoadingDialog();
+
+                    }
+                });
+            }
+        });
+    }
+
     private void connect(){
 //        loadingDialog = DialogUtils.getLoadingDialog(this, "正在连接...");
 //        loadingDialog.setTitle("正在连接");
@@ -1940,8 +2507,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     Log.e("0x99===timeout", isLookPsdBtn+"==="+isStop+"==="+type);
 
                     if("3".equals(type)){
+                        if(isOpenLock){
+                            unlock();     //TODO
+                        }else{
+                            Toast.makeText(context,"蓝牙连接失败，重启软件试试吧！",Toast.LENGTH_LONG).show();
+                        }
 
-//                        unlock();     //TODO
                     }else{
                         Toast.makeText(context,"蓝牙连接失败，重启软件试试吧！",Toast.LENGTH_LONG).show();
 //                        car_notification(isOpenLock?1:isAgain?2:isEndBtn?3:0, 2, 0);      //TODO
@@ -2012,15 +2583,29 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                            String tvAgain = tv_againBtn.getText().toString().trim();
 
-                            Log.e("token===", token+"==="+s1);
+                            Log.e("token===", isOpenLock+"==="+token+"==="+s1);
 
-                            openLock();
+                            m_myHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getBattery();
+                                }
+                            }, 1000);
+
+                            if(isOpenLock){
+                                openLock();
+                            }else{
+                                getLockStatus();
+//                                getBattery();
+                            }
+
 
                         }else if(s1.startsWith("0502")){    //开锁
                             Log.e("openLock===", "==="+s1);
 
                             Toast.makeText(context, "开锁成功", Toast.LENGTH_LONG).show();
 
+                            getLockStatus();
                             closeLoadingDialog();
 //                            m_myHandler.sendEmptyMessage(7);
                         }else if(s1.startsWith("0508")){   //关锁==050801RET：RET取值如下：0x00，锁关闭成功。0x01，锁关闭失败。0x02，锁关闭异常。
@@ -2032,8 +2617,23 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 ToastUtil.showMessageApp(context,"关锁失败");
                                 Log.e("closeLock===fail", "===");
                             }
+
+                            getLockStatus();
+                        }else if(s1.startsWith("0202")){    //电量
+
+                            Log.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
+
+//                            if (TextUtils.isEmpty(data)) {
+//                                tvCz.setText(R.string.battery_fail);
+//                            } else {
+//                                tvCz.setText(R.string.battery_success);
+//                                tvBattery.setText(getText(R.string.battery) + String.valueOf(Integer.parseInt(data, 16)));
+//                            }
+
+                            tv_electricity.setText(s1.substring(6, 8)+"%");
+
                         }else if(s1.startsWith("050F")){   //锁状态
-                            Log.e("lockState===0", "==="+s1);
+                            Log.e("lockState===0", "==="+s1);   //
 
 
                             isStop = true;
@@ -2046,9 +2646,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 ToastUtil.showMessageApp(context,"锁已关闭");
                                 Log.e("closeLock===1", "锁已关闭==="+first3);
 
+                                tv_lock_status.setText("已关锁");
                             } else {
                                 //锁已开启
-                                ToastUtil.showMessageApp(context,"车锁未关，请手动关锁");
+                                ToastUtil.showMessageApp(context,"锁已打开");
+                                tv_lock_status.setText("已开锁");
 
 //                                car_notification(3, 5, 0);    //TODO
 
@@ -2134,6 +2736,26 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onWriteFailure(BleException exception) {
                 Log.e("getBleToken=onWriteFail", "==="+exception);
+            }
+        });
+    }
+
+    private void getBattery(){
+        String s = new BatteryTxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("getBattery===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("getBattery=onWriteFa", "==="+exception);
             }
         });
     }
@@ -2716,44 +3338,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     //助力车关锁
     private void lock() {
-        Log.e("mf===lock", isAgain+"===");
+        Log.e("mf===lock", "===");
 
 
-        RequestParams params = new RequestParams();
-        params.put("action_type", isAgain?1:2); //操作类型 1临时上锁 2还车
-//        if(!isAgain){
-//            params.put("parking", parking());    //电子围栏json字符串 操作类型为还车时必传
-//        }
-//        params.put("longitude", referLongitude);   //0代表成功 1连接不上蓝牙 2蓝牙开锁超时 3网络开锁请求失败(接口无响应或异常) 4网络开锁超时（接口有响应但返回超时码） 5网络开锁失败
-//        params.put("latitude", referLatitude);
-//
-//        //还车类型 操作类型为还车时必传 1手机gps在电子围栏 2锁gps在电子围栏 3信标 4锁与信标
-//        if(!isAgain){
-//            if(major!=0){
-//                Log.e("mf===lock1", major+"==="+macList+"==="+macList2+"==="+isContainsList.contains(true)+"==="+uid+"==="+access_token);
-//                params.put("back_type", "4");     // 4锁与信标
-//            }else if(isGPS_Lo){
-//                Log.e("mf===lock2", major+"==="+macList+"==="+macList2+"==="+isContainsList.contains(true)+"==="+uid+"==="+access_token);
-//                params.put("back_type", "2");     // 2锁gps在电子围栏
-//            }else if(macList.size() > 0){
-//                Log.e("mf===lock3", major+"==="+macList+"==="+macList2+"==="+isContainsList.contains(true)+"==="+uid+"==="+access_token);
-//                params.put("back_type", "3");     // 3信标
-//            }else if(force_backcar==1 && isTwo){
-//                Log.e("mf===lock4", major+"==="+macList+"==="+macList2+"==="+isContainsList.contains(true)+"==="+uid+"==="+access_token);
-//                params.put("back_type", "5");     // 没锁第二次强制还车
-//            }else{
-////                  }else if(isContainsList.contains(true)){
-//                Log.e("mf===lock5", major+"==="+macList+"==="+macList2+"==="+isContainsList.contains(true)+"==="+uid+"==="+access_token);
-//                params.put("back_type", "1");     // 1手机gps在电子围栏
-//            }
-//        }
+//        RequestParams params = new RequestParams();
+//        params.put("number", codenum);
 
-        HttpHelper.post(context, Urls.lock, params, new TextHttpResponseHandler() {
+        HttpHelper.post(context, Urls.lock+codenum, null, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if(isAgain){
 
-                }
                 onStartCommon("正在加载");
             }
             @Override
@@ -2781,9 +3375,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                            carLoopClose();
 
                         } catch (Exception e) {
-                            closeLoadingDialog();
+
 //                            memberEvent(context.getClass().getName()+"_"+e.getStackTrace()[0].getLineNumber()+"_"+e.getMessage());
                         }
+
+                        closeLoadingDialog();
 
                     }
                 });
@@ -2795,9 +3391,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void unlock() {
         Log.e("mf===unlock", "===");
 
-        isOpenLock = false;
+//        isOpenLock = false;
 
-        HttpHelper.post(context, Urls.unlock, null, new TextHttpResponseHandler() {
+//        RequestParams params = new RequestParams();
+//        params.put("number", codenum);
+
+        HttpHelper.post(context, Urls.unlock+codenum, null, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
                 onStartCommon("正在加载");
@@ -2819,8 +3418,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             Log.e("mf===unlock1", carmodel_id+ "===" + type + "===" + codenum + "===" + responseString + "===" + result.data);
 
+                            ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
 
-                            popupwindow.dismiss();
+//                            popupwindow.dismiss();
 
 //                            n=0;
 //                            carLoopOpen();
@@ -2828,9 +3428,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
                         } catch (Exception e) {
-                            closeLoadingDialog();
+
 //                            memberEvent(context.getClass().getName()+"_"+e.getStackTrace()[0].getLineNumber()+"_"+e.getMessage());
                         }
+
+                        closeLoadingDialog();
 
                     }
                 });
@@ -3214,7 +3816,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                    Toast.makeText(context,"==="+myLocation, Toast.LENGTH_SHORT).show();
 
                     if (mFirstFix){
-                        initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
+//                        initNearby(amapLocation.getLatitude(),amapLocation.getLongitude());
+                        cars();
                         mFirstFix = false;
 
 //                        Toast.makeText(context,"==="+leveltemp, Toast.LENGTH_SHORT).show();
@@ -3369,56 +3972,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 switch (requestCode) {
 
-                    case 1:
-                        if (resultCode == RESULT_OK) {
-                            String result = data.getStringExtra("QR_CODE");
-//                    upcarmap(result);
-                            lock(result);
-                        } else {
-                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
-                        }
-
-                        Log.e("requestCode===1", "==="+resultCode);
-                        break;
-
-                    case 2:
-                        if (resultCode == RESULT_OK) {
-                            String result = data.getStringExtra("QR_CODE");
-                            switch (isLock){
-                                case 1:
-                                    Log.e("requestCode===2_1", "==="+resultCode);
-                                    lock(result);
-                                    break;
-                                case 2:
-                                    Log.e("requestCode===2_2", "==="+resultCode);
-                                    unLock(result);
-                                    break;
-                                case 3:
-                                    Log.e("requestCode===2_3", "==="+resultCode);
-                                    endCar(result);
-                                    break;
-                                case 4:
-                                    Log.e("requestCode===2_4", "==="+resultCode);
-                                    recycle(result);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        } else {
-                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
-                        }
-
-                        Log.e("requestCode===2", "==="+resultCode);
-                        break;
-
-                    case PRIVATE_CODE:
-                        openGPSSettings();
-                        break;
-
                     case 101:
-
-
-
                         if (resultCode == RESULT_OK) {
                             String tz = data.getStringExtra("tz");
                             if(tz!=null && "1".equals(tz)){
@@ -3427,15 +3981,90 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             String sx = data.getStringExtra("sx");
                             if(sx!=null && "1".equals(sx)){
-                                initNearby(latitude, longitude);
+//                                initNearby(latitude, longitude);
+                                cars();
                             }
 
-                            Log.e("requestCode===101", requestCode+"==="+data.getStringExtra("address"));
+
+                            codenum = data.getStringExtra("codenum");
+                            lock_name = data.getStringExtra("lock_name");
+                            lock_title = data.getStringExtra("lock_title");
+                            m_nowMac = data.getStringExtra("m_nowMac");
+                            carmodel_id = data.getIntExtra("carmodel_id", 1);
+                            type = data.getStringExtra("type");
+                            lock_no = data.getStringExtra("lock_no");
+                            bleid = data.getStringExtra("bleid");
+                            deviceuuid = data.getStringExtra("deviceuuid");
+                            electricity = data.getStringExtra("electricity");
+                            carmodel_name = data.getStringExtra("carmodel_name");
+                            lock_status = data.getIntExtra("lock_status", 0);
+                            status = data.getIntExtra("status", 0);
+                            can_finish_order = data.getIntExtra("can_finish_order", 0);
+                            isMac = data.getBooleanExtra("isMac", false);
+                            isSearch = data.getBooleanExtra("isSearch", false);
+
+                            Log.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order);
+
+                            if(carmodel_id==1){
+                                initmPopupRentWindowView();
+                            }else{
+                                initmPopupRentWindowView2();
+                            }
+
+
                         } else {
                             Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                         }
 
                         break;
+
+//                    case 1:
+//                        if (resultCode == RESULT_OK) {
+//                            String result = data.getStringExtra("QR_CODE");
+////                    upcarmap(result);
+//                            lock(result);
+//                        } else {
+//                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                        Log.e("requestCode===1", "==="+resultCode);
+//                        break;
+//
+//                    case 2:
+//                        if (resultCode == RESULT_OK) {
+//                            String result = data.getStringExtra("QR_CODE");
+//                            switch (isLock){
+//                                case 1:
+//                                    Log.e("requestCode===2_1", "==="+resultCode);
+//                                    lock(result);
+//                                    break;
+//                                case 2:
+//                                    Log.e("requestCode===2_2", "==="+resultCode);
+//                                    unLock(result);
+//                                    break;
+//                                case 3:
+//                                    Log.e("requestCode===2_3", "==="+resultCode);
+//                                    endCar(result);
+//                                    break;
+//                                case 4:
+//                                    Log.e("requestCode===2_4", "==="+resultCode);
+//                                    recycle(result);
+//                                    break;
+//                                default:
+//                                    break;
+//                            }
+//                        } else {
+//                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                        Log.e("requestCode===2", "==="+resultCode);
+//                        break;
+
+                    case PRIVATE_CODE:
+                        openGPSSettings();
+                        break;
+
+
 
                     case 188:
 
@@ -3609,15 +4238,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void upcarmap(String result){
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+        if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
+//            params.put("uid",uid);
+//            params.put("access_token",access_token);
             params.put("tokencode",result);
             params.put("latitude",latitude);
             params.put("longitude",longitude);
@@ -3657,15 +4286,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void recycle(String result){
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+        if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
+//            params.put("uid",uid);
+//            params.put("access_token",access_token);
             params.put("codenum",result);
             HttpHelper.post(context, Urls.recycle, params, new TextHttpResponseHandler() {
                 @Override
@@ -3701,107 +4330,108 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
-    private void lock(String result){
+//    private void lock(String result){
+//
+////        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//        if (access_token == null || "".equals(access_token)){
+//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//            UIHelper.goToAct(context, LoginActivity.class);
+//        }else {
+//            RequestParams params = new RequestParams();
+////            params.put("uid",uid);
+////            params.put("access_token",access_token);
+//            params.put("codenum",result);
+//            HttpHelper.post(context, Urls.lock, params, new TextHttpResponseHandler() {
+//                @Override
+//                public void onStart() {
+//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                        loadingDialog.setTitle("正在提交");
+//                        loadingDialog.show();
+//                    }
+//                }
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                    if (loadingDialog != null && loadingDialog.isShowing()){
+//                        loadingDialog.dismiss();
+//                    }
+//                    UIHelper.ToastError(context, throwable.toString());
+//                }
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//                    try {
+//                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//                        if (result.getFlag().equals("Success")) {
+//                            Toast.makeText(context,"恭喜您，锁定成功",Toast.LENGTH_SHORT).show();
+//                        }else {
+//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                        }
+//                    } catch (Exception e) {
+//                    }
+//                    if (loadingDialog != null && loadingDialog.isShowing()){
+//                        loadingDialog.dismiss();
+//                    }
+//                }
+//            });
+//        }
+//    }
+//    private void unLock(String result){
+//
+////        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//        if (access_token == null || "".equals(access_token)){
+//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//            UIHelper.goToAct(context, LoginActivity.class);
+//        }else {
+//            RequestParams params = new RequestParams();
+////            params.put("uid",uid);
+////            params.put("access_token",access_token);
+//            params.put("codenum",result);
+//            HttpHelper.post(context, Urls.unLock, params, new TextHttpResponseHandler() {
+//                @Override
+//                public void onStart() {
+//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                        loadingDialog.setTitle("正在提交");
+//                        loadingDialog.show();
+//                    }
+//                }
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                    if (loadingDialog != null && loadingDialog.isShowing()){
+//                        loadingDialog.dismiss();
+//                    }
+//                    UIHelper.ToastError(context, throwable.toString());
+//                }
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//                    try {
+//                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//                        if (result.getFlag().equals("Success")) {
+//                            Toast.makeText(context,"恭喜您，解锁成功",Toast.LENGTH_SHORT).show();
+//                        }else {
+//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                        }
+//                    } catch (Exception e) {
+//                    }
+//                    if (loadingDialog != null && loadingDialog.isShowing()){
+//                        loadingDialog.dismiss();
+//                    }
+//                }
+//            });
+//        }
+//    }
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
-        }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("codenum",result);
-            HttpHelper.post(context, Urls.lock, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，锁定成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        }
-    }
-    private void unLock(String result){
-
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
-        }else {
-            RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
-            params.put("codenum",result);
-            HttpHelper.post(context, Urls.unLock, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            Toast.makeText(context,"恭喜您，解锁成功",Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        }
-    }
     private void endCar(String result){
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+        if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-            params.put("uid",uid);
-            params.put("access_token",access_token);
+//            params.put("uid",uid);
+//            params.put("access_token",access_token);
             params.put("tokencode",result);
             HttpHelper.post(context, Urls.endCar, params, new TextHttpResponseHandler() {
                 @Override
@@ -3875,6 +4505,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     if (permissions[0].equals(Manifest.permission.CAMERA)){
                         try {
                             SharedPreferencesUrls.getInstance().putString("type", "");
+
+                            end2();
 
                             Intent intent = new Intent();
                             intent.setClass(context, ActivityScanerCode.class);

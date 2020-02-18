@@ -69,12 +69,12 @@
                     android:text="车辆编号："/>
 
                 <TextView
-                    android:id="@+id/tv_codenum"
+                    android:id="@+id/tv_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
 
@@ -90,12 +90,12 @@
                     android:text="锁的名称："/>
 
                 <TextView
-                    android:id="@+id/tv_2"
+                    android:id="@+id/tv_lock_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
             <LinearLayout
@@ -110,12 +110,12 @@
                     android:text="设备编号："/>
 
                 <TextView
-                    android:id="@+id/tv_5"
+                    android:id="@+id/tv_deviceuuid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
             <LinearLayout
@@ -130,12 +130,12 @@
                     android:text="设备状态："/>
 
                 <TextView
-                    android:id="@+id/tv_6"
+                    android:id="@+id/tv_lock_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
             <LinearLayout
@@ -150,12 +150,12 @@
                     android:text="MAC："/>
 
                 <TextView
-                    android:id="@+id/tv_3"
+                    android:id="@+id/tv_lock_mac"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
             <LinearLayout
@@ -170,140 +170,17 @@
                     android:text="电量："/>
 
                 <TextView
-                    android:id="@+id/tv_4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#666666"
-                    android:text="123456"/>
-            </LinearLayout>
-
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/ll_ebike"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:gravity="center_vertical"
-            >
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#333333"
-                    android:text="电量："/>
-
-                <TextView
                     android:id="@+id/tv_electricity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="80%"/>
+                    android:text=""/>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#333333"
-                    android:text="续航："/>
 
-                <TextView
-                    android:id="@+id/tv_mileage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#666666"
-                    android:text="40KM"/>
-
-            </LinearLayout>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:gravity="center_vertical"
-            >
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#333333"
-                    android:text="起步价："/>
-
-                <TextView
-                    android:id="@+id/tv_first_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#666666"
-                    android:text="0.35元"/>
-
-                <TextView
-                    android:id="@+id/tv_first_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#666666"
-                    android:text="/15分钟"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#333333"
-                    android:text="续租价："/>
-
-                <TextView
-                    android:id="@+id/tv_continued_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#666666"
-                    android:text="0.35元"/>
-
-                <TextView
-                    android:id="@+id/tv_continued_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/sp14"
-                    android:textColor="#666666"
-                    android:text="15分钟"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-
 
 
         <LinearLayout
@@ -311,6 +188,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:layout_marginBottom="34dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
             android:layout_alignParentBottom="true"
@@ -355,6 +233,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/ll_battery_lock"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -411,7 +290,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/ll_power_exchange"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -439,67 +317,10 @@
 
             </LinearLayout>
 
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:background="#EDEDED"
-            />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="17dp">
-
-            <TextView
-                android:id="@+id/tv_each_free_time"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:layout_marginLeft="30dp"
-                android:text="损坏部位："
-                android:textColor="@color/tx_black"
-                android:textSize="14sp"
-                android:gravity="center"/>
-
-            <TextView
-                android:id="@+id/tv_"
-                android:layout_width="78dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/block_dumping_bcg"
-                android:text="设为已报废"
-                android:textColor="@color/tx_black"
-                android:textSize="14sp"
-                android:gravity="center"/>
-
-        </RelativeLayout>
-
-
-
-        <LinearLayout
-            android:id="@+id/ll_set"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="34dp"
-            android:onClick="btn"
-            android:weightSum="2">
-
-
             <LinearLayout
-                android:id="@+id/ll_set_recovered"
+                android:id="@+id/ll_end_order"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="30dp"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:onClick="btn"
@@ -508,36 +329,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/set_recovered_icon"
-                    android:gravity="center"
-                    />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:gravity="center"
-                    android:text="点击开始"
-                    android:textSize="14sp"
-                    android:textColor="@color/tx_black"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_set_ok"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginRight="30dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:onClick="btn"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/set_ok_icon"
+                    android:src="@drawable/end_order_icon"
                     android:gravity="center"
                     />
 
@@ -555,6 +347,128 @@
 
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_bad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="-22dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="#EDEDED"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="17dp">
+
+                <TextView
+                    android:id="@+id/tv_each_free_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="30dp"
+                    android:text="损坏部位："
+                    android:textColor="@color/tx_black"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tv_set_useless"
+                    android:layout_width="78dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/block_dumping_bcg"
+                    android:text="设为已报废"
+                    android:textColor="@color/tx_black"
+                    android:textSize="14sp"
+                    android:gravity="center"/>
+
+            </RelativeLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/ll_set"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="22dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="12dp"
+                android:onClick="btn">
+
+
+                <LinearLayout
+                    android:id="@+id/ll_set_recovered"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:onClick="btn"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/set_recovered_icon"
+                        android:gravity="center"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center"
+                        android:text="设为已回收"
+                        android:textSize="14sp"
+                        android:textColor="@color/tx_black"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_set_ok"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="30dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:onClick="btn"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/set_ok_icon"
+                        android:gravity="center"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center"
+                        android:text="设为已修好"
+                        android:textSize="14sp"
+                        android:textColor="@color/tx_black"
+                        />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
 
 
 

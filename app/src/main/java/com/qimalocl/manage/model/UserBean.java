@@ -1,5 +1,7 @@
 package com.qimalocl.manage.model;
 
+import org.json.JSONObject;
+
 /**
  * Created by Administrator on 2017/2/16 0016.
  */
@@ -28,10 +30,11 @@ public class UserBean {
     private String history_order_h5_url;    //历史订单H5地址 需要拼接上 ?token=xxx
     private int unread_count; //未读消息数 为0时不显示红点 否则显示红点
 
+    private String avatar;  //用户头像 没有显示默认头像
+    private String[] roles;  //用户角色数组 取第一个角色显示
+    private String[] schools;  //用户管辖学校数组 取第一个管辖学校显示 另：车绑学校选择列表也用该数据
 
-    public int getId() {
-        return id;
-    }
+
 
     public void setId(int id) {
         this.id = id;
@@ -203,5 +206,34 @@ public class UserBean {
 
     public void setUnread_count(int unread_count) {
         this.unread_count = unread_count;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String[] getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String[] roles) {
+        this.roles = roles;
+    }
+
+    public String[] getSchools() {
+        return schools;
+    }
+
+    public void setSchools(String[] schools) {
+        this.schools = schools;
     }
 }

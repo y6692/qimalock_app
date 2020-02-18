@@ -23,7 +23,7 @@ import java.util.Set;
 
 import butterknife.ButterKnife;
 
-public class BaseActivity extends FragmentActivity {
+public class BaseActivity extends BaseFragmentActivity {
 
 	private static final int MSG_SET_ALIAS = 1001;
 	private static final int MSG_SET_TAGS = 1002;
@@ -32,6 +32,7 @@ public class BaseActivity extends FragmentActivity {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		BaseApplication.context = context;
 //		ButterKnife.bind(this);
 
 //		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

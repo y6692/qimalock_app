@@ -25,11 +25,13 @@ import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseViewAdapter;
 import com.qimalocl.manage.base.BaseViewHolder;
 import com.qimalocl.manage.core.common.HttpHelper;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.model.HistorysRecordBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
+import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.zxing.lib.scaner.activity.ActivityScanerCode;
 
@@ -44,8 +46,7 @@ import java.util.List;
  * Created by Administrator on 2017/2/18 0018.
  */
 
-public class SchoolSelectActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
-        AdapterView.OnItemClickListener {
+public class SchoolSelectActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener {
 
     private Context context;
 
@@ -77,6 +78,8 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
     private List<SchoolListBean> schoolList;
     static ArrayList<String> item = new ArrayList<>();
     static ArrayList<String[]> item1 = new ArrayList<>();
+
+    private int school_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +158,12 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         SchoolListBean bean = myAdapter.getDatas().get(position);
 
+        school_id = bean.getId();
+
+
         Log.e("ssa===onItemClick", bean.getId()+"==="+bean.getName());
+
+        et_school.setText(bean.getName());
 
 //        Intent rIntent = new Intent();
 //        rIntent.putExtra("school_id", bean.getId());
@@ -203,9 +211,18 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
                 intent.setClass(context, ActivityScanerCode.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("isBindSchool",true);
+                intent.putExtra("school_id", school_id);
                 intent.putExtra("isChangeKey",false);
                 intent.putExtra("isAdd",true);
                 startActivityForResult(intent, 1);
+
+//        Intent rIntent = new Intent();
+//        rIntent.putExtra("school_id", bean.getId());
+//        rIntent.putExtra("school_name", bean.getName());
+//        setResult(RESULT_OK, rIntent);
+//        scrollToFinishActivity();
+//
+//        Log.e("ssa===onItemClick2", bean.getId()+"==="+bean.getName());
 
                 break;
 
@@ -243,78 +260,156 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
     }
 
     private void getSchoolList(){
-        RequestParams params = new RequestParams();
-        params.put("name","");
 
-        HttpHelper.get(context, Urls.schools, params, new TextHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                onStartCommon("正在加载");
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                onFailureCommon(throwable.toString());
-            }
+        Log.e("getSchoolList===", "===");
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-                            Log.e("getSchoolList===", "==="+responseString);
-
-                            JSONArray JSONArray = new JSONArray(result.getData());
-                            if (schoolList.size() != 0 || !schoolList.isEmpty()){
-                                schoolList.clear();
-                            }
-                            if (item.size() != 0 || !item.isEmpty()){
-                                item.clear();
-                            }
-                            if (item1.size() != 0 || !item1.isEmpty()){
-                                item1.clear();
-                            }
-                            for (int i = 0; i < JSONArray.length();i++){
-                                SchoolListBean bean = JSON.parseObject(JSONArray.getJSONObject(i).toString(),SchoolListBean.class);
-                                schoolList.add(bean);
-                                datas.add(bean);
-//                                    item.add(bean.getSchool()+"_"+bean.getCert_method());
-                                item.add(bean.getName());
-//                                    item1.add(new String[]{bean.getName(), bean.getCert_method()});
-
-                            }
-
-                            setFooterType(2);
-
-                            Log.e("getSchoolList===2", datas.size()+"==="+schoolList.size());
-
-                            myAdapter.notifyDataSetChanged();
-
-//                                handler.sendEmptyMessage(0x123);
-
-
-//                            if (result.getFlag().equals("Success")) {
-//
-//                            }else {
-//                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-//                            }
-                        }catch (Exception e) {
-                            e.printStackTrace();
-                        }finally {
-                            isRefresh = false;
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
-                        }
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
+        if (access_token != null && !"".equals(access_token)) {
+            HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在加载");
+                        loadingDialog.show();
                     }
-                });
+                }
 
-            }
-        });
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        Log.e("getSchoolList===1", "==="+responseString);
+
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                        UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
+
+                        String[] schools = bean.getSchools();
+
+                        Log.e("getSchoolList===2", schools+"===");
+
+                        if (schoolList.size() != 0 || !schoolList.isEmpty()){
+                            schoolList.clear();
+                        }
+                        if (item.size() != 0 || !item.isEmpty()){
+                            item.clear();
+                        }
+
+                        for (int i = 0; i < schools.length;i++){
+                            SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
+                            schoolList.add(bean2);
+                            datas.add(bean2);
+                            item.add(bean.getName());
+                        }
+
+                        setFooterType(2);
+
+                        Log.e("getSchoolList===3", datas.size()+"==="+schoolList.size());
+
+                        myAdapter.notifyDataSetChanged();
+
+//                        if(schools!=null && schools.length>0){
+//
+//                            Log.e("getSchoolList===3", schools[0]+"===");
+//
+//                            SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+//
+//                            schoolName.setText(bean2.getName());
+//                        }
+//
+//                        String[] roles = bean.getRoles();
+//                        if(roles!=null && roles.length>0){
+//
+//                            Log.e("getSchoolList===4", roles[0]+"==="+roles[1]);
+//
+//                            roleName.setText(roles[0]);
+//                        }
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(context, "请先登录账号", Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }
+
+//        RequestParams params = new RequestParams();
+//        params.put("name","");
+//
+//        HttpHelper.get(context, Urls.schools, params, new TextHttpResponseHandler() {
+//            @Override
+//            public void onStart() {
+//                onStartCommon("正在加载");
+//            }
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                onFailureCommon(throwable.toString());
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+//                m_myHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//
+//                            Log.e("getSchoolList===", "==="+responseString);
+//
+//                            JSONArray JSONArray = new JSONArray(result.getData());
+//                            if (schoolList.size() != 0 || !schoolList.isEmpty()){
+//                                schoolList.clear();
+//                            }
+//                            if (item.size() != 0 || !item.isEmpty()){
+//                                item.clear();
+//                            }
+//                            if (item1.size() != 0 || !item1.isEmpty()){
+//                                item1.clear();
+//                            }
+//                            for (int i = 0; i < JSONArray.length();i++){
+//                                SchoolListBean bean = JSON.parseObject(JSONArray.getJSONObject(i).toString(),SchoolListBean.class);
+//                                schoolList.add(bean);
+//                                datas.add(bean);
+////                                    item.add(bean.getSchool()+"_"+bean.getCert_method());
+//                                item.add(bean.getName());
+////                                    item1.add(new String[]{bean.getName(), bean.getCert_method()});
+//
+//                            }
+//
+//                            setFooterType(2);
+//
+//                            Log.e("getSchoolList===2", datas.size()+"==="+schoolList.size());
+//
+//                            myAdapter.notifyDataSetChanged();
+//
+//                        }catch (Exception e) {
+//                            e.printStackTrace();
+//                        }finally {
+//                            isRefresh = false;
+//                            swipeRefreshLayout.setRefreshing(false);
+//                        }
+//
+//                        if (loadingDialog != null && loadingDialog.isShowing()){
+//                            loadingDialog.dismiss();
+//                        }
+//                    }
+//                });
+//
+//            }
+//        });
     }
 
 

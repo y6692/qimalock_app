@@ -18,6 +18,8 @@ public class UserIndexBean {
     private String iscert;
     private String headimg;
 
+
+
     public String getTelphone() {
         return telphone;
     }

@@ -229,16 +229,16 @@ public class HttpHelper {
 			Log.e("header===0", "===" + SharedPreferencesUrls.getInstance().getString("access_token",""));
 
 			client.addHeader("Authorization", SharedPreferencesUrls.getInstance().getString("access_token",""));
-			client.addHeader("Accept", "application/vnd.ws.v1+json");
-			client.addHeader("Phone-Brand", new Build().MANUFACTURER.toUpperCase());
-			client.addHeader("Phone-Model", new Build().MODEL);
-			client.addHeader("Phone-System", "Android");
-			client.addHeader("Phone-System-Version", SystemUtil.getSystemVersion());
-			client.addHeader("App-Version", context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName);
-			client.addHeader("Device_UUID", "" + tm.getDeviceId());
-			client.addHeader("Client", "Android_APP");
+			client.addHeader("Accept", "application/vnd.ws.manage+json");
+//			client.addHeader("Phone-Brand", new Build().MANUFACTURER.toUpperCase());
+//			client.addHeader("Phone-Model", new Build().MODEL);
+//			client.addHeader("Phone-System", "Android");
+//			client.addHeader("Phone-System-Version", SystemUtil.getSystemVersion());
+//			client.addHeader("App-Version", context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName);
+//			client.addHeader("Device_UUID", "" + tm.getDeviceId());
+//			client.addHeader("Client", "Android_APP");
 
-			Log.e("post===", new Build().MANUFACTURER.toUpperCase()+"==="+new Build().MODEL+"==="+SystemUtil.getSystemVersion()+"==="+context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName+"==="+tm.getDeviceId());
+			Log.e("post===", "===");
 
 
 		} catch (Exception e) {
@@ -257,14 +257,14 @@ public class HttpHelper {
 
 			Log.e("header===0", "===" + SharedPreferencesUrls.getInstance().getString("access_token",""));
 
-			client.addHeader("Accept", "application/vnd.ws.v1+json");
-			client.addHeader("Phone-Brand", new Build().MANUFACTURER.toUpperCase());
-			client.addHeader("Phone-Model", new Build().MODEL);
-			client.addHeader("Phone-System", "Android");
-			client.addHeader("Phone-System-Version", SystemUtil.getSystemVersion());
-			client.addHeader("App-Version", context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName);
-			client.addHeader("Device_UUID", "" + tm.getDeviceId());
-			client.addHeader("Client", "Android_APP");
+			client.addHeader("Accept", "application/vnd.ws.manage+json");
+//			client.addHeader("Phone-Brand", new Build().MANUFACTURER.toUpperCase());
+//			client.addHeader("Phone-Model", new Build().MODEL);
+//			client.addHeader("Phone-System", "Android");
+//			client.addHeader("Phone-System-Version", SystemUtil.getSystemVersion());
+//			client.addHeader("App-Version", context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName);
+//			client.addHeader("Device_UUID", "" + tm.getDeviceId());
+//			client.addHeader("Client", "Android_APP");
 
 			Log.e("post===", new Build().MANUFACTURER.toUpperCase()+"==="+new Build().MODEL+"==="+SystemUtil.getSystemVersion()+"==="+context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName+"==="+tm.getDeviceId());
 

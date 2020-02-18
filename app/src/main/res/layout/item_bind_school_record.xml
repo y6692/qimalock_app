@@ -11,127 +11,60 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:paddingTop="19dp"
-        android:gravity="center_vertical">
+        android:paddingTop="26dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/item_order_type"
+            android:id="@+id/item_created_at"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="@dimen/sp18"
+            android:textSize="@dimen/sp16"
             android:textColor="@color/tx_black"
-            android:text="2019-12-28"/>
+            android:text=""/>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-
-
-        <LinearLayout
-            android:layout_width="0dp"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical">
 
             <TextView
+                android:id="@+id/item_car_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="500"
-                android:textSize="16sp"
-                android:textColor="#00BC27"/>
+                android:textSize="@dimen/sp16"
+                android:textColor="@color/tx_black"
+                android:text=""/>
 
             <TextView
+                android:id="@+id/item_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_centerInParent="true"
-                android:text="有效换电数"
-                android:textSize="16sp"
-                android:textColor="#666666"/>
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/sp16"
+                android:textColor="@color/tx_black"
+                android:text="已绑定"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
+        <TextView
+            android:id="@+id/item_school_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="@dimen/sp16"
+            android:textColor="@color/tx_black"
+            android:text=""/>
+        
         <View
-            android:layout_width="2dp"
-            android:layout_height="54dp"
-            android:layout_gravity="center"
-            android:background="#CCCCCC"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="500"
-                android:textSize="16sp"
-                android:textColor="#00BC27"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_centerInParent="true"
-                android:text="无效换电数"
-                android:textSize="16sp"
-                android:textColor="#666666"/>
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="2dp"
-            android:layout_height="54dp"
-            android:layout_gravity="center"
-            android:background="#CCCCCC"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="850"
-                android:textSize="16sp"
-                android:textColor="@color/black"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:layout_centerInParent="true"
-                android:text="换电中"
-                android:textSize="16sp"
-                android:textColor="#666666"/>
-
-        </LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="#F1F1F1"
+            />
 
 
     </LinearLayout>
-
-
-    <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="10dp"-->
-        <!--android:background="@color/line_color"-->
-        <!--android:layout_marginTop="@dimen/dp5"/>-->
 
 </LinearLayout>

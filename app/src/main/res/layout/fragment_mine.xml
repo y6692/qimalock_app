@@ -93,15 +93,32 @@
 
                         <RelativeLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:gravity="center">
 
                             <TextView
                                 android:id="@+id/personUI_userName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
                                 android:textSize="@dimen/sp16"
                                 android:textColor="@color/white"
-                                android:text="张三"/>
+                                android:text=""/>
+
+                            <LinearLayout
+                                android:id="@+id/ll_backBtn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_alignParentRight="true">
+
+                                <ImageView
+                                    android:id="@+id/personUI_rightBtn"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/set_icon"/>
+
+                            </LinearLayout>
 
                         </RelativeLayout>
 
@@ -114,31 +131,27 @@
 
 
                             <TextView
-                                android:id="@+id/personUI_2"
+                                android:id="@+id/personUI_schoolName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="25dp"
                                 android:textSize="@dimen/sp16"
                                 android:textColor="@color/white"
-                                android:text="江苏理工学院"/>
+                                android:text=""/>
+
+                            <TextView
+                                android:id="@+id/personUI_roleName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="25dp"
+                                android:layout_marginLeft="16dp"
+                                android:textSize="@dimen/sp16"
+                                android:textColor="@color/white"
+                                android:text=""/>
 
                         </LinearLayout>
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/ll_backBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentRight="true">
 
-                        <ImageView
-                            android:id="@+id/personUI_rightBtn"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginTop="9dp"
-                            android:src="@drawable/set_icon"/>
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -169,6 +182,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_delivered_cars"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
@@ -203,6 +217,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_is_using_cars"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
@@ -237,6 +252,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_longtime_not_used_cars"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
@@ -284,6 +300,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_not_recycled_cars"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
@@ -318,6 +335,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_not_fixed_cars"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
@@ -352,6 +370,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_fixed_not_used_cars"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"

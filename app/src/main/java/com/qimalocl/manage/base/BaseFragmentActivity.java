@@ -41,6 +41,7 @@ public class BaseFragmentActivity extends FragmentActivity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		context = this;
+		BaseApplication.context = context;
 
 		tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
 		// 添加Activity到堆栈

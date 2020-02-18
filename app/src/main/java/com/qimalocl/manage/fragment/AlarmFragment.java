@@ -321,16 +321,16 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
     }
 
     private void initHttp() {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+        if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context,LoginActivity.class);
             return;
         }
         RequestParams params = new RequestParams();
-        params.put("uid",uid);
-        params.put("access_token",access_token);
+//        params.put("uid",uid);
+//        params.put("access_token",access_token);
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
