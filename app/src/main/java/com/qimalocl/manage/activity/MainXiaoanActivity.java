@@ -498,18 +498,22 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                         @Override
                         public void run() {
                             try {
-                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                                if (result.getFlag().equals("Success")) {
-                                    JSONObject jsonObject = new JSONObject(result.getData());
+                                Log.e("b3===", responseString + "===");
 
-                                    Log.e("b3===", responseString + "===");
-                                }else {
-                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
-//                            if (loadingDialog != null && loadingDialog.isShowing()){
-//                                loadingDialog.dismiss();
-//                            }
-                                    scrollToFinishActivity();
-                                }
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//                                if (result.getFlag().equals("Success")) {
+//                                    JSONObject jsonObject = new JSONObject(result.getData());
+//
+//                                    Log.e("b3===1", responseString + "===");
+//                                }else {
+//
+////                            if (loadingDialog != null && loadingDialog.isShowing()){
+////                                loadingDialog.dismiss();
+////                            }
+//                                    scrollToFinishActivity();
+//                                }
+
+                                Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 
                             } catch (Exception e) {
                                 Log.e("Test","异常"+e);
@@ -556,7 +560,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                                 if (result.getFlag().equals("Success")) {
-                                    JSONObject jsonObject = new JSONObject(result.getData());
+//                                    JSONObject jsonObject = new JSONObject(result.getData());
 
                                     Log.e("b4===", responseString + "===");
                                 }else {
