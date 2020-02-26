@@ -1164,14 +1164,14 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				intent.putExtra("mac", jsonObject.getString("macinfo"));
 				intent.putExtra("name", jsonObject.getString("lock_no"));
 				startActivity(intent);
-			}else if ("7".equals(jsonObject.getString("type"))){    //3合1锁
+			}else if ("7".equals(jsonObject.getString("type"))){    //小安
 
 				Log.e("Scan===7", jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("type"));
 
 
 				Intent intent = new Intent(ActivityScanerCode.this, MainXiaoanActivity.class);
 				intent.putExtra("codenum", jsonObject.getString("codenum"));
-				intent.putExtra("address", jsonObject.getString("macinfo"));
+//				intent.putExtra("address", jsonObject.getString("macinfo"));
 				intent.putExtra("deviceuuid", jsonObject.getString("deviceuuid"));
 //				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -1223,7 +1223,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					}else{
 						if (!isChangeKey){
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-								Log.e("Scan===2_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								Log.e("Scan===2_1", macList.contains(jsonObject.getString("macinfo"))+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								n=0;
 								macLoop(jsonObject);
@@ -1258,7 +1258,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 
 							}else {
-								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								Log.e("Scan===2_2", isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								n=0;
 								macLoop(jsonObject);
@@ -1273,7 +1273,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //								scrollToFinishActivity();
 							}
 						}else {
-							Log.e("Scan===2_3", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+							Log.e("Scan===2_3", isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 							Intent intent = new Intent(ActivityScanerCode.this, ChangeKeyLockManageActivity.class);
 							intent.putExtra("name", "NokeLock");
@@ -1388,7 +1388,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 							codenum = jsonObject.getString("codenum");
 
-							Log.e("Scan===", codenum+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+							Log.e("Scan===", codenum+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+
+//							Log.e("Scan===", codenum+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 							if (result.getInfo().equals("2")) {
 								CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);

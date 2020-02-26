@@ -348,11 +348,11 @@ public class Main2Activity extends SwipeBackActivity {
 
                         Log.e("biking===", "openEbike===="+result.getData());
 
-//                        if ("200".equals(jsonObject.getString("code"))) {
-//                            ToastUtil.showMessageApp(context,"开锁成功");
-//                        }else{
-//                            ToastUtil.showMessageApp(context,"开锁失败");
-//
+                        if ("200".equals(jsonObject.getString("code"))) {
+                            ToastUtil.showMessageApp(context,"开锁成功");
+                        }else{
+                            ToastUtil.showMessageApp(context,"开锁失败");
+
 //                            if(mac!=null && !"".equals(mac)){
 //                                bleService.connect(mac);
 //
@@ -360,7 +360,7 @@ public class Main2Activity extends SwipeBackActivity {
 //
 //                                openLock();
 //                            }
-//                        }
+                        }
 
                     } else {
 

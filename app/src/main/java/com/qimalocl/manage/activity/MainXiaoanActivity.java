@@ -95,7 +95,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
         final Intent intent = getIntent();
         deviceuuid = intent.getStringExtra("deviceuuid");
         codenum = intent.getStringExtra("codenum");
-        mac = intent.getStringExtra("address");
+//        mac = intent.getStringExtra("address");
 
         loadingDialog = new LoadingDialog(this);
         loadingDialog.setCancelable(false);
@@ -633,9 +633,9 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 Log.e("biking===", "openEbike===="+result.getData());
 
                                 if ("200".equals(jsonObject.getString("code"))) {
-//                                    ToastUtil.showMessageApp(context,"开锁成功");
+                                    ToastUtil.showMessageApp(context,"开锁成功");
                                 }else{
-//                                    ToastUtil.showMessageApp(context,"开锁失败");
+                                    ToastUtil.showMessageApp(context,"开锁失败");
 
 //                            if(mac!=null && !"".equals(mac)){
 //                                bleService.connect(mac);
@@ -799,11 +799,13 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
                                 Log.e("biking===", "closeEbike===="+responseString);
 
-                                if ("0".equals(result.getData())){
-//                                    ToastUtil.showMessageApp(context,"关锁成功");
+
+
+                                if ("Success".equals(result.getFlag())){
+                                    ToastUtil.showMessageApp(context,"关锁成功");
 
                                 } else {
-//                                    ToastUtil.showMessageApp(context,"关锁失败");
+                                    ToastUtil.showMessageApp(context,"关锁失败");
 
 //                            if(mac!=null && !"".equals(mac)){
 //                                bleService.connect(mac);
