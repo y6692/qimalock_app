@@ -402,7 +402,7 @@
                     android:orientation="vertical">
 
                     <RelativeLayout
-                        android:id="@+id/personUI_myOrderLayout"
+                        android:id="@+id/personUI_maintenanceRecordLayout"
                         android:layout_width="match_parent"
                         android:layout_height="24dp"
                         android:layout_marginTop="16dp"
@@ -535,9 +535,10 @@
                             android:layout_alignParentRight="true">
 
                             <TextView
+                                android:id="@+id/tv_low_power_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="35"
+                                android:text=""
                                 android:textColor="#333333"
                                 android:textSize="@dimen/sp16"/>
 
@@ -559,7 +560,7 @@
                         android:background="#CCCCCC"/>
 
                     <RelativeLayout
-                        android:id="@+id/personUI_serviceCenterLayout"
+                        android:id="@+id/personUI_scrappedLayout"
                         android:layout_width="match_parent"
                         android:layout_height="24dp"
                         android:layout_marginTop="12dp"
@@ -590,9 +591,10 @@
                             android:layout_alignParentRight="true">
 
                             <TextView
+                                android:id="@+id/tv_scrapped_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="25"
+                                android:text=""
                                 android:textColor="#333333"
                                 android:textSize="@dimen/sp16"/>
 

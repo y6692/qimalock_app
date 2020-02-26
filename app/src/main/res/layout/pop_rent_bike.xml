@@ -241,12 +241,12 @@
             android:id="@+id/ll_bad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-22dp"
             android:orientation="vertical">
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="-22dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:background="#EDEDED"
@@ -258,27 +258,40 @@
                 android:layout_marginTop="17dp">
 
                 <TextView
-                    android:id="@+id/tv_each_free_time"
+                    android:id="@+id/tv_bad_reason"
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
-                    android:text="损坏部位："
+                    android:layout_marginRight="120dp"
+                    android:text="损坏部位：abc123qweqweqweqwe"
                     android:textColor="@color/tx_black"
                     android:textSize="14sp"
-                    android:gravity="center"/>
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:singleLine="false"/>
 
-                <TextView
-                    android:id="@+id/tv_set_useless"
+                <LinearLayout
                     android:layout_width="78dp"
                     android:layout_height="20dp"
-                    android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/block_dumping_bcg"
-                    android:text="设为已报废"
-                    android:textColor="@color/tx_black"
-                    android:textSize="14sp"
-                    android:gravity="center"/>
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:background="@drawable/block_dumping_bcg">
+
+                    <TextView
+                        android:id="@+id/tv_set_useless"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="设为已报废"
+                        android:textColor="@color/tx_black"
+                        android:textSize="14sp"
+
+                        />
+
+                </LinearLayout>
+
+
 
             </RelativeLayout>
 

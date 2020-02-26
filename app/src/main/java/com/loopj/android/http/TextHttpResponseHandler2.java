@@ -18,21 +18,13 @@
 
 package com.loopj.android.http;
 
-import java.io.UnsupportedEncodingException;
-
-import org.apache.http.Header;
-
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
-import com.qimalocl.manage.activity.LoginActivity;
-import com.qimalocl.manage.base.BaseApplication;
-import com.qimalocl.manage.core.common.SharedPreferencesUrls;
-import com.qimalocl.manage.model.ResultConsel;
-import com.qimalocl.manage.utils.ToastUtil;
+import org.apache.http.Header;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Used to intercept and handle the responses from requests made using {@link AsyncHttpClient}. The
@@ -65,13 +57,13 @@ import com.qimalocl.manage.utils.ToastUtil;
  * });
  * </pre>
  */
-public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
+public abstract class TextHttpResponseHandler2 extends AsyncHttpResponseHandler {
     private static final String LOG_TAG = "TextHttpResponseHandler";
 
     /**
      * Creates new instance with default UTF-8 encoding
      */
-    public TextHttpResponseHandler() {
+    public TextHttpResponseHandler2() {
         this(DEFAULT_CHARSET);
     }
 
@@ -80,7 +72,7 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
      *
      * @param encoding String encoding, see {@link #setCharset(String)}
      */
-    public TextHttpResponseHandler(String encoding) {
+    public TextHttpResponseHandler2(String encoding) {
         super();
         setCharset(encoding);
     }
@@ -104,6 +96,7 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
      */
     public abstract void onSuccess(int statusCode, Header[] headers, String responseString);
 
+
     private Handler m_myHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message mes) {
@@ -116,6 +109,7 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
         }
     });
 
+
     @Override
     public void onSuccess(final int statusCode, final Header[] headers, final byte[] responseBytes) {
 
@@ -126,52 +120,11 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 
                 String responseString = getResponseString(responseBytes, getCharset());
 
-                Log.e("onSuccess===0", responseString+"===");
-
-                if(responseString!=null && !"".equals(responseString)){
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-                    Log.e("onSuccess===1", responseString+"==="+result.getStatus_code());
-
-                    if(result.getStatus_code()==401){
-                        Log.e("onSuccess===2", responseString+"==="+result.getStatus_code());
-
-                        SharedPreferencesUrls.getInstance().putString("access_token", "");
-//                        SharedPreferencesUrls.getInstance().putString("iscert", "");
-
-                        ToastUtil.showMessageApp(BaseApplication.context, result.getMessage());
-
-                        Intent intent = new Intent(BaseApplication.context, LoginActivity.class);
-                        BaseApplication.context.startActivity(intent);
-                    }else if(result.getStatus_code()==406){
-                        Log.e("onSuccess===3", responseString+"==="+result.getStatus_code());
-
-                        ToastUtil.showMessageApp(BaseApplication.context, result.getMessage());
-
-//                        if (loadingDialog != null && loadingDialog.isShowing()) {
-//                            loadingDialog.dismiss();
-//                        }
-
-                        onSuccess(statusCode, headers, responseString);
-
-                    }else{
-                        onSuccess(statusCode, headers, responseString);
-                    }
-                }
+                onSuccess(statusCode, headers, responseString);
 
             }
         });
 
-
-
-//        try {
-//        	String returnStr = new String(responseBytes, "utf-8");
-//        	Log.e("MyTest", "onSuccess:" + returnStr);
-//			onSuccess(statusCode, headers, getResponseString(RSAUtils.decryptByPrivateKey(Base64Utils.decode(returnStr), MyKey.cliPrivateKey), "utf-8"));
-//		} catch (Exception e) {
-//			Log.e("MyTest", "successError:" + e.toString());
-//			e.printStackTrace();
-//		}
     }
 
     @Override

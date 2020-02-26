@@ -27,7 +27,7 @@ import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.model.GlobalConfig;
-import com.qimalocl.manage.model.PowerExchangeBean;
+import com.qimalocl.manage.model.MaintenanceBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 
@@ -42,7 +42,7 @@ import java.util.List;
  * Created by Administrator1 on 2017/2/13.
  */
 
-public class ExchangePowerRecordActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+public class MaintenanceRecordActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener {
 
     private Context context;
@@ -63,7 +63,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
     private View footerLayout;
 
     private MyAdapter myAdapter;
-    private List<PowerExchangeBean> data;
+    private List<MaintenanceBean> data;
     private boolean isRefresh = true;// 是否刷新中
     private boolean isLast = false;
     private int showPage = 1;
@@ -83,7 +83,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText("换电记录");
+        title.setText("维保记录");
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
@@ -181,7 +181,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
     }
     private void initHttp(){
 
-        Log.e("epra===initHttp", "==="+showPage);
+        Log.e("mra===initHttp", "==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -193,7 +193,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         params.put("page",showPage);
 //        params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        HttpHelper.get(context, Urls.carbatteryaction_count, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.carbadaction_count, params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -213,7 +213,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("epra===initHttp1", "==="+responseString);
+                    Log.e("mra===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {
@@ -231,11 +231,11 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                         setFooterType(0);
                     }
                     for (int i = 0; i < array.length(); i++) {
-                        PowerExchangeBean bean = JSON.parseObject(array.getJSONObject(i).toString(), PowerExchangeBean.class);
+                        MaintenanceBean bean = JSON.parseObject(array.getJSONObject(i).toString(), MaintenanceBean.class);
                         data.add(bean);
                     }
 
-//                    PowerExchangeBean bean = new PowerExchangeBean();
+//                    MaintenanceBean bean = new MaintenanceBean();
 //                    data.add(bean);
 
                     myAdapter.notifyDataSetChanged();
@@ -346,7 +346,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         }
     }
 
-    private class MyAdapter extends BaseViewAdapter<PowerExchangeBean> {
+    private class MyAdapter extends BaseViewAdapter<MaintenanceBean> {
 
         private LayoutInflater inflater;
 
@@ -358,57 +358,58 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (null == convertView) {
-                convertView = inflater.inflate(R.layout.item_exchange_power_record, null);
+                convertView = inflater.inflate(R.layout.item_maintenance_record, null);
             }
 
-            LinearLayout ll_valid_power_exchange = BaseViewHolder.get(convertView,R.id.ll_valid_power_exchange);
-            LinearLayout ll_invalid_power_exchange = BaseViewHolder.get(convertView,R.id.ll_invalid_power_exchange);
-            LinearLayout ll_power_exchanging = BaseViewHolder.get(convertView,R.id.ll_power_exchanging);
+            LinearLayout ll_car_repair_used= BaseViewHolder.get(convertView,R.id.ll_car_repair_used);
+            LinearLayout ll_car_recycle = BaseViewHolder.get(convertView,R.id.ll_car_recycle);
+            LinearLayout ll_car_repair = BaseViewHolder.get(convertView,R.id.ll_car_repair);
 
             TextView date = BaseViewHolder.get(convertView,R.id.tv_date);
-            TextView car_course = BaseViewHolder.get(convertView,R.id.tv_car_course);
-            TextView car_valid = BaseViewHolder.get(convertView,R.id.tv_car_valid);
-            TextView car_invalid = BaseViewHolder.get(convertView,R.id.tv_car_invalid);
+            TextView car_repair_used = BaseViewHolder.get(convertView,R.id.tv_car_repair_used);
+            TextView car_recycle = BaseViewHolder.get(convertView,R.id.tv_car_recycle);
+            TextView car_repair = BaseViewHolder.get(convertView,R.id.tv_car_repair);
 
-            final PowerExchangeBean bean = getDatas().get(position);
+            final MaintenanceBean bean = getDatas().get(position);
             date.setText(bean.getDate());
-            car_course.setText(bean.getCar_course());
-            car_valid.setText(bean.getCar_valid());
-            car_invalid.setText(bean.getCar_invalid());
+            car_repair_used.setText(bean.getCar_repair_used());
+            car_recycle.setText(bean.getCar_recycle());
+            car_repair.setText(bean.getCar_repair());
 
 
-            ll_power_exchanging.setOnClickListener(new View.OnClickListener(){
+            ll_car_repair_used.setOnClickListener(new View.OnClickListener(){
 
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
-//                    intent.putExtra("date", "2020-2-18");
+                    Intent intent = new Intent(context, SetGoodUsedDetailActivity.class);
+//                    intent.putExtra("date", "2020-02-19");
                     intent.putExtra("date", bean.getDate());
-                    intent.putExtra("status", 0);
+                    intent.putExtra("type", 1);   //类型 1 投放使用 2 已修好
                     context.startActivity(intent);
                 }
 
             });
 
-            ll_valid_power_exchange.setOnClickListener(new View.OnClickListener(){
+            ll_car_recycle.setOnClickListener(new View.OnClickListener(){
 
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
+                    Intent intent = new Intent(context, RecycleDetailActivity.class);
+//                    intent.putExtra("date", "2020-02-19");
                     intent.putExtra("date", bean.getDate());
-                    intent.putExtra("status", 1);
                     context.startActivity(intent);
                 }
 
             });
 
-            ll_invalid_power_exchange.setOnClickListener(new View.OnClickListener(){
+            ll_car_repair.setOnClickListener(new View.OnClickListener(){
 
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
+                    Intent intent = new Intent(context, SetGoodUsedDetailActivity.class);
+//                    intent.putExtra("date", "2020-02-19");
                     intent.putExtra("date", bean.getDate());
-                    intent.putExtra("status", 2);
+                    intent.putExtra("type", 2);
                     context.startActivity(intent);
                 }
 

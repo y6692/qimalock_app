@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:paddingTop="19dp"
+        android:paddingTop="23dp"
         android:gravity="center_vertical">
 
         <TextView
@@ -29,11 +29,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="17dp"
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/ll_valid_power_exchange"
+            android:id="@+id/ll_car_repair_used"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -41,7 +41,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_car_valid"
+                android:id="@+id/tv_car_repair_used"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="500"
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="有效换电数"
+                android:text="投放使用"
                 android:textSize="16sp"
                 android:textColor="#666666"/>
 
@@ -65,7 +65,7 @@
             android:background="#CCCCCC"/>
 
         <LinearLayout
-            android:id="@+id/ll_invalid_power_exchange"
+            android:id="@+id/ll_car_recycle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -73,18 +73,18 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_car_invalid"
+                android:id="@+id/tv_car_recycle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="500"
                 android:textSize="16sp"
-                android:textColor="#00BC27"/>
+                android:textColor="#FF0000"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="无效换电数"
+                android:text="已回收"
                 android:textSize="16sp"
                 android:textColor="#666666"/>
 
@@ -97,7 +97,7 @@
             android:background="#CCCCCC"/>
 
         <LinearLayout
-            android:id="@+id/ll_power_exchanging"
+            android:id="@+id/ll_car_repair"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -105,18 +105,19 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_car_course"
+                android:id="@+id/tv_car_repair"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:text="850"
                 android:textSize="16sp"
-                android:textColor="@color/black"/>
+                android:textColor="#FF0000"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="换电中"
+                android:text="已修好"
                 android:textSize="16sp"
                 android:textColor="#666666"/>
 

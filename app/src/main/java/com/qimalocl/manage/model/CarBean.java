@@ -19,6 +19,7 @@ public class CarBean {
     private String carmodel_name;    //车型名称
     private int status;  //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
     private int can_finish_order;    //可否结束订单（有无进行中行程）1有 0无
+    private String bad_reason;    //坏车原因（损坏部件）
 
     public String getNumber() {
         return number;
@@ -130,5 +131,13 @@ public class CarBean {
 
     public void setCan_finish_order(int can_finish_order) {
         this.can_finish_order = can_finish_order;
+    }
+
+    public String getBad_reason() {
+        return bad_reason;
+    }
+
+    public void setBad_reason(String bad_reason) {
+        this.bad_reason = bad_reason;
     }
 }

@@ -113,6 +113,8 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
     private void initView() {
 
+        Log.e("LA===initView", "==="+isRefresh);
+
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
@@ -177,6 +179,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
             @Override
             public void afterTextChanged(Editable s) {
+                Log.e("afterTextChanged===", "==="+phoneEdit.getText());
 
                 String phone = phoneEdit.getText().toString().trim().replaceAll("\\s+", "");
 
@@ -193,7 +196,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                Log.e("onFocusChange===", "==="+hasFocus);
+                Log.e("onFocusChange===", hasFocus+"==="+telphone);
 
                 if (hasFocus) {
                     if (telphone.length() == 11) {
@@ -216,7 +219,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
             }
         });
 
-        phoneEdit.requestFocus();
+//        phoneEdit.requestFocus();
 
         rightBtn.setOnClickListener(this);
         change_phone.setOnClickListener(this);

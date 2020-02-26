@@ -139,20 +139,22 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
         footerLayout.setOnClickListener(this);
         nextBtn.setOnClickListener(this);
 
-        et_school.addTextChangedListener(new TextWatcher() {
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}//文本改变之前执行
-
-            @Override
-            //文本改变的时候执行
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //如果长度为0
-                querySchoolList();
-            }
-
-            public void afterTextChanged(Editable s) { }//文本改变之后执行
-        });
+        et_school.addTextChangedListener(tw);
     }
+
+    TextWatcher tw = new TextWatcher() {
+
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}//文本改变之前执行
+
+        @Override
+        //文本改变的时候执行
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            //如果长度为0
+            querySchoolList();
+        }
+
+        public void afterTextChanged(Editable s) { }//文本改变之后执行
+    };
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -163,7 +165,9 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 
         Log.e("ssa===onItemClick", bean.getId()+"==="+bean.getName());
 
+        et_school.removeTextChangedListener(tw);
         et_school.setText(bean.getName());
+        et_school.addTextChangedListener(tw);
 
 //        Intent rIntent = new Intent();
 //        rIntent.putExtra("school_id", bean.getId());
@@ -206,6 +210,8 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 
             case R.id.schoolSelectUI_btn:
 //                UIHelper.goToAct(context, ActivityScanerCode.class);
+
+                Log.e("ssa===onClick", school_id+"===");
 
                 Intent intent = new Intent();
                 intent.setClass(context, ActivityScanerCode.class);

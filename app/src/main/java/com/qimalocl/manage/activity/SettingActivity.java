@@ -1,6 +1,7 @@
 package com.qimalocl.manage.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,12 +18,14 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.loopj.android.http.TextHttpResponseHandler2;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.StringUtil;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
@@ -40,6 +43,9 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
     private static final int MSG_SET_TAGS = 1002;
 
     private Context context;
+
+    CustomDialog.Builder customBuilder;
+    private CustomDialog customDialog;
 
     private ImageView backImg;
     private TextView title;
@@ -99,6 +105,20 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 
     private void initView() {
 
+        customBuilder = new CustomDialog.Builder(context);
+        customBuilder.setTitle("温馨提示").setMessage("您将退出登录")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        logout();
+                        dialog.cancel();
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        customDialog = customBuilder.create();
+
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
         title.setText("设置");
@@ -123,22 +143,63 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
                 break;
             case R.id.settingUI_btn:
 
-//                telphone = phoneEdit.getText().toString().trim().replaceAll("\\s+", "");
-//                if (telphone == null || "".equals(telphone)) {
-//                    Toast.makeText(context, "请输入您的手机号码", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                if (!StringUtil.isPhoner(telphone)) {
-//                    Toast.makeText(context, "手机号码格式不正确", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                sendCode();
+                customDialog.show();
                 break;
 
 
 
         }
+    }
+
+
+    private void logout() {
+
+        HttpHelper.delete(context, Urls.authorizations, new TextHttpResponseHandler2() {
+            @Override
+            public void onStart() {
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在提交");
+                    loadingDialog.show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()) {
+                    loadingDialog.dismiss();
+                }
+                UIHelper.ToastError(context, throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+
+                    Log.e("logout===", "==="+responseString);
+
+                    if(responseString==null){
+                        Intent intent0 = new Intent();
+                        setResult(RESULT_OK, intent0);
+
+                        SharedPreferencesUrls.getInstance().putString("access_token", "");
+//                        SharedPreferencesUrls.getInstance().putString("iscert", "");
+                        SharedPreferencesUrls.getInstance().putString("userName", "");
+                        Intent intent = new Intent(context, LoginActivity.class);
+                        context.startActivity(intent);
+                        scrollToFinishActivity();
+                    }else{
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        ToastUtil.showMessageApp(context, result.getMessage());
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()) {
+                    loadingDialog.dismiss();
+                }
+            }
+        });
     }
 
     private void sendCode() {

@@ -28,7 +28,6 @@
             android:layout_height="17dp"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="@dimen/dp30"
-            android:onClick="btn"
             android:src="@drawable/s_left"
             android:layout_centerVertical="true"/>
 
@@ -202,8 +201,7 @@
             android:layout_height="100dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="40dp"
-            android:onClick="btn">
+            android:layout_marginBottom="40dp">
 
 
 
@@ -217,25 +215,23 @@
             <!--android:gravity="center"-->
             <!--android:text="手动输入编号"-->
             <!--android:textColor="#DBD5D5"-->
-            <!--android:onClick="btn"-->
             <!--/>-->
 
             <LinearLayout
+                android:id="@+id/top_back"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="30dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="0.3">
 
                 <ImageView
-                    android:id="@+id/top_back"
+
                     android:layout_width="16dp"
                     android:layout_height="8dp"
                     android:layout_alignParentLeft="true"
                     android:gravity="center"
-                    android:onClick="btn"
                     android:src="@drawable/s_down"
                     android:layout_centerVertical="true"/>
 
@@ -247,7 +243,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView
@@ -277,7 +272,6 @@
                 android:layout_marginRight="30dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView
@@ -368,6 +362,8 @@
                     android:orientation="horizontal"
                     >
 
+                    <!--android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"-->
+
                     <com.qimalocl.manage.core.widget.ClearEditText
                         android:id="@+id/pop_circlesMenu_bikeNumEdit"
                         android:layout_width="match_parent"
@@ -377,7 +373,7 @@
                         android:background="@drawable/shape_et_codenum"
                         android:drawableRight="@drawable/delete_selector"
                         android:gravity="center"
-                        android:inputType="numberDecimal"
+                        android:inputType="text"
                         android:hint="请输入车辆编号"
                         android:lineSpacingExtra="@dimen/dp5"
                         android:paddingBottom="0dp"
@@ -394,7 +390,6 @@
                         android:layout_alignParentLeft="true"
                         android:layout_marginLeft="-60dp"
                         android:gravity="center"
-                        android:onClick="btn"
                         >
 
                         <ImageView

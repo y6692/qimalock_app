@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -188,6 +189,33 @@ public class MainActivity extends BaseActivity{
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+//        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+//        inputMethodManager.hideSoftInputFromWindow(context.getWindowToken(), 0); // 隐藏
+
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
+
+        boolean flag = getIntent().getBooleanExtra("flag", false);
+
+        Log.e("ma===onResume",  flag + "===" + access_token);
+
+        if("".equals(access_token)){
+            tab.setCurrentTab(0);
+        }
+
+        if(flag){
+//            purseFragment.user();
+            mineFragment.initHttp();
+        }
+
+//        mainFragment.show
+//        tab.setCurrentTab(0);
+    }
+
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         private String action = null;
 
@@ -225,11 +253,15 @@ public class MainActivity extends BaseActivity{
         mFragments.add(queryFragment);
         mFragments.add(mineFragment);
 
+//        mFragments.get(1).set
+
+
 //        mFragments.add(alarmFragment);
 //        mFragments.add(maintenanceFragment);
 
         for (int i = 0; i < mTitles.length; i++) {
             mTabEntities.add(new TabEntity(mTitles[i], mIconSelectIds[i], mIconUnselectIds[i]));
+
         }
     }
 
@@ -315,8 +347,33 @@ public class MainActivity extends BaseActivity{
 
         tab = findViewById(R.id.tab);
 
+
+
         tab.setTabData(mTabEntities, MainActivity.this, R.id.fl_change, mFragments);
+
+
+//        TabLayout.Tab tab1 = tab.getChildAt(1);
+
+//        tab.getIconView(1).setClickable(false);
+//        tab.getChildAt(1).setClickable(false);
+
         tab.setCurrentTab(0);
+
+        Log.e("ma===initView", tab.getChildAt(0)+"==="+tab.getChildAt(1));
+
+//        tab.getChildAt(0).setClickable(false);
+//        tab.onT
+
+        LinearLayout tabStrip = (LinearLayout) tab.getChildAt(0);
+//        for (int i = 0; i < tabStrip.getChildCount(); i++) {
+//            View tabView = tabStrip.getChildAt(i);
+//            if (tabView != null) {
+//                tabView.setClickable(false);
+//            }
+//        }
+
+        tabStrip.getChildAt(1).setClickable(false);
+        tabStrip.getChildAt(2).setClickable(false);
     }
 
 //    @Override
@@ -419,10 +476,6 @@ public class MainActivity extends BaseActivity{
     }
 
     private void initListener() {
-    }
-
-    @Override protected void onResume() {
-        super.onResume();
     }
 
     @Override

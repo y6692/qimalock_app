@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,8 +26,8 @@ import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.model.GlobalConfig;
-import com.qimalocl.manage.model.PowerExchangeBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.SetGoodUsedDetailBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 
 import org.apache.http.Header;
@@ -42,7 +41,7 @@ import java.util.List;
  * Created by Administrator1 on 2017/2/13.
  */
 
-public class ExchangePowerRecordActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+public class SetGoodUsedDetailActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener {
 
     private Context context;
@@ -63,12 +62,13 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
     private View footerLayout;
 
     private MyAdapter myAdapter;
-    private List<PowerExchangeBean> data;
+    private List<SetGoodUsedDetailBean> data;
     private boolean isRefresh = true;// 是否刷新中
     private boolean isLast = false;
     private int showPage = 1;
-    private String starttime = "";
-    private String endtime = "";
+
+    private String date;
+    private int type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +76,10 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         setContentView(R.layout.activity_exchange_power_record);
         context = this;
         data = new ArrayList<>();
+
+        date = getIntent().getStringExtra("date");
+        type = getIntent().getIntExtra("type", 1);
+
         initView();
     }
 
@@ -83,7 +87,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText("换电记录");
+        title.setText(type==1?"投放使用":"已修好");
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
@@ -180,8 +184,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         }
     }
     private void initHttp(){
-
-        Log.e("epra===initHttp", "==="+showPage);
+        Log.e("sguda===initHttp", date+"==="+type+"==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -190,10 +193,12 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
             return;
         }
         RequestParams params = new RequestParams();
+        params.put("date", date);
+        params.put("type", type);
         params.put("page",showPage);
-//        params.put("pagesize", GlobalConfig.PAGE_SIZE);
+        params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        HttpHelper.get(context, Urls.carbatteryaction_count, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.carbadaction_setgoodused, params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -213,7 +218,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("epra===initHttp1", "==="+responseString);
+                    Log.e("sguda===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {
@@ -231,11 +236,11 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                         setFooterType(0);
                     }
                     for (int i = 0; i < array.length(); i++) {
-                        PowerExchangeBean bean = JSON.parseObject(array.getJSONObject(i).toString(), PowerExchangeBean.class);
+                        SetGoodUsedDetailBean bean = JSON.parseObject(array.getJSONObject(i).toString(), SetGoodUsedDetailBean.class);
                         data.add(bean);
                     }
 
-//                    PowerExchangeBean bean = new PowerExchangeBean();
+//                    SetGoodUsedDetailBean bean = new SetGoodUsedDetailBean();
 //                    data.add(bean);
 
                     myAdapter.notifyDataSetChanged();
@@ -266,8 +271,8 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         switch (requestCode) {
             case 0:
                 if (data != null) {
-                    starttime = data.getExtras().getString("starttime");
-                    endtime = data.getExtras().getString("endtime");
+//                    starttime = data.getExtras().getString("starttime");
+//                    endtime = data.getExtras().getString("endtime");
                     onRefresh();
                 }
                 break;
@@ -346,7 +351,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         }
     }
 
-    private class MyAdapter extends BaseViewAdapter<PowerExchangeBean> {
+    private class MyAdapter extends BaseViewAdapter<SetGoodUsedDetailBean> {
 
         private LayoutInflater inflater;
 
@@ -358,61 +363,39 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (null == convertView) {
-                convertView = inflater.inflate(R.layout.item_exchange_power_record, null);
+                convertView = inflater.inflate(R.layout.item_set_good_used_detail, null);
             }
 
-            LinearLayout ll_valid_power_exchange = BaseViewHolder.get(convertView,R.id.ll_valid_power_exchange);
-            LinearLayout ll_invalid_power_exchange = BaseViewHolder.get(convertView,R.id.ll_invalid_power_exchange);
-            LinearLayout ll_power_exchanging = BaseViewHolder.get(convertView,R.id.ll_power_exchanging);
+            TextView number = BaseViewHolder.get(convertView,R.id.tv_number);
+            TextView bad_time = BaseViewHolder.get(convertView,R.id.tv_bad_time);
+            TextView recycle_time = BaseViewHolder.get(convertView,R.id.tv_recycle_time);
+            TextView setgood_time = BaseViewHolder.get(convertView,R.id.tv_setgood_time);
+            TextView last_user_time = BaseViewHolder.get(convertView,R.id.tv_last_user_time);
 
-            TextView date = BaseViewHolder.get(convertView,R.id.tv_date);
-            TextView car_course = BaseViewHolder.get(convertView,R.id.tv_car_course);
-            TextView car_valid = BaseViewHolder.get(convertView,R.id.tv_car_valid);
-            TextView car_invalid = BaseViewHolder.get(convertView,R.id.tv_car_invalid);
+            SetGoodUsedDetailBean bean = getDatas().get(position);
+            number.setText(bean.getNumber());
+            bad_time.setText(bean.getBad_time());
+            recycle_time.setText(bean.getRecycle_time());
+            setgood_time.setText(bean.getSetgood_time());
+            last_user_time.setText(bean.getLast_user_time());
 
-            final PowerExchangeBean bean = getDatas().get(position);
-            date.setText(bean.getDate());
-            car_course.setText(bean.getCar_course());
-            car_valid.setText(bean.getCar_valid());
-            car_invalid.setText(bean.getCar_invalid());
+//            if(status==0){
+//                text_aft_electricity.setText("当前电量：");
+//            }else{
+//                text_aft_electricity.setText("更换后电量：");
+//            }
 
-
-            ll_power_exchanging.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
-//                    intent.putExtra("date", "2020-2-18");
-                    intent.putExtra("date", bean.getDate());
-                    intent.putExtra("status", 0);
-                    context.startActivity(intent);
-                }
-
-            });
-
-            ll_valid_power_exchange.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
-                    intent.putExtra("date", bean.getDate());
-                    intent.putExtra("status", 1);
-                    context.startActivity(intent);
-                }
-
-            });
-
-            ll_invalid_power_exchange.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
-                    intent.putExtra("date", bean.getDate());
-                    intent.putExtra("status", 2);
-                    context.startActivity(intent);
-                }
-
-            });
+//            ll_valid_power_exchange.setOnClickListener(new View.OnClickListener(){
+//
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(context, SettlementPlatformActivity.class);
+////                    intent.putExtra("order_type", 1);
+////                    intent.putExtra("order_id", order_id);
+//                    context.startActivity(intent);
+//                }
+//
+//            });
 
             return convertView;
         }

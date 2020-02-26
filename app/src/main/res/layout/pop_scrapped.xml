@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#333333"
-            android:text="11111"
+            android:text="输入原因"
             android:textSize="18sp"
             />
 
@@ -29,6 +29,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/content"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -54,7 +55,32 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/dp10">
 
+        <com.qimalocl.manage.core.widget.ClearEditText
+            android:id="@+id/pop_reasonEdit"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp45"
+            android:layout_marginTop="@dimen/dp10"
+            android:layout_marginLeft="@dimen/dp5"
+            android:layout_marginRight="@dimen/dp5"
+            android:background="@drawable/shape_change_phone"
+            android:drawableRight="@drawable/delete_selector"
+            android:gravity="center_vertical"
+            android:hint="请输入原因"
+            android:lineSpacingExtra="@dimen/dp5"
+            android:paddingBottom="0dp"
+            android:paddingLeft="@dimen/dp10"
+            android:paddingRight="0dp"
+            android:textColor="@color/tx_black"
+            android:textColorHint="#c0c0c0"
+            android:textSize="@dimen/sp14" />
+    </LinearLayout>
 
 
     <LinearLayout
@@ -94,17 +120,10 @@
             android:stateListAnimator="@null"
             />
 
-        <!--<TextView-->
-            <!--android:id="@+id/positiveButton2"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="换辆车试试"-->
-            <!--android:textSize="@dimen/sp16"-->
-            <!--android:textColor="@color/white"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--/>-->
     </LinearLayout>
 
 
 
 </LinearLayout>
+
+

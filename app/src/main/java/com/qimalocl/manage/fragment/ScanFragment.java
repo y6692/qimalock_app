@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -39,7 +40,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -148,6 +151,7 @@ import butterknife.Unbinder;
 import permissions.dispatcher.NeedsPermission;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.INPUT_METHOD_SERVICE;
 import static com.fitsleep.sunshinelibrary.utils.EncryptUtils.Encrypt;
 import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
 
@@ -245,6 +249,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private String deviceuuid = "";
     private String electricity = "";
     private String carmodel_name = "";
+    private String bad_reason = "";
     private int lock_status;
     private int status;
     private int can_finish_order;
@@ -307,6 +312,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public String oid = "";
     private int notice_code = 0;
 
+    private boolean threadScan = true;
+
+    private Dialog dialogReason;
+    private EditText reasonEdit;
+    private Button positiveButton;
+    private Button negativeButton;
+    public String reason;
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
         unbinder = ButterKnife.bind(this, v);
@@ -346,7 +359,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         e.printStackTrace();
                     }
 
-                    m_myHandler.sendEmptyMessage(1);
+                    if(threadScan){
+                        m_myHandler.sendEmptyMessage(1);
+                    }
+
                 }
 
             }
@@ -356,19 +372,55 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("onResume===Scan", latitude + "===" + longitude);
+        threadScan = true;
+
+        Log.e("sf===onResume", latitude + "===" + longitude);
 
 //        initNearby(latitude, longitude);
 
 //        mapView.onResume();
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (access_token != null && !"".equals(access_token)){
-            rightBtn.setText("退出登录");
-        }else {
-            rightBtn.setText("登录");
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//        if (access_token != null && !"".equals(access_token)){
+//            rightBtn.setText("退出登录");
+//        }else {
+//            rightBtn.setText("登录");
+//        }
+
+        closeLoadingDialog();
+
+        boolean flag = activity.getIntent().getBooleanExtra("flag", false);
+
+
+        Log.e("sf===onResume", isPermission+"==="+flag+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type);
+
+        mapView.onResume();
+
+        if(flag){
+            activity.getIntent().putExtra("flag", false);
         }
+
+        if(isPermission){
+//            if(!isNavi){
+//                banner();
+//                car_authority();
+//            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        threadScan = false;
+
+        Log.e("sf===onPause", isPermission+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type);
+
+
+
+//        mapView.onPause();
+//        deactivate();
+//		mFirstFix = false;
     }
 
     @Override
@@ -379,12 +431,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         if(hidden){
             //pause
+            threadScan = false;
+
             mapView.setVisibility(View.GONE);
 
 //            mapView.onPause();
 //            deactivate();
         }else{
             //resume
+            threadScan = true;
+
             mapView.setVisibility(View.VISIBLE);
 
 //            mapView.onResume();
@@ -540,6 +596,67 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
+
+
+
+        dialogReason = new Dialog(context, R.style.Theme_AppCompat_Dialog);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.pop_scrapped, null);
+        dialogReason.setContentView(dialogView);
+        dialogReason.setCanceledOnTouchOutside(false);
+
+        reasonEdit = (EditText)dialogView.findViewById(R.id.pop_reasonEdit);
+        positiveButton = (Button)dialogView.findViewById(R.id.positiveButton);
+        negativeButton = (Button)dialogView.findViewById(R.id.negativeButton);
+
+
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reason = reasonEdit.getText().toString().trim();
+                if (reason == null || "".equals(reason)){
+                    Toast.makeText(context,"请输入原因",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                InputMethodManager manager = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                manager.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+
+                if (dialogReason.isShowing()) {
+                    dialogReason.dismiss();
+                }
+
+                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+
+                            }
+                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+
+                        Log.e("sf===onC", "==="+type);
+
+                        carbadaction(3);
+
+                    }
+                });
+                customBuilder.create().show();
+            }
+        });
+
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodManager manager1= (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                manager1.hideSoftInputFromWindow(v.getWindowToken(), 0); // 隐藏
+                if (dialogReason.isShowing()) {
+                    dialogReason.dismiss();
+                }
+            }
+        });
+
         if (aMap == null) {
             aMap = mapView.getMap();
             setUpMap();
@@ -638,7 +755,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 @Override
                 public void onStart() {
                     if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.setTitle("正在加载");
                         loadingDialog.show();
                     }
                 }
@@ -770,6 +887,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
         LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
@@ -779,6 +897,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);   //TODO
         tv_lock_status.setText("");    //TODO 已开锁/已关锁
+        tv_bad_reason.setText("损坏部位："+bad_reason);
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
         }else{
@@ -888,6 +1007,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
         LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
@@ -898,6 +1018,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);   //TODO
+        tv_bad_reason.setText("损坏部位："+bad_reason);
 
         if(isSearch){
             ll_car_search.setVisibility(View.VISIBLE);
@@ -979,6 +1100,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
         LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
@@ -989,6 +1111,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);   //TODO
+        tv_bad_reason.setText("损坏部位："+bad_reason);
 
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
@@ -1189,7 +1312,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         if(result.getStatus_code()==200){
 //                            m_myHandler.sendEmptyMessage(2);
-                            curMarker.setIcon(bikeDescripter_blue);
+                            if(curMarker!=null){
+                                curMarker.setIcon(bikeDescripter_blue);
+                            }
+
                         }else{
 
                         }
@@ -1225,6 +1351,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }else {
             RequestParams params = new RequestParams();
             params.put("type", type);  //类型 1已回收 2已修好 3报废
+            if(type==3){
+                params.put("scrapped_reason", reason);
+            }
+
             HttpHelper.post(context, Urls.carbadaction+codenum, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -1320,13 +1450,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 cars();
 
 
-                                if (result.getFlag().equals("Success")) {
-
-
-
-                                } else {
-                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                                }
+//                                if (result.getFlag().equals("Success")) {
+//
+//
+//
+//                                } else {
+//                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1456,7 +1586,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         Log.e("cars===", type+"==="+carmodel_id);
 
-        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
             @Override
             public void onStart() {
                 if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -1471,6 +1601,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     loadingDialog.dismiss();
                 }
                 UIHelper.ToastError(context, throwable.toString());
+
+                Log.e("cars===fail", "==="+throwable.toString());
             }
 
             @Override
@@ -1502,6 +1634,136 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
 
                             Log.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
+
+                            // 加入自定义标签
+                            MarkerOptions bikeMarkerOption = null;
+
+                            int lock_id = bean.getLock_id();
+
+                            if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
+                                if(lock_id==4){
+
+                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon(bean.getLevel()==1?bikeDescripter_green:bean.getLevel()==2?bikeDescripter_yellow:bean.getLevel()==3?bikeDescripter_red:bean.getLevel()==4?bikeDescripter_blue:bikeDescripter_brown);
+
+                                }else if(lock_id==7){
+                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+
+                                }else{
+                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon(bean.getLevel()==0?bikeDescripter:bikeDescripter_bad);
+
+                                }
+
+                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                bikeMarkerList.add(bikeMarker);
+                            }
+
+//                            if("40004690".equals(bean.getNumber())){
+//                                Log.e("cars===3", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+//                            }
+//
+//                            if("30005053".equals(bean.getNumber())){
+//                                Log.e("cars===4", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+//                            }
+//
+//                            if("40001".equals(bean.getNumber())){
+//                                Log.e("cars===5", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+//                            }
+                        }
+                    }
+
+
+//                    if (result.getFlag().equals("Success")) {
+//
+//                    } else {
+//                        ToastUtils.showMessage(result.getMsg());
+//                    }
+                } catch (Exception e) {
+
+                }
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+            }
+        });
+
+
+    }
+
+    private void carsLoop(){
+        RequestParams params = new RequestParams();
+
+        int type = 0;
+        if(switcher_bad.isChecked()){
+            type = 1;
+        }
+
+        if(switcher.isChecked()){
+            if(switcher_bad.isChecked()){
+                type = 3;
+            }else{
+                type = 2;
+            }
+        }
+
+
+        params.put("type", type);  //0全部 1只看坏车 2只看低电
+
+        Log.e("carsLoop===", type+"==="+carmodel_id);
+
+        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
+            @Override
+            public void onStart() {
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在加载");
+//                    loadingDialog.show();
+//                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if (loadingDialog != null && loadingDialog.isShowing()){
+                    loadingDialog.dismiss();
+                }
+                UIHelper.ToastError(context, throwable.toString());
+
+                Log.e("carsLoop===fail", "==="+throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                    Log.e("carsLoop===0", "==="+responseString);
+
+                    JSONArray array = new JSONArray(result.getData());
+
+                    Log.e("carsLoop===1", "==="+array.length());
+
+                    for (Marker marker : bikeMarkerList){
+                        if (marker != null){
+                            marker.remove();
+                        }
+                    }
+
+                    if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                        bikeMarkerList.clear();
+                    }
+
+                    if (0 == array.length()){
+                        ToastUtils.showMessage("附近没有单车");
+                    } else {
+                        for (int i = 0; i < array.length(); i++){
+
+                            CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
+
+                            Log.e("carsLoop===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
 
                             // 加入自定义标签
                             MarkerOptions bikeMarkerOption = null;
@@ -1784,13 +2046,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
 
-    @Override
-    public void onPause() {
-        super.onPause();
-//        mapView.onPause();
-//        deactivate();
-//		mFirstFix = false;
-    }
+
     /**
      * 方法必须重写
      */
@@ -2103,7 +2359,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 carbadaction(2);
                 break;
             case R.id.tv_set_useless:
-                carbadaction(3);
+                dialogReason.show();
+//                carbadaction(3);
                 break;
 
             case R.id.lock_switcher:
@@ -3824,16 +4081,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
 
+                        accuracy = amapLocation.getAccuracy();
+
+                        addChooseMarker();
+                        addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
+
 //                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 18f));
                     } else {
 //                        centerMarker.remove();
                         mCircle.remove();
                     }
 
-                    accuracy = amapLocation.getAccuracy();
 
-                    addChooseMarker();
-                    addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
                 }else{
                     CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
                     customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
@@ -4000,10 +4259,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             lock_status = data.getIntExtra("lock_status", 0);
                             status = data.getIntExtra("status", 0);
                             can_finish_order = data.getIntExtra("can_finish_order", 0);
+                            bad_reason = data.getStringExtra("bad_reason");
                             isMac = data.getBooleanExtra("isMac", false);
                             isSearch = data.getBooleanExtra("isSearch", false);
 
-                            Log.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order);
+                            Log.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order+"==="+bad_reason);
 
                             if(carmodel_id==1){
                                 initmPopupRentWindowView();

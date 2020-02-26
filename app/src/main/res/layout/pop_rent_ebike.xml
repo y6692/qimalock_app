@@ -352,12 +352,12 @@
             android:id="@+id/ll_bad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="-22dp"
             android:orientation="vertical">
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="-22dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:background="#EDEDED"
@@ -369,14 +369,16 @@
                 android:layout_marginTop="17dp">
 
                 <TextView
-                    android:id="@+id/tv_each_free_time"
+                    android:id="@+id/tv_bad_reason"
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
-                    android:text="损坏部位："
+                    android:layout_marginRight="120dp"
+                    android:text="损坏部位：abc1234324sadasdasdasdasasda21321321321312321312312312321312312312312"
                     android:textColor="@color/tx_black"
                     android:textSize="14sp"
-                    android:gravity="center"/>
+                    android:gravity="center_vertical"
+                    android:singleLine="false"/>
 
                 <TextView
                     android:id="@+id/tv_set_useless"

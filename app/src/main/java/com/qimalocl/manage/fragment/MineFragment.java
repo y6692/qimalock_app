@@ -42,6 +42,9 @@ import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.ExchangePowerRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
+import com.qimalocl.manage.activity.MaintenanceRecordActivity;
+import com.qimalocl.manage.activity.ScrappedDetailActivity;
+import com.qimalocl.manage.activity.SetGoodUsedDetailActivity;
 import com.qimalocl.manage.activity.SettingActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
@@ -54,8 +57,11 @@ import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.DatasBean;
+import com.qimalocl.manage.model.LowPowerBean;
+import com.qimalocl.manage.model.LowPowerDetailBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
+import com.qimalocl.manage.model.ScrappedBean;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UtilAnim;
@@ -102,7 +108,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private TextView userName, schoolName, roleName, tv_delivered_cars, tv_is_using_cars, tv_longtime_not_used_cars, tv_not_recycled_cars, tv_not_fixed_cars, tv_fixed_not_used_cars;
 
     private LinearLayout ll_1, ll_2, ll_3, ll_4, ll_5, ll_6, curRouteLayout, hisRouteLayout;
-    private RelativeLayout  myOrderLayout, exchangePowerRecordLayout, lowPowerLayout, serviceCenterLayout, changePhoneLayout, authLayout, inviteLayout;
+    private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, changePhoneLayout, authLayout, inviteLayout;
+
+    private TextView tv_low_power_count, tv_scrapped_count;
 
     private ImageView iv_popup_window_back;
     private RelativeLayout rl_popup_window;
@@ -128,6 +136,11 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private String history_order_h5_url;
 
     private PopupWindow popupwindow;
+
+    private int ultra_low_count_xa;
+    private int low_count_xa;
+    private int ultra_low_count_xyt;
+    private int low_count_xyt;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mine, null);
@@ -193,6 +206,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             }else{
                 initHttp();
                 datas();
+                carbatteryaction_lowpower();
+                carbadaction_scrapped();
             }
 
         }
@@ -239,6 +254,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         ll_5 = getActivity().findViewById(R.id.ll_5);
         ll_6 = getActivity().findViewById(R.id.ll_6);
 
+        tv_low_power_count = getActivity().findViewById(R.id.tv_low_power_count);
+        tv_scrapped_count = getActivity().findViewById(R.id.tv_scrapped_count);
+
 //        delivered_cars	String
 //        投放车辆数量
 //
@@ -264,10 +282,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         tv_not_fixed_cars = getActivity().findViewById(R.id.tv_not_fixed_cars);
         tv_fixed_not_used_cars = getActivity().findViewById(R.id.tv_fixed_not_used_cars);
 
-        myOrderLayout = getActivity().findViewById(R.id.personUI_myOrderLayout);
+        maintenanceRecordLayout = getActivity().findViewById(R.id.personUI_maintenanceRecordLayout);
         exchangePowerRecordLayout = getActivity().findViewById(R.id.personUI_exchangePowerRecordLayout);
         lowPowerLayout = getActivity().findViewById(R.id.personUI_lowPowerLayout);
-        serviceCenterLayout = getActivity().findViewById(R.id.personUI_serviceCenterLayout);
+        scrappedLayout = getActivity().findViewById(R.id.personUI_scrappedLayout);
         changePhoneLayout = getActivity().findViewById(R.id.personUI_changePhoneLayout);
         authLayout = getActivity().findViewById(R.id.personUI_authLayout);
         inviteLayout = getActivity().findViewById(R.id.personUI_inviteLayout);
@@ -283,10 +301,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         ll_5.setOnClickListener(this);
         ll_6.setOnClickListener(this);
 
-        myOrderLayout.setOnClickListener(this);
+        maintenanceRecordLayout.setOnClickListener(this);
         exchangePowerRecordLayout.setOnClickListener(this);
         lowPowerLayout.setOnClickListener(this);
-        serviceCenterLayout.setOnClickListener(this);
+        scrappedLayout.setOnClickListener(this);
         changePhoneLayout.setOnClickListener(this);
         authLayout.setOnClickListener(this);
         inviteLayout.setOnClickListener(this);
@@ -313,6 +331,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             }
 
             initHttp();
+
 
 //            if (("0".equals(bikenum) || bikenum == null || "".equals(bikenum))
 //                    && ("0".equals(specialdays) || specialdays == null || "".equals(specialdays))){
@@ -811,16 +830,20 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                break;
 
             case R.id.personUI_rightBtn:
-                UIHelper.goToAct(context, SettingActivity.class);
+//                UIHelper.goToAct(context, SettingActivity.class);
 
-//                Intent intent = new Intent();
-//                intent.setClass(context, SettingActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivityForResult(intent, 10);
+                Intent intent = new Intent();
+                intent.setClass(context, SettingActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, 10);
                 break;
 
             case R.id.ll_1:
-                UIHelper.goToAct(context, ExchangePowerRecordActivity.class);
+//                UIHelper.goToAct(context, SetGoodUsedDetailActivity.class);
+                break;
+
+            case R.id.personUI_maintenanceRecordLayout:
+                UIHelper.goToAct(context, MaintenanceRecordActivity.class);
                 break;
 
             case R.id.personUI_exchangePowerRecordLayout:
@@ -828,7 +851,12 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 break;
 
             case R.id.personUI_lowPowerLayout:
+//                carbatteryaction_lowpower();
                 initmPopupWindowView();
+                break;
+
+            case R.id.personUI_scrappedLayout:
+                UIHelper.goToAct(context, ScrappedDetailActivity.class);
                 break;
 
             case R.id.personUI_header:
@@ -844,56 +872,181 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         }
     }
 
+    private void carbatteryaction_lowpower(){
+
+        Log.e("lowpower===", "===");
+
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token != null && !"".equals(access_token)){
+//            RequestParams params = new RequestParams();
+//            params.put("uid",uid);
+//            params.put("access_token",access_token);
+            HttpHelper.get(context, Urls.carbatteryaction_lowpower, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    onStartCommon("正在加载");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                Log.e("lowpower===1", tv_low_power_count+"==="+responseString);
+
+                                LowPowerBean bean = JSON.parseObject(result.getData(), LowPowerBean.class);
+
+                                Log.e("lowpower===2", "==="+bean.getCount());
+
+                                tv_low_power_count.setText(""+bean.getCount());
+
+                                LowPowerDetailBean  bean_xa= JSON.parseObject(bean.getXiaoan(), LowPowerDetailBean.class);
+                                LowPowerDetailBean  bean_xyt= JSON.parseObject(bean.getXyt(), LowPowerDetailBean.class);
+
+                                ultra_low_count_xa = bean_xa.getUltra_low_count();
+                                low_count_xa = bean_xa.getLow_count();
+                                ultra_low_count_xyt = bean_xyt.getUltra_low_count();
+                                low_count_xyt = bean_xyt.getLow_count();
+
+                                Log.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count());
+
+//                                initmPopupWindowView();
+
+//                                if (result.getFlag().equals("Success")) {
+//
+//                                } else {
+//                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+
+                                Log.e("lowpower===e", "==="+e);
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }else {
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+        }
+    }
+
+    private void carbadaction_scrapped(){
+        Log.e("scrapped===", "===");
+
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token != null && !"".equals(access_token)){
+//            RequestParams params = new RequestParams();
+//            params.put("uid",uid);
+//            params.put("access_token",access_token);
+            HttpHelper.get(context, Urls.carbadaction_scrapped, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    onStartCommon("正在加载");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                    Log.e("scrapped===fail", "==="+throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                Log.e("scrapped===1", tv_scrapped_count+"==="+responseString);
+
+                                ScrappedBean bean = JSON.parseObject(result.getData(), ScrappedBean.class);
+
+                                Log.e("scrapped===2", "==="+bean.getCount());
+
+                                tv_scrapped_count.setText(""+bean.getCount());
+
+//                                LowPowerDetailBean  bean_xa= JSON.parseObject(bean.getXiaoan(), LowPowerDetailBean.class);
+//                                LowPowerDetailBean  bean_xyt= JSON.parseObject(bean.getXyt(), LowPowerDetailBean.class);
+//
+//                                ultra_low_count_xa = bean_xa.getUltra_low_count();
+//                                low_count_xa = bean_xa.getLow_count();
+//                                ultra_low_count_xyt = bean_xyt.getUltra_low_count();
+//                                low_count_xyt = bean_xyt.getLow_count();
+//
+//                                Log.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count());
+
+//                                initmPopupWindowView();
+
+//                                if (result.getFlag().equals("Success")) {
+//
+//                                } else {
+//                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+
+                                Log.e("lowpower===e", "==="+e);
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }else {
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+        }
+    }
+
+    protected Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                case 0:
+                    break;
+
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
+
     public void initmPopupWindowView(){
 
         // 获取自定义布局文件的视图
         View customView = getLayoutInflater().inflate(R.layout.pop_low_power_bike, null, false);
         // 创建PopupWindow宽度和高度
-        RelativeLayout pop_win_bg = (RelativeLayout) customView.findViewById(R.id.pop_low_power_bg);
-        ImageView iv_popup_window_back = (ImageView) customView.findViewById(R.id.popupWindow_low_power_back);
-//        ImageView iv_rent_cancelBtn = (ImageView) customView.findViewById(R.id.iv_rent_cancelBtn);
-//        TextView tv_codenum = (TextView) customView.findViewById(R.id.tv_codenum);
-//        TextView tv_carmodel_name = (TextView) customView.findViewById(R.id.tv_carmodel_name);
-//        TextView tv_each_free_time = (TextView) customView.findViewById(R.id.tv_each_free_time);
-//        TextView tv_first_price = (TextView) customView.findViewById(R.id.tv_first_price);
-//        TextView tv_first_time = (TextView) customView.findViewById(R.id.tv_first_time);
-//        TextView tv_continued_price = (TextView) customView.findViewById(R.id.tv_continued_price);
-//        TextView tv_continued_time = (TextView) customView.findViewById(R.id.tv_continued_time);
-//        TextView tv_electricity = (TextView) customView.findViewById(R.id.tv_electricity);
-//        TextView tv_mileage= (TextView) customView.findViewById(R.id.tv_mileage);
-//        LinearLayout ll_ebike = (LinearLayout) customView.findViewById(R.id.ll_ebike);
-//        LinearLayout ll_change_car = (LinearLayout) customView.findViewById(R.id.ll_change_car);
-//        LinearLayout ll_rent = (LinearLayout) customView.findViewById(R.id.ll_rent);
-//
-//        LinearLayout ll_open_lock = (LinearLayout) customView.findViewById(R.id.ll_open_lock);
+        RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_low_power_bg);
+        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_low_power_back);
 
-//        if(carmodel_id==2){
-//            ll_ebike.setVisibility(View.VISIBLE);
-//
-//            tv_electricity.setText(electricity);
-//            tv_mileage.setText(mileage);
-//        }else{
-//            ll_ebike.setVisibility(View.GONE);
-//        }
-//
-//        tv_codenum.setText(codenum);
-//        tv_carmodel_name.setText(carmodel_name);
-//        tv_first_price.setText(first_price+"元");
-//        tv_first_time.setText("/"+first_time+"分钟");
-//        tv_continued_price.setText(continued_price+"元");
-//        tv_continued_time.setText("/"+continued_time+"分钟");
-//
-//        if("0".equals(each_free_time)){
-//            tv_each_free_time.setVisibility(View.GONE);
-//        }else{
-//            tv_each_free_time.setVisibility(View.VISIBLE);
-//            tv_each_free_time.setText(each_free_time+"分钟免费");
-//        }
+        TextView tv_low_count_xa = customView.findViewById(R.id.tv_low_count_xa);
+        TextView tv_ultra_low_count_xa = customView.findViewById(R.id.tv_ultra_low_count_xa);
+        TextView tv_low_count_xyt = customView.findViewById(R.id.tv_low_count_xyt);
+        TextView tv_ultra_low_count_xyt = customView.findViewById(R.id.tv_ultra_low_count_xyt);
 
-
-//        iv_rent_cancelBtn.setOnClickListener(this);
-//        ll_change_car.setOnClickListener(this);
-//        ll_rent.setOnClickListener(this);
+        tv_low_count_xa.setText("低电："+low_count_xa);
+        tv_ultra_low_count_xa.setText("超低电："+ultra_low_count_xa);
+        tv_low_count_xyt.setText("低电："+low_count_xyt);
+        tv_ultra_low_count_xyt.setText("超低电："+ultra_low_count_xyt);
 
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);

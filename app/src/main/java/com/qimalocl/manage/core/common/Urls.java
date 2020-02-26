@@ -52,6 +52,24 @@ public class Urls {
 	//车辆开锁接口
 	public static String unlock = host2 + "/car/unlock/";
 
+	//换电统计接口
+	public static String carbatteryaction_count = host2 + "/carbatteryaction/count";
+	//换电列表接口
+	public static String carbatteryaction = host2 + "/carbatteryaction";
+	//低电数量接口
+	public static String carbatteryaction_lowpower = host2 + "/carbatteryaction/lowpower";
+
+
+	//维保统计接口
+	public static String carbadaction_count = host2 + "/carbadaction/count";
+	//投放使用 已修好列表接口
+	public static String carbadaction_setgoodused = host2 + "/carbadaction/setgoodused";
+	//已回收列表接口
+	public static String carbadaction_recycle = host2 + "/carbadaction/recycle";
+	//报废数量接口
+	public static String carbadaction_scrapped = host2 + "/carbadaction/scrapped";
+	//报废列表接口
+	public static String carbadaction_scrappedlist = host2 + "/carbadaction/scrappedlist";
 
 
 	/**上传头像*/

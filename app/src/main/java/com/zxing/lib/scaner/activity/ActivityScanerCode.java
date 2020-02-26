@@ -29,7 +29,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.TextKeyListener;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -154,6 +156,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private String carmodel_name = "";
     private int status;
 	private int can_finish_order;
+	private String bad_reason = "";
 
 	private boolean isSearch = false;
 
@@ -456,6 +459,20 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		findViewById(R.id.right_mask).setOnClickListener(this);
 		findViewById(R.id.bottom_mask).setOnClickListener(this);
 		findViewById(R.id.ll_confirm).setOnClickListener(this);
+
+		bikeNumEdit.setKeyListener(new TextKeyListener(TextKeyListener.Capitalize.NONE, false) {
+			@Override
+//                public int getInputType() {
+//                    优先弹出数字键盘
+//                    return InputType.TYPE_CLASS_PHONE;
+//                }
+
+			public int getInputType() {
+				//优先弹出字母键盘
+//				return InputType.TYPE_MASK_CLASS;
+				return InputType.TYPE_CLASS_NUMBER;
+			}
+		});
 
 //        initViews();
 		playBeep = true;
@@ -1459,8 +1476,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 						carmodel_name = bean.getCarmodel_name();
                         status = bean.getStatus();
 						can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
+						bad_reason = bean.getBad_reason();
 
-						Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order);
+						Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason);
 
 						if("2".equals(type) || "3".equals(type)){
 							n=0;
@@ -1481,6 +1499,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 							intent.putExtra("lock_status", lock_status);
                             intent.putExtra("status", status);
 							intent.putExtra("can_finish_order", can_finish_order);
+							intent.putExtra("bad_reason", bad_reason);
 							intent.putExtra("isMac",false);
 							intent.putExtra("isSearch",isSearch);
 
@@ -1812,6 +1831,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                     intent.putExtra("lock_status", lock_status);
                     intent.putExtra("status", status);
 					intent.putExtra("can_finish_order", can_finish_order);
+					intent.putExtra("bad_reason", bad_reason);
 					intent.putExtra("isMac",true);
 					intent.putExtra("isSearch",isSearch);
 //					intent.putExtra("pdk",jsonObject.getString("pdk"));		//TODO
@@ -1857,6 +1877,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                 intent.putExtra("lock_status", lock_status);
                 intent.putExtra("status", status);
 				intent.putExtra("can_finish_order", can_finish_order);
+				intent.putExtra("bad_reason", bad_reason);
 				intent.putExtra("isMac",is);
 				intent.putExtra("isSearch",isSearch);
 //				intent.putExtra("pdk",jsonObject.getString("pdk"));

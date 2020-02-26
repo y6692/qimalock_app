@@ -116,7 +116,35 @@
         </activity>
 
         <activity
-            android:name=".activity.ValidExchangePowerRecordActivity"
+            android:name=".activity.ExchangePowerDetailActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
+            android:name=".activity.MaintenanceRecordActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
+            android:name=".activity.SetGoodUsedDetailActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
+            android:name=".activity.RecycleDetailActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
+        </activity>
+
+        <activity
+            android:name=".activity.ScrappedDetailActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" >
 
