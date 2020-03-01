@@ -1,6 +1,7 @@
 package com.qimalocl.manage.base;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -42,6 +43,8 @@ public class BaseFragmentActivity extends FragmentActivity {
 
 		context = this;
 		BaseApplication.context = context;
+
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);		//设定为竖屏
 
 		tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
 		// 添加Activity到堆栈
