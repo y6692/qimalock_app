@@ -121,6 +121,7 @@ import com.sofi.blelocker.library.protocol.IConnectResponse;
 import com.sofi.blelocker.library.protocol.IEmptyResponse;
 import com.sofi.blelocker.library.protocol.IGetRecordResponse;
 import com.sofi.blelocker.library.protocol.IGetStatusResponse;
+import com.sofi.blelocker.library.protocol.IQueryOpenStateResponse;
 import com.sofi.blelocker.library.search.SearchRequest;
 import com.sofi.blelocker.library.search.SearchResult;
 import com.sofi.blelocker.library.search.response.SearchResponse;
@@ -984,6 +985,39 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 isOpenLock = false;
                 connect();
             }
+        }else if("5".equals(type) || "6".equals(type)){
+            if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+                popupwindow.dismiss();
+            }
+            //蓝牙锁
+            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+
+            mBluetoothAdapter = bluetoothManager.getAdapter();
+
+            if (mBluetoothAdapter == null) {
+                ToastUtil.showMessageApp(context, "获取蓝牙失败");
+                popupwindow.dismiss();
+                return;
+            }
+            if (!mBluetoothAdapter.isEnabled()) {
+                isPermission = false;
+                closeLoadingDialog2();
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 188);
+            } else {
+
+                Log.e("order===2",  "===" + type);
+
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在连接");
+                    loadingDialog.show();
+                }
+
+                isOpenLock = false;
+                m_myHandler.sendEmptyMessage(0x98);
+            }
+
         }
 
     }
@@ -1533,7 +1567,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
                         ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
                     }else{
-                        getStateLP(m_nowMac);
+                        getStateLP();
                     }
 
 //                    m_myHandler.postDelayed(new Runnable() {
@@ -2573,6 +2607,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             } else {
 //                      iv_help.setVisibility(View.VISIBLE);
 
+                isOpenLock = true;
                 m_myHandler.sendEmptyMessage(0x98);
 
             }
@@ -3134,7 +3169,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 Log.e("connectDeviceLP===", "Success==="+profile);
 
 
-                getStateLP(m_nowMac);
+                getStateLP();
 
             }
         });
@@ -3263,7 +3298,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        SharedPreferencesUrls.getInstance().putString("tempStat","1");
 //                    }
 
+                    queryOpenState();
+
                     getBleRecord2();
+
+
 
 //                    ClientManager.getClient().disconnect(m_nowMac);
 //                    ClientManager.getClient().unnotifyClose(m_nowMac, mCloseListener);
@@ -3374,26 +3413,29 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         });
     }
 
-    private void getStateLP(String mac){
-        ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
+    private void getStateLP(){
+        ClientManager.getClient().getStatus(m_nowMac, new IGetStatusResponse() {
             @Override
-            public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
+            public void onResponseSuccess(String version, String keySerial, String macKey, final String vol) {
 //                    quantity = vol+"";
 
-                Log.e("getStatus===", "===="+macKey);
+                Log.e("getStatus===", isOpenLock+"===="+vol+"===="+macKey);
                 keySource = keySerial;
+
+
 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("mf===getStatus1", "==="+isEndBtn);
+                        tv_electricity.setText(vol + "V");
 
-//                                    getBleRecord();
+                        if(isOpenLock){
+                            rent();
+                        }else{
+                            queryOpenState();
+                        }
 
-                        rent();
 
-
-                        Log.e("scan===", "scan===="+loadingDialog);
 
                     }
                 });
@@ -3410,6 +3452,56 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 });
             }
 
+        });
+    }
+
+    //泺平===还车_查锁是否关闭
+    private void queryOpenState() {
+        Log.e("queryOpenState===0", "===="+m_nowMac);
+
+//        UIHelper.showProgress(this, R.string.collectState);
+        ClientManager.getClient().queryOpenState(m_nowMac, new IQueryOpenStateResponse() {
+            @Override
+            public void onResponseSuccess(final boolean open) {
+//                UIHelper.dismiss();
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("queryOpenState===", "===="+open);
+
+
+                        if(open) {
+//                            ToastUtil.showMessageApp(context,"车锁未关，请手动关锁");
+
+
+                            tv_lock_status.setText("已开锁");
+                        }else {
+
+                            tv_lock_status.setText("已关锁");
+
+                        }
+
+                        closeLoadingDialog();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponseFail(final int code) {
+                Log.e("queryOpenState===f",  Code.toString(code));
+//                UIHelper.dismiss();
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+//                        ToastUtil.showMessageApp(context,Code.toString(code));
+
+                        closeLoadingDialog();
+                    }
+                });
+
+            }
         });
     }
 
@@ -3486,6 +3578,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     public void run() {
                         Log.e("openLock===Fail", m_nowMac+"==="+Code.toString(code));
 
+                        queryOpenState();
+
                         getBleRecord();
 
 //                        car_notification(1, 3, 0);    //TODO
@@ -3498,6 +3592,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onResponseSuccess() {
                 Log.e("openLock===Success", "===");
+
+                queryOpenState();
 
                 getBleRecord();
 
