@@ -744,7 +744,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void lockInfo(){
 
-//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
@@ -1261,7 +1260,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void ddSearch(){
         Log.e("ddSearch===", "==="+codenum);
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
@@ -1318,7 +1316,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         Log.e("battery_unlock===", "==="+codenum);
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号", Toast.LENGTH_SHORT).show();
@@ -1381,7 +1378,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         Log.e("carbadaction===", type+"==="+codenum);
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号", Toast.LENGTH_SHORT).show();
@@ -1442,7 +1438,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void initHttp(){
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
 //            RequestParams params = new RequestParams();
@@ -1934,7 +1929,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 }
             });
         }else{
-//            String uid = SharedPreferencesUrls.getInstance().getString("uid","");
             String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
             if (access_token == null || "".equals(access_token)){
                 Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
@@ -2226,7 +2220,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public void onClick(View v) {
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         switch (v.getId()){
             case R.id.mainUI_msg:
@@ -4604,7 +4597,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void upcarmap(String result){
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
@@ -4652,7 +4644,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void recycle(String result){
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
@@ -4789,7 +4780,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void endCar(String result){
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();

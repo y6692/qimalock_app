@@ -486,7 +486,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 	@Override
 	public void onClick(View v) {
-		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
 		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
 		switch (v.getId()){
 //			case R.id.iv_cancle:
@@ -517,7 +516,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				break;
 
 			case R.id.loca_show_btnBikeNum:
-				if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+				if (access_token == null || "".equals(access_token)){
 					Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
 					UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
 				}else {
@@ -1428,7 +1427,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		Log.e("Scan===lockInfo", "==="+result);
 
-//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
 		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
 		if (access_token == null || "".equals(access_token)){
 			Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
