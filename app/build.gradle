@@ -84,6 +84,19 @@ dependencies {
     compile project(':blelibrary')
     compile project(':flowlayout-lib')
     compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
+    implementation files('libs/AMap_Location_V3.3.0_20170118.jar')
+    implementation files('libs/AMap_Search_V4.0.0_20170111.jar')
+    implementation files('libs/Android_Map3D_SDK_V4.1.3_20161208.jar')
+    implementation files('libs/core-3.2.1.jar')
+    implementation files('libs/fastjson-1.1.34.android.jar')
+    implementation files('libs/fluent-hc-4.2.5.jar')
+    implementation files('libs/glide-3.7.0.jar')
+    implementation files('libs/httpclient-4.2.5.jar')
+    implementation files('libs/httpclient-cache-4.2.5.jar')
+    implementation files('libs/httpcore-4.2.4.jar')
+    implementation files('libs/httpmime-4.2.5.jar')
+    implementation files('libs/javabase64-1.3.1.jar')
+    implementation files('libs/ZBarDecoder.jar')
 }
 afterEvaluate {
     tasks.matching {

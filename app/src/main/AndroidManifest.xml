@@ -128,15 +128,15 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
-        <activity
-            android:name="com.zbar.lib.UpLocationScanCaptureAct"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+        <!--<activity-->
+            <!--android:name="com.zbar.lib.UpLocationScanCaptureAct"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:windowSoftInputMode="adjustUnspecified|stateHidden" />-->
 
-        <activity
-            android:name="com.zbar.lib.LockStatusScanCaptureAct"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+        <!--<activity-->
+            <!--android:name="com.zbar.lib.LockStatusScanCaptureAct"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:windowSoftInputMode="adjustUnspecified|stateHidden" />-->
 
         <activity
             android:name="com.zbar.lib.AddCarCaptureAct"
