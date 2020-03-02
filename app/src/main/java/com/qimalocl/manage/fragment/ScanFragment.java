@@ -876,7 +876,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         View customView = getLayoutInflater().inflate(R.layout.pop_rent_bike, null, false);
         // 创建PopupWindow宽度和高度
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
-        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_rent_back);
+        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
 
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
@@ -892,12 +892,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
 
+        Log.e("PopupRent===", codenum+"==="+electricity);
+
         tv_number.setText(codenum);
-        tv_lock_title.setText(lock_title);
+        tv_lock_title.setText(lock_name);
         tv_lock_mac.setText(m_nowMac);
-        tv_electricity.setText(electricity);   //TODO
+        tv_electricity.setText("");   //TODO
         tv_lock_status.setText("");    //TODO 已开锁/已关锁
-        tv_bad_reason.setText("损坏部位："+bad_reason);
+        tv_bad_reason.setText("损坏部位："+bad_reason);      //TODO 损坏部位没有使用后台该车最新的坏车原因
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
         }else{
@@ -917,6 +919,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         ll_set_recovered.setOnClickListener(this);
         ll_set_ok.setOnClickListener(this);
         tv_set_useless.setOnClickListener(this);
+        iv_popup_window_back.setOnClickListener(this);
 
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
@@ -991,7 +994,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         View customView = getLayoutInflater().inflate(R.layout.pop_rent_ebike, null, false);
         // 创建PopupWindow宽度和高度
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
-        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_rent_back);
+        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
 
 
         TextView tv_number = customView.findViewById(R.id.tv_number);
@@ -1013,7 +1016,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
 
         tv_number.setText(codenum);
-        tv_lock_title.setText(lock_title);
+        tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
         tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
         tv_lock_mac.setText(m_nowMac);
@@ -1040,14 +1043,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         Log.e("initmPopup===2", lock_status+"==="+can_finish_order+"==="+status);
 
-        lock_switcher.setOnClickListener(this);
+        lock_switcher.setOnClickListener(this);     //TODO 行运兔电单车的弹窗开关锁按钮无效
         ll_power_exchange.setOnClickListener(this);
         ll_car_search.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
         tv_set_useless.setOnClickListener(this);
         ll_set_recovered.setOnClickListener(this);
         ll_set_ok.setOnClickListener(this);
-
+        iv_popup_window_back.setOnClickListener(this);
 
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
@@ -1106,7 +1109,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
 
         tv_number.setText(codenum);
-        tv_lock_title.setText(lock_title);
+        tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
         tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
         tv_lock_mac.setText(m_nowMac);
@@ -1181,19 +1184,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_set_useless.setOnClickListener(this);
         ll_set_recovered.setOnClickListener(this);
         ll_set_ok.setOnClickListener(this);
+        iv_popup_window_back.setOnClickListener(this);
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
-        popupwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                // 改变显示的按钮图片为正常状态
-                Log.e("onDismiss===", "===");
-
-//                initNearby(latitude, longitude);
-                cars();
-            }
-        });
+//        popupwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//            @Override
+//            public void onDismiss() {
+//                // 改变显示的按钮图片为正常状态
+//                Log.e("onDismiss===", "===");
+//
+////                initNearby(latitude, longitude);
+//                cars();
+//            }
+//        });
 
     }
 
@@ -1522,6 +1526,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
                         ClientManager.getClient().search(request, mSearchResponse);
+
+//                        ClientManager.getClient().
 
                         connectDeviceLP();
                         ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
@@ -2352,6 +2358,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 order_finish();
                 break;
 
+            case R.id.popupWindow_back:
+                popupwindow.dismiss();
+                break;
+
             case R.id.ll_set_recovered:
                 carbadaction(1);
                 break;
@@ -2434,8 +2444,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
 
         if ("1".equals(type)) {          //单车机械锁
-//                    UIHelper.goToAct(context, CurRoadStartActivity.class);
-//                    popupwindow.dismiss();
+//          UIHelper.goToAct(context, CurRoadStartActivity.class);
+//          popupwindow.dismiss();
         } else if ("2".equals(type) || "3".equals(type)) {    //单车蓝牙锁
 
             if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -2887,7 +2897,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                                tvBattery.setText(getText(R.string.battery) + String.valueOf(Integer.parseInt(data, 16)));
 //                            }
 
-                            tv_electricity.setText(s1.substring(6, 8)+"%");
+                            tv_electricity.setText(Integer.parseInt(s1.substring(6, 8), 16)+"%");
 
                         }else if(s1.startsWith("050F")){   //锁状态
                             Log.e("lockState===0", "==="+s1);   //
@@ -3653,7 +3663,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        RequestParams params = new RequestParams();
 //        params.put("number", codenum);
 
-        HttpHelper.post(context, Urls.unlock+codenum, null, new TextHttpResponseHandler() {
+        HttpHelper.post(context, Urls.unlock+codenum, null, new TextHttpResponseHandler() {     //TODO  都是执行的关锁
             @Override
             public void onStart() {
                 onStartCommon("正在加载");
