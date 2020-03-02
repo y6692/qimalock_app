@@ -428,6 +428,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     tvVersion.setText(getText(R.string.device_version) + GlobalParameterUtils.getInstance().getVersion());
                     break;
                 case Config.BATTERY_ACTION:
+
+                    Log.e("BATTERY_ACTION===", data+"==="+Integer.parseInt(data, 16));
+
                     if (TextUtils.isEmpty(data)) {
                         tvCz.setText(R.string.battery_fail);
                     } else {
