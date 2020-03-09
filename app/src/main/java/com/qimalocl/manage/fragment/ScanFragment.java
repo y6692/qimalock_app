@@ -4359,7 +4359,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             isMac = data.getBooleanExtra("isMac", false);
                             isSearch = data.getBooleanExtra("isSearch", false);
 
-                            Log.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order+"==="+bad_reason);
+                            Log.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order+"==="+status+"==="+bad_reason);
 
                             if(carmodel_id==1){
                                 initmPopupRentWindowView();

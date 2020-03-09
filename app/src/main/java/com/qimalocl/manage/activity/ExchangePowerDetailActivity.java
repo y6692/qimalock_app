@@ -384,6 +384,8 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
             created_at.setText(bean.getCreated_at());
             finished_time.setText(bean.getFinished_time());
 
+            Log.e("epda===MyAdapter", status+"==="+bean.getCar_number()+"==="+bean.getPre_electricity()+"==="+bean.getAft_electricity()+"==="+bean.getCreated_at()+"==="+bean.getFinished_time());
+
             if(status==0){
                 text_aft_electricity.setText("当前电量：");
             }else{

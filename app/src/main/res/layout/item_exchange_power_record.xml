@@ -59,7 +59,7 @@
         </LinearLayout>
 
         <View
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="54dp"
             android:layout_gravity="center"
             android:background="#CCCCCC"/>
@@ -91,7 +91,7 @@
         </LinearLayout>
 
         <View
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="54dp"
             android:layout_gravity="center"
             android:background="#CCCCCC"/>
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:text="850"
                 android:textSize="16sp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/red"/>
 
             <TextView
                 android:layout_width="wrap_content"

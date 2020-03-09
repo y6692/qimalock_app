@@ -865,7 +865,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                 break;
 
-
+            case R.id.popupWindow_back:
+                popupwindow.dismiss();
+                break;
 
             default:
                 break;
@@ -1036,7 +1038,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         View customView = getLayoutInflater().inflate(R.layout.pop_low_power_bike, null, false);
         // 创建PopupWindow宽度和高度
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_low_power_bg);
-        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_low_power_back);
+        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
 
         TextView tv_low_count_xa = customView.findViewById(R.id.tv_low_count_xa);
         TextView tv_ultra_low_count_xa = customView.findViewById(R.id.tv_ultra_low_count_xa);
@@ -1047,6 +1049,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         tv_ultra_low_count_xa.setText("超低电："+ultra_low_count_xa);
         tv_low_count_xyt.setText("低电："+low_count_xyt);
         tv_ultra_low_count_xyt.setText("超低电："+ultra_low_count_xyt);
+
+        iv_popup_window_back.setOnClickListener(this);
 
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
@@ -1070,6 +1074,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
         Log.e("initmPopup===", "===");
+
+
 
     }
 

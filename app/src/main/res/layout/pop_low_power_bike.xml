@@ -6,7 +6,7 @@
 
     <!-- 弹窗背景 -->
     <ImageView
-        android:id="@+id/popupWindow_low_power_back"
+        android:id="@+id/popupWindow_back"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#FFF5F7FA"
@@ -114,7 +114,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
+                        android:layout_height="1dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="2dp"
                         android:background="#CCCCCC"/>
@@ -182,7 +182,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
+                        android:layout_height="1dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="2dp"
                         android:background="#CCCCCC"/>
