@@ -47,14 +47,12 @@ public class WebViewWithProgress extends RelativeLayout{
 	
 	public WebViewWithProgress(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 		this.context = context;
 		init();
 	}
 
 	public WebViewWithProgress(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
 		this.context = context;
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.WebViewWithProgress);
         mProgressStyle = attributes.getInt(R.styleable.WebViewWithProgress_progressStyle,ProgressStyle.Horizontal.ordinal());
@@ -79,7 +77,6 @@ public class WebViewWithProgress extends RelativeLayout{
 
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				// TODO Auto-generated method stub
 				view.loadUrl(url);
 				return true;
 			}
@@ -88,7 +85,6 @@ public class WebViewWithProgress extends RelativeLayout{
 
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
-				// TODO Auto-generated method stub
 				super.onProgressChanged(view, newProgress);
 				if(newProgress == 100){
 					if(progressBar!=null){

@@ -1557,7 +1557,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //							if (loadingDialog != null && loadingDialog.isShowing()){
 //								loadingDialog.dismiss();
 //							}
-////							scrollToFinishActivity();	//TODO
 //
 //							initCamera(surfaceHolder);
 //						}

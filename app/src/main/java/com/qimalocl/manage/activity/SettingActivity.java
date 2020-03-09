@@ -66,7 +66,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 
         isForeground = true;
         isRefresh = true;
-        Log.e("LA===onCreate", "==="+isRefresh);
+        Log.e("SA===onCreate", "==="+isRefresh);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 //      must store the new intent unless getIntent() will return the old one
         setIntent(intent);
 
-        Log.e("la===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
+        Log.e("SA===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
 
     }
 
@@ -83,14 +83,14 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
     public void onResume() {
         isForeground = true;
 //        isRefresh = true;
-        Log.e("LA===onResume", "==="+isRefresh);
+        Log.e("SA===onResume", "==="+isRefresh);
         super.onResume();
     }
 
     @Override
     public void onPause() {
 //        isForeground = false;
-        Log.e("LA===onPause", "==="+isRefresh);
+        Log.e("SA===onPause", "==="+isRefresh);
         super.onPause();
     }
 
@@ -99,7 +99,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
     protected void onDestroy() {
 //        isForeground = false;
 
-        Log.e("LA===onDestroy", "==="+isRefresh);
+        Log.e("SA===onDestroy", "==="+isRefresh);
         super.onDestroy();
     }
 

@@ -194,7 +194,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
 //                }
 //                sendCode(telphone);
 
-//                UIHelper.goToAct(context, ServiceCenterActivity.class);   //TODO
+//                UIHelper.goToAct(context, ServiceCenterActivity.class);
 
                 break;
         }

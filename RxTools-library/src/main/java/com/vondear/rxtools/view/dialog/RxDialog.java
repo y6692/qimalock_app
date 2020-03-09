@@ -59,7 +59,6 @@ public class RxDialog extends Dialog {
      */
     public RxDialog(Context context, float alpha, int gravity) {
         super(context);
-        // TODO Auto-generated constructor stub
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setBackgroundDrawableResource(R.drawable.transparent_bg);
         mContext = context;

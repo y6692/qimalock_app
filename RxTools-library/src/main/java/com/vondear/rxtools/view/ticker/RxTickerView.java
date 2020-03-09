@@ -120,7 +120,6 @@ public class RxTickerView extends View {
             final TypedArray textAppearanceArr = context.obtainStyledAttributes(
                     textAppearanceResId,
                     new int[] {
-                            // TODO: having textColor first here does not work, why?
                             android.R.attr.textSize,
                             android.R.attr.textColor,
                     });

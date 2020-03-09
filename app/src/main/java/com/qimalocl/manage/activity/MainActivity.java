@@ -33,6 +33,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -150,11 +151,17 @@ public class MainActivity extends BaseActivity{
 
     private CaptureActivityHandler2 handler;
 
+    MainActivity activity;
+    InputMethodManager inputMethodManager;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.ui_main);
         ButterKnife.bind(this);
+
+        activity = this;
+        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         IntentFilter filter = new IntentFilter("data.broadcast.action");
         registerReceiver(mReceiver, filter);
@@ -193,15 +200,24 @@ public class MainActivity extends BaseActivity{
     public void onResume() {
         super.onResume();
 
-//        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-//        inputMethodManager.hideSoftInputFromWindow(context.getWindowToken(), 0); // 隐藏
+
+
 
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
 
         boolean flag = getIntent().getBooleanExtra("flag", false);
 
-        Log.e("ma===onResume",  flag + "===" + access_token);
+        Log.e("ma===onResume",  loadingDialog+ "===" + flag + "===" + access_token);
+
+//        if (loadingDialog != null && !loadingDialog.isShowing()) {
+//            loadingDialog.setTitle("请稍等");
+//            loadingDialog.show();
+//        }
+
+//        if (loadingDialog != null && loadingDialog.isShowing()){
+//            loadingDialog.dismiss();
+//        }
 
         if("".equals(access_token)){
             tab.setCurrentTab(0);
@@ -345,9 +361,11 @@ public class MainActivity extends BaseActivity{
             }
         }
 
+        loadingDialog = new LoadingDialog(context);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+
         tab = findViewById(R.id.tab);
-
-
 
         tab.setTabData(mTabEntities, MainActivity.this, R.id.fl_change, mFragments);
 
@@ -493,6 +511,33 @@ public class MainActivity extends BaseActivity{
         Log.e("main==onBackPressed", "===");
         super.onBackPressed();
         //Toast.makeText(FDQControlAct.this, "onBackPessed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            try{
+                CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
+                customBuilder.setTitle("温馨提示").setMessage("您将退出7MA调度。")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        AppManager.getAppManager().AppExit(context);
+                    }
+                });
+                customBuilder.create().show();
+
+
+                return true;
+            }catch (Exception e){
+
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 //    @Override

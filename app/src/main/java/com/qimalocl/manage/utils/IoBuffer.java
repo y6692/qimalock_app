@@ -251,7 +251,7 @@ public final class IoBuffer {
 	}
 	
 	public static void main(String[] args) {
-//		IoBuffer buffer = IoBuffer.wrap(new byte[]{0x01,(byte)0xd0});  // TODO 小端试一下
+//		IoBuffer buffer = IoBuffer.wrap(new byte[]{0x01,(byte)0xd0});  //
 //		int  a = buffer.readShort();
 		
 		IoBuffer buffer = IoBuffer.allocate(20);

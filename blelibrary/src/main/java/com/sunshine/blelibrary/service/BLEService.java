@@ -15,7 +15,6 @@ public class BLEService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        //TODO 初始化操作类
         mIBLE = new AndroidBle(this);
     }
 

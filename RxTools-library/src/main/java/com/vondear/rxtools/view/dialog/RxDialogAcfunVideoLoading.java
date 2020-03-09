@@ -21,7 +21,6 @@ public class RxDialogAcfunVideoLoading extends RxDialog {
 
     public RxDialogAcfunVideoLoading(Context context) {
         super(context);
-        // TODO Auto-generated constructor stub
         View dialogView = LayoutInflater.from(context).inflate(
                 R.layout.dialog_loading_progress_acfun_video, null);
         loading_progressBar = (ProgressBar) dialogView.findViewById(R.id.loading_progressBar);

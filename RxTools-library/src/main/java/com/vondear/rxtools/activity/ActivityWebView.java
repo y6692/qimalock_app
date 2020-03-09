@@ -54,7 +54,6 @@ public class ActivityWebView extends ActivityBase {
     }
 
     private void initView() {
-        // TODO Auto-generated method stub
         mRxTextAutoZoom = (RxTextAutoZoom) findViewById(R.id.afet_tv_title);
         llIncludeTitle = (LinearLayout) findViewById(R.id.ll_include_title);
         tvTitle = (TextView) findViewById(R.id.tv_title);
@@ -155,7 +154,6 @@ public class ActivityWebView extends ActivityBase {
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                // TODO Auto-generated method stub
                 pbWebBase.setProgress(newProgress);
                 super.onProgressChanged(view, newProgress);
             }
@@ -173,7 +171,6 @@ public class ActivityWebView extends ActivityBase {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                // TODO Auto-generated method stub
                 pbWebBase.setVisibility(View.VISIBLE);
                 super.onPageStarted(view, url, favicon);
             }

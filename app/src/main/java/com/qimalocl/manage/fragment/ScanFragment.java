@@ -593,11 +593,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
 
 
-
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
-
 
 
         dialogReason = new Dialog(context, R.style.Theme_AppCompat_Dialog);
@@ -897,8 +895,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_lock_mac.setText(m_nowMac);
-        tv_electricity.setText("");   //TODO
-        tv_lock_status.setText("");    //TODO 已开锁/已关锁
+        tv_electricity.setText("");
+        tv_lock_status.setText("");
         tv_bad_reason.setText("损坏部位："+bad_reason);      //TODO 损坏部位没有使用后台该车最新的坏车原因
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
@@ -1051,9 +1049,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
-        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
+        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");
         tv_lock_mac.setText(m_nowMac);
-        tv_electricity.setText(electricity);   //TODO
+        tv_electricity.setText(electricity);
         tv_bad_reason.setText("损坏部位："+bad_reason);
 
         if(isSearch){
@@ -1144,9 +1142,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
-        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");    //TODO 0未知 3离线 非0非3 正常
+        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");
         tv_lock_mac.setText(m_nowMac);
-        tv_electricity.setText(electricity);   //TODO
+        tv_electricity.setText(electricity);
         tv_bad_reason.setText("损坏部位："+bad_reason);
 
         if(can_finish_order==1){
@@ -1615,7 +1613,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 type = 2;
             }
         }
-
 
         params.put("type", type);  //0全部 1只看坏车 2只看低电
 
@@ -2803,7 +2800,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                     if("3".equals(type)){
                         if(isOpenLock){
-                            unlock();     //TODO
+                            unlock();
                         }else{
                             Toast.makeText(context,"蓝牙连接失败，重启软件试试吧！",Toast.LENGTH_LONG).show();
                         }

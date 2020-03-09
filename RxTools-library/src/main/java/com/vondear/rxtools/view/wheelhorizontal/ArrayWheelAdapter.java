@@ -40,7 +40,6 @@ public class ArrayWheelAdapter<T> extends AbstractWheelTextAdapter {
 
     @Override
     public View getItem(int index, View convertView, ViewGroup parent) {
-    	// TODO Auto-generated method stub
     	return super.getItem(index, convertView, parent);
     }
     

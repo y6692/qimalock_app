@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.base.BaseActivity;
 import com.qimalocl.manage.core.common.AppManager;
@@ -205,7 +206,14 @@ public class SplashActivity extends BaseActivity {
 //			}
 //		}
 
-		UIHelper.goToAct(context, MainActivity.class);
+		String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
+
+		if("".equals(access_token)){
+			UIHelper.goToAct(context, LoginActivity.class);
+		}else{
+			UIHelper.goToAct(context, MainActivity.class);
+		}
+
 		finishMine();
 
 //        initLocation();
@@ -358,7 +366,7 @@ public class SplashActivity extends BaseActivity {
 
 			if (null != loc) {
 				if (0.0 != loc.getLongitude() && 0.0 != loc.getLongitude()) {
-					PostDeviceInfo(loc.getLatitude(), loc.getLongitude());
+//					PostDeviceInfo(loc.getLatitude(), loc.getLongitude());
 					stopLocation();
 				} else {
 					CustomDialog.Builder customBuilder = new CustomDialog.Builder(SplashActivity.this);

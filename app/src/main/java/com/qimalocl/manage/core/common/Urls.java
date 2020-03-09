@@ -127,7 +127,7 @@ public class Urls {
 	public static String set_car_scrapped = host + "/index.php?g=App&m=UserManage&a=set_car_scrapped";
 
 	/**锁定*/
-//	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";		//TODO
+//	public static String lock = host + "/index.php?g=App&m=UserManage&a=update_car_status_lock";
 
 //	/**打开电池锁接口*/
 //	public static String battery_unlock = host + "/index.php?g=App&m=Ebike&a=battery_unlock";

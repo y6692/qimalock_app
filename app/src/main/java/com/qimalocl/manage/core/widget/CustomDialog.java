@@ -212,6 +212,9 @@ public class CustomDialog extends Dialog {
 						new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 			}
 			dialog.setContentView(layout);
+
+			dialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+
 			return dialog;
 		}
 

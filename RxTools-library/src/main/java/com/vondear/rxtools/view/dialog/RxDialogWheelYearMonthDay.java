@@ -48,14 +48,12 @@ public class RxDialogWheelYearMonthDay extends RxDialog {
 
     public RxDialogWheelYearMonthDay(Context mContext) {
         super(mContext);
-        // TODO Auto-generated constructor stub
         this.mContext = mContext;
         build();
     }
 
     public RxDialogWheelYearMonthDay(Context mContext, int beginYear) {
         super(mContext);
-        // TODO Auto-generated constructor stub
         this.mContext = mContext;
         this.beginYear = beginYear;
         build();
@@ -63,7 +61,6 @@ public class RxDialogWheelYearMonthDay extends RxDialog {
 
     public RxDialogWheelYearMonthDay(Context mContext, int beginYear, int endYear) {
         super(mContext);
-        // TODO Auto-generated constructor stub
         this.mContext = mContext;
         this.beginYear = beginYear;
         this.endYear = endYear;
@@ -72,7 +69,6 @@ public class RxDialogWheelYearMonthDay extends RxDialog {
 
     public RxDialogWheelYearMonthDay(Context mContext, TextView tvTime) {
         super(mContext);
-        // TODO Auto-generated constructor stub
         this.mContext = mContext;
         build();
         tvTime.setText(curYear + "年" + mMonths[curMonth] + "月");

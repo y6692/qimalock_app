@@ -493,7 +493,6 @@ public class RxSeekBar extends View {
 
                     int x = (int) (widthSize / 2 - mCursorPaint.measureText(text2Draw) / 2);
 
-                    // TODO: 2017/2/6
                     //这里和背景形状有关，暂时根据本图形状比例计算
                     //Here and the background shape, temporarily based on the shape of this figure ratio calculation
                     int y = hintH / 3 + defaultPaddingTop + mCursorTextHeight / 2;

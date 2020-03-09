@@ -126,7 +126,6 @@ public class RxTextRoundProgressBar extends RxBaseRoundProgressBar implements Vi
 //            }
 //        });
         clearTextProgressAlign();
-        // TODO Temporary
         int textProgressWidth = tvProgress.getMeasuredWidth() + (getTextProgressMargin() * 2);
         float ratio = getMax() / getProgress();
         int progressWidth = (int) ((getLayoutWidth() - (getPadding() * 2)) / ratio);
