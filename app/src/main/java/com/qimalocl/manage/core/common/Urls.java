@@ -43,7 +43,7 @@ public class Urls {
 	//寻车接口
 	public static String search = host2 + "/car/search/";
 	//设为回收 修好 报废接口
-	public static String carbadaction = host2 + "/carbadaction/operation/";
+	public static String carbadaction_operation = host2 + "/carbadaction/operation/";
 
 	//结束订单接口
 	public static String order_finish = host2 + "/car/order_finish/";
@@ -62,10 +62,12 @@ public class Urls {
 
 	//维保统计接口
 	public static String carbadaction_count = host2 + "/carbadaction/count";
-	//投放使用 已修好列表接口
-	public static String carbadaction_setgoodused = host2 + "/carbadaction/setgoodused";
-	//已回收列表接口
-	public static String carbadaction_recycle = host2 + "/carbadaction/recycle";
+	//	已回收 投放使用 已修好列表接口
+	public static String carbadaction= host2 + "/carbadaction";
+//	//投放使用 已修好列表接口
+//	public static String carbadaction_setgoodused = host2 + "/carbadaction/setgoodused";
+//	//已回收列表接口
+//	public static String carbadaction_recycle = host2 + "/carbadaction/recycle";
 	//报废数量接口
 	public static String carbadaction_scrapped = host2 + "/carbadaction/scrapped";
 	//报废列表接口

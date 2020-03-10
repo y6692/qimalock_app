@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -16,6 +17,7 @@ import pl.droidsonroids.gif.GifDrawable;
 public class LoadingDialog extends Dialog {
 
 	private static final int CHANGE_TITLE_WHAT = 1;
+	private static final int CHANGE_TITLE_DISMISS = 2;
 	private static final int CHNAGE_TITLE_DELAYMILLIS = 300;
 	private static final int MAX_SUFFIX_NUMBER = 3;
 	private static final char SUFFIX = '.';
@@ -26,6 +28,8 @@ public class LoadingDialog extends Dialog {
 	private RotateAnimation mAnim;
 
 	private GifDrawable gifDrawable;
+
+	private int n = 0;
 
 	private Handler handler = new Handler() {
 		private int num = 0;
@@ -40,12 +44,24 @@ public class LoadingDialog extends Dialog {
 				for (int i = 0; i < num; i++) {
 					builder.append(SUFFIX);
 				}
+
+				Log.e("LoadingDialog===handler", n+"==="+detail_tv.getText()+"==="+builder.toString());
+
+				n++;
+
 				tv_point.setText(builder.toString());
 				if (isShowing()) {
-					handler.sendEmptyMessageDelayed(CHANGE_TITLE_WHAT, CHNAGE_TITLE_DELAYMILLIS);
+					if(n<70){
+						handler.sendEmptyMessageDelayed(CHANGE_TITLE_WHAT, CHNAGE_TITLE_DELAYMILLIS);
+					}else{
+						handler.sendEmptyMessage(CHANGE_TITLE_DISMISS);
+					}
+
 				} else {
 					num = 0;
 				}
+			}else if (msg.what == CHANGE_TITLE_DISMISS) {
+				dismiss();
 			}
 		};
 	};
@@ -80,6 +96,7 @@ public class LoadingDialog extends Dialog {
 
 		gifDrawable.start();
 
+		n=0;
 		handler.sendEmptyMessage(CHANGE_TITLE_WHAT);
 		super.show();
 	}

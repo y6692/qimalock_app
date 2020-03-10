@@ -360,6 +360,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         e.printStackTrace();
                     }
 
+                    Log.e("sf===thread", threadScan + "===");
+
                     if(threadScan){
                         m_myHandler.sendEmptyMessage(1);
                     }
@@ -1387,7 +1389,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 params.put("scrapped_reason", reason);
             }
 
-            HttpHelper.post(context, Urls.carbadaction+codenum, params, new TextHttpResponseHandler() {
+            HttpHelper.post(context, Urls.carbadaction_operation+codenum, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
                     if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -2423,7 +2425,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void end2() {
 
-        Log.e("mf==end2", type+"===");
+        Log.e("mf==end2", type+"==="+m_nowMac);
 
         if("5".equals(type)  || "6".equals(type)){
             ClientManager.getClient().stopSearch();
@@ -2461,6 +2463,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 ////                lock_no = "LPKMIrwLD";
 //        m_nowMac = "A4:34:F1:7B:BF:9A";     //30005060
 //        lock_no = "GpDTxe7<a";
+
+//        initParams();
 
         if (loadingDialog != null && !loadingDialog.isShowing()) {
             loadingDialog.setTitle("正在唤醒车锁");
@@ -4361,6 +4365,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             Log.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order+"==="+status+"==="+bad_reason);
 
+                            initParams();
+
                             if(carmodel_id==1){
                                 initmPopupRentWindowView();
                             }else{
@@ -4437,35 +4443,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             Log.e("188===", isAgain+"==="+isConnect+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
 
 
-                            isStop = false;
-                            isOpen = false;
-                            isFinish = false;
-                            n = 0;
-                            cn = 0;
-                            force_backcar = 0;
-                            isTwo = false;
-                            first3 = true;
-                            flagm = 0;
-                            isFrist1 = true;
-                            stopScan = false;
-                            clickCount = 0;
-                            tz = 0;
-                            transtype = "";
-                            major = 0;
-                            minor = 0;
-                            isGPS_Lo = false;
-                            scan = false;
-                            isTemp = false;
-                            backType = "";
-                            isOpenLock = false;
-                            isConnect = false;
-                            isLookPsdBtn = false;
-                            isEndBtn = false;
-                            isAgain = false;
-                            order_type = 0;
-                            isWaitEbikeInfo = true;
-                            ebikeInfoThread = null;
-                            oid = "";
+                            initParams();
 
 //                            if ("2".equals(type) || "3".equals(type)){
 //
@@ -4590,6 +4568,38 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        }
 
 
+    }
+
+    void initParams(){
+        isStop = false;
+        isOpen = false;
+        isFinish = false;
+        n = 0;
+        cn = 0;
+        force_backcar = 0;
+        isTwo = false;
+        first3 = true;
+        flagm = 0;
+        isFrist1 = true;
+        stopScan = false;
+        clickCount = 0;
+        tz = 0;
+        transtype = "";
+        major = 0;
+        minor = 0;
+        isGPS_Lo = false;
+        scan = false;
+        isTemp = false;
+        backType = "";
+        isOpenLock = false;
+        isConnect = false;
+        isLookPsdBtn = false;
+        isEndBtn = false;
+        isAgain = false;
+        order_type = 0;
+        isWaitEbikeInfo = true;
+        ebikeInfoThread = null;
+        oid = "";
     }
 
     private void upcarmap(String result){
@@ -4857,7 +4867,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     // Permission Granted
                     if (permissions[0].equals(Manifest.permission.CAMERA)){
                         try {
-                            SharedPreferencesUrls.getInstance().putString("type", "");
+//                            SharedPreferencesUrls.getInstance().putString("type", "");
 
                             end2();
 

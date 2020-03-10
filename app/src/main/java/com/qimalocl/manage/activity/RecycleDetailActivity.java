@@ -194,10 +194,11 @@ public class RecycleDetailActivity extends SwipeBackActivity implements View.OnC
         }
         RequestParams params = new RequestParams();
         params.put("date", date);
+        params.put("type", 1);
         params.put("page",showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        HttpHelper.get(context, Urls.carbadaction_recycle, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.carbadaction, params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {

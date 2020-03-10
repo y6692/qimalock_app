@@ -80,6 +80,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
     static ArrayList<String[]> item1 = new ArrayList<>();
 
     private int school_id;
+    private String school_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,6 +162,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
         SchoolListBean bean = myAdapter.getDatas().get(position);
 
         school_id = bean.getId();
+        school_name = bean.getName();
 
 
         Log.e("ssa===onItemClick", bean.getId()+"==="+bean.getName());
@@ -218,9 +220,11 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("isBindSchool",true);
                 intent.putExtra("school_id", school_id);
+                intent.putExtra("school_name", school_name);
                 intent.putExtra("isChangeKey",false);
                 intent.putExtra("isAdd",true);
                 startActivityForResult(intent, 1);
+                scrollToFinishActivity();
 
 //        Intent rIntent = new Intent();
 //        rIntent.putExtra("school_id", bean.getId());

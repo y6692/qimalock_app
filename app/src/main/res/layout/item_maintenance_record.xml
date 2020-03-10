@@ -59,7 +59,7 @@
         </LinearLayout>
 
         <View
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="54dp"
             android:layout_gravity="center"
             android:background="#CCCCCC"/>
@@ -91,7 +91,7 @@
         </LinearLayout>
 
         <View
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="54dp"
             android:layout_gravity="center"
             android:background="#CCCCCC"/>

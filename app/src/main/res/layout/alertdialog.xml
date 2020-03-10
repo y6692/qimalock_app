@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="270dp"
     android:minWidth="270dip"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@drawable/block_dialog_bcg"
     android:orientation="vertical"
@@ -35,19 +35,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="31dp"
         android:gravity="center"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         >
+
 
 
         <TextView
             style="@style/DialogText"
             android:id="@+id/message"
-            android:layout_width="wrap_content"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="5dp"
             android:singleLine="false"
-            android:text="2222"
+            android:text="是否绑定30008241到江苏理工学院？"
             android:textColor="#666666"
             android:textSize="14sp"
             />

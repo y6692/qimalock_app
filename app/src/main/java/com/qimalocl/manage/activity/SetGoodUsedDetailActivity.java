@@ -198,7 +198,7 @@ public class SetGoodUsedDetailActivity extends SwipeBackActivity implements View
         params.put("page",showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        HttpHelper.get(context, Urls.carbadaction_setgoodused, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.carbadaction, params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {

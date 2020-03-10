@@ -186,6 +186,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 	private List<String> macList = new ArrayList<String>();
 	private int school_id = 0;
+	private String school_name = "";
 
 	private boolean isHide = false;
 	private boolean isHand = false;
@@ -194,6 +195,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private boolean isPermission = false;
 
 	private InputMethodManager inputMethodManager;
+
+	CustomDialog.Builder customBuilder;
+	private CustomDialog customDialog;
 
 //	static {
 //		System.loadLibrary("iconv");
@@ -214,6 +218,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		isBindSchool = getIntent().getExtras().getBoolean("isBindSchool", false);
 		school_id = getIntent().getExtras().getInt("school_id");
+		school_name = getIntent().getExtras().getString("school_name");
 		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey", false);
 		isAdd = getIntent().getExtras().getBoolean("isAdd", false);
 		findViewById();
@@ -423,6 +428,10 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		loadingDialog = new LoadingDialog(ActivityScanerCode.this);
 		loadingDialog.setCancelable(false);
 		loadingDialog.setCanceledOnTouchOutside(false);
+
+		customBuilder = new CustomDialog.Builder(context);
+
+//		customDialog = customBuilder.create();
 
 //		scanPreview =  (FrameLayout) findViewById(R.id.capture_preview);
 		scanPreview =  (SurfaceView) findViewById(R.id.capture_preview);
@@ -657,7 +666,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				if(isBindSchool){
 					Log.e("BindSchool===2", "==="+bikeNum);
 
-					carschoolaction(bikeNum);
+
+
+					lockInfo(bikeNum);
 				}else if(isAdd){
 					Intent rIntent = new Intent();
 					rIntent.putExtra("QR_CODE", bikeNum);
@@ -1141,7 +1152,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			if(isBindSchool){
 				Log.e("BindSchool===", "==="+result.toString());
 
-				carschoolaction(result.toString());
+//				carschoolaction(result.toString());
+				lockInfo(result.toString());
 			}else if(isAdd){
 				Intent rIntent = new Intent();
 				rIntent.putExtra("QR_CODE", result.toString());
@@ -1155,9 +1167,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 	}
 
-	private void carschoolaction(String result){
+	private void carschoolaction(){
 		RequestParams params = new RequestParams();
-		params.put("car_number", URLEncoder.encode(result));
+		params.put("car_number", codenum);
 		params.put("school_id", school_id);
 
 		HttpHelper.post(ActivityScanerCode.this, Urls.carschoolaction, params, new TextHttpResponseHandler() {
@@ -1192,7 +1204,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 					Toast.makeText(ActivityScanerCode.this,	result.getMessage(), Toast.LENGTH_SHORT).show();
 
-					initCamera(surfaceHolder);
+//					initCamera(surfaceHolder);
 
 //					if (result.getFlag().equals("Success")) {
 //						Toast.makeText(ActivityScanerCode.this, result.getMsg(), Toast.LENGTH_SHORT).show();
@@ -1478,38 +1490,73 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 						Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason);
 
-						if("2".equals(type) || "3".equals(type)){
-							n=0;
-							macLoop();
-						}else{
-							Intent intent = new Intent();
-							intent.putExtra("codenum", codenum);
-							intent.putExtra("lock_name", lock_name);
-							intent.putExtra("lock_title", lock_title);
-							intent.putExtra("m_nowMac", m_nowMac);
-							intent.putExtra("carmodel_id", carmodel_id);
-							intent.putExtra("type", type);
-							intent.putExtra("lock_no", lock_no);
-							intent.putExtra("bleid", bleid);
-							intent.putExtra("deviceuuid", deviceuuid);
-							intent.putExtra("electricity", electricity);
-							intent.putExtra("carmodel_name", carmodel_name);
-							intent.putExtra("lock_status", lock_status);
-                            intent.putExtra("status", status);
-							intent.putExtra("can_finish_order", can_finish_order);
-							intent.putExtra("bad_reason", bad_reason);
-							intent.putExtra("isMac",false);
-							intent.putExtra("isSearch",isSearch);
+						if(isBindSchool){
+
+							customBuilder.setTitle("温馨提示").setMessage("是否绑定"+codenum+"到"+school_name+"？")
+									.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog, int which) {
+											carschoolaction();
+
+											dialog.cancel();
+
+											previewing = true;
+											initCamera(surfaceHolder);
+											mCropLayout2.setVisibility(View.VISIBLE);
+
+
+										}
+									}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.cancel();
+
+									previewing = true;
+									initCamera(surfaceHolder);
+									mCropLayout2.setVisibility(View.VISIBLE);
+								}
+							});
+
+//							customBuilder.setMessage("是否绑定"+codenum+"到"+school_name+"？");
+							customDialog = customBuilder.create();
+							customDialog.show();
 
 							if (loadingDialog != null && loadingDialog.isShowing()){
 								loadingDialog.dismiss();
 							}
+						}else{
+							if("2".equals(type) || "3".equals(type)){
+								n=0;
+								macLoop();
+							}else{
+								Intent intent = new Intent();
+								intent.putExtra("codenum", codenum);
+								intent.putExtra("lock_name", lock_name);
+								intent.putExtra("lock_title", lock_title);
+								intent.putExtra("m_nowMac", m_nowMac);
+								intent.putExtra("carmodel_id", carmodel_id);
+								intent.putExtra("type", type);
+								intent.putExtra("lock_no", lock_no);
+								intent.putExtra("bleid", bleid);
+								intent.putExtra("deviceuuid", deviceuuid);
+								intent.putExtra("electricity", electricity);
+								intent.putExtra("carmodel_name", carmodel_name);
+								intent.putExtra("lock_status", lock_status);
+								intent.putExtra("status", status);
+								intent.putExtra("can_finish_order", can_finish_order);
+								intent.putExtra("bad_reason", bad_reason);
+								intent.putExtra("isMac",false);
+								intent.putExtra("isSearch",isSearch);
 
-							BleManager.getInstance().cancelScan();
+								if (loadingDialog != null && loadingDialog.isShowing()){
+									loadingDialog.dismiss();
+								}
 
-							setResult(RESULT_OK, intent);
-							scrollToFinishActivity();
+								BleManager.getInstance().cancelScan();
+
+								setResult(RESULT_OK, intent);
+								scrollToFinishActivity();
+							}
 						}
+
 
 //						if (result.getInfo().equals("2")) {
 //							CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);

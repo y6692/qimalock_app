@@ -384,7 +384,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
                     Intent intent = new Intent(context, SetGoodUsedDetailActivity.class);
 //                    intent.putExtra("date", "2020-02-19");
                     intent.putExtra("date", bean.getDate());
-                    intent.putExtra("type", 1);   //类型 1 投放使用 2 已修好
+                    intent.putExtra("type", 2);   //类型 1 已回收 2 投放使用 已修好
                     context.startActivity(intent);
                 }
 
