@@ -140,7 +140,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             bytes[i] = (byte) Integer.parseInt(subStr, 16);
         }
 
-        Log.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[5]);
+        Log.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[1]+"==="+bytes[5]);
 
         Config.key = bytes;
 

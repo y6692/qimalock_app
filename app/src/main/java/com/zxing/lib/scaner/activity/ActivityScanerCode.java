@@ -199,7 +199,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		mCameraManager = CameraManager.get();
 
-		Log.e("ActivityScanerCode===", "===");
+		Log.e("ActivityScanerCode===", isChangeKey+"==="+isAdd);
 
 //		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
 //			Toast.makeText(ActivityScanerCode.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
@@ -1185,6 +1185,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 				scrollToFinishActivity();
 			}else {
+				Log.e("Scan===2", macList.contains(jsonObject.getString("macinfo"))+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 
 				if (!isChangeKey){

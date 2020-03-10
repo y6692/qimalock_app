@@ -200,9 +200,10 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         address = getIntent().getStringExtra("address");
         codenum = getIntent().getStringExtra("codenum");
 
-//        BaseApplication.getInstance().getIBLE().setChangKey(true);
+        BaseApplication.getInstance().getIBLE().setChangKey(true);
 //        BaseApplication.getInstance().getIBLE().setChangKey(false);
 
+//        BaseApplication.getInstance().getIBLE().get
         Log.e("LockStorageActivity===", name+"==="+address+"==="+codenum);
 
         if (!TextUtils.isEmpty(address)) {
@@ -212,8 +213,6 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         loadingDialog.show();
 
         titleText.setText("锁的信息");
-
-
 
 
         changePsdBtn.setOnClickListener(new View.OnClickListener() {
