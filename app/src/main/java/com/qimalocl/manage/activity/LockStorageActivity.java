@@ -229,22 +229,22 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
 
-                byte[] bytes = {Config.key[0],
-                        Config.key[1], Config.key[2], Config.key[3], Config.key[4],
-                        Config.key[5], Config.key[6], Config.key[7]};
-                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
-
-                m_myHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        byte[] bytes1 = {Config.key[8],
-                                Config.key[9], Config.key[10], Config.key[11], Config.key[12],
-                                Config.key[13], Config.key[14], Config.key[15]};
-                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
-
-                        BaseApplication.getInstance().getIBLE().setChangKey(false);
-                    }
-                }, 2000);
+//                byte[] bytes = {Config.key[0],
+//                        Config.key[1], Config.key[2], Config.key[3], Config.key[4],
+//                        Config.key[5], Config.key[6], Config.key[7]};
+//                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
+//
+//                m_myHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        byte[] bytes1 = {Config.key[8],
+//                                Config.key[9], Config.key[10], Config.key[11], Config.key[12],
+//                                Config.key[13], Config.key[14], Config.key[15]};
+//                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
+//
+//                        BaseApplication.getInstance().getIBLE().setChangKey(false);
+//                    }
+//                }, 2000);
 
 //                byte[] bytes = {Config.newKey[0],
 //                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
@@ -261,32 +261,32 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 //                }, 2000);
 
 
-//                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
-////                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-////                        Config.passwordnew[2], Config.passwordnew[3],
-////                        Config.passwordnew[4], Config.passwordnew[5]};
-////                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
-////                        Config.passwordnew2[2], Config.passwordnew2[3],
-////                        Config.passwordnew2[4], Config.passwordnew2[5]};
-//                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
-//
-//                m_myHandler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-//                                Config.passwordnew[2], Config.passwordnew[3],
-//                                Config.passwordnew[4], Config.passwordnew[5]};
-//
-////                        byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
-////                                Config.passwordnew2[2], Config.passwordnew2[3],
-////                                Config.passwordnew2[4], Config.passwordnew2[5]};
-//
-////                        BaseApplication.getInstance().getIBLE().setChangKey(false);
-//
-//                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
-//                    }
-//                }, 2000);
+                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
+//                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+//                        Config.passwordnew[2], Config.passwordnew[3],
+//                        Config.passwordnew[4], Config.passwordnew[5]};
+//                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
+//                        Config.passwordnew2[2], Config.passwordnew2[3],
+//                        Config.passwordnew2[4], Config.passwordnew2[5]};
+                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
+
+                m_myHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
+                                Config.passwordnew[2], Config.passwordnew[3],
+                                Config.passwordnew[4], Config.passwordnew[5]};
+
+//                        byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
+//                                Config.passwordnew2[2], Config.passwordnew2[3],
+//                                Config.passwordnew2[4], Config.passwordnew2[5]};
+
+//                        BaseApplication.getInstance().getIBLE().setChangKey(false);
+
+                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
+                    }
+                }, 2000);
 //                }else {
 //                    Toast.makeText(context,"此设备密码已修改",Toast.LENGTH_SHORT).show();
 //                }
