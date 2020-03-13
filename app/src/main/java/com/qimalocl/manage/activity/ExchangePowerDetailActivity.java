@@ -220,9 +220,6 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
 
                     Log.e("epda===initHttp1", "==="+responseString);
 
-
-
-
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {
                         footerLayout.setVisibility(View.VISIBLE);
@@ -378,13 +375,13 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
             TextView finished_time = BaseViewHolder.get(convertView,R.id.tv_finished_time);
 
             ExchangePowerDetailBean bean = getDatas().get(position);
-            car_number.setText(bean.getCar_number());
+            car_number.setText(bean.getNumber());
             pre_electricity.setText(bean.getPre_electricity());
             aft_electricity.setText(bean.getAft_electricity());
             created_at.setText(bean.getCreated_at());
             finished_time.setText(bean.getFinished_time());
 
-            Log.e("epda===MyAdapter", status+"==="+bean.getCar_number()+"==="+bean.getPre_electricity()+"==="+bean.getAft_electricity()+"==="+bean.getCreated_at()+"==="+bean.getFinished_time());
+            Log.e("epda===MyAdapter", status+"==="+bean.getNumber()+"==="+bean.getPre_electricity()+"==="+bean.getAft_electricity()+"==="+bean.getCreated_at()+"==="+bean.getFinished_time());
 
             if(status==0){
                 text_aft_electricity.setText("当前电量：");

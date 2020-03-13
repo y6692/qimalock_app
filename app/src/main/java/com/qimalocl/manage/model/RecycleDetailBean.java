@@ -6,10 +6,9 @@ package com.qimalocl.manage.model;
 
 public class RecycleDetailBean {
     private String number;    //车辆编号
+    private String bad_reason; //坏车原因
     private String bad_time;    //坏车时间
     private String recycle_time; //回收时间
-    private String scrapped_time; //报废时间
-
 
     public String getNumber() {
         return number;
@@ -17,6 +16,14 @@ public class RecycleDetailBean {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public String getBad_reason() {
+        return bad_reason;
+    }
+
+    public void setBad_reason(String bad_reason) {
+        this.bad_reason = bad_reason;
     }
 
     public String getBad_time() {
@@ -33,13 +40,5 @@ public class RecycleDetailBean {
 
     public void setRecycle_time(String recycle_time) {
         this.recycle_time = recycle_time;
-    }
-
-    public String getScrapped_time() {
-        return scrapped_time;
-    }
-
-    public void setScrapped_time(String scrapped_time) {
-        this.scrapped_time = scrapped_time;
     }
 }

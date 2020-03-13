@@ -5,18 +5,18 @@ package com.qimalocl.manage.model;
  */
 
 public class ExchangePowerDetailBean {
-    private String car_number;    //车辆编号
+    private String number;    //车辆编号
     private String pre_electricity;    //更换前电量
     private String aft_electricity; //当前电量
     private String created_at; //更换时间
     private String finished_time; //完成时间
 
-    public String getCar_number() {
-        return car_number;
+    public String getNumber() {
+        return number;
     }
 
-    public void setCar_number(String car_number) {
-        this.car_number = car_number;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public String getPre_electricity() {

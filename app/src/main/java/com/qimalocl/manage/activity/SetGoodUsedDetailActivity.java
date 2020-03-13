@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -194,7 +195,7 @@ public class SetGoodUsedDetailActivity extends SwipeBackActivity implements View
         }
         RequestParams params = new RequestParams();
         params.put("date", date);
-        params.put("type", type);
+        params.put("type", 2);
         params.put("page",showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);
 
@@ -237,7 +238,15 @@ public class SetGoodUsedDetailActivity extends SwipeBackActivity implements View
                     }
                     for (int i = 0; i < array.length(); i++) {
                         SetGoodUsedDetailBean bean = JSON.parseObject(array.getJSONObject(i).toString(), SetGoodUsedDetailBean.class);
-                        data.add(bean);
+                        if(type==1){
+                            if(bean.getStatus()==4){
+                                data.add(bean);
+                            }
+                        }else{
+                            if(bean.getStatus()==2 || bean.getStatus()==4){
+                                data.add(bean);
+                            }
+                        }
                     }
 
 //                    SetGoodUsedDetailBean bean = new SetGoodUsedDetailBean();
@@ -367,17 +376,26 @@ public class SetGoodUsedDetailActivity extends SwipeBackActivity implements View
             }
 
             TextView number = BaseViewHolder.get(convertView,R.id.tv_number);
+            TextView bad_reason = BaseViewHolder.get(convertView,R.id.tv_bad_reason);
             TextView bad_time = BaseViewHolder.get(convertView,R.id.tv_bad_time);
             TextView recycle_time = BaseViewHolder.get(convertView,R.id.tv_recycle_time);
             TextView setgood_time = BaseViewHolder.get(convertView,R.id.tv_setgood_time);
             TextView last_user_time = BaseViewHolder.get(convertView,R.id.tv_last_user_time);
+            LinearLayout ll_last_user_time = BaseViewHolder.get(convertView,R.id.ll_last_user_time);
 
             SetGoodUsedDetailBean bean = getDatas().get(position);
             number.setText(bean.getNumber());
+            bad_reason.setText(bean.getBad_reason());
             bad_time.setText(bean.getBad_time());
             recycle_time.setText(bean.getRecycle_time());
             setgood_time.setText(bean.getSetgood_time());
             last_user_time.setText(bean.getLast_user_time());
+
+            if(type==1){
+                ll_last_user_time.setVisibility(View.VISIBLE);
+            }else{
+                ll_last_user_time.setVisibility(View.GONE);
+            }
 
 //            if(status==0){
 //                text_aft_electricity.setText("当前电量：");

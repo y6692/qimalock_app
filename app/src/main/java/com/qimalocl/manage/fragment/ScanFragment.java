@@ -599,11 +599,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
+//        customBuilder = new CustomDialog.Builder(context);
 
         dialogReason = new Dialog(context, R.style.Theme_AppCompat_Dialog);
         View dialogView = LayoutInflater.from(context).inflate(R.layout.pop_scrapped, null);
         dialogReason.setContentView(dialogView);
         dialogReason.setCanceledOnTouchOutside(false);
+        dialogReason.getWindow().setBackgroundDrawableResource(R.drawable.block_dialog_bcg);
 
         reasonEdit = (EditText)dialogView.findViewById(R.id.pop_reasonEdit);
         positiveButton = (Button)dialogView.findViewById(R.id.positiveButton);

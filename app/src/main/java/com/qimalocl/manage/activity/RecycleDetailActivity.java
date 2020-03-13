@@ -246,8 +246,6 @@ public class RecycleDetailActivity extends SwipeBackActivity implements View.OnC
                     myAdapter.notifyDataSetChanged();
 
 //                    if ("Success".equals(result.getFlag())) {
-//
-//
 //                    } else {
 //                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
 //
@@ -367,15 +365,17 @@ public class RecycleDetailActivity extends SwipeBackActivity implements View.OnC
             }
 
             TextView number = BaseViewHolder.get(convertView,R.id.tv_number);
+            TextView bad_reason = BaseViewHolder.get(convertView,R.id.tv_bad_reason);
             TextView bad_time = BaseViewHolder.get(convertView,R.id.tv_bad_time);
             TextView recycle_time = BaseViewHolder.get(convertView,R.id.tv_recycle_time);
-            TextView scrapped_time = BaseViewHolder.get(convertView,R.id.tv_scrapped_time);
 
             RecycleDetailBean bean = getDatas().get(position);
             number.setText(bean.getNumber());
+            bad_reason.setText(bean.getBad_reason());
             bad_time.setText(bean.getBad_time());
             recycle_time.setText(bean.getRecycle_time());
-            scrapped_time.setText(bean.getScrapped_time());
+
+
 
 //            if(status==0){
 //                text_aft_electricity.setText("当前电量：");
