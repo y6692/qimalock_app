@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.IBinder;
 import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 import com.fitsleep.sunshinelibrary.utils.Logger;
 import com.fitsleep.sunshinelibrary.utils.ToastUtils;
@@ -26,7 +27,7 @@ import java.io.File;
  * @author wutao
  *
  */
-public class BaseApplication extends Application {
+public class BaseApplication extends MultiDexApplication {
 	public  static Context context;
 	private static BaseApplication app;
 	private BLEService mBleService;

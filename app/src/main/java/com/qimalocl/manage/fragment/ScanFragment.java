@@ -375,9 +375,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @Override
     public void onResume() {
         super.onResume();
-        threadScan = true;
 
-        Log.e("sf===onResume", latitude + "===" + longitude);
+        Log.e("sf===onResume", isHidden()+ "===" + latitude + "===" + longitude);
+
+        if(!isHidden()){
+            threadScan = true;
+        }else{
+            threadScan = false;
+        }
+
+
+
 
 //        initNearby(latitude, longitude);
 
@@ -4154,10 +4162,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         if (mListener != null && amapLocation != null) {
 
+            Log.e("onLocationChanged=1", latitude +"==="+amapLocation.getLatitude() +">>>"+longitude+"==="+amapLocation.getLongitude());
+
             if ((latitude == amapLocation.getLatitude()) && (longitude == amapLocation.getLongitude())) return;
 
             if (amapLocation != null && amapLocation.getErrorCode() == 0) {
-
 
                 if (0.0 != amapLocation.getLatitude() && 0.0 != amapLocation.getLongitude()) {
                     if (mListener != null) {
