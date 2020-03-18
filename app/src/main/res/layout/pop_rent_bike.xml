@@ -238,6 +238,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/ll_bad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -369,7 +370,45 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_bad2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-22dp"
+            android:orientation="vertical">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="#EDEDED"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="17dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tv_bad_reason2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:text="损坏部位：abc123qweqweqweqwe"
+                    android:textColor="@color/tx_black"
+                    android:textSize="14sp"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:singleLine="false"/>
+
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
 
 
     </LinearLayout>

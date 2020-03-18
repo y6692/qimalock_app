@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:id="@+id/pop_rent_bg">
+    android:id="@+id/pop_win_bg">
 
     <!-- 弹窗背景 -->
     <ImageView
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text=""/>
+                    android:text="123456"/>
             </LinearLayout>
 
 
@@ -95,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text=""/>
+                    android:text="123456"/>
             </LinearLayout>
 
             <LinearLayout
@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text=""/>
+                    android:text="123456"/>
             </LinearLayout>
 
             <LinearLayout
@@ -135,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text=""/>
+                    android:text="123456"/>
             </LinearLayout>
 
             <LinearLayout
@@ -155,7 +155,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text=""/>
+                    android:text="123456"/>
             </LinearLayout>
 
             <LinearLayout
@@ -175,12 +175,14 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text=""/>
+                    android:text="123456"/>
             </LinearLayout>
 
 
 
         </LinearLayout>
+
+
 
 
         <LinearLayout
@@ -204,13 +206,6 @@
                 android:gravity="center"
                 android:onClick="btn"
                 android:layout_weight="1">
-
-                <!--<ImageView-->
-                    <!--android:layout_width="30dp"-->
-                    <!--android:layout_height="30dp"-->
-                    <!--android:src="@drawable/open_lock_icon"-->
-                    <!--android:gravity="center"-->
-                    <!--/>-->
 
                 <Switch
                     android:id="@+id/lock_switcher"
@@ -345,11 +340,9 @@
 
             </LinearLayout>
 
-
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
             android:id="@+id/ll_bad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -367,14 +360,15 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="17dp">
+                android:layout_marginTop="17dp"
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:id="@+id/tv_bad_reason"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
-                    android:layout_marginRight="120dp"
+                    android:layout_marginRight="30dp"
                     android:text="损坏部位：abc1234324sadasdasdasdasasda21321321321312321312312312321312312312312"
                     android:textColor="@color/tx_black"
                     android:textSize="14sp"
@@ -382,6 +376,7 @@
                     android:singleLine="false"/>
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/tv_set_useless"
                     android:layout_width="78dp"
                     android:layout_height="20dp"
@@ -399,6 +394,7 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/ll_set"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
@@ -406,7 +402,6 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="12dp"
                 android:onClick="btn">
-
 
                 <LinearLayout
                     android:id="@+id/ll_set_recovered"
@@ -470,46 +465,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/ll_bad2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-22dp"
-            android:orientation="vertical">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:background="#EDEDED"
-                />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="17dp"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:id="@+id/tv_bad_reason2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
-                    android:text="损坏部位：abc1234324sadasdasdasdasasda21321321321312321312312312321312312312312"
-                    android:textColor="@color/tx_black"
-                    android:textSize="14sp"
-                    android:gravity="center_vertical"
-                    android:singleLine="false"/>
-
-            </RelativeLayout>
-
-
-        </LinearLayout>
-
 
     </LinearLayout>
 </RelativeLayout>

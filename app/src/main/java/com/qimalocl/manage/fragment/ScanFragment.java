@@ -258,8 +258,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private float accuracy = 29.0f;
     float leveltemp = 18f;
 
-    private Boolean isMac;
-    private Boolean isFind;
+    private Boolean isMac = false;
+    private Boolean isFind = false;
 
     private String keySource = "";
     //密钥索引
@@ -347,6 +347,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         initView();
 
         initHttp();
+
+//        BleManager.getInstance().init(activity.getApplication());
+//        BleManager.getInstance()
+//                .enableLog(true)
+//                .setReConnectCount(10, 5000)
+//                .setConnectOverTime(timeout)
+//                .setOperateTimeout(10000);
+//
+//        setScanRule();
+//        scan();
 
         new Thread(new Runnable() {
             @Override
@@ -799,12 +809,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         carmodel_name = bean.getCarmodel_name();
                         status = bean.getStatus();
                         can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
+                        bad_reason = bean.getBad_reason();
 
 
                         Log.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order);
 
-                        if(carmodel_id==2){
+                        if(carmodel_id==1){
                             initmPopupWindowView();
+                        }else if(carmodel_id==2){
+                            initmPopupWindowView2();
                         }
 
 
@@ -897,7 +910,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        LinearLayout ll_bad2 = customView.findViewById(R.id.ll_bad2);
         TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
+        TextView tv_bad_reason2 = customView.findViewById(R.id.tv_bad_reason2);
         LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
@@ -910,6 +925,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_electricity.setText("");
         tv_lock_status.setText("");
         tv_bad_reason.setText("损坏部位："+bad_reason);      //TODO 损坏部位没有使用后台该车最新的坏车原因
+        tv_bad_reason2.setText("损坏部位："+bad_reason);
+
+
+
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
         }else{
@@ -918,8 +937,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
             ll_bad.setVisibility(View.VISIBLE);
+
+            if(isSearch){
+                ll_bad.setVisibility(View.GONE);
+                ll_bad2.setVisibility(View.VISIBLE);
+            }else{
+                ll_bad.setVisibility(View.VISIBLE);
+                ll_bad2.setVisibility(View.GONE);
+            }
         }else{
             ll_bad.setVisibility(View.GONE);
+            ll_bad2.setVisibility(View.GONE);
         }
 
         Log.e("initmPopup===", can_finish_order+"==="+status);
@@ -1053,7 +1081,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        LinearLayout ll_bad2 = customView.findViewById(R.id.ll_bad2);
         TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
+        TextView tv_bad_reason2 = customView.findViewById(R.id.tv_bad_reason2);
         LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
@@ -1065,6 +1095,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
         tv_bad_reason.setText("损坏部位："+bad_reason);
+        tv_bad_reason2.setText("损坏部位："+bad_reason);
 
         if(isSearch){
             ll_car_search.setVisibility(View.VISIBLE);
@@ -1080,8 +1111,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
             ll_bad.setVisibility(View.VISIBLE);
+
+            if(isSearch){
+                ll_bad.setVisibility(View.GONE);
+                ll_bad2.setVisibility(View.VISIBLE);
+            }else{
+                ll_bad.setVisibility(View.VISIBLE);
+                ll_bad2.setVisibility(View.GONE);
+            }
         }else{
             ll_bad.setVisibility(View.GONE);
+            ll_bad2.setVisibility(View.GONE);
         }
 
         Log.e("initmPopup===2", lock_status+"==="+can_finish_order+"==="+status);
@@ -1116,18 +1156,171 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
-
-
     }
 
     public void initmPopupWindowView(){
+        // 获取自定义布局文件的视图
+        View customView = getLayoutInflater().inflate(R.layout.pop_menu, null, false);
+        // 创建PopupWindow宽度和高度
+        RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
+        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
+
+        TextView tv_number = customView.findViewById(R.id.tv_number);
+        TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
+        TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
+        tv_electricity = customView.findViewById(R.id.tv_electricity);
+        tv_lock_status = customView.findViewById(R.id.tv_lock_status);
+        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+
+        LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
+        TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
+        LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
+        LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
+        TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
+
+        Log.e("PopupRent===", codenum+"==="+electricity);
+
+        tv_number.setText(codenum);
+        tv_lock_title.setText(lock_name);
+        tv_lock_mac.setText(m_nowMac);
+        tv_electricity.setText("");
+        tv_lock_status.setText("");
+        tv_bad_reason.setText("损坏部位："+bad_reason);      //TODO 损坏部位没有使用后台该车最新的坏车原因
+        if(can_finish_order==1){
+            ll_end_order.setVisibility(View.VISIBLE);
+        }else{
+            ll_end_order.setVisibility(View.GONE);
+        }
+
+        if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
+            ll_bad.setVisibility(View.VISIBLE);
+        }else{
+            ll_bad.setVisibility(View.GONE);
+        }
+
+        Log.e("initmPopup===", can_finish_order+"==="+status);
+
+        ll_open_lock.setOnClickListener(this);
+        ll_end_order.setOnClickListener(this);
+        ll_set_recovered.setOnClickListener(this);
+        ll_set_ok.setOnClickListener(this);
+        tv_set_useless.setOnClickListener(this);
+        iv_popup_window_back.setOnClickListener(this);
+
+        // 获取截图的Bitmap
+        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+        if (bitmap != null) {
+            // 将截屏Bitma放入ImageView
+            iv_popup_window_back.setImageBitmap(bitmap);
+            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
+        } else {
+            // 获取的Bitmap为null时，用半透明代替
+            iv_popup_window_back.setBackgroundColor(0x77000000);
+        }
+        // 打开弹窗
+        UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
+        // 创建PopupWindow宽度和高度
+        popupwindow = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
+        //设置动画效果 ,从上到下加载方式等，不设置自动的下拉，最好 [动画效果不好，不加实现下拉效果，不错]
+        popupwindow.setAnimationStyle(R.style.PopupAnimation);
+        popupwindow.setOutsideTouchable(false);
+
+        popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+
+
+
+//        if ("2".equals(type) || "3".equals(type)) {    //单车蓝牙锁
+//
+//            if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                popupwindow.dismiss();
+//            }
+//            //蓝牙锁
+//            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//            mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//            if (mBluetoothAdapter == null) {
+//                ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                popupwindow.dismiss();
+//                return;
+//            }
+//            if (!mBluetoothAdapter.isEnabled()) {
+//                isPermission = false;
+//                closeLoadingDialog2();
+//                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                startActivityForResult(enableBtIntent, 188);
+//            } else {
+//
+//                Log.e("order===2",  type+"===" +isMac );
+//
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在连接");
+//                    loadingDialog.show();
+//                }
+//
+//                BleManager.getInstance().init(activity.getApplication());
+////                BleManager.getInstance()
+////                        .enableLog(true)
+////                        .setReConnectCount(10, 5000)
+////                        .setConnectOverTime(timeout)
+////                        .setOperateTimeout(10000);
+//
+//                isOpenLock = false;
+//
+//
+//                if(isMac){
+//                    connect();
+//                }else{
+//                    setScanRule();
+//                    scan2();
+//                }
+//            }
+//        }else if("5".equals(type) || "6".equals(type)){
+//            if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                popupwindow.dismiss();
+//            }
+//            //蓝牙锁
+//            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//            mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//            if (mBluetoothAdapter == null) {
+//                ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                popupwindow.dismiss();
+//                return;
+//            }
+//            if (!mBluetoothAdapter.isEnabled()) {
+//                isPermission = false;
+//                closeLoadingDialog2();
+//                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                startActivityForResult(enableBtIntent, 188);
+//            } else {
+//
+//                Log.e("order===2",  "===" + type);
+//
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在连接");
+//                    loadingDialog.show();
+//                }
+//
+//                isOpenLock = false;
+//                m_myHandler.sendEmptyMessage(0x98);
+//            }
+//
+//        }
+
+    }
+
+    public void initmPopupWindowView2(){
 
         // 获取自定义布局文件的视图
 //        View customView = getLayoutInflater().inflate(R.layout.pop_menu, null, false);
 
-        View customView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu, null, false);
-
-
+        View customView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu2, null, false);
 
         // 创建PopupWindow宽度和高度
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_win_bg);
@@ -1685,7 +1878,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             int lock_id = bean.getLock_id();
 
                             if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
-                                if(lock_id==4){
+                                if(lock_id==4 || lock_id==8){
 
                                     bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
                                             Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
@@ -1815,7 +2008,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             int lock_id = bean.getLock_id();
 
                             if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
-                                if(lock_id==4){
+                                if(lock_id==4 || lock_id==8){
 
                                     bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
                                             Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
@@ -2450,7 +2643,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
 //            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener2);
 
-        }else if("4".equals(type)){
+        }else if("4".equals(type) || "8".equals(type)){
         }else if("7".equals(type)){
             if (apiClient != null) {
                 apiClient.onDestroy();
@@ -2507,7 +2700,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 startActivityForResult(enableBtIntent, 188);
             } else {
 
-                Log.e("order===2",  "===" + type);
+                Log.e("order===2",  isLookPsdBtn + "===" + type + "===" + isMac);
 
                 isOpenLock = true;
 
@@ -2539,7 +2732,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                unlock();   //TODO 不支持该操作
 
             }
-        }else if ("4".equals(type)) {
+        }else if ("4".equals(type) || "8".equals(type)) {
 
             unlock();
 
@@ -2669,7 +2862,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //		loadingDialog.setTitle("正在搜索");
 //		loadingDialog.show();
 
-        BleManager.getInstance().cancelScan();
+//        BleManager.getInstance().cancelScan();
 
         isFind = false;
         BleManager.getInstance().scan(new BleScanCallback() {
@@ -2688,7 +2881,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onScanning(final BleDevice bleDevice) {
 
-                Log.e("mf===onScanning2", bleDevice+"==="+bleDevice.getMac());
+                Log.e("mf===onScanning2", m_nowMac+"==="+bleDevice.getMac());
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -2700,6 +2893,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             isFind = true;
                             BleManager.getInstance().cancelScan();
+
+                            connect();
 
                             Log.e("onScanning===2_1", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
 

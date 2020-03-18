@@ -49,13 +49,13 @@ public class BaseFragmentActivity extends FragmentActivity {
 		tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
 		// 添加Activity到堆栈
 		AppManager.getAppManager().addActivity(this);
-		// 修改状态栏颜色，4.4+生效
-		if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-			// 透明状态栏
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			// 透明导航栏
-			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-		}
+//		// 修改状态栏颜色，4.4+生效
+//		if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
+//			// 透明状态栏
+//			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//			// 透明导航栏
+//			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//		}
 	}
 	
 	@Override
