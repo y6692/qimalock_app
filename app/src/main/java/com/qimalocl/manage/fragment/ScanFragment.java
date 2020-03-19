@@ -1046,13 +1046,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 Log.e("order===2",  "===" + type);
 
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在连接");
-                    loadingDialog.show();
-                }
-
-                isOpenLock = false;
-                m_myHandler.sendEmptyMessage(0x98);
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在连接");
+//                    loadingDialog.show();
+//                }
+//
+//                isOpenLock = false;
+//                m_myHandler.sendEmptyMessage(0x98);
             }
 
         }
@@ -1745,21 +1745,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                    ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
 
                     if(!isLookPsdBtn){
-                        SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
-                                .searchBluetoothLeDevice(0)
-                                .build();
+//                        SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
+//                                .searchBluetoothLeDevice(0)
+//                                .build();
+//
+//
+//                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                            Log.e("usecar===1", "===");
+//
+//                            break;
+//                        }
+//
+//
+//                        ClientManager.getClient().search(request, mSearchResponse);
 
-
-                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            Log.e("usecar===1", "===");
-
-                            break;
-                        }
-
-
-                        ClientManager.getClient().search(request, mSearchResponse);
-
-//                        ClientManager.getClient().
 
                         connectDeviceLP();
                         ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
