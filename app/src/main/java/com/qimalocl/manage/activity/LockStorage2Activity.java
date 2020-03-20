@@ -63,6 +63,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+//未改密钥密码
 @SuppressLint("NewApi")
 public class LockStorage2Activity extends MPermissionsActivity implements OnConnectionListener, OnDeviceSearchListener {
     @BindView(R.id.tv_name)
