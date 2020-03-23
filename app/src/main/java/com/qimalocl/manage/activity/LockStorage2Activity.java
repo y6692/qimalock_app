@@ -63,6 +63,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+//未改密钥密码
 @SuppressLint("NewApi")
 public class LockStorage2Activity extends MPermissionsActivity implements OnConnectionListener, OnDeviceSearchListener {
     @BindView(R.id.tv_name)
@@ -845,6 +846,8 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
                             }
+
+//                            Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
 
                             //修改密钥
                             loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");

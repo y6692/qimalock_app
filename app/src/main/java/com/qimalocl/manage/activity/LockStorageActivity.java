@@ -68,6 +68,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+//已改密钥密码
 @SuppressLint("NewApi")
 public class LockStorageActivity extends MPermissionsActivity implements OnConnectionListener, OnDeviceSearchListener {
     @BindView(R.id.tv_name)
