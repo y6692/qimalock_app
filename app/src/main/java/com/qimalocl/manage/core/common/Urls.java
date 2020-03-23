@@ -13,8 +13,8 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-//    public static String host2 = HTTPS + "newmapi.7mate.cn/api";
-	public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
+    public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+//	public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
 
 	//获取验证码接口
 	public static String verificationcode = host2 + "/verificationcode";

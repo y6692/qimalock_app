@@ -982,47 +982,48 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
 
-        if ("2".equals(type) || "3".equals(type)) {    //单车蓝牙锁
-
-            if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-                ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
-                popupwindow.dismiss();
-            }
-            //蓝牙锁
-            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-
-            mBluetoothAdapter = bluetoothManager.getAdapter();
-
-            if (mBluetoothAdapter == null) {
-                ToastUtil.showMessageApp(context, "获取蓝牙失败");
-                popupwindow.dismiss();
-                return;
-            }
-            if (!mBluetoothAdapter.isEnabled()) {
-                isPermission = false;
-                closeLoadingDialog2();
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, 188);
-            } else {
-
-                Log.e("order===2",  "===" + type);
-
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在连接");
-                    loadingDialog.show();
-                }
-
-                BleManager.getInstance().init(activity.getApplication());
-                BleManager.getInstance()
-                        .enableLog(true)
-                        .setReConnectCount(10, 5000)
-                        .setConnectOverTime(timeout)
-                        .setOperateTimeout(10000);
-
-                isOpenLock = false;
-                connect();
-            }
-        }else if("5".equals(type) || "6".equals(type)){
+//        if ("2".equals(type) || "3".equals(type)) {    //单车蓝牙锁
+//
+//            if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                popupwindow.dismiss();
+//            }
+//            //蓝牙锁
+//            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//            mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//            if (mBluetoothAdapter == null) {
+//                ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                popupwindow.dismiss();
+//                return;
+//            }
+//            if (!mBluetoothAdapter.isEnabled()) {
+//                isPermission = false;
+//                closeLoadingDialog2();
+//                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                startActivityForResult(enableBtIntent, 188);
+//            } else {
+//
+//                Log.e("order===2",  "===" + type);
+//
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在连接");
+//                    loadingDialog.show();
+//                }
+//
+//                BleManager.getInstance().init(activity.getApplication());
+//                BleManager.getInstance()
+//                        .enableLog(true)
+//                        .setReConnectCount(10, 5000)
+//                        .setConnectOverTime(timeout)
+//                        .setOperateTimeout(10000);
+//
+//                isOpenLock = false;
+//                connect();
+//            }
+//        }else
+        if("5".equals(type) || "6".equals(type)){
             if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                 ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
                 popupwindow.dismiss();
@@ -2712,12 +2713,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             .setConnectOverTime(timeout)
                             .setOperateTimeout(10000);
 
-                    if(isMac){
-                        connect();
-                    }else{
-                        setScanRule();
-                        scan2();
-                    }
+//                    if(isMac){
+//                        connect();
+//                    }else{
+//                        setScanRule();
+//                        scan2();
+//                    }
+
+                    connect();
                 }else{
 //                    BaseApplication.getInstance().getIBLE().openLock();
 
@@ -2982,7 +2985,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         Log.e("connect===", carmodel_id+"==="+type+"==="+isLookPsdBtn);
 
-        BleManager.getInstance().cancelScan();
+//        BleManager.getInstance().cancelScan();
 
         BleManager.getInstance().connect(m_nowMac, new BleGattCallback() {
             @Override
