@@ -294,8 +294,12 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                                 Config.passwordnew[2], Config.passwordnew[3],
                                 Config.passwordnew[4], Config.passwordnew[5]};
 
-
                         BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
+
+
+                        if (loadingDialog != null && loadingDialog.isShowing()) {
+                            loadingDialog.dismiss();
+                        }
                     }
                 }, 2000);
 
@@ -531,7 +535,6 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             return;
         }
 
-
         codenum = edbikeNum.getText().toString().trim();
 
         if (codenum  == null || "".equals(codenum)) {
@@ -546,8 +549,6 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
         params.put("uid", uid);
         params.put("access_token", access_token);
         params.put("codenum", codenum);
-
-
 
         HttpHelper.post(context, Urls.changeKey, params, new TextHttpResponseHandler() {
             @Override
@@ -570,8 +571,12 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+
+
                     if (result.getFlag().equals("Success")) {
                         Toast.makeText(context, "恭喜您，数据提交成功", Toast.LENGTH_SHORT).show();
+
                         BaseApplication.getInstance().getIBLE().setChangKey(true);
 
 //                        BaseApplication.getInstance().getIBLE().connect(address, LockStorage2Activity.this);
@@ -641,8 +646,9 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
         params.put("uid", uid);
         params.put("access_token", access_token);
         params.put("codenum", codenum);
-        params.put("latitude", SharedPreferencesUrls.getInstance().getString("latitude", ""));
-        params.put("longitude", SharedPreferencesUrls.getInstance().getString("longitude", ""));
+//        params.put("latitude", SharedPreferencesUrls.getInstance().getString("latitude", ""));
+//        params.put("longitude", SharedPreferencesUrls.getInstance().getString("longitude", ""));
+
         HttpHelper.post(context, Urls.changePsd, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {

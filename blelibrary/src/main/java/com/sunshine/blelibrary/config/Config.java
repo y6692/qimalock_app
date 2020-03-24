@@ -73,6 +73,9 @@ public class Config {
         keyMap.put("38F9F6138195", "A80DEF0122E5F625CCC1F76AF77B7794");
         keyMap.put("28D499CAA431", "60616D80EFA5B97196BBFF1FDF7B3D6E");
         keyMap.put("1372252284EC", "39DA9700FACC678CB96CE5F5357CA9A6");
+
+        keyMap.put("285688E4C7A4", "A80DEF0122E5F625CCC1F76AF77B7794");
+        keyMap.put("039263609B3C", "4733F500D3BF6F2CFE9EE76AE77EFEFB");
     }
 
 //    1106 022102423925    56 0D 23 00 34 3D 46 04 7D 46 06 79 56 7F 3B 7B
@@ -124,7 +127,7 @@ public class Config {
      * */
     public static byte[] newKey = {30,85,45,80,52,73,60,70,45,75,60,86,10,90,40,42};   //7MA密钥  1E552D5034493C462D4B3C560A5A282A
 
-//    public static byte[] newKey = {(byte)0xA8, (byte)0x0D, (byte)0xEF, (byte)0x01, (byte)0x22, (byte)0xE5, (byte)0xF6, (byte)0x25, (byte)0xCC, (byte)0xC1, (byte)0xF7, (byte)0x6A, (byte)0xF7, (byte)0x7B, (byte)0x77, (byte)0x94};
+//    public static byte[] newKey = {(byte)0xA8, (byte)0x0D, (byte)0xEF, (byte)0x01, (byte)0x22, (byte)0xE5, (byte)0xF6, (byte)0x25, (byte)0xCC, (byte)0xC1, (byte)0xF7, (byte)0x6A, (byte)0xF7, (byte)0x7B, (byte)0x77, (byte)0x94}; //1124 锁厂密钥
 //    A8 0D EF 01 22 E5 F6 25 CC C1 F7 6A F7 7B 77 94
 
     public static byte[] newKey2 = {30,85,45,80,52,73,60,70,45,75,60,86,10,90,40,42};
@@ -138,7 +141,7 @@ public class Config {
 //    public static byte[] passwordnew = {0x4D, 0x47, 0x22, 0x3F, 0x38, 0x3B};
 //    public static byte[] passwordnew = {0x28, 0x5, 0x55, 0x28, 0x58, 0x49};  //40,5,85,40,88,73
     public static byte[] passwordnew = {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};    //7MA密码 201715
-//    public static byte[] passwordnew = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
+//    public static byte[] passwordnew = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};        //锁厂密码
 
 
 //    public static byte[] passwordnew = {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};

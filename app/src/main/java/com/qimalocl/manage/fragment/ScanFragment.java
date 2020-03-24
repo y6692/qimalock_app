@@ -84,6 +84,7 @@ import com.qimalocl.manage.activity.DeviceSelectActivity;
 import com.qimalocl.manage.activity.DotSelectActivity;
 import com.qimalocl.manage.activity.GetDotActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
+import com.qimalocl.manage.activity.LockManageAlterActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.TestXiaoanActivity;
@@ -1350,6 +1351,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener,L
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtra("isChangeKey",false);
                         startActivityForResult(intent, 101);
+
+
+//                        Intent intent = new Intent(context, LockManageAlterActivity.class);
+//                        intent.putExtra("name", "NokeLock");
+//                        intent.putExtra("codenum","");
+//                        intent.putExtra("pdk","2");
+//                        intent.putExtra("pwd","2");
+//                        intent.putExtra("address", "38:F9:F6:13:81:95");
+//                        intent.putExtra("isMac",false);
+//                        startActivity(intent);
+
                     } catch (Exception e) {
                         UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
                     }

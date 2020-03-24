@@ -378,7 +378,7 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         loadingDialog.show();
 
         isFind = false;
-        BleManager.getInstance().cancelScan();
+//        BleManager.getInstance().cancelScan();
         BleManager.getInstance().scan(new BleScanCallback() {
             @Override
             public void onScanStarted(boolean success) {
