@@ -183,6 +183,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.mainUI_getDotLayout) LinearLayout getDotLayout;
     @BindView(R.id.mainUI_testXALayout) LinearLayout testXALayout;
     @BindView(R.id.mainUI_bindSchoolLayout) LinearLayout bindSchoolLayout;
+    @BindView(R.id.mainUI_inStorageLayout) LinearLayout inStorageLayout;
     @BindView(R.id.mainUI_yellow_xyt) TextView tvYellow_xyt;
     @BindView(R.id.mainUI_red_xyt) TextView tvRed_xyt;
     @BindView(R.id.mainUI_yellow_xa) TextView tvYellow_xa;
@@ -747,6 +748,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         getDotLayout.setOnClickListener(this);
         testXALayout.setOnClickListener(this);
         bindSchoolLayout.setOnClickListener(this);
+        inStorageLayout.setOnClickListener(this);
         switcher.setOnClickListener(this);
         switcher_bad.setOnClickListener(this);
         switcher_type.setOnClickListener(this);
@@ -2531,6 +2533,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.mainUI_bindSchoolLayout:
                 UIHelper.goToAct(context, BindSchoolActivity.class);
+                break;
+
+            case R.id.mainUI_inStorageLayout:
+                UIHelper.goToAct(context, DeviceSelectActivity.class);
                 break;
 
             case R.id.mainUI_scanCode_lock:

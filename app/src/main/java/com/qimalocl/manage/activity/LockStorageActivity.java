@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,7 +34,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.clj.fastble.BleManager;
+import com.clj.fastble.callback.BleGattCallback;
+import com.clj.fastble.callback.BleNotifyCallback;
+import com.clj.fastble.callback.BleWriteCallback;
+import com.clj.fastble.data.BleDevice;
+import com.clj.fastble.exception.BleException;
+import com.fitsleep.sunshinelibrary.utils.ConvertUtils;
 import com.fitsleep.sunshinelibrary.utils.DialogUtils;
+import com.fitsleep.sunshinelibrary.utils.EncryptUtils;
 import com.fitsleep.sunshinelibrary.utils.Logger;
 import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
@@ -49,13 +58,17 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.ClearEditText;
 import com.qimalocl.manage.core.widget.CustomDialog;
-import com.qimalocl.manage.model.BleDevice;
+import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
+import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
+import com.sunshine.blelibrary.mode.GetTokenTxOrder;
+import com.sunshine.blelibrary.mode.OpenLockTxOrder;
 import com.sunshine.blelibrary.mode.Order;
+import com.sunshine.blelibrary.mode.XinbiaoTxOrder;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
 import com.zxing.lib.scaner.activity.ActivityScanerCode;
 import com.zxing.lib.scaner.activity.AddCarCaptureAct;
@@ -69,9 +82,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.fitsleep.sunshinelibrary.utils.EncryptUtils.Encrypt;
+
 //已改密钥密码
 @SuppressLint("NewApi")
-public class LockStorageActivity extends MPermissionsActivity implements OnConnectionListener, OnDeviceSearchListener {
+public class LockStorageActivity extends MPermissionsActivity implements OnConnectionListener {
     @BindView(R.id.tv_name)
     TextView tvName;
     @BindView(R.id.tv_address)
@@ -122,9 +137,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     private Dialog loadingDialog2;
     public static final int QR_SCAN_REQUEST_CODE = 3638;
 
-    private List<BleDevice> bleDeviceList = new ArrayList<>();
-    private List<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
-    private BleDevice bleDevice;
+//    private List<BleDevice> bleDeviceList = new ArrayList<>();
+//    private List<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
+//    private BleDevice bleDevice;
 
     private boolean isStop = false;
     private boolean isPwd = false;
@@ -133,6 +148,13 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     private String codenum = "";
 
     private boolean isChangePsd = false;
+    private boolean isConnect = false;
+    BleDevice bleDevice;
+    String token;
+
+    private boolean isOpen = false;
+    private boolean isMac = false;
+    private boolean isFind = false;
 
     public static byte[] hexStringToByteArray(String str) {
         if(str == null || str.trim().equals("")) {
@@ -148,15 +170,25 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         Log.e("StringToByte===1", bytes+"==="+bytes[0]);
 
         return bytes;
-    }
+}
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock_storage);
+
+        Log.e("onCreate===", "===");
+
+        BleManager.getInstance().init(getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(10, 5000)
+                .setConnectOverTime(20000)
+                .setOperateTimeout(10000);
+
         ButterKnife.bind(this);
-        registerReceiver(broadcastReceiver, Config.initFilter());
+//        registerReceiver(broadcastReceiver, Config.initFilter());
         appVersion.setText("Version:" + ToolsUtils.getVersion(getApplicationContext()));
 
 
@@ -205,13 +237,34 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 //        BaseApplication.getInstance().getIBLE().setChangKey(true);
 //        BaseApplication.getInstance().getIBLE().setChangKey(false);
 
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+
+        tvAddress.setText("MAC:" + address);
+
         Log.e("LockStorageActivity===", name+"==="+address+"==="+codenum);
 
         if (!TextUtils.isEmpty(address)) {
-            BaseApplication.getInstance().getIBLE().connect(address, this);
+//            BaseApplication.getInstance().getIBLE().connect(address, this);
+
+            m_myHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+//                    if(isMac){
+//                        connect();
+//                    }else{
+//
+//                        setScanRule();
+//                        scan();
+//                    }
+
+                    connect();
+                }
+            }, 0 * 1000);
         }
-        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
-        loadingDialog.show();
+//        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
+//        loadingDialog.show();
 
         titleText.setText("锁的信息");
 
@@ -358,6 +411,231 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
     }
 
+    void connect(){
+//        loadingDialog = DialogUtils.getLoadingDialog(this, "正在连接...");
+        loadingDialog.setTitle("正在连接");
+        loadingDialog.show();
+
+        BleManager.getInstance().connect(address, new BleGattCallback() {
+            @Override
+            public void onStartConnect() {
+                Log.e("onStartConnect===", "===");
+            }
+
+            @Override
+            public void onConnectFail(com.clj.fastble.data.BleDevice bleDevice, BleException exception) {
+                Log.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
+
+                if (loadingDialog != null && loadingDialog.isShowing()) {
+                    loadingDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onConnectSuccess(com.clj.fastble.data.BleDevice device, BluetoothGatt gatt, int status) {
+                if (loadingDialog != null && loadingDialog.isShowing()) {
+                    loadingDialog.dismiss();
+                }
+
+                isConnect = true;
+                bleDevice = device;
+
+//                BleManager.getInstance().cancelScan();
+
+                Log.e("onConnectSuccess===", bleDevice.getMac()+"===");
+                Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
+
+
+                tvName.setText("Name:" + name);
+                tvStatus.setText(getText(R.string.connect_status) + "Connected");
+
+                m_myHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        getBleToken();
+
+                    }
+                }, 500);
+
+                BleManager.getInstance().notify(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f6-0000-1000-8000-00805f9b34fb", new BleNotifyCallback() {
+                    @Override
+                    public void onNotifySuccess() {
+                        Log.e("onNotifySuccess===", "===");
+                    }
+
+                    @Override
+                    public void onNotifyFailure(BleException exception) {
+                        Log.e("onNotifyFailure===", "===");
+                    }
+
+                    @Override
+                    public void onCharacteristicChanged(byte[] data) {
+//                            byte[] values = characteristic.getValue();
+
+                        Log.e("onCharacteristicChanged", "===0");
+
+
+                        byte[] x = new byte[16];
+                        System.arraycopy(data, 0, x, 0, 16);
+
+                        byte[] mingwen = EncryptUtils.Decrypt(x, Config.newKey);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
+
+                        Log.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
+
+                        String s1 = ConvertUtils.bytes2HexString(mingwen);
+
+                        if(s1.startsWith("0602")){      //获取token
+
+                            token = s1.substring(6, 14);    //0602070C0580E001010406C8D6DC1949
+                            GlobalParameterUtils.getInstance().setToken(ConvertUtils.hexString2Bytes(token));
+
+                            Log.e("token===", isOpen+"==="+token+"==="+s1);
+
+                            if(isOpen){
+                                openLock();
+                            }else{
+                                getLockStatus();
+                            }
+
+                            Toast.makeText(context, "token获取成功", Toast.LENGTH_LONG).show();
+                        }else if(s1.startsWith("0502")){
+                            Log.e("openLock===", "==="+s1);
+
+                            Toast.makeText(context, "开锁成功", Toast.LENGTH_LONG).show();
+                        }else if(s1.startsWith("0508")){
+                            Log.e("closeLock===1", "==="+s1);
+
+                            if("00".equals(s1.substring(6, 8))){
+                                Toast.makeText(context, "关闭成功", Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(context, "关闭失败", Toast.LENGTH_LONG).show();
+                            }
+
+                        }else if(s1.startsWith("050F")){
+                            Log.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
+
+                            if("01".equals(s1.substring(6, 8))){
+                                Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
+                            }
+                        }else if(s1.startsWith("058502")){
+                            Log.e("xiaobiao===", "==="+s1);        //050F0101017A0020782400200F690300
+
+//                            if("01".equals(s1.substring(6, 8))){
+//                                Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
+//                            }else{
+//                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
+//                            }
+                        }
+
+                    }
+                });
+
+
+
+            }
+
+            @Override
+            public void onDisConnected(boolean isActiveDisConnected, com.clj.fastble.data.BleDevice bleDevice, BluetoothGatt gatt, int status) {
+
+                isConnect = false;
+                Log.e("connect=onDisConnected", "==="+isActiveDisConnected);
+
+//                    if (isActiveDisConnected) {
+//                        Toast.makeText(MainActivity.this, getString(R.string.active_disconnected), Toast.LENGTH_LONG).show();
+//                    } else {
+//                        Toast.makeText(MainActivity.this, getString(R.string.disconnected), Toast.LENGTH_LONG).show();
+//                        ObserverManager.getInstance().notifyObserver(bleDevice);
+//                    }
+
+            }
+        });
+    }
+
+    void getBleToken(){
+        String s = new GetTokenTxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("getBleToken===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("getBleToken==onWriteSuc", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("getBleToken=onWriteFail", "==="+exception);
+            }
+        });
+    }
+
+    void getLockStatus(){
+        String s = new GetLockStatusTxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("getLockStatus===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("getLockStatus==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("getLockStatus=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
+    void getXinbiao(){
+        String s = new XinbiaoTxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("getXinbiao===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("getXinbiao==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("getXinbiao=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
+    void openLock() {
+        String s = new OpenLockTxOrder(true).generateString();
+
+//        s= s.substring(0, 18) + token + s.substring(26, 32);
+
+        Log.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("onWriteSuccess===a", current+"==="+total+"==="+justWrite);
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("onWriteFailure===a", "==="+exception);
+            }
+        });
+    }
+
     @OnClick(R.id.mainUI_title_backBtn)
     void back() {
         scrollToFinishActivity();
@@ -367,32 +645,32 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     protected void onResume() {
         super.onResume();
         isChangePsd = false;
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                scanDevice();
-            }
-        }, 500);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                scanDevice();
+//            }
+//        }, 500);
     }
 
-    public void scanDevice() {
-        bluetoothDeviceList.clear();
-        bleDeviceList.clear();
-        requestPermission(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
-    }
-
-    @Override
-    public void onScanDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
-        if (!bluetoothDeviceList.contains(device)) {
-            bluetoothDeviceList.add(device);
-            bleDevice = new BleDevice(device, scanRecord, rssi);
-            bleDeviceList.add(bleDevice);
-        }
-        if (address.equals(device.getAddress())) {
-            isStop = true;
-            BaseApplication.getInstance().getIBLE().stopScan();
-        }
-    }
+//    public void scanDevice() {
+//        bluetoothDeviceList.clear();
+//        bleDeviceList.clear();
+//        requestPermission(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+//    }
+//
+//    @Override
+//    public void onScanDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
+//        if (!bluetoothDeviceList.contains(device)) {
+//            bluetoothDeviceList.add(device);
+//            bleDevice = new BleDevice(device, scanRecord, rssi);
+//            bleDeviceList.add(bleDevice);
+//        }
+//        if (address.equals(device.getAddress())) {
+//            isStop = true;
+//            BaseApplication.getInstance().getIBLE().stopScan();
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
@@ -401,16 +679,26 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
             unregisterReceiver(broadcastReceiver);
             broadcastReceiver = null;
         }
-        isStop = true;
-        m_myHandler.removeCallbacksAndMessages(null);
-        BaseApplication.getInstance().getIBLE().stopScan();
+//        isStop = true;
+//        m_myHandler.removeCallbacksAndMessages(null);
+//        BaseApplication.getInstance().getIBLE().stopScan();
+
+        BleManager.getInstance().disconnectAllDevice();
+        BleManager.getInstance().destroy();
+
+        Log.e("onDestroy===", "===");
+
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        BaseApplication.getInstance().getIBLE().close();
-        isStop = true;
+//        BaseApplication.getInstance().getIBLE().close();
+//        isStop = true;
+
+        Log.e("onBackPressed===", "===");
+
+        scrollToFinishActivity();
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -694,18 +982,43 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     void open() {
 
 
-        BaseApplication.getInstance().getIBLE().openLock();
+//        BaseApplication.getInstance().getIBLE().openLock();
+
+        Log.e("open===", "==="+isConnect);
+
+        isOpen =true;
+        if(isConnect){
+
+            if(token==null || "".equals(token)){
+                getBleToken();
+            }else{
+                openLock();
+            }
+
+        }else{
+            connect();
+        }
     }
 
     @OnClick(R.id.bt_close)
     void close() {
-        BaseApplication.getInstance().getIBLE().resetLock();
+//        BaseApplication.getInstance().getIBLE().resetLock();
     }
 
 
     @OnClick(R.id.bt_status)
     void status() {
-        BaseApplication.getInstance().getIBLE().getLockStatus();
+//        BaseApplication.getInstance().getIBLE().getLockStatus();
+
+        Log.e("status===", "==="+isConnect);
+
+
+        if(isConnect){
+            getLockStatus();
+        }else{
+            isOpen = false;
+            connect();
+        }
     }
 
 //    @OnClick(R.id.bt_wx)

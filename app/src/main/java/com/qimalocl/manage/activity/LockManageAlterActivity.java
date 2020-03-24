@@ -155,12 +155,6 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
         setContentView(R.layout.activity_lock_manage);
 
         BleManager.getInstance().init(getApplication());
-//        BleManager.getInstance()
-//                .enableLog(true)
-//                .setReConnectCount(10, 10000)
-//                .setConnectOverTime(20000)
-//                .setOperateTimeout(10000);
-
         BleManager.getInstance()
                 .enableLog(true)
                 .setReConnectCount(10, 5000)
@@ -171,7 +165,7 @@ public class LockManageAlterActivity extends MPermissionsActivity implements OnC
 //        BleManager.getInstance().destroy();
 
         ButterKnife.bind(this);
-        registerReceiver(broadcastReceiver, Config.initFilter());
+//        registerReceiver(broadcastReceiver, Config.initFilter());
         appVersion.setText("Version:" + ToolsUtils.getVersion(getApplicationContext()));
         btAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
