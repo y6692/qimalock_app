@@ -73,9 +73,11 @@ public class DeviceSelectActivity extends Activity {
 
     @OnClick(R.id.bt1)
     void bt1() {
+        SharedPreferencesUrls.getInstance().putString("type", "9");
+
         Intent intent = new Intent();
         intent.setClass(context, DeviceListActivity.class);
-        intent.putExtra("isChange",true);
+//        intent.putExtra("isChange",true);
         intent.putExtra("title",bt1.getText());
         startActivity(intent);
 //        UIHelper.goToAct(context, DeviceListActivity.class);
@@ -83,24 +85,35 @@ public class DeviceSelectActivity extends Activity {
 
     @OnClick(R.id.bt1_2)
     void bt1_2() {
+
+
         Intent intent = new Intent();
         intent.setClass(context, DeviceListActivity.class);
-        intent.putExtra("isChange",false);
+//        intent.putExtra("isChange",false);
         startActivity(intent);
 //        UIHelper.goToAct(context, DeviceListActivity.class);
     }
 
     @OnClick(R.id.bt2)
     void bt2() {
-        SharedPreferencesUrls.getInstance().putString("type", "5");
-//        UIHelper.goToAct(context, DeviceDetailActivity.class);
-        UIHelper.goToAct(context, DeviceList2Activity.class);
+        SharedPreferencesUrls.getInstance().putString("type", "6");
+//        UIHelper.goToAct(context, DeviceListActivity.class);
+
+        Intent intent = new Intent();
+        intent.setClass(context, DeviceListActivity.class);
+        intent.putExtra("title", bt2.getText());
+        startActivity(intent);
     }
 
     @OnClick(R.id.bt3)
     void bt3() {
-        SharedPreferencesUrls.getInstance().putString("type", "6");
-        UIHelper.goToAct(context, DeviceList3Activity.class);
+        SharedPreferencesUrls.getInstance().putString("type", "5");
+//        UIHelper.goToAct(context, DeviceList3Activity.class);
+
+        Intent intent = new Intent();
+        intent.setClass(context, DeviceListActivity.class);
+        intent.putExtra("title", bt3.getText());
+        startActivity(intent);
     }
 
     @OnClick(R.id.bt4)

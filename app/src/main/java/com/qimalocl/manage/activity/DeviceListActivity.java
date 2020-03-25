@@ -44,6 +44,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class DeviceListActivity extends MPermissionsActivity{
+//    @BindView(R.id.mainUI_title_backBtn)
+//    TextView tvScan;
     @BindView(R.id.tv_scan)
     TextView tvScan;
     @BindView(R.id.bt_scan)
@@ -63,9 +65,11 @@ public class DeviceListActivity extends MPermissionsActivity{
     private List<String> macList = new ArrayList<>();
     private BleDevice bleDevice;
     private boolean isChange = false;
+    private boolean isFresh = false;
     private String title;
 
     private long timeout = 10000;
+    private float degree;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +85,12 @@ public class DeviceListActivity extends MPermissionsActivity{
         setContentView(R.layout.ui_device_list);
         ButterKnife.bind(this);
 
-        isChange = getIntent().getBooleanExtra("isChange", false);
+//        isChange = getIntent().getBooleanExtra("isChange", false);
         title = getIntent().getStringExtra("title");
 
         initWidget();
+
+        thread.start();
     }
 
     private void initWidget() {
@@ -113,7 +119,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                 Bundle bundle = new Bundle();
                 bundle.putString("name", name);
                 bundle.putString("mac", address);
-                bundle.putString("type", "2");
+//                bundle.putString("type", "2");
 
                 Log.e("DLA===", "==="+isChange);
 
@@ -150,7 +156,7 @@ public class DeviceListActivity extends MPermissionsActivity{
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
 //                .setServiceUuids(serviceUuids)      // 只扫描指定的服务的设备，可选
 //                .setDeviceName(true, names)   // 只扫描指定广播名的设备，可选
-//				.setDeviceMac(address)                  // 只扫描指定mac的设备，可选
+//				  .setDeviceMac(address)                  // 只扫描指定mac的设备，可选
 //                .setAutoConnect(true)                 // 连接时的autoConnect参数，可选，默认false
                 .setScanTimeOut(timeout)              // 扫描超时时间，可选，默认10秒
                 .build();
@@ -231,6 +237,8 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                img_loading.setVisibility(View.INVISIBLE);
 //                btn_scan.setText(getString(R.string.start_scan));
 
+                isFresh = false;
+
                 Log.e("mf===onScanFinished", scanResultList+"==="+scanResultList.size());
             }
         });
@@ -239,24 +247,36 @@ public class DeviceListActivity extends MPermissionsActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        BleManager.getInstance().cancelScan();
         finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                scanDevice();
-            }
-        }, 500);
+        scanDevice();
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                scanDevice();
+//            }
+//        }, 500);
+    }
+
+    @OnClick(R.id.mainUI_title_backBtn)
+    void back() {
+        BleManager.getInstance().cancelScan();
+        finish();
     }
 
     @OnClick(R.id.bt_scan)
     void scanDevice() {
 //        macList.clear();
 //        adapterList.clear();
+
+
+        isFresh = true;
+
 
         BleManager.getInstance().cancelScan();
         scan();
@@ -268,6 +288,54 @@ public class DeviceListActivity extends MPermissionsActivity{
 //            requestPermission(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
         }
     }
+
+    Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+
+            while (true){
+
+                try {
+                    Thread.sleep(1 * 20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
+
+                if(isFresh){
+//                    Log.e("sf===thread", isFresh + "===");
+
+                    degree = (degree+30)%360;
+                    m_myHandler.sendEmptyMessage(1);
+                }
+
+            }
+
+        }
+    });
+
+    protected Handler m_myHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message mes) {
+            switch (mes.what) {
+                case 0:
+                    break;
+
+                case 1:
+                    btScan.setPivotX(btScan.getWidth()/2);
+                    btScan.setPivotY(btScan.getHeight()/2);//支点在图片中心
+                    btScan.setRotation(degree);
+
+                    break;
+
+
+                default:
+                    break;
+            }
+            return false;
+        }
+    });
 
 //    @Override
 //    public void permissionSuccess(int requestCode) {

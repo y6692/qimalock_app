@@ -177,6 +177,8 @@ public class LockStorageActivity extends MPermissionsActivity {
     private boolean isMac = false;
     private boolean isFind = false;
 
+    private int isStorage;
+
 //    private boolean mConnected = false;
 
     private String keySource = "";
@@ -262,8 +264,9 @@ public class LockStorageActivity extends MPermissionsActivity {
                 }
             }
         });
-        type = getIntent().getStringExtra("type");
-        if("2".equals(type) || "3".equals(type)){
+//        type = getIntent().getStringExtra("type");
+        type = SharedPreferencesUrls.getInstance().getString("type", "");
+        if("2".equals(type) || "3".equals(type) || "9".equals(type)){
             name = getIntent().getStringExtra("name");
         }else{
             name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
@@ -461,14 +464,19 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                             KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
 
-                            tvType.setText("是否入库："+(bean.getType()==1?"是":"否"));
+                            isStorage = bean.getType();
+
+                            tvType.setText("是否入库："+(isStorage==1?"是":"否"));
                             Config.key = hexStringToByteArray(bean.getLock_secretkey());
                             Config.password = hexStringToByteArray(bean.getLock_password());
 
                             if (!TextUtils.isEmpty(mac)) {
 //                              BaseApplication.getInstance().getIBLE().connect(address, this);
 
-                                if("2".equals(type) || "3".equals(type)){
+                                loadingDialog.setTitle("正在连接");
+                                loadingDialog.show();
+
+                                if("2".equals(type) || "3".equals(type) || "9".equals(type)){
                                     m_myHandler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -499,7 +507,7 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                                                                 connectDevice();
                                                                 ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-//                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
+                                                                ClientManager.getClient().notifyClose(mac, mCloseListener);
 
 
                                                             }
@@ -531,8 +539,7 @@ public class LockStorageActivity extends MPermissionsActivity {
     //type2、3
     void connect(){
 //        loadingDialog = DialogUtils.getLoadingDialog(this, "正在连接...");
-        loadingDialog.setTitle("正在连接");
-        loadingDialog.show();
+
 
         BleManager.getInstance().connect(mac, new BleGattCallback() {
             @Override
@@ -818,13 +825,15 @@ public class LockStorageActivity extends MPermissionsActivity {
                 isStop = false;
                 isConnect = false;
 
-                com.qimalocl.manage.utils.UIHelper.dismiss();
+//                com.qimalocl.manage.utils.UIHelper.dismiss();
 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         Log.e("connect===fail", Code.toString(code));
-                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+//                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+                        ToastUtil.showMessageApp(context, Code.toString(code));
+                        closeLoadingDialog();
                     }
                 });
 
@@ -837,7 +846,7 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                 tvStatus.setText(getText(R.string.connect_status) + "Connected");
 
-                com.qimalocl.manage.utils.UIHelper.dismiss();
+//                com.qimalocl.manage.utils.UIHelper.dismiss();
 
                 Log.e("connect===Success", "===");
 
@@ -848,7 +857,7 @@ public class LockStorageActivity extends MPermissionsActivity {
 //                        refreshData(true);
 
                         if (Globals.bType == 1) {
-                            com.qimalocl.manage.utils.UIHelper.showProgress(context, "正在关锁中");
+//                            com.qimalocl.manage.utils.UIHelper.showProgress(context, "正在关锁中");
                             getBleRecord();
                         }
                     }
@@ -868,12 +877,12 @@ public class LockStorageActivity extends MPermissionsActivity {
 
     //与设备，获取记录
     private void getBleRecord() {
-        m_myHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                com.qimalocl.manage.utils.UIHelper.showProgress(context, "get_bike_record");
-            }
-        });
+//        m_myHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                com.qimalocl.manage.utils.UIHelper.showProgress(context, "get_bike_record");
+//            }
+//        });
 
         ClientManager.getClient().getRecord(mac, new IGetRecordResponse() {
             @Override
@@ -881,7 +890,9 @@ public class LockStorageActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        Log.e("getBleRecord===suc", "");
+
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
                         deleteBleRecord(bikeTradeNo);
 //                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
                     }
@@ -894,8 +905,11 @@ public class LockStorageActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
-                        com.qimalocl.manage.utils.UIHelper.showToast(context, "record empty");
+                        Log.e("getBleRecord===Empty", "");
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
+//                        com.qimalocl.manage.utils.UIHelper.showToast(context, "record empty");
+
+//                        closeLoadingDialog();
                     }
                 });
 
@@ -907,8 +921,11 @@ public class LockStorageActivity extends MPermissionsActivity {
                     @Override
                     public void run() {
                         Log.e("getBleRecord===", Code.toString(code));
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
-                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
+//                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+
+                        ToastUtil.showMessageApp(context, Code.toString(code));
+                        closeLoadingDialog();
                     }
                 });
 
@@ -918,12 +935,12 @@ public class LockStorageActivity extends MPermissionsActivity {
 
     //与设备，删除记录
     private void deleteBleRecord(String tradeNo) {
-        m_myHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                com.qimalocl.manage.utils.UIHelper.showProgress(context, "delete_bike_record");
-            }
-        });
+//        m_myHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                com.qimalocl.manage.utils.UIHelper.showProgress(context, "delete_bike_record");
+//            }
+//        });
 
         ClientManager.getClient().deleteRecord(mac, tradeNo, new IGetRecordResponse() {
             @Override
@@ -931,7 +948,9 @@ public class LockStorageActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        Log.e("deleteBleRecord===suc", "");
+
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
 //                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
                         deleteBleRecord(bikeTradeNo);
                     }
@@ -944,7 +963,12 @@ public class LockStorageActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        Log.e("deleteBleRecord===Empty", "");
+
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
+
+//                        ToastUtil.showMessageApp(context, Code.toString(code));
+                        closeLoadingDialog();
 
 //                        if(Globals.bType == 1) {
 //                            Globals.bType = 0;
@@ -965,8 +989,11 @@ public class LockStorageActivity extends MPermissionsActivity {
                     @Override
                     public void run() {
                         Log.e("deleteBleRecord===f", Code.toString(code));
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
-                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
+//                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+
+                        ToastUtil.showMessageApp(context, Code.toString(code));
+                        closeLoadingDialog();
                     }
                 });
 
@@ -1037,12 +1064,12 @@ public class LockStorageActivity extends MPermissionsActivity {
 
     //与设备，开锁
     private void openBleLock(RRent.ResultBean resultBean) {
-        m_myHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                com.qimalocl.manage.utils.UIHelper.showProgress(context, "open_bike_status");
-            }
-        });
+//        m_myHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                com.qimalocl.manage.utils.UIHelper.showProgress(context, "open_bike_status");
+//            }
+//        });
 
 //        ClientManager.getClient().openLock(mac, "18112348925", resultBean.getServerTime(),
 
@@ -1056,8 +1083,12 @@ public class LockStorageActivity extends MPermissionsActivity {
                     @Override
                     public void run() {
                         Log.e("scan===openBleLock1", code+"==="+Code.toString(code));
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
-                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
+//                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+
+                        ToastUtil.showMessageApp(context, Code.toString(code));
+                        closeLoadingDialog();
+
                         getBleRecord();
                     }
                 });
@@ -1070,8 +1101,42 @@ public class LockStorageActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        com.qimalocl.manage.utils.UIHelper.dismiss();
+//                        com.qimalocl.manage.utils.UIHelper.dismiss();
                         getBleRecord();
+
+                        closeLoadingDialog();
+                        ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
+
+
+                        if(isStorage==0){
+                            CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                            customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
+                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+
+                                        }
+                                    }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+
+                                            Log.e("sf===onC", "==="+type);
+
+//                                            carbadaction(3);
+
+                                            Intent intent = new Intent();
+
+                                            intent.setClass(context, ActivityScanerCode.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                            intent.putExtra("isChangeKey",false);
+                                            intent.putExtra("isAdd",true);
+
+                                            startActivityForResult(intent, 1);
+
+                                        }
+                                    });
+                            customBuilder.create().show();
+                        }
                     }
                 });
 
@@ -1088,8 +1153,11 @@ public class LockStorageActivity extends MPermissionsActivity {
                 public void run() {
                     Log.e("onNotifyClose===", "====");
 
-                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
+//                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
 //                    tvOpen.setText("开锁");
+
+                    ToastUtil.showMessageApp(context,"锁已关闭");
+
                     getBleRecord();
                 }
             });
@@ -1129,7 +1197,6 @@ public class LockStorageActivity extends MPermissionsActivity {
         if (loadingDialog != null && loadingDialog.isShowing()){
             loadingDialog.dismiss();
         }
-
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
@@ -1179,7 +1246,7 @@ public class LockStorageActivity extends MPermissionsActivity {
 //        m_myHandler.removeCallbacksAndMessages(null);
 //        BaseApplication.getInstance().getIBLE().stopScan();
 
-        if("2".equals(type) || "3".equals(type)){
+        if("2".equals(type) || "3".equals(type) || "9".equals(type)){
             BleManager.getInstance().disconnectAllDevice();
             BleManager.getInstance().destroy();
         }else{
@@ -1497,9 +1564,12 @@ public class LockStorageActivity extends MPermissionsActivity {
 
         Log.e("open===", type+"==="+isConnect+"==="+mac+"==="+token);
 
+        if (loadingDialog != null && !loadingDialog.isShowing()) {
+            loadingDialog.setTitle("正在唤醒车锁");
+            loadingDialog.show();
+        }
 
-
-        if("2".equals(type) || "3".equals(type)){
+        if("2".equals(type) || "3".equals(type) || "9".equals(type)){
 
             isOpen =true;
             if(isConnect){
@@ -1517,13 +1587,15 @@ public class LockStorageActivity extends MPermissionsActivity {
             if(isConnect){
                 ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
                     @Override
-                    public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
+                    public void onResponseSuccess(String version, String keySerial, String macKey, final String vol) {
                         keySource = keySerial;
 
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                com.qimalocl.manage.utils.UIHelper.dismiss();
+//                                com.qimalocl.manage.utils.UIHelper.dismiss();
+                                tvBattery.setText("电池电量：" + vol + "V");
+
                                 rent();
                             }
                         });
@@ -1536,8 +1608,11 @@ public class LockStorageActivity extends MPermissionsActivity {
                             @Override
                             public void run() {
                                 Log.e("getStatus===f", Code.toString(code));
-                                com.qimalocl.manage.utils.UIHelper.dismiss();
-                                com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+//                                com.qimalocl.manage.utils.UIHelper.dismiss();
+//                                com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+
+                                ToastUtil.showMessageApp(context, Code.toString(code));
+                                closeLoadingDialog();
                             }
                         });
                     }

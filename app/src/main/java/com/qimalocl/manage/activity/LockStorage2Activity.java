@@ -156,8 +156,6 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
         registerReceiver(broadcastReceiver, Config.initFilter());
         appVersion.setText("Version:" + ToolsUtils.getVersion(getApplicationContext()));
 
-
-
         btAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
