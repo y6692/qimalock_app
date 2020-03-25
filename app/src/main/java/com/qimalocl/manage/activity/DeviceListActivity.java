@@ -102,7 +102,8 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
 
                 Bundle bundle = new Bundle();
                 bundle.putString("name", name);
-                bundle.putString("address", address);
+                bundle.putString("mac", address);
+                bundle.putString("type", "2");
 
                 Log.e("DLA===", "==="+isChange);
 

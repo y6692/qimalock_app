@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.DeviceDetailActivity;
+import com.qimalocl.manage.activity.LockStorageActivity;
 import com.sofi.blelocker.library.search.SearchResult;
 import com.sofi.blelocker.library.utils.StringUtils;
 
@@ -91,9 +92,11 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
         public void onItemClick() {
             final SearchResult result = (SearchResult) mDataList.get(getAdapterPosition());
             Intent intent = new Intent();
-            intent.setClass(mContext, DeviceDetailActivity.class);
+//            intent.setClass(mContext, DeviceDetailActivity.class);
+            intent.setClass(mContext, LockStorageActivity.class);
             intent.putExtra("mac", result.getAddress());
             intent.putExtra("name", result.getName());
+            intent.putExtra("type", "5");
             mContext.startActivity(intent);
             mActivity.finish();
         }

@@ -47,6 +47,7 @@ import com.fitsleep.sunshinelibrary.utils.Logger;
 import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
 import com.fitsleep.sunshinelibrary.utils.UtilSharedPreference;
+import com.http.rdata.RRent;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -59,7 +60,21 @@ import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.ClearEditText;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.Globals;
+import com.qimalocl.manage.utils.ToastUtil;
+import com.sofi.blelocker.library.Code;
+import com.sofi.blelocker.library.connect.listener.BleConnectStatusListener;
+import com.sofi.blelocker.library.connect.options.BleConnectOptions;
+import com.sofi.blelocker.library.model.BleGattProfile;
+import com.sofi.blelocker.library.protocol.ICloseListener;
+import com.sofi.blelocker.library.protocol.IConnectResponse;
+import com.sofi.blelocker.library.protocol.IEmptyResponse;
+import com.sofi.blelocker.library.protocol.IGetRecordResponse;
+import com.sofi.blelocker.library.protocol.IGetStatusResponse;
+import com.sofi.blelocker.library.utils.BluetoothLog;
+import com.sofi.blelocker.library.utils.StringUtils;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
@@ -77,12 +92,14 @@ import org.apache.http.Header;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.fitsleep.sunshinelibrary.utils.EncryptUtils.Encrypt;
+import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
 
 //已改密钥密码
 @SuppressLint("NewApi")
@@ -130,8 +147,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     ClearEditText edbikeNum;
 
     private int count = 0;
+    private String type;
     private String name;
-    private String address;
+    private String mac;
     private boolean isAuto;
     private Dialog loadingDialog;
     private Dialog loadingDialog2;
@@ -155,6 +173,16 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     private boolean isOpen = false;
     private boolean isMac = false;
     private boolean isFind = false;
+
+//    private boolean mConnected = false;
+
+    private String keySource = "";
+    //密钥索引
+    int encryptionKey= 0;
+    //开锁密钥
+    String keys = null;
+    //服务器时间戳，精确到秒，用于锁同步时间
+    long serverTime;
 
     public static byte[] hexStringToByteArray(String str) {
         if(str == null || str.trim().equals("")) {
@@ -230,9 +258,17 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 }
             }
         });
-        name = getIntent().getStringExtra("name");
-        address = getIntent().getStringExtra("address");
+        type = getIntent().getStringExtra("type");
+        if("2".equals(type) || "3".equals(type)){
+            name = getIntent().getStringExtra("name");
+        }else{
+            name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
+        }
+
+        mac = getIntent().getStringExtra("mac");
         codenum = getIntent().getStringExtra("codenum");
+
+
 
 //        BaseApplication.getInstance().getIBLE().setChangKey(true);
 //        BaseApplication.getInstance().getIBLE().setChangKey(false);
@@ -241,16 +277,18 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
-        tvAddress.setText("MAC:" + address);
+        tvName.setText("Name:" + name);
+        tvAddress.setText("MAC:" + mac);
 
-        Log.e("LockStorageActivity===", name+"==="+address+"==="+codenum);
+        Log.e("LockStorageActivity===", name+"==="+mac+"==="+codenum);
 
-        if (!TextUtils.isEmpty(address)) {
+        if (!TextUtils.isEmpty(mac)) {
 //            BaseApplication.getInstance().getIBLE().connect(address, this);
 
-            m_myHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+            if("2".equals(type) || "3".equals(type)){
+                m_myHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
 //                    if(isMac){
 //                        connect();
 //                    }else{
@@ -259,9 +297,41 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 //                        scan();
 //                    }
 
-                    connect();
-                }
-            }, 0 * 1000);
+                        connect();
+                    }
+                }, 0 * 1000);
+            }else{
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+
+                                    m_myHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+                                            connectDevice();
+                                            ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+//                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
+
+
+                                        }
+                                    }, 0 * 1000);
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+
+
+
         }
 //        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
 //        loadingDialog.show();
@@ -411,12 +481,13 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
     }
 
+    //type2、3
     void connect(){
 //        loadingDialog = DialogUtils.getLoadingDialog(this, "正在连接...");
         loadingDialog.setTitle("正在连接");
         loadingDialog.show();
 
-        BleManager.getInstance().connect(address, new BleGattCallback() {
+        BleManager.getInstance().connect(mac, new BleGattCallback() {
             @Override
             public void onStartConnect() {
                 Log.e("onStartConnect===", "===");
@@ -445,8 +516,6 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 Log.e("onConnectSuccess===", bleDevice.getMac()+"===");
                 Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
 
-
-                tvName.setText("Name:" + name);
                 tvStatus.setText(getText(R.string.connect_status) + "Connected");
 
                 m_myHandler.postDelayed(new Runnable() {
@@ -615,6 +684,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     }
 
     void openLock() {
+        Log.e("openLock===", type+"==="+isConnect+"==="+mac);
+
+
         String s = new OpenLockTxOrder(true).generateString();
 
 //        s= s.substring(0, 18) + token + s.substring(26, 32);
@@ -634,6 +706,343 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 Log.e("onWriteFailure===a", "==="+exception);
             }
         });
+
+
+
+
+    }
+
+
+
+    //type5、6   连接设备
+    private void connectDevice() {
+        BleConnectOptions options = new BleConnectOptions.Builder()
+                .setConnectRetry(1)
+                .setConnectTimeout(10000)
+                .setServiceDiscoverRetry(1)
+                .setServiceDiscoverTimeout(10000)
+                .setEnableNotifyRetry(1)
+                .setEnableNotifyTimeout(10000)
+                .build();
+
+        ClientManager.getClient().connect(mac, options, new IConnectResponse() {
+            @Override
+            public void onResponseFail(final int code) {
+                isStop = false;
+                isConnect = false;
+
+                com.qimalocl.manage.utils.UIHelper.dismiss();
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("connect===fail", Code.toString(code));
+                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponseSuccess(BleGattProfile profile) {
+                isStop = true;
+                isConnect = true;
+
+                tvStatus.setText(getText(R.string.connect_status) + "Connected");
+
+                com.qimalocl.manage.utils.UIHelper.dismiss();
+
+                Log.e("connect===Success", "===");
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+//                        BluetoothLog.v(String.format("profile:\n%s", profile));
+//                        refreshData(true);
+
+                        if (Globals.bType == 1) {
+                            com.qimalocl.manage.utils.UIHelper.showProgress(context, "正在关锁中");
+                            getBleRecord();
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void connectDeviceIfNeeded() {
+        if (!isConnect) {
+            connectDevice();
+        } else {
+            ClientManager.getClient().stopSearch();
+        }
+    }
+
+    //与设备，获取记录
+    private void getBleRecord() {
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                com.qimalocl.manage.utils.UIHelper.showProgress(context, "get_bike_record");
+            }
+        });
+
+        ClientManager.getClient().getRecord(mac, new IGetRecordResponse() {
+            @Override
+            public void onResponseSuccess(String phone, final String bikeTradeNo, String timestamp, String transType, String mackey, String index, final int Major, final int Minor, String vol) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        deleteBleRecord(bikeTradeNo);
+//                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponseSuccessEmpty() {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        com.qimalocl.manage.utils.UIHelper.showToast(context, "record empty");
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("getBleRecord===", Code.toString(code));
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+                    }
+                });
+
+            }
+        });
+    }
+
+    //与设备，删除记录
+    private void deleteBleRecord(String tradeNo) {
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                com.qimalocl.manage.utils.UIHelper.showProgress(context, "delete_bike_record");
+            }
+        });
+
+        ClientManager.getClient().deleteRecord(mac, tradeNo, new IGetRecordResponse() {
+            @Override
+            public void onResponseSuccess(String phone, final String bikeTradeNo, String timestamp, String transType, String mackey, String index, final int Major, final int Minor, String vol) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+//                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
+                        deleteBleRecord(bikeTradeNo);
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponseSuccessEmpty() {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+
+//                        if(Globals.bType == 1) {
+//                            Globals.bType = 0;
+//                            tvOpen.setText("开锁");
+//                        }
+//                        else {
+//                            Globals.bType = 1;
+//                            tvOpen.setText("已开锁");
+//                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("deleteBleRecord===f", Code.toString(code));
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+                    }
+                });
+
+
+            }
+        });
+    }
+
+    protected void rent(){
+        Log.e("rent===000",mac+"==="+name+"==="+keySource);
+
+        RequestParams params = new RequestParams();
+        params.put("lock_no", name);
+//        params.put("macinfo", mac);
+        params.put("keySource",keySource);
+        HttpHelper.get(context, Urls.rent, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+//                onStartCommon("正在提交");
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.e("rent===","==="+responseString);
+
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
+
+//                            if (loadingDialog != null && loadingDialog.isShowing()){
+//                                loadingDialog.dismiss();
+//                            }
+
+                            encryptionKey = bean.getEncryptionKey();
+                            keys = bean.getKeys();
+                            serverTime = bean.getServerTime();
+
+                            Log.e("rent===", mac+"==="+encryptionKey+"==="+keys);
+
+//                                getBleRecord();
+
+//                            iv_help.setVisibility(View.GONE);
+
+                            openBleLock(null);
+
+                        }catch (Exception e){
+                            closeLoadingDialog();
+                        }
+
+
+                    }
+                });
+
+
+
+            }
+        });
+    }
+
+    //与设备，开锁
+    private void openBleLock(RRent.ResultBean resultBean) {
+        m_myHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                com.qimalocl.manage.utils.UIHelper.showProgress(context, "open_bike_status");
+            }
+        });
+
+//        ClientManager.getClient().openLock(mac, "18112348925", resultBean.getServerTime(),
+
+        Log.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
+
+        ClientManager.getClient().openLock(mac,"000000000000", (int) serverTime, keys, encryptionKey, new IEmptyResponse(){
+            //        ClientManager.getClient().openLock(mac,"000000000000", resultBean.getServerTime(), resultBean.getKeys(), resultBean.getEncryptionKey(), new IEmptyResponse(){
+            @Override
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("scan===openBleLock1", code+"==="+Code.toString(code));
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+                        getBleRecord();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponseSuccess() {
+                Log.e("scan===openBleLock2", "===");
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        com.qimalocl.manage.utils.UIHelper.dismiss();
+                        getBleRecord();
+                    }
+                });
+
+            }
+        });
+    }
+
+    //监听锁关闭事件
+    private final ICloseListener mCloseListener = new ICloseListener() {
+        @Override
+        public void onNotifyClose() {
+            m_myHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e("onNotifyClose===", "====");
+
+                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
+//                    tvOpen.setText("开锁");
+                    getBleRecord();
+                }
+            });
+
+        }
+    };
+
+    //监听当前连接状态
+    private final BleConnectStatusListener mConnectStatusListener = new BleConnectStatusListener() {
+        @Override
+        public void onConnectStatusChanged(String mac, final int status) {
+            m_myHandler.post(new Runnable() {
+                @Override
+                public void run() {
+//                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onConnectStatusChanged %d in %s", status, Thread.currentThread().getName()));
+
+                    Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
+
+                    if(status == STATUS_CONNECTED){
+//                        refreshData(true);
+
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+
+
+                    Globals.isBleConnected = isConnect = (status == STATUS_CONNECTED);
+                    connectDeviceIfNeeded();
+                }
+            });
+
+        }
+    };
+
+    void closeLoadingDialog(){
+        if (loadingDialog != null && loadingDialog.isShowing()){
+            loadingDialog.dismiss();
+        }
+
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
@@ -675,16 +1084,31 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (broadcastReceiver != null) {
-            unregisterReceiver(broadcastReceiver);
-            broadcastReceiver = null;
-        }
+//        if (broadcastReceiver != null) {
+//            unregisterReceiver(broadcastReceiver);
+//            broadcastReceiver = null;
+//        }
 //        isStop = true;
 //        m_myHandler.removeCallbacksAndMessages(null);
 //        BaseApplication.getInstance().getIBLE().stopScan();
 
-        BleManager.getInstance().disconnectAllDevice();
-        BleManager.getInstance().destroy();
+        if("2".equals(type) || "3".equals(type)){
+            BleManager.getInstance().disconnectAllDevice();
+            BleManager.getInstance().destroy();
+        }else{
+            ClientManager.getClient().stopSearch();
+            ClientManager.getClient().disconnect(mac);
+            ClientManager.getClient().disconnect(mac);
+            ClientManager.getClient().disconnect(mac);
+            ClientManager.getClient().disconnect(mac);
+            ClientManager.getClient().disconnect(mac);
+            ClientManager.getClient().disconnect(mac);
+            ClientManager.getClient().unnotifyClose(mac, mCloseListener);
+            ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
+        }
+
+
+
 
         Log.e("onDestroy===", "===");
 
@@ -984,20 +1408,59 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
 //        BaseApplication.getInstance().getIBLE().openLock();
 
-        Log.e("open===", "==="+isConnect);
+        Log.e("open===", type+"==="+isConnect+"==="+mac);
 
-        isOpen =true;
-        if(isConnect){
 
-            if(token==null || "".equals(token)){
-                getBleToken();
+
+        if("2".equals(type) || "3".equals(type)){
+
+            isOpen =true;
+            if(isConnect){
+
+                if(token==null || "".equals(token)){
+                    getBleToken();
+                }else{
+                    openLock();
+                }
+
             }else{
-                openLock();
+                connect();
             }
-
         }else{
-            connect();
+            if(isConnect){
+                ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
+                    @Override
+                    public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
+                        keySource = keySerial;
+
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                com.qimalocl.manage.utils.UIHelper.dismiss();
+                                rent();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponseFail(final int code) {
+
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.e("getStatus===f", Code.toString(code));
+                                com.qimalocl.manage.utils.UIHelper.dismiss();
+                                com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
+                            }
+                        });
+                    }
+
+                });
+            }else{
+                connectDevice();
+            }
         }
+
     }
 
     @OnClick(R.id.bt_close)
@@ -1055,7 +1518,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         public boolean handleMessage(Message mes) {
             switch (mes.what) {
                 case 0:
-                    BaseApplication.getInstance().getIBLE().connect(address, LockStorageActivity.this);
+                    BaseApplication.getInstance().getIBLE().connect(mac, LockStorageActivity.this);
                     break;
                 case 1:
                     break;
@@ -1099,9 +1562,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
             params.put("access_token",access_token);
             params.put("tokencode",result);    //二维码链接地址
             params.put("codenum",codenum);     //车辆编号
-            params.put("macinfo",address);    //mac地址
+            params.put("macinfo",mac);    //mac地址
 
-            Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+codenum+"==="+address);
+            Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+codenum+"==="+mac);
 
             HttpHelper.post(context, Urls.addCar, params, new TextHttpResponseHandler() {
                 @Override
