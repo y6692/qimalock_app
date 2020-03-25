@@ -88,6 +88,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppBlackTheme">
 
+
+        </activity>
+
+        <activity
+            android:name=".activity.DeviceSelectActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -236,13 +244,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
-        <activity
-            android:name=".activity.DeviceSelectActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden" >
 
-
-        </activity>
 
 
 

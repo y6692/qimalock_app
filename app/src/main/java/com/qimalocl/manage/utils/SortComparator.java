@@ -1,6 +1,7 @@
 package com.qimalocl.manage.utils;
 
-import com.qimalocl.manage.model.BleDevice;
+
+import com.clj.fastble.data.BleDevice;
 
 import java.util.Comparator;
 
@@ -15,6 +16,6 @@ public class SortComparator implements Comparator {
         BleDevice a = (BleDevice) o;
         BleDevice b = (BleDevice) t1;
 
-        return (b.getRiss()- a.getRiss());
+        return (b.getRssi()- a.getRssi());
     }
 }

@@ -13,8 +13,8 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-    public static String host2 = HTTPS + "newmapi.7mate.cn/api";
-//	public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
+//    public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+	public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
 
 	//获取验证码接口
 	public static String verificationcode = host2 + "/verificationcode";
@@ -74,6 +74,9 @@ public class Urls {
 	//报废列表接口
 	public static String carbadaction_scrappedlist = host2 + "/carbadaction/scrappedlist";
 
+	//	车辆相关 - 获取思科秘钥接口
+	public static String lock_info = host2 + "/car/lock_info/";
+//	https://testnewmapi.7mate.cn/api/car/lock_info/{lock_mac}
 
 	/**上传头像*/
 	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";

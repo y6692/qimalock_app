@@ -279,6 +279,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                 }
             }
         });
+
         titleText.setText("锁的信息");
 
         changePsdBtn.setOnClickListener(new View.OnClickListener() {

@@ -79,6 +79,7 @@ import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
+import com.sunshine.blelibrary.mode.BatteryTxOrder;
 import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
 import com.sunshine.blelibrary.mode.GetTokenTxOrder;
 import com.sunshine.blelibrary.mode.OpenLockTxOrder;
@@ -103,17 +104,19 @@ import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
 
 //已改密钥密码
 @SuppressLint("NewApi")
-public class LockStorageActivity extends MPermissionsActivity implements OnConnectionListener {
+public class LockStorageActivity extends MPermissionsActivity {
     @BindView(R.id.tv_name)
     TextView tvName;
     @BindView(R.id.tv_address)
     TextView tvAddress;
     @BindView(R.id.tv_status)
     TextView tvStatus;
-    @BindView(R.id.tv_version)
-    TextView tvVersion;
+    @BindView(R.id.tv_type)
+    TextView tvType;
     @BindView(R.id.tv_battery)
     TextView tvBattery;
+    @BindView(R.id.tv_version)
+    TextView tvVersion;
     @BindView(R.id.tv_cz)
     TextView tvCz;
     @BindView(R.id.open_count)
@@ -197,8 +200,9 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
         Log.e("StringToByte===1", bytes+"==="+bytes[0]);
 
+
         return bytes;
-}
+    }
 
 
     @Override
@@ -220,7 +224,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         appVersion.setText("Version:" + ToolsUtils.getVersion(getApplicationContext()));
 
 
-        hexStringToByteArray("566C230035BBE3827CE40778567B3A7A");
+//        hexStringToByteArray("566C230035BBE3827CE40778567B3A7A");
 
         btAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -271,74 +275,18 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
 
 //        BaseApplication.getInstance().getIBLE().setChangKey(true);
-//        BaseApplication.getInstance().getIBLE().setChangKey(false);
+        BaseApplication.getInstance().getIBLE().setChangKey(false);
+        BaseApplication.getInstance().getIBLE().setChangPsd(false);
 
         loadingDialog = new LoadingDialog(this);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
-        tvName.setText("Name:" + name);
-        tvAddress.setText("MAC:" + mac);
+        titleText.setText("入库");
+        tvName.setText("锁名：" + name);
+        tvAddress.setText("MAC地址：" + mac);
 
         Log.e("LockStorageActivity===", name+"==="+mac+"==="+codenum);
-
-        if (!TextUtils.isEmpty(mac)) {
-//            BaseApplication.getInstance().getIBLE().connect(address, this);
-
-            if("2".equals(type) || "3".equals(type)){
-                m_myHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-//                    if(isMac){
-//                        connect();
-//                    }else{
-//
-//                        setScanRule();
-//                        scan();
-//                    }
-
-                        connect();
-                    }
-                }, 0 * 1000);
-            }else{
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-
-                                    m_myHandler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            connectDevice();
-                                            ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-//                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
-
-
-                                        }
-                                    }, 0 * 1000);
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-            }
-
-
-
-        }
-//        loadingDialog = DialogUtils.getLoadingDialog(this, getString(R.string.loading));
-//        loadingDialog.show();
-
-        titleText.setText("锁的信息");
-
-
 
 
         changePsdBtn.setOnClickListener(new View.OnClickListener() {
@@ -479,6 +427,105 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
             }
         });
 
+
+        lock_info();
+
+
+    }
+
+    protected void lock_info(){
+        Log.e("lock_info===",mac+"===");
+
+//        RequestParams params = new RequestParams();
+//        params.put("lock_mac", mac);
+        HttpHelper.get(context, Urls.lock_info+mac, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+//                onStartCommon("正在提交");
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.e("lock_info===","==="+responseString);
+
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
+
+                            tvType.setText("是否入库："+(bean.getType()==1?"是":"否"));
+                            Config.key = hexStringToByteArray(bean.getLock_secretkey());
+                            Config.password = hexStringToByteArray(bean.getLock_password());
+
+                            if (!TextUtils.isEmpty(mac)) {
+//                              BaseApplication.getInstance().getIBLE().connect(address, this);
+
+                                if("2".equals(type) || "3".equals(type)){
+                                    m_myHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+//                    if(isMac){
+//                        connect();
+//                    }else{
+//
+//                        setScanRule();
+//                        scan();
+//                    }
+
+                                            connect();
+                                        }
+                                    }, 0 * 1000);
+                                }else{
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+
+
+                                                        m_myHandler.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+
+                                                                connectDevice();
+                                                                ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+//                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
+
+
+                                                            }
+                                                        }, 0 * 1000);
+                                                    }
+                                                });
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).start();
+                                }
+                            }
+
+                        }catch (Exception e){
+                            closeLoadingDialog();
+                        }
+
+
+                    }
+                });
+
+
+
+            }
+        });
     }
 
     //type2、3
@@ -548,7 +595,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                         byte[] x = new byte[16];
                         System.arraycopy(data, 0, x, 0, 16);
 
-                        byte[] mingwen = EncryptUtils.Decrypt(x, Config.newKey);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
+                        byte[] mingwen = EncryptUtils.Decrypt(x, Config.key);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
 
                         Log.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
 
@@ -561,15 +608,25 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
                             Log.e("token===", isOpen+"==="+token+"==="+s1);
 
+                            m_myHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getBattery();
+                                }
+                            }, 1000);
+
                             if(isOpen){
                                 openLock();
                             }else{
                                 getLockStatus();
                             }
 
-                            Toast.makeText(context, "token获取成功", Toast.LENGTH_LONG).show();
+//                            Toast.makeText(context, "token获取成功", Toast.LENGTH_LONG).show();
                         }else if(s1.startsWith("0502")){
                             Log.e("openLock===", "==="+s1);
+
+                            getLockStatus();
+                            closeLoadingDialog();
 
                             Toast.makeText(context, "开锁成功", Toast.LENGTH_LONG).show();
                         }else if(s1.startsWith("0508")){
@@ -581,8 +638,17 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                                 Toast.makeText(context, "关闭失败", Toast.LENGTH_LONG).show();
                             }
 
+                            getLockStatus();
+                        }else if(s1.startsWith("0202")){    //电量
+
+                            Log.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
+
+                            tvBattery.setText("电池电量："+Integer.parseInt(s1.substring(6, 8), 16)+"%");
+
                         }else if(s1.startsWith("050F")){
                             Log.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
+
+                            closeLoadingDialog();
 
                             if("01".equals(s1.substring(6, 8))){
                                 Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
@@ -590,12 +656,13 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                                 Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
                             }
                         }else if(s1.startsWith("058502")){
-                            Log.e("xiaobiao===", "==="+s1);        //050F0101017A0020782400200F690300
 
-//                            if("01".equals(s1.substring(6, 8))){
-//                                Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
+                            Log.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
+
+//                            if("000000000000".equals(s1.substring(2*4, 2*10))){
+//                                major = 0;
 //                            }else{
-//                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
+//                                major = 1;
 //                            }
                         }
 
@@ -628,7 +695,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
         Log.e("getBleToken===1", "==="+s);  //1648395B
 
-        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
@@ -643,12 +710,32 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         });
     }
 
+    private void getBattery(){
+        String s = new BatteryTxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("getBattery===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("getBattery=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
     void getLockStatus(){
         String s = new GetLockStatusTxOrder().generateString();  //06010101490E602E46311640422E5238
 
         Log.e("getLockStatus===1", "==="+s);  //1648395B
 
-        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
@@ -668,7 +755,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
         Log.e("getXinbiao===1", "==="+s);  //1648395B
 
-        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
@@ -687,13 +774,13 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         Log.e("openLock===", type+"==="+isConnect+"==="+mac);
 
 
-        String s = new OpenLockTxOrder(true).generateString();
+        String s = new OpenLockTxOrder(false).generateString();
 
 //        s= s.substring(0, 18) + token + s.substring(26, 32);
 
         Log.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
 
-        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
@@ -1217,10 +1304,10 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         }
     };
 
-    @Override
-    public void onConnect() {
-        Logger.e(getClass().getSimpleName(), "连接成功");
-    }
+//    @Override
+//    public void onConnect() {
+//        Logger.e(getClass().getSimpleName(), "连接成功");
+//    }
 
     private void changKey() {
         String uid = SharedPreferencesUrls.getInstance().getString("uid", "");
@@ -1263,7 +1350,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                     if (result.getFlag().equals("Success")) {
                         Toast.makeText(context, "恭喜您，数据提交成功", Toast.LENGTH_SHORT).show();
-                        BaseApplication.getInstance().getIBLE().setChangKey(false);
+//                        BaseApplication.getInstance().getIBLE().setChangKey(false);
 
 
 
@@ -1364,43 +1451,43 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         });
     }
 
-    @Override
-    public void onDisconnect(int state) {
-        count = 0;
-        tvCount.setText(getText(R.string.open_count) + String.valueOf(count));
-        tvAddress.setText("MAC:");
-        tvName.setText("Name:");
-        tvStatus.setText(getText(R.string.connect_status) + "Disconnect");
-        tvCz.setText(R.string.current_cz);
-        tvBattery.setText(R.string.battery);
-        tvVersion.setText(R.string.device_version);
-        m_myHandler.sendEmptyMessageDelayed(0, 1000);
-    }
-
-    @Override
-    public void onServicesDiscovered(String name, String address) {
-        if (null != loadingDialog && loadingDialog.isShowing()) {
-            loadingDialog.dismiss();
-            loadingDialog = null;
-        }
-        Logger.e(getClass().getSimpleName(), "服务");
-        tvAddress.setText("MAC:" + address);
-        tvName.setText("Name:" + name);
-        tvStatus.setText(getText(R.string.connect_status) + "Connected");
-        getToken();
-    }
-
-    /**
-     * 获取token
-     */
-    private void getToken() {
-        m_myHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                BaseApplication.getInstance().getIBLE().getToken();
-            }
-        }, 1000);
-    }
+//    @Override
+//    public void onDisconnect(int state) {
+//        count = 0;
+//        tvCount.setText(getText(R.string.open_count) + String.valueOf(count));
+//        tvAddress.setText("MAC:");
+//        tvName.setText("Name:");
+//        tvStatus.setText(getText(R.string.connect_status) + "Disconnect");
+//        tvCz.setText(R.string.current_cz);
+//        tvBattery.setText(R.string.battery);
+//        tvVersion.setText(R.string.device_version);
+//        m_myHandler.sendEmptyMessageDelayed(0, 1000);
+//    }
+//
+//    @Override
+//    public void onServicesDiscovered(String name, String address) {
+//        if (null != loadingDialog && loadingDialog.isShowing()) {
+//            loadingDialog.dismiss();
+//            loadingDialog = null;
+//        }
+//        Logger.e(getClass().getSimpleName(), "服务");
+//        tvAddress.setText("MAC:" + address);
+//        tvName.setText("Name:" + name);
+//        tvStatus.setText(getText(R.string.connect_status) + "Connected");
+//        getToken();
+//    }
+//
+//    /**
+//     * 获取token
+//     */
+//    private void getToken() {
+//        m_myHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                BaseApplication.getInstance().getIBLE().getToken();
+//            }
+//        }, 1000);
+//    }
 
     @OnClick(R.id.bt_open)
     void open() {
@@ -1408,7 +1495,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
 
 //        BaseApplication.getInstance().getIBLE().openLock();
 
-        Log.e("open===", type+"==="+isConnect+"==="+mac);
+        Log.e("open===", type+"==="+isConnect+"==="+mac+"==="+token);
 
 
 
@@ -1517,7 +1604,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
         public boolean handleMessage(Message mes) {
             switch (mes.what) {
                 case 0:
-                    BaseApplication.getInstance().getIBLE().connect(mac, LockStorageActivity.this);
+//                    BaseApplication.getInstance().getIBLE().connect(mac, LockStorageActivity.this);
                     break;
                 case 1:
                     break;
@@ -1637,6 +1724,7 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
             });
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {

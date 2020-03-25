@@ -36,6 +36,8 @@ public class DeviceSelectActivity extends Activity {
     Button bt2;
     @BindView(R.id.bt3)
     Button bt3;
+    @BindView(R.id.bt4)
+    Button bt4;
     @BindView(R.id.mainUI_title_backBtn)
     ImageView backBtn;
     @BindView(R.id.mainUI_title_titleText)
@@ -61,7 +63,7 @@ public class DeviceSelectActivity extends Activity {
 
         context = this;
 
-        titleText.setText("入库选择");
+        titleText.setText("入库");
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
@@ -74,6 +76,7 @@ public class DeviceSelectActivity extends Activity {
         Intent intent = new Intent();
         intent.setClass(context, DeviceListActivity.class);
         intent.putExtra("isChange",true);
+        intent.putExtra("title",bt1.getText());
         startActivity(intent);
 //        UIHelper.goToAct(context, DeviceListActivity.class);
     }

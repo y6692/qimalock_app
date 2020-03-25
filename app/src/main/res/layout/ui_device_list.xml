@@ -11,31 +11,35 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#329d67">
+        android:background="@drawable/bcg_title_home">
+
+        <ImageView
+            android:id="@+id/mainUI_title_backBtn"
+            android:layout_width="23dp"
+            android:layout_height="17dp"
+            android:layout_marginLeft="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/back_image"/>
 
         <TextView
             android:id="@+id/tv_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/scan_device"
+            android:text=""
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
-        <TextView
+        <ImageView
             android:id="@+id/bt_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:background="@drawable/bg_button"
-            android:gravity="center"
-            android:text="@string/refresh"
-            android:textColor="@drawable/box_text_color"
-            android:textSize="18sp" />
+            android:layout_marginRight="40dp"
+            android:src="@drawable/fresh"
+            android:gravity="center" />
     </RelativeLayout>
 
     <ListView
@@ -44,9 +48,10 @@
         android:layout_height="0dp"
         android:layout_weight="7"
         android:divider="@android:color/black"
-        android:dividerHeight="1px" />
+        android:dividerHeight="0px" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/app_version"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

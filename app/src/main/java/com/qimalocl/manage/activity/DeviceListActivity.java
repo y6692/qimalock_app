@@ -15,16 +15,20 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.clj.fastble.BleManager;
+import com.clj.fastble.callback.BleScanCallback;
+import com.clj.fastble.data.BleDevice;
+import com.clj.fastble.scan.BleScanRuleConfig;
 import com.fitsleep.sunshinelibrary.utils.IntentUtils;
 import com.fitsleep.sunshinelibrary.utils.Logger;
 import com.qimalocl.manage.base.MPermissionsActivity;
 import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseApplication;
-import com.qimalocl.manage.model.BleDevice;
 import com.qimalocl.manage.utils.ParseLeAdvData;
 import com.qimalocl.manage.utils.SortComparator;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
@@ -39,11 +43,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class DeviceListActivity extends MPermissionsActivity implements OnDeviceSearchListener {
+public class DeviceListActivity extends MPermissionsActivity{
     @BindView(R.id.tv_scan)
     TextView tvScan;
     @BindView(R.id.bt_scan)
-    TextView btScan;
+    ImageView btScan;
     @BindView(R.id.list_item)
     ListView listItem;
     @BindView(R.id.app_version)
@@ -56,8 +60,12 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
     private List<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
     private List<BleDevice> bleDeviceList = new ArrayList<>();
     private List<BleDevice> adapterList = new ArrayList<>();
+    private List<String> macList = new ArrayList<>();
     private BleDevice bleDevice;
     private boolean isChange = false;
+    private String title;
+
+    private long timeout = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +82,7 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
         ButterKnife.bind(this);
 
         isChange = getIntent().getBooleanExtra("isChange", false);
+        title = getIntent().getStringExtra("title");
 
         initWidget();
     }
@@ -81,7 +90,8 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
     private void initWidget() {
         parseLeAdvData = new ParseLeAdvData();
         comp = new SortComparator();
-        appVersion.setText("Version:" + ToolsUtils.getVersion(getApplicationContext()));
+        tvScan.setText(title);
+//        appVersion.setText("Version:" + ToolsUtils.getVersion(getApplicationContext()));
         mAdapter = new ListAdapter();
         listItem.setAdapter(mAdapter);
         listItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,19 +117,123 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
 
                 Log.e("DLA===", "==="+isChange);
 
-                if(isChange){
-                    BaseApplication.getInstance().getIBLE().setChangKey(true);
-                    BaseApplication.getInstance().getIBLE().setChangPsd(true);
-                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
-                }else{
-                    BaseApplication.getInstance().getIBLE().setChangKey(false);
-                    BaseApplication.getInstance().getIBLE().setChangPsd(false);
-                    IntentUtils.startActivity(DeviceListActivity.this, LockStorage2Activity.class, bundle);
-                }
+                IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+
+//                if(isChange){
+//                    BaseApplication.getInstance().getIBLE().setChangKey(true);
+//                    BaseApplication.getInstance().getIBLE().setChangPsd(true);
+//                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+//                }else{
+//                    BaseApplication.getInstance().getIBLE().setChangKey(false);
+//                    BaseApplication.getInstance().getIBLE().setChangPsd(false);
+//                    IntentUtils.startActivity(DeviceListActivity.this, LockStorage2Activity.class, bundle);
+//                }
 
             }
         });
-        new Thread(new DeviceThread()).start();
+//        new Thread(new DeviceThread()).start();
+
+
+        BleManager.getInstance().init(getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(10, 5000)
+                .setConnectOverTime(timeout)
+                .setOperateTimeout(10000);
+
+        setScanRule();
+        scan();
+    }
+
+    private void setScanRule() {
+
+        BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
+//                .setServiceUuids(serviceUuids)      // 只扫描指定的服务的设备，可选
+//                .setDeviceName(true, names)   // 只扫描指定广播名的设备，可选
+//				.setDeviceMac(address)                  // 只扫描指定mac的设备，可选
+//                .setAutoConnect(true)                 // 连接时的autoConnect参数，可选，默认false
+                .setScanTimeOut(timeout)              // 扫描超时时间，可选，默认10秒
+                .build();
+        BleManager.getInstance().initScanRule(scanRuleConfig);
+    }
+
+    void scan(){
+//        loadingDialog = DialogUtils.getLoadingDialog(context, "正在搜索...");
+//		loadingDialog.setTitle("正在搜索");
+//		loadingDialog.show();
+
+        BleManager.getInstance().scan(new BleScanCallback() {
+            @Override
+            public void onScanStarted(boolean success) {
+//                mDeviceAdapter.clearScanDevice();
+//                mDeviceAdapter.notifyDataSetChanged();
+//                img_loading.startAnimation(operatingAnim);
+//                img_loading.setVisibility(View.VISIBLE);
+//                btn_scan.setText(getString(R.string.stop_scan));
+                Log.e("mf===onScanStarted", "==="+success);
+
+                if(macList.size()>0){
+                    macList.clear();
+                    adapterList.clear();
+                }
+
+            }
+
+            @Override
+            public void onLeScan(BleDevice device) {
+                super.onLeScan(device);
+
+                Log.e("mf===onLeScan", device+"==="+device.getMac()+"==="+macList.contains(device.getMac()));
+
+//                if (!bluetoothDeviceList.contains(device)){
+//                    bluetoothDeviceList.add(device);
+//                    bleDevice = new BleDevice(device, scanRecord, rssi);
+//                    bleDevice = new BleDevice(device);
+//                    bleDeviceList.add(bleDevice);
+//                }
+
+                if (!macList.contains(device.getMac())){
+
+                    Log.e("mf===onLeScan2", device+"==="+device.getMac()+"==="+adapterList.contains(device));
+
+                    macList.add(device.getMac());
+
+                    adapterList.add(device);
+//                    bleDevice = new BleDevice(device);
+//                    bleDeviceList.add(bleDevice);
+
+
+
+                    mAdapter.notifyDataSetChanged();
+
+                    handler.sendEmptyMessage(0);
+                }
+
+
+
+//                public BleDevice(BluetoothDevice device, int rssi, byte[] scanRecord, long timestampNanos) {
+
+            }
+
+            @Override
+            public void onScanning(final com.clj.fastble.data.BleDevice bleDevice) {
+//                mDeviceAdapter.addDevice(bleDevice);
+//                mDeviceAdapter.notifyDataSetChanged();
+
+                Log.e("mf===onScanning", bleDevice+"==="+bleDevice.getMac());
+
+
+            }
+
+            @Override
+            public void onScanFinished(List<com.clj.fastble.data.BleDevice> scanResultList) {
+//                img_loading.clearAnimation();
+//                img_loading.setVisibility(View.INVISIBLE);
+//                btn_scan.setText(getString(R.string.start_scan));
+
+                Log.e("mf===onScanFinished", scanResultList+"==="+scanResultList.size());
+            }
+        });
     }
 
     @Override
@@ -141,45 +255,53 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
 
     @OnClick(R.id.bt_scan)
     void scanDevice() {
+//        macList.clear();
+//        adapterList.clear();
+
+        BleManager.getInstance().cancelScan();
+        scan();
+
         if (isScan) {
-            mBluetoothDeviceList.clear();
-            requestPermission(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+
+
+//            mBluetoothDeviceList.clear();
+//            requestPermission(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
         }
     }
 
-    @Override
-    public void permissionSuccess(int requestCode) {
-        super.permissionSuccess(requestCode);
-        if (101 == requestCode) {
-            Logger.e(getClass().getSimpleName(), "申请成功了");
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    tvScan.setText(R.string.search_over);
-                    isScan = true;
-                    BaseApplication.getInstance().getIBLE().stopScan();
-                }
-            }, 3000);
-            tvScan.setText(R.string.Searching);
-            isScan = false;
-            bluetoothDeviceList.clear();
-            adapterList.clear();
-            if (mAdapter != null) {
-                mAdapter.notifyDataSetChanged();
-            }
-            BaseApplication.getInstance().getIBLE().startScan(this);
-        }
-    }
-
-    @Override
-    public void onScanDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
-//        if (rssi > -75 && !bluetoothDeviceList.contains(device)) {
-        if (!bluetoothDeviceList.contains(device)){
-            bluetoothDeviceList.add(device);
-            bleDevice = new BleDevice(device, scanRecord, rssi);
-            bleDeviceList.add(bleDevice);
-        }
-    }
+//    @Override
+//    public void permissionSuccess(int requestCode) {
+//        super.permissionSuccess(requestCode);
+//        if (101 == requestCode) {
+//            Logger.e(getClass().getSimpleName(), "申请成功了");
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+////                    tvScan.setText(R.string.search_over);
+//                    isScan = true;
+//                    BaseApplication.getInstance().getIBLE().stopScan();
+//                }
+//            }, 3000);
+////            tvScan.setText(R.string.Searching);
+//            isScan = false;
+//            bluetoothDeviceList.clear();
+//            adapterList.clear();
+//            if (mAdapter != null) {
+//                mAdapter.notifyDataSetChanged();
+//            }
+//            BaseApplication.getInstance().getIBLE().startScan(this);
+//        }
+//    }
+//
+//    @Override
+//    public void onScanDevice(BluetoothDevice device, int rssi, byte[] scanRecord) {
+////        if (rssi > -75 && !bluetoothDeviceList.contains(device)) {
+////        if (!bluetoothDeviceList.contains(device)){
+////            bluetoothDeviceList.add(device);
+////            bleDevice = new BleDevice(device, scanRecord, rssi);
+////            bleDeviceList.add(bleDevice);
+////        }
+//    }
     private boolean parseAdvData(int rssi, byte[] scanRecord) {
         byte[] bytes = ParseLeAdvData.adv_report_parse(ParseLeAdvData.BLE_GAP_AD_TYPE_MANUFACTURER_SPECIFIC_DATA, scanRecord);
         if(bytes==null || bytes.length==0){
@@ -234,7 +356,7 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             BleDevice device = adapterList.get(position);
-            viewHolder.listRiss.setText("" + device.getRiss());
+            viewHolder.listRiss.setText("" + device.getRssi());
             viewHolder.listAddress.setText("" + device.getDevice().getAddress());
             viewHolder.listName.setText("" + device.getDevice().getName());
             return convertView;
@@ -260,12 +382,12 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
         public void run() {
             while (true) {
                 if (bleDeviceList.size() > 0) {
-                    BleDevice bleDevice = bleDeviceList.get(0);
-                    if (null != bleDevice && parseAdvData(bleDevice.getRiss(), bleDevice.getScanBytes())) {
-                        adapterList.add(bleDevice);
-                        handler.sendEmptyMessage(0);
-                    }
-                    bleDeviceList.remove(0);
+//                    BleDevice bleDevice = bleDeviceList.get(0);
+//                    if (null != bleDevice && parseAdvData(bleDevice.getRiss(), bleDevice.getScanBytes())) {
+//                        adapterList.add(bleDevice);
+//                        handler.sendEmptyMessage(0);
+//                    }
+//                    bleDeviceList.remove(0);
                 }
             }
         }

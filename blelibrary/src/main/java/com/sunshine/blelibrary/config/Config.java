@@ -84,6 +84,7 @@ public class Config {
 
 
 //    80 D7 CC 01 6B FB EF 70 F7 3F EF 36 7F D3 6A FC
+//    80D7CC016BFBEF70F73FEF367FD36AFC
 
 //    public static byte[] key = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};   //物联锁原始密钥
 //    十六进制：20 57 2f 52 36 4b 3f 47 30 50 41 58 11 63 2d 2b
@@ -114,6 +115,7 @@ public class Config {
     public static byte[] passwordnew = {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};    //7MA密码
 //    public static byte[] passwordnew = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
 
+//    323031373135
 
 //    public static byte[] passwordnew = {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};
 

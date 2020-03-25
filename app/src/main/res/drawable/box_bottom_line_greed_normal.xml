@@ -4,8 +4,8 @@
     <!-- 连框颜色值 -->
     <item>
         <shape>
-            <solid android:color="@color/box_line_select" />
-            <corners android:radius="5dp"/>
+            <solid android:color="#FD545B" />
+            <corners android:radius="10dp"/>
         </shape>
     </item>
     <!-- 主体背景颜色值 -->
@@ -13,7 +13,7 @@
         android:bottom="1dp" android:top="1dp" android:left="1dp" android:right="1dp">
         <shape>
             <solid android:color="@android:color/white" />
-            <corners android:radius="5dp"/>
+            <corners android:radius="10dp"/>
         </shape>
     </item>
 
