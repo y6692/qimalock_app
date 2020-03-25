@@ -1460,7 +1460,6 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
                 connectDevice();
             }
         }
-
     }
 
     @OnClick(R.id.bt_close)
