@@ -290,7 +290,6 @@ public class DeviceListActivity extends MPermissionsActivity{
 
         m_myHandler.removeCallbacksAndMessages(null);
         handler.removeCallbacksAndMessages(null);
-//        finish();
     }
 
     @Override
