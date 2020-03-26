@@ -288,6 +288,7 @@ public class DeviceListActivity extends MPermissionsActivity{
             thread.interrupt();
         }
 
+
         m_myHandler.removeCallbacksAndMessages(null);
         handler.removeCallbacksAndMessages(null);
     }
