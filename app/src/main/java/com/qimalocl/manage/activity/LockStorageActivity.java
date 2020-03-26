@@ -446,6 +446,7 @@ public class LockStorageActivity extends MPermissionsActivity {
             public void onStart() {
 //                onStartCommon("正在提交");
             }
+
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 onFailureCommon(throwable.toString());
@@ -467,8 +468,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                             isStorage = bean.getType();
 
                             tvType.setText("是否入库："+(isStorage==1?"是":"否"));
-                            Config.key = hexStringToByteArray(bean.getLock_secretkey());
-                            Config.password = hexStringToByteArray(bean.getLock_password());
+
 
                             if (!TextUtils.isEmpty(mac)) {
 //                              BaseApplication.getInstance().getIBLE().connect(address, this);
@@ -477,6 +477,10 @@ public class LockStorageActivity extends MPermissionsActivity {
                                 loadingDialog.show();
 
                                 if("2".equals(type) || "3".equals(type) || "9".equals(type)){
+
+                                    Config.key = hexStringToByteArray(bean.getLock_secretkey());
+                                    Config.password = hexStringToByteArray(bean.getLock_password());
+
                                     m_myHandler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -551,6 +555,9 @@ public class LockStorageActivity extends MPermissionsActivity {
             public void onConnectFail(com.clj.fastble.data.BleDevice bleDevice, BleException exception) {
                 Log.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
 
+//                Toast.makeText(context, "连接失败", Toast.LENGTH_LONG).show();
+                tvStatus.setText(getText(R.string.connect_status) + "连接失败");
+
                 if (loadingDialog != null && loadingDialog.isShowing()) {
                     loadingDialog.dismiss();
                 }
@@ -568,9 +575,9 @@ public class LockStorageActivity extends MPermissionsActivity {
 //                BleManager.getInstance().cancelScan();
 
                 Log.e("onConnectSuccess===", bleDevice.getMac()+"===");
-                Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
+//                Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
 
-                tvStatus.setText(getText(R.string.connect_status) + "Connected");
+                tvStatus.setText(getText(R.string.connect_status) + "连接成功");
 
                 m_myHandler.postDelayed(new Runnable() {
                     @Override
@@ -632,20 +639,23 @@ public class LockStorageActivity extends MPermissionsActivity {
                         }else if(s1.startsWith("0502")){
                             Log.e("openLock===", "==="+s1);
 
-                            getLockStatus();
+//                            getLockStatus();
                             closeLoadingDialog();
 
                             Toast.makeText(context, "开锁成功", Toast.LENGTH_LONG).show();
+
+                            showDialog();
+
                         }else if(s1.startsWith("0508")){
                             Log.e("closeLock===1", "==="+s1);
 
-                            if("00".equals(s1.substring(6, 8))){
-                                Toast.makeText(context, "关闭成功", Toast.LENGTH_LONG).show();
-                            }else{
-                                Toast.makeText(context, "关闭失败", Toast.LENGTH_LONG).show();
-                            }
+//                            if("00".equals(s1.substring(6, 8))){
+//                                Toast.makeText(context, "关闭成功", Toast.LENGTH_LONG).show();
+//                            }else{
+//                                Toast.makeText(context, "关闭失败", Toast.LENGTH_LONG).show();
+//                            }
 
-                            getLockStatus();
+//                            getLockStatus();
                         }else if(s1.startsWith("0202")){    //电量
 
                             Log.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
@@ -660,7 +670,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                             if("01".equals(s1.substring(6, 8))){
                                 Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
                             }else{
-                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
                             }
                         }else if(s1.startsWith("058502")){
 
@@ -832,7 +842,9 @@ public class LockStorageActivity extends MPermissionsActivity {
                     public void run() {
                         Log.e("connect===fail", Code.toString(code));
 //                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
-                        ToastUtil.showMessageApp(context, Code.toString(code));
+//                        ToastUtil.showMessageApp(context, Code.toString(code));
+
+                        tvStatus.setText(getText(R.string.connect_status) + "连接失败");
                         closeLoadingDialog();
                     }
                 });
@@ -844,7 +856,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                 isStop = true;
                 isConnect = true;
 
-                tvStatus.setText(getText(R.string.connect_status) + "Connected");
+                tvStatus.setText(getText(R.string.connect_status) + "连接成功");
 
 //                com.qimalocl.manage.utils.UIHelper.dismiss();
 
@@ -1108,40 +1120,45 @@ public class LockStorageActivity extends MPermissionsActivity {
                         ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
 
 
-                        if(isStorage==0){
-                            CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                            customBuilder.setTitle("温馨提示").setMessage("是否确定提交?")
-                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.cancel();
-
-                                        }
-                                    }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.cancel();
-
-                                            Log.e("sf===onC", "==="+type);
-
-//                                            carbadaction(3);
-
-                                            Intent intent = new Intent();
-
-                                            intent.setClass(context, ActivityScanerCode.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            intent.putExtra("isChangeKey",false);
-                                            intent.putExtra("isAdd",true);
-
-                                            startActivityForResult(intent, 1);
-
-                                        }
-                                    });
-                            customBuilder.create().show();
-                        }
+                        showDialog();
                     }
                 });
 
             }
         });
+    }
+
+    void showDialog(){
+        if(isStorage==0){
+            CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+            customBuilder.setTitle("温馨提示").setMessage("开锁成功，是否进行入库")
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+
+                        }
+                    }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+
+                    Log.e("sf===onC", "==="+type);
+
+                    Intent intent = new Intent();
+
+                    intent.setClass(context, ActivityScanerCode.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("isChangeKey",false);
+                    intent.putExtra("isAdd",true);
+
+                    startActivityForResult(intent, 1);
+
+                }
+            });
+            customBuilder.create().show();
+
+
+        }
+
     }
 
     //监听锁关闭事件
@@ -1711,6 +1728,64 @@ public class LockStorageActivity extends MPermissionsActivity {
     });
 
     private void addCar(String result,String codenum){
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("type", type);
+            params.put("qrcode", result);    //二维码链接地址
+            params.put("lock_no", name);     //车辆编号
+            params.put("lock_mac", mac);    //mac地址
+
+            Log.e("addCar===", result+"==="+result+"==="+name+"==="+mac);
+
+            HttpHelper.post(context, Urls.lock_in, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                        Log.e("addCar===", responseString+"===");
+
+//                        if (result.getFlag().equals("Success")) {
+//                            Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
+//                        }else {
+//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                        }
+
+                        Toast.makeText(context,	result.getMessage(), Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("addCar===eee", "==="+e);
+                    }
+
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+
+                }
+            });
+        }
+    }
+
+    private void addCar2(String result,String codenum){
 
         String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");

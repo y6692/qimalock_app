@@ -118,57 +118,49 @@ public class DeviceSelectActivity extends Activity {
 
     @OnClick(R.id.bt4)
     void bt4() {
-//        SharedPreferencesUrls.getInstance().putString("type", "6");
-//        UIHelper.goToAct(context, DeviceList3Activity.class);
 
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-//        String bikeName = edbikeNum.getText().toString().trim();
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-            com.qimalocl.manage.core.common.UIHelper.goToAct(context,LoginActivity.class);
-            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-        }else {
-//            if (bikeName == null || "".equals(bikeName)){
-//                ToastUtils.showMessage("请输入车编号");
-//                return;
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//        if (access_token == null || "".equals(access_token)){
+//            com.qimalocl.manage.core.common.UIHelper.goToAct(context,LoginActivity.class);
+//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//        }else {
+//            if (Build.VERSION.SDK_INT >= 23) {
+//                int checkPermission = checkSelfPermission(Manifest.permission.CAMERA);
+//                if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+//                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+//                        requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
+//                    } else {
+//                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//                        customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
+//                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        dialog.cancel();
+//                                    }
+//                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.cancel();
+//                                requestPermissions(new String[] { Manifest.permission.CAMERA },100);
+//                            }
+//                        });
+//                        customBuilder.create().show();
+//                    }
+//                    return;
+//                }
 //            }
-            if (Build.VERSION.SDK_INT >= 23) {
-                int checkPermission = checkSelfPermission(Manifest.permission.CAMERA);
-                if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                        requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
-                    } else {
-                        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                        customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
-                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                                requestPermissions(new String[] { Manifest.permission.CAMERA },100);
-                            }
-                        });
-                        customBuilder.create().show();
-                    }
-                    return;
-                }
-            }
-            try {
-                SharedPreferencesUrls.getInstance().putString("type", "7");
-
-                Intent intent = new Intent();
-                intent.setClass(context, ActivityScanerCode.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("isChangeKey",false);
-                intent.putExtra("isAdd",true);
-                startActivityForResult(intent, 1);
-
-            } catch (Exception e) {
-                com.qimalocl.manage.core.common.UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
-            }
-        }
+//            try {
+//                SharedPreferencesUrls.getInstance().putString("type", "7");
+//
+//                Intent intent = new Intent();
+//                intent.setClass(context, ActivityScanerCode.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                intent.putExtra("isChangeKey",false);
+//                intent.putExtra("isAdd",true);
+//                startActivityForResult(intent, 1);
+//
+//            } catch (Exception e) {
+//                com.qimalocl.manage.core.common.UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
+//            }
+//        }
     }
 
     @Override

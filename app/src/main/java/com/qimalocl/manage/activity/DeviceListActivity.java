@@ -9,6 +9,7 @@ import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -29,6 +30,7 @@ import com.qimalocl.manage.base.MPermissionsActivity;
 import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseApplication;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.utils.ParseLeAdvData;
 import com.qimalocl.manage.utils.SortComparator;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
@@ -65,11 +67,16 @@ public class DeviceListActivity extends MPermissionsActivity{
     private List<String> macList = new ArrayList<>();
     private BleDevice bleDevice;
     private boolean isChange = false;
+    private boolean isThread = true;
     private boolean isFresh = false;
     private String title;
 
     private long timeout = 10000;
     private float degree;
+
+    private String type;
+
+    private Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,10 +93,37 @@ public class DeviceListActivity extends MPermissionsActivity{
         ButterKnife.bind(this);
 
 //        isChange = getIntent().getBooleanExtra("isChange", false);
+        type = SharedPreferencesUrls.getInstance().getString("type", "");
         title = getIntent().getStringExtra("title");
 
         initWidget();
 
+
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (isThread){
+
+                    try {
+                        Thread.sleep(1 * 20);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+                    if(isFresh){
+//                    Log.e("dla===thread", isFresh + "===");
+
+                        degree = (degree+30)%360;
+                        m_myHandler.sendEmptyMessage(1);
+                    }
+
+                }
+
+            }
+        });
         thread.start();
     }
 
@@ -121,7 +155,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                 bundle.putString("mac", address);
 //                bundle.putString("type", "2");
 
-                Log.e("DLA===", "==="+isChange);
+                Log.e("dla===", "==="+isChange);
 
                 IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
 
@@ -140,15 +174,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 //        new Thread(new DeviceThread()).start();
 
 
-        BleManager.getInstance().init(getApplication());
-        BleManager.getInstance()
-                .enableLog(true)
-                .setReConnectCount(10, 5000)
-                .setConnectOverTime(timeout)
-                .setOperateTimeout(10000);
 
-        setScanRule();
-        scan();
     }
 
     private void setScanRule() {
@@ -176,20 +202,19 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                img_loading.startAnimation(operatingAnim);
 //                img_loading.setVisibility(View.VISIBLE);
 //                btn_scan.setText(getString(R.string.stop_scan));
-                Log.e("mf===onScanStarted", "==="+success);
+                Log.e("dla===onScanStarted", macList.size()+"==="+adapterList.size()+"==="+success);
 
                 if(macList.size()>0){
                     macList.clear();
                     adapterList.clear();
                 }
-
             }
 
             @Override
             public void onLeScan(BleDevice device) {
                 super.onLeScan(device);
 
-                Log.e("mf===onLeScan", device+"==="+device.getMac()+"==="+macList.contains(device.getMac()));
+                Log.e("dla===onLeScan", type+"==="+device.getName()+"==="+device.getMac()+"==="+macList.contains(device.getMac())+"==="+macList.contains("03:92:63:60:9B:3C"));
 
 //                if (!bluetoothDeviceList.contains(device)){
 //                    bluetoothDeviceList.add(device);
@@ -198,9 +223,9 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                    bleDeviceList.add(bleDevice);
 //                }
 
-                if (!macList.contains(device.getMac())){
+                if (device.getName()!=null && !macList.contains(device.getMac()) && (("9".equals(type) && device.getName().startsWith("SNLock-") || (("5".equals(type) || "6".equals(type)) && device.getName().startsWith("bike:")))) ){
 
-                    Log.e("mf===onLeScan2", device+"==="+device.getMac()+"==="+adapterList.contains(device));
+                    Log.e("dla===onLeScan2", device+"==="+device.getMac()+"==="+adapterList.contains(device));
 
                     macList.add(device.getMac());
 
@@ -210,7 +235,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 
 
 
-                    mAdapter.notifyDataSetChanged();
+//                    mAdapter.notifyDataSetChanged();
 
                     handler.sendEmptyMessage(0);
                 }
@@ -226,7 +251,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                mDeviceAdapter.addDevice(bleDevice);
 //                mDeviceAdapter.notifyDataSetChanged();
 
-                Log.e("mf===onScanning", bleDevice+"==="+bleDevice.getMac());
+                Log.e("dla===onScanning", bleDevice+"==="+bleDevice.getMac());
 
 
             }
@@ -239,7 +264,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 
                 isFresh = false;
 
-                Log.e("mf===onScanFinished", scanResultList+"==="+scanResultList.size());
+                Log.e("dla===onScanFinished", scanResultList+"==="+scanResultList.size());
             }
         });
     }
@@ -248,24 +273,55 @@ public class DeviceListActivity extends MPermissionsActivity{
     protected void onDestroy() {
         super.onDestroy();
         BleManager.getInstance().cancelScan();
-        finish();
+
+        Log.e("dla===onDestroy", "===");
+
+        if(macList.size()>0){
+            macList.clear();
+            adapterList.clear();
+        }
+
+        isFresh = false;
+        isThread = false;
+
+        if(thread!=null){
+            thread.interrupt();
+        }
+
+        m_myHandler.removeCallbacksAndMessages(null);
+        handler.removeCallbacksAndMessages(null);
+//        finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        scanDevice();
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                scanDevice();
-//            }
-//        }, 500);
+
+
+
+        Log.e("dla===onResume", "==="+macList.size());
+
+        if(macList.size()>0){
+            macList.clear();
+            adapterList.clear();
+
+
+        }
+
+        mAdapter.notifyDataSetChanged();
+
+//        scanDevice();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scanDevice();
+            }
+        }, 500);
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
     void back() {
-        BleManager.getInstance().cancelScan();
+//        BleManager.getInstance().cancelScan();
         finish();
     }
 
@@ -278,7 +334,15 @@ public class DeviceListActivity extends MPermissionsActivity{
         isFresh = true;
 
 
-        BleManager.getInstance().cancelScan();
+//        BleManager.getInstance().cancelScan();
+        BleManager.getInstance().init(getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(10, 5000)
+                .setConnectOverTime(timeout)
+                .setOperateTimeout(10000);
+
+        setScanRule();
         scan();
 
         if (isScan) {
@@ -289,31 +353,31 @@ public class DeviceListActivity extends MPermissionsActivity{
         }
     }
 
-    Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            while (true){
-
-                try {
-                    Thread.sleep(1 * 20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-
-
-                if(isFresh){
-//                    Log.e("sf===thread", isFresh + "===");
-
-                    degree = (degree+30)%360;
-                    m_myHandler.sendEmptyMessage(1);
-                }
-
-            }
-
-        }
-    });
+//    Thread thread = new Thread(new Runnable() {
+//        @Override
+//        public void run() {
+//
+//            while (isThread){
+//
+//                try {
+//                    Thread.sleep(1 * 20);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//
+//                if(isFresh){
+////                    Log.e("dla===thread", isFresh + "===");
+//
+//                    degree = (degree+30)%360;
+//                    m_myHandler.sendEmptyMessage(1);
+//                }
+//
+//            }
+//
+//        }
+//    });
 
     protected Handler m_myHandler = new Handler(new Handler.Callback() {
         @Override
@@ -459,5 +523,19 @@ public class DeviceListActivity extends MPermissionsActivity{
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        Log.e("onKeyDown===", "==="+keyCode);
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            finishMine();
+
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -666,8 +666,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				if(isBindSchool){
 					Log.e("BindSchool===2", "==="+bikeNum);
 
-
-
 					lockInfo(bikeNum);
 				}else if(isAdd){
 					Intent rIntent = new Intent();

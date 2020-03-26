@@ -1734,7 +1734,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 case 0x98://搜索超时
 
-                    Log.e("0x98===", isLookPsdBtn+"==="+isAgain+"==="+isOpenLock+"==="+isEndBtn);
+                    Log.e("0x98===", isLookPsdBtn+"==="+isAgain+"==="+isOpenLock+"==="+isEndBtn+"==="+lock_no);
 
 //                    ClientManager.getClient().stopSearch();
 //                    ClientManager.getClient().disconnect(m_nowMac);
@@ -1766,6 +1766,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         connectDeviceLP();
                         ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
                         ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
+
+//                        ClientManager.getClient().registerConnectStatusListener(lock_no, mConnectStatusListener);
+//                        ClientManager.getClient().notifyClose(lock_no, mCloseListener);
                     }else{
                         getStateLP();
                     }
@@ -2654,7 +2657,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             if (apiClient != null) {
                 apiClient.onDestroy();
             }
-        }else{
+        }else if("2".equals(type) || "3".equals(type) || "9".equals(type)){
             BleManager.getInstance().disconnectAllDevice();
             BleManager.getInstance().destroy();
         }
@@ -2683,7 +2686,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         if ("1".equals(type)) {          //单车机械锁
 //          UIHelper.goToAct(context, CurRoadStartActivity.class);
 //          popupwindow.dismiss();
-        } else if ("2".equals(type) || "3".equals(type)) {    //单车蓝牙锁
+        } else if ("2".equals(type) || "3".equals(type) || "9".equals(type)) {    //单车蓝牙锁
 
             if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                 ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");

@@ -23,6 +23,7 @@
             android:textColor="#333333"
             android:text="11111"
             android:textSize="18sp"
+            android:textStyle="bold"
             />
 
 
@@ -50,7 +51,7 @@
             android:singleLine="false"
             android:text="是否绑定30008241到江苏理工学院？"
             android:textColor="#666666"
-            android:textSize="14sp"
+            android:textSize="16sp"
             />
 
     </LinearLayout>

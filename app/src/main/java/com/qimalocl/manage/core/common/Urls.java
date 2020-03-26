@@ -76,7 +76,8 @@ public class Urls {
 
 	//	车辆相关 - 获取思科秘钥接口
 	public static String lock_info = host2 + "/car/lock_info/";
-//	https://testnewmapi.7mate.cn/api/car/lock_info/{lock_mac}
+	//	入库接口
+	public static String lock_in = host2 + "/car/lock_in";
 
 	/**上传头像*/
 	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";
