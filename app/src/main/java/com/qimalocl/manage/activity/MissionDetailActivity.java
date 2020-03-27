@@ -75,6 +75,8 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
     private double latitude;
     private double longitude;
     private String codenum;
+    private String telphone;
+    private String time;
     private AMap aMap;
     private static final int STROKE_COLOR = Color.argb(80, 3, 0, 255);
     private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
@@ -89,19 +91,78 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
         ButterKnife.bind(this);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         context = this;
-//        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
-//        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+
 
         codenum =getIntent().getExtras().getString("codenum");
+        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
+        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+        telphone =getIntent().getExtras().getString("telphone");
+        time =getIntent().getExtras().getString("time");
 
         init();
 
-        initHttp();
+
+        tvNum.setText(codenum);
+        tvTel.setText(telphone);
+        tvTime.setText(time.substring(0,16));
+
+        myLocation = new LatLng(latitude, longitude);
+        addChooseMarker();
+        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
+
+        tvTel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("Test","111111111");
+//                                linkTel = bean.getTelphone();
+                if (Build.VERSION.SDK_INT >= 23) {
+                    int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);
+                    if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                        if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
+                            requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
+                        } else {
+                            CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                            customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开拨打电话权限！")
+                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                    MissionDetailActivity.this.requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
+                                }
+                            });
+                            customBuilder.create().show();
+                        }
+                        return;
+                    }
+                }
+                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                customBuilder.setTitle("温馨提示").setMessage("确认拨打" + telphone + "吗?")
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Intent intent=new Intent();
+                        intent.setAction(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + telphone));
+                        startActivity(intent);
+                    }
+                });
+                customBuilder.create().show();
+            }
+        });
+
+//        initHttp();
     }
 
     private void init(){
 
-        titleText.setText("任务详情");
+        titleText.setText("任务");
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
@@ -165,63 +226,7 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
 
                         longitude = Double.parseDouble(obj.getString("longitude"));
                         latitude = Double.parseDouble(obj.getString("latitude"));
-                        tvNum.setText(obj.getString("codenum"));
 
-                        final String telphone = obj.getString("telphone");
-
-                        tvTel.setText(telphone);
-                        tvTime.setText(obj.getString("lastusetime").substring(0,16));
-
-                        myLocation = new LatLng(latitude,longitude);
-                        addChooseMarker();
-                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
-
-                        tvTel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.e("Test","111111111");
-//                                linkTel = bean.getTelphone();
-                                if (Build.VERSION.SDK_INT >= 23) {
-                                    int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);
-                                    if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                                        if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
-                                            requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
-                                        } else {
-                                            CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                            customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开拨打电话权限！")
-                                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int which) {
-                                                            dialog.cancel();
-                                                        }
-                                                    }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.cancel();
-                                                    MissionDetailActivity.this.requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
-                                                }
-                                            });
-                                            customBuilder.create().show();
-                                        }
-                                        return;
-                                    }
-                                }
-                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-                                customBuilder.setTitle("温馨提示").setMessage("确认拨打" + telphone + "吗?")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                        Intent intent=new Intent();
-                                        intent.setAction(Intent.ACTION_CALL);
-                                        intent.setData(Uri.parse("tel:" + telphone));
-                                        startActivity(intent);
-                                    }
-                                });
-                                customBuilder.create().show();
-                            }
-                        });
 
 
                     } else {

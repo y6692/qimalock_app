@@ -382,16 +382,10 @@ public class MainActivity extends BaseActivity{
 //        tab.getChildAt(0).setClickable(false);
 //        tab.onT
 
-        LinearLayout tabStrip = (LinearLayout) tab.getChildAt(0);
-//        for (int i = 0; i < tabStrip.getChildCount(); i++) {
-//            View tabView = tabStrip.getChildAt(i);
-//            if (tabView != null) {
-//                tabView.setClickable(false);
-//            }
-//        }
-
-        tabStrip.getChildAt(1).setClickable(false);
-        tabStrip.getChildAt(2).setClickable(false);
+//        LinearLayout tabStrip = (LinearLayout) tab.getChildAt(0);
+//
+//        tabStrip.getChildAt(1).setClickable(false);
+//        tabStrip.getChildAt(2).setClickable(false);
     }
 
 //    @Override

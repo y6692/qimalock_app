@@ -74,10 +74,16 @@ public class Urls {
 	//报废列表接口
 	public static String carbadaction_scrappedlist = host2 + "/carbadaction/scrappedlist";
 
-	//	车辆相关 - 获取思科秘钥接口
+	//车辆相关 - 获取思科秘钥接口
 	public static String lock_info = host2 + "/car/lock_info/";
-	//	入库接口
+	//入库接口
 	public static String lock_in = host2 + "/car/lock_in";
+
+	//车辆历史订单记录查询接口
+	public static String cyclingorder = host2 + "/cyclingorder";
+	//回收任务 未回收(个人中心) 未修好(个人中心) 列表接口
+	public static String recycletask = host2 + "/carbadaction/recycletask";
+//	https://testnewmapi.7mate.cn/api/carbadaction/recycletask
 
 	/**上传头像*/
 	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";

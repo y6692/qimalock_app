@@ -1875,7 +1875,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
 
-                            Log.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
+//                            Log.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
 
                             // 加入自定义标签
                             MarkerOptions bikeMarkerOption = null;

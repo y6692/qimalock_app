@@ -442,6 +442,7 @@ public class LockStorageActivity extends MPermissionsActivity {
 //        RequestParams params = new RequestParams();
 //        params.put("lock_mac", mac);
         HttpHelper.get(context, Urls.lock_info+mac, new TextHttpResponseHandler() {
+//        HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
 //                onStartCommon("正在提交");
@@ -463,27 +464,28 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
+                            if(result.getStatus_code()==0){
+                                KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
 
-                            isStorage = bean.getType();
+                                isStorage = bean.getType();
 
-                            tvType.setText("是否入库："+(isStorage==1?"是":"否"));
+                                tvType.setText("是否入库："+(isStorage==1?"是":"否"));
 
 
-                            if (!TextUtils.isEmpty(mac)) {
+                                if (!TextUtils.isEmpty(mac)) {
 //                              BaseApplication.getInstance().getIBLE().connect(address, this);
 
-                                loadingDialog.setTitle("正在连接");
-                                loadingDialog.show();
+                                    loadingDialog.setTitle("正在连接");
+                                    loadingDialog.show();
 
-                                if("2".equals(type) || "3".equals(type) || "9".equals(type)){
+                                    if("2".equals(type) || "3".equals(type) || "9".equals(type)){
 
-                                    Config.key = hexStringToByteArray(bean.getLock_secretkey());
-                                    Config.password = hexStringToByteArray(bean.getLock_password());
+                                        Config.key = hexStringToByteArray(bean.getLock_secretkey());
+                                        Config.password = hexStringToByteArray(bean.getLock_password());
 
-                                    m_myHandler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
+                                        m_myHandler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
 //                    if(isMac){
 //                        connect();
 //                    }else{
@@ -492,39 +494,43 @@ public class LockStorageActivity extends MPermissionsActivity {
 //                        scan();
 //                    }
 
-                                            connect();
-                                        }
-                                    }, 0 * 1000);
-                                }else{
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-
-
-                                                        m_myHandler.postDelayed(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-
-                                                                connectDevice();
-                                                                ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-                                                                ClientManager.getClient().notifyClose(mac, mCloseListener);
-
-
-                                                            }
-                                                        }, 0 * 1000);
-                                                    }
-                                                });
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
+                                                connect();
                                             }
-                                        }
-                                    }).start();
+                                        }, 0 * 1000);
+                                    }else{
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+
+
+                                                            m_myHandler.postDelayed(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+
+                                                                    connectDevice();
+                                                                    ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
+                                                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
+
+
+                                                                }
+                                                            }, 0 * 1000);
+                                                        }
+                                                    });
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }).start();
+                                    }
                                 }
+                            }else{
+                                ToastUtil.showMessageApp(context, result.getMessage());
                             }
+
 
                         }catch (Exception e){
                             closeLoadingDialog();
@@ -1771,6 +1777,8 @@ public class LockStorageActivity extends MPermissionsActivity {
 //                        }
 
                         Toast.makeText(context,	result.getMessage(), Toast.LENGTH_SHORT).show();
+
+                        finish();
                     } catch (Exception e) {
                         e.printStackTrace();
                         Log.e("addCar===eee", "==="+e);

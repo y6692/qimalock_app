@@ -6,40 +6,104 @@ package com.qimalocl.manage.model;
 
 public class BadCarBean {
 
-    private String badtime;
-    private String codenum;
-    private String status_name;
-    private String totalnum;
+    private String number;  //车辆编号
+    private String last_user_time;  //最后使用时间
+    private String last_user_phone;  //最后使用人手机号
+    private String longitude;  //经度
+    private String latitude;  //纬度
+    private String bad_time;  //坏车时间
+    private String bad_reason;  //坏车原因
+    private String recycle_time;  //回收时间
+    private String setgood_time;  //修好时间
 
-    public String getBadtime() {
-        return badtime;
+    private boolean isLoad; //是否加载过
+    private boolean isShowDate; //是否显示日期
+
+    public String getNumber() {
+        return number;
     }
 
-    public void setBadtime(String badtime) {
-        this.badtime = badtime;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
-    public String getCodenum() {
-        return codenum;
+    public String getLast_user_time() {
+        return last_user_time;
     }
 
-    public void setCodenum(String codenum) {
-        this.codenum = codenum;
+    public void setLast_user_time(String last_user_time) {
+        this.last_user_time = last_user_time;
     }
 
-    public String getStatus_name() {
-        return status_name;
+    public String getLast_user_phone() {
+        return last_user_phone;
     }
 
-    public void setStatus_name(String status_name) {
-        this.status_name = status_name;
+    public void setLast_user_phone(String last_user_phone) {
+        this.last_user_phone = last_user_phone;
     }
 
-    public String getTotalnum() {
-        return totalnum;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setTotalnum(String totalnum) {
-        this.totalnum = totalnum;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getBad_time() {
+        return bad_time;
+    }
+
+    public void setBad_time(String bad_time) {
+        this.bad_time = bad_time;
+    }
+
+    public String getBad_reason() {
+        return bad_reason;
+    }
+
+    public void setBad_reason(String bad_reason) {
+        this.bad_reason = bad_reason;
+    }
+
+    public String getRecycle_time() {
+        return recycle_time;
+    }
+
+    public void setRecycle_time(String recycle_time) {
+        this.recycle_time = recycle_time;
+    }
+
+    public String getSetgood_time() {
+        return setgood_time;
+    }
+
+    public void setSetgood_time(String setgood_time) {
+        this.setgood_time = setgood_time;
+    }
+
+    public boolean isLoad() {
+        return isLoad;
+    }
+
+    public void setLoad(boolean load) {
+        isLoad = load;
+    }
+
+    public boolean isShowDate() {
+        return isShowDate;
+    }
+
+    public void setShowDate(boolean showDate) {
+        isShowDate = showDate;
     }
 }

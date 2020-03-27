@@ -107,7 +107,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     private MyAdapter myAdapter;
     private int curPosition = 0;
     private int showPage = 1;
-    private boolean isRefresh = true;// 是否刷新中
+    private boolean isRefresh;// 是否刷新中
     private boolean isLast = false;
 
     private View footerView;
@@ -139,25 +139,26 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
         initView();
 
-//        initHttp();
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                while (true){
-//
-//                    try {
-//                        Thread.sleep(30*1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    m_myHandler.sendEmptyMessage(1);
-//                }
-//
-//            }
-//        }).start();
+        initHttp();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (true){
+
+
+
+                    try {
+                        Thread.sleep(30*1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    m_myHandler.sendEmptyMessage(1);
+                }
+            }
+        }).start();
 
     }
 
@@ -252,11 +253,15 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                dialog.getWindow().setAttributes(params1);
 //                dialog.show();
 
+                BadCarBean bean = myAdapter.getDatas().get(position);
+
                 Intent intent = new Intent(context, MissionDetailActivity.class);
 //                intent.putExtra("id", myAdapter.getDatas().get(position).);
-                intent.putExtra("codenum", myAdapter.getDatas().get(position).getCodenum());
-//                intent.putExtra("latitude", jsonObject.getString("latitude"));
-//                intent.putExtra("longitude", jsonObject.getString("longitude"));
+                intent.putExtra("codenum", bean.getNumber());
+                intent.putExtra("telphone", bean.getLast_user_phone());
+                intent.putExtra("time", bean.getLast_user_time());
+                intent.putExtra("latitude", bean.getLatitude());
+                intent.putExtra("longitude", bean.getLongitude());
                 startActivity(intent);
             }
         });
@@ -297,46 +302,42 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
             if (null == convertView) {
                 convertView = inflater.inflate(R.layout.item_mission_record, null);
             }
-            TextView num = BaseViewHolder.get(convertView,R.id.item_num);
-            TextView status = BaseViewHolder.get(convertView,R.id.item_status);
-            TextView time = BaseViewHolder.get(convertView,R.id.item_time);
+            TextView number = BaseViewHolder.get(convertView,R.id.item_number);
+            TextView bad_time = BaseViewHolder.get(convertView,R.id.item_bad_time);
             final BadCarBean bean = getDatas().get(position);
 
-            num.setText(bean.getCodenum());
-            status.setText(bean.getStatus_name());
-            time.setText(bean.getBadtime());
+            number.setText(bean.getNumber());
+            bad_time.setText(bean.getBad_time());
 
-            if("即将超时".equals(bean.getStatus_name())){
-                num.setTextColor(getResources().getColor(R.color.red));
-                status.setTextColor(getResources().getColor(R.color.red));
-                time.setTextColor(getResources().getColor(R.color.red));
-            }else{
-                num.setTextColor(getResources().getColor(R.color.tx_black));
-                status.setTextColor(getResources().getColor(R.color.tx_black));
-                time.setTextColor(getResources().getColor(R.color.tx_black));
-            }
+//            if("即将超时".equals(bean.getStatus_name())){
+//                num.setTextColor(getResources().getColor(R.color.red));
+//                status.setTextColor(getResources().getColor(R.color.red));
+//                time.setTextColor(getResources().getColor(R.color.red));
+//            }else{
+//                num.setTextColor(getResources().getColor(R.color.tx_black));
+//                status.setTextColor(getResources().getColor(R.color.tx_black));
+//                time.setTextColor(getResources().getColor(R.color.tx_black));
+//            }
 
             return convertView;
         }
     }
 
     private void initHttp() {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+        if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context,LoginActivity.class);
+            UIHelper.goToAct(context, LoginActivity.class);
             return;
         }
         RequestParams params = new RequestParams();
-        params.put("uid",uid);
-        params.put("access_token",access_token);
+        params.put("type", 1);
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        Log.e("badcarList===0", totalnum+"==="+codenum);
+        Log.e("recycletask===0", totalnum+"==="+codenum);
 
-        HttpHelper.get(context, Urls.badcarList, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.recycletask, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -350,8 +351,6 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         setFooterType(1);
                     }
                 });
-
-
             }
 
             @Override
@@ -380,78 +379,78 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("badcarList===1", "==="+responseString);
-
-                            if (result.getFlag().equals("Success")) {
-//                        JSONArray array = new JSONArray(result.getData());
-//                        if (0 == array.length()) {
-//                            msgText.setVisibility(View.VISIBLE);
-//                            listview.setVisibility(View.GONE);
-//                            msgText.setText("对不起,暂无信息");
-//                        }else {
-//                            msgText.setVisibility(View.GONE);
-//                            listview.setVisibility(View.VISIBLE);
-//                            if (datas.size() != 0){
-//                                datas.clear();
-//                            }
-//                            for (int i = 0; i < array.length();i++){
-//                                BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
-//                                datas.add(bean);
-//                            }
-//                            myAdapter.notifyDataSetChanged();
-//                        }
+                            Log.e("recycletask===1", "==="+responseString);
 
 
-                                JSONArray array = new JSONArray(result.getData());
+                            JSONArray array = new JSONArray(result.getData());
 
-                                Log.e("badcarList===2", "==="+array);
+                            Log.e("recycletask===2", "==="+array);
 
-                                if (array.length() == 0 && showPage == 1) {
-                                    totalnum = "0";
-                                    codenum = "";
+                            if (array.length() == 0 && showPage == 1) {
+                                totalnum = "0";
+                                codenum = "";
 
-                                    footerLayout.setVisibility(View.VISIBLE);
-                                    setFooterType(4);
-                                } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
-                                    footerLayout.setVisibility(View.GONE);
-                                    setFooterType(5);
-                                } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-                                    footerLayout.setVisibility(View.VISIBLE);
-                                    setFooterType(2);
-                                } else if (array.length() >= 10) {
-                                    footerLayout.setVisibility(View.VISIBLE);
-                                    setFooterType(0);
-                                }
-
-                                for (int i = 0; i < array.length();i++){
-                                    BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
-
-                                    if(i==0 && bean.getBadtime().compareTo(badtime)<0){
-                                        badtime = bean.getBadtime();
-                                        codenum = bean.getCodenum();
-                                        totalnum = bean.getTotalnum();
-                                    }
-
-                                    datas.add(bean);
-                                }
-
-                                Log.e("badcarList===3", totalnum+"==="+codenum);
-
-                                if(!"".equals(totalnum)){
-                                    Intent intent = new Intent("data.broadcast.action");
-                                    intent.putExtra("codenum", codenum);
-                                    intent.putExtra("count", Integer.parseInt(totalnum));
-                                    context.sendBroadcast(intent);
-                                }
-
-
-//                        View view = LayoutInflater.from(context).inflate(R.layout.fragment_scan, null);
-//                        TextView tvMsg = view.findViewById(R.id.msg);
-//                        tvMsg.setText("456");
-
-                            } else {
-                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                                footerLayout.setVisibility(View.VISIBLE);
+                                setFooterType(4);
+                            } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+                                footerLayout.setVisibility(View.GONE);
+                                setFooterType(5);
+                            } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+                                footerLayout.setVisibility(View.VISIBLE);
+                                setFooterType(2);
+                            } else if (array.length() >= 10) {
+                                footerLayout.setVisibility(View.VISIBLE);
+                                setFooterType(0);
                             }
+
+                            for (int i = 0; i < array.length();i++){
+                                BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+
+//                                    if(i==0 && bean.getBadtime().compareTo(badtime)<0){
+//                                        badtime = bean.getBadtime();
+//                                        codenum = bean.getCodenum();
+//                                        totalnum = bean.getTotalnum();
+//                                    }
+
+                                datas.add(bean);
+                            }
+
+                            Log.e("recycletask===3", totalnum+"==="+codenum);
+
+                            if(!"".equals(totalnum)){
+                                Intent intent = new Intent("data.broadcast.action");
+                                intent.putExtra("codenum", codenum);
+                                intent.putExtra("count", Integer.parseInt(totalnum));
+                                context.sendBroadcast(intent);
+                            }
+
+//                            if (result.getFlag().equals("Success")) {
+////                        JSONArray array = new JSONArray(result.getData());
+////                        if (0 == array.length()) {
+////                            msgText.setVisibility(View.VISIBLE);
+////                            listview.setVisibility(View.GONE);
+////                            msgText.setText("对不起,暂无信息");
+////                        }else {
+////                            msgText.setVisibility(View.GONE);
+////                            listview.setVisibility(View.VISIBLE);
+////                            if (datas.size() != 0){
+////                                datas.clear();
+////                            }
+////                            for (int i = 0; i < array.length();i++){
+////                                BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+////                                datas.add(bean);
+////                            }
+////                            myAdapter.notifyDataSetChanged();
+////                        }
+//
+//
+////                        View view = LayoutInflater.from(context).inflate(R.layout.fragment_scan, null);
+////                        TextView tvMsg = view.findViewById(R.id.msg);
+////                        tvMsg.setText("456");
+//
+//                            } else {
+//                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         } finally {
@@ -530,9 +529,6 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     }
 
 
-
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -543,10 +539,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         switch (v.getId()){
-
             case R.id.historyLayout:
                 UIHelper.goToAct(context, HistorysRecordActivity.class);
                 break;

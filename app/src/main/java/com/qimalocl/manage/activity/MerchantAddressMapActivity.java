@@ -63,10 +63,10 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
     @BindView(R.id.mainUI_title_backBtn)
     ImageView backBtn;
-    @BindView(R.id.mainUI_title_rightBtn)
-    TextView rightBtn;
-    @BindView(R.id.mainUI_title_titleText)
-    TextView titleText;
+//    @BindView(R.id.mainUI_title_rightBtn)
+//    TextView rightBtn;
+//    @BindView(R.id.mainUI_title_titleText)
+//    TextView titleText;
     @BindView(R.id.ui_merchantAddress_map)
     MapView mapView;
     @BindView(R.id.et_name)
@@ -127,10 +127,10 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         begintime = formatter.format(date);
         endtime = formatter.format(calendar.getTime());
 
-        tv_day.setText("日期范围："+begintime+" 到 "+endtime);
+//        tv_day.setText("日期范围："+begintime+" 到 "+endtime);
 
-        titleText.setText("车辆位置");
-        rightBtn.setText("选择日期");
+//        titleText.setText("车辆位置");
+//        rightBtn.setText("选择日期");
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
@@ -149,7 +149,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
 
         backBtn.setOnClickListener(this);
-        rightBtn.setOnClickListener(this);
+//        rightBtn.setOnClickListener(this);
         searchBtn.setOnClickListener(this);
 
 //        myLocation = new LatLng(latitude,longitude);
@@ -160,18 +160,16 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
     }
 
     private void initHttp(final String codenum) {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
+        if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context,LoginActivity.class);
             return;
         }
-        RequestParams params = new RequestParams();
-        params.put("uid",uid);
-        params.put("access_token",access_token);
-        params.put("codenum",codenum);
-        HttpHelper.get(context, Urls.carsLocation, params, new TextHttpResponseHandler() {
+//        RequestParams params = new RequestParams();
+//        params.put("codenum",codenum);
+        HttpHelper.get(context, Urls.car+codenum, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
                 onStartCommon("正在加载");
@@ -186,29 +184,40 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("Test","RRRR:"+responseString);
+                        Log.e("mama===car","==="+responseString);
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                            if (result.getFlag().equals("Success")){
-                                JSONObject jsonObject = new JSONObject(result.getData());
-                                if (!"[]".equals(result.getData())){
 
-                                    type = jsonObject.getString("type");
+                            JSONObject jsonObject = new JSONObject(result.getData());
 
-                                    if("4".equals(type) || "7".equals(type)){
-                                        gpstrack(codenum);
-                                    }else{
-                                        tv_day.setText("");
-
-                                        myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
-                                        addChooseMarker();
-                                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
-                                    }
-
-                                }
-                            } else {
-                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                            if("".equals(jsonObject.getString("latitude"))){
+                                myLocation = new LatLng(31.76446, 119.920594);
+                            }else{
+                                myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
                             }
+                            addChooseMarker();
+                            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+
+//                            if (result.getFlag().equals("Success")){
+//                                JSONObject jsonObject = new JSONObject(result.getData());
+//                                if (!"[]".equals(result.getData())){
+//
+//                                    type = jsonObject.getString("type");
+//
+//                                    if("4".equals(type) || "7".equals(type)){
+//                                        gpstrack(codenum);
+//                                    }else{
+//                                        tv_day.setText("");
+//
+//                                        myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
+//                                        addChooseMarker();
+//                                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+//                                    }
+//
+//                                }
+//                            } else {
+//                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                            }
                         } catch (Exception e) {
                             Log.e("Test","异常:"+e);
                         }
@@ -231,17 +240,17 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
 
-            if (begintime == null || "".equals(begintime)){
-                Toast.makeText(context,"请选择日期",Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (endtime == null || "".equals(endtime)){
-                Toast.makeText(context,"请选择日期",Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            tv_day.setText("日期范围："+begintime+" 到 "+endtime);
+//            if (begintime == null || "".equals(begintime)){
+//                Toast.makeText(context,"请选择日期",Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            if (endtime == null || "".equals(endtime)){
+//                Toast.makeText(context,"请选择日期",Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            tv_day.setText("日期范围："+begintime+" 到 "+endtime);
 
             if (polyline != null) {
                 polyline.remove();

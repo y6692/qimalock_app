@@ -3,110 +3,152 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
+    android:paddingLeft="@dimen/dp30"
+    android:paddingRight="@dimen/dp30"
+    android:paddingTop="@dimen/dp10"
     android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/dp10"
-        android:paddingRight="@dimen/dp10"
-        android:paddingTop="@dimen/dp10"
         android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/item_order_type"
+            android:id="@+id/item_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/sp14"
+            android:textSize="@dimen/sp18"
             android:textColor="@color/tx_black"
-            android:text=""/>
+            android:text="2019-12"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/dp10"
-        android:paddingRight="@dimen/dp10"
-        android:paddingTop="@dimen/dp10"
-        android:gravity="center_vertical">
+        android:paddingTop="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-
-        <TextView
-            android:id="@+id/item_historyRecord_realName"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/sp14"
-            android:textColor="@color/tx_black"
-            android:text=""/>
+            android:paddingTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/item_iv_order_state"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="11dp"
+                android:src="@drawable/order_0"/>
+
+            <TextView
+                android:id="@+id/item_tv_order_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
+                android:layout_marginLeft="7dp"
+                android:textSize="@dimen/sp10"
+                android:textColor="@color/tx_black"
+                android:text="已取消"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp5"
-            android:gravity="right|center_vertical"
-            android:layout_weight="1">
+            android:layout_marginLeft="25dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/item_historyRecord_tel"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/tx_black"
-                android:textSize="@dimen/sp14"
-                android:minHeight="@dimen/dp45"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/item_user_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/sp16"
+                        android:textColor="@color/tx_black"
+                        android:text="张三"/>
+
+                    <TextView
+                        android:id="@+id/item_user_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:textSize="@dimen/sp16"
+                        android:textColor="@color/tx_black"
+                        android:text="联系电话：18112577853"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true">
+
+                    <TextView
+                        android:id="@+id/item_order_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="9dp"
+                        android:textSize="@dimen/sp16"
+                        android:textColor="#FF0000"
+                        android:text="¥3.00"/>
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/item_created_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textSize="@dimen/sp10"
+                    android:textColor="@color/tx_black"
+                    android:text="借车: 2019-12-08 16:00"/>
+
+                <TextView
+                    android:id="@+id/item_car_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="@dimen/sp10"
+                    android:textColor="@color/tx_black"
+                    android:text="还车: 2019-12-08 16:00"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line_color"
+                android:layout_marginTop="@dimen/dp5"/>
+
         </LinearLayout>
+
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="@dimen/dp10"
-        android:paddingLeft="@dimen/dp10"
-        android:paddingRight="@dimen/dp10">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/item_historyRecord_codeNum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/tx_black"
-                android:textSize="@dimen/sp12"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/dp5">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/sp12"
-                android:textColor="@color/tx_black"
-                android:text="订单金额: "/>
-
-            <TextView
-                android:id="@+id/item_historyRecord_money"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/red"
-                android:textSize="@dimen/sp12"
-                android:paddingLeft="@dimen/dp5"/>
-        </LinearLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@color/line_color"
-        android:layout_marginTop="@dimen/dp5"/>
 
 </LinearLayout>

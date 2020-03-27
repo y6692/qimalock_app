@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="1"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/tx_black"
                     android:textSize="12sp" />
 
                 <TextView
@@ -50,14 +50,14 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="编号"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp" />
+                    android:textColor="@color/tx_black"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/black"/>
+                android:background="#CCCCCC"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="1"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/tx_black"
                     android:textSize="12sp" />
 
                 <TextView
@@ -82,14 +82,14 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="使用人联系方式"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp" />
+                    android:textColor="@color/tx_black"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/black"/>
+                android:background="#CCCCCC"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -105,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="1"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/tx_black"
                     android:textSize="12sp" />
 
                 <TextView
@@ -114,8 +114,8 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="最后使用时间"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp" />
+                    android:textColor="@color/tx_black"
+                    android:textSize="14sp" />
             </LinearLayout>
 
 
@@ -123,6 +123,7 @@
 
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/tv_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

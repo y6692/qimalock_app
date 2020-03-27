@@ -46,6 +46,7 @@ import com.qimalocl.manage.activity.MaintenanceRecordActivity;
 import com.qimalocl.manage.activity.ScrappedDetailActivity;
 import com.qimalocl.manage.activity.SetGoodUsedDetailActivity;
 import com.qimalocl.manage.activity.SettingActivity;
+import com.qimalocl.manage.activity.UnGoodUsedDetailActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
 import com.qimalocl.manage.core.common.BitmapUtils1;
@@ -294,8 +295,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         rightBtn.setOnClickListener(this);
 //        headerImageView.setOnClickListener(this);
 
-        ll_1.setOnClickListener(this);
-        ll_2.setOnClickListener(this);
+//        ll_1.setOnClickListener(this);
+//        ll_2.setOnClickListener(this);
         ll_3.setOnClickListener(this);
         ll_4.setOnClickListener(this);
         ll_5.setOnClickListener(this);
@@ -838,8 +839,24 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 startActivityForResult(intent, 10);
                 break;
 
-            case R.id.ll_1:
-//                UIHelper.goToAct(context, SetGoodUsedDetailActivity.class);
+            case R.id.ll_4:
+//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
+
+                intent = new Intent();
+                intent.setClass(context, UnGoodUsedDetailActivity.class);
+                intent.putExtra("type", 1);
+                startActivity(intent);
+
+                break;
+
+            case R.id.ll_5:
+//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
+
+                intent = new Intent();
+                intent.setClass(context, UnGoodUsedDetailActivity.class);
+                intent.putExtra("type", 2);
+                startActivity(intent);
+
                 break;
 
             case R.id.personUI_maintenanceRecordLayout:

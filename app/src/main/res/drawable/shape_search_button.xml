@@ -12,6 +12,6 @@
     <!--</stroke>-->
 
     <!-- 矩形的圆角半径 -->
-    <corners android:radius="@dimen/dp20" />
+    <corners android:radius="@dimen/dp10" />
 
 </shape>

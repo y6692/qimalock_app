@@ -444,6 +444,12 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		bikeNunBtn = (LinearLayout)findViewById(R.id.loca_show_btnBikeNum);
 		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
 
+		if(isAdd){
+			ivHand.setVisibility(View.GONE);
+		}else{
+			ivHand.setVisibility(View.VISIBLE);
+		}
+
 		mCropLayout = (RelativeLayout) findViewById(R.id.capture_crop_layout);
 		mCropLayout2 = (RelativeLayout) findViewById(R.id.capture_crop_layout2);
 		ll_input = (LinearLayout) findViewById(R.id.ll_input);

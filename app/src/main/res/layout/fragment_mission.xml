@@ -14,10 +14,8 @@
         android:id="@+id/mainUI_titleLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp40"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
+        android:background="@drawable/bcg_title_home"
+        >
 
         <TextView
             android:id="@+id/mainUI_title"
@@ -25,14 +23,10 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="任务"
-            android:textColor="@color/black"
-            android:textSize="@dimen/sp16"/>
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp18"/>
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@color/line_color"/>
 
 
     <!--<RelativeLayout-->
@@ -62,8 +56,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/ui_backgroud">
+        android:orientation="vertical">
 
         <include
             android:layout_width="match_parent"
@@ -73,11 +66,11 @@
 
 
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/line_height"
-        android:background="@color/line_color"
-        android:layout_marginLeft="@dimen/dp15"
-        android:layout_marginRight="@dimen/dp15"/>
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/line_height"-->
+        <!--android:background="@color/line_color"-->
+        <!--android:layout_marginLeft="@dimen/dp15"-->
+        <!--android:layout_marginRight="@dimen/dp15"/>-->
 
 </LinearLayout>

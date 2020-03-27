@@ -86,12 +86,10 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
 
     private Context context;
 
-    @BindView(R.id.historyLayout)
-    RelativeLayout historyLayout;
-    @BindView(R.id.locationLayout)
-    RelativeLayout locationLayout;
-//    @BindView(R.id.locationLayout2)
-//    RelativeLayout locationLayout2;
+    @BindView(R.id.ll_history)
+    LinearLayout historyLayout;
+    @BindView(R.id.ll_location)
+    LinearLayout locationLayout;
 
 
     private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
@@ -133,7 +131,7 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
 
         historyLayout.setOnClickListener(this);
         locationLayout.setOnClickListener(this);
-//        locationLayout2.setOnClickListener(this);
+
     }
 
     @Override
@@ -156,21 +154,16 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         switch (v.getId()){
 
-            case R.id.historyLayout:
+            case R.id.ll_history:
                 UIHelper.goToAct(context, HistorysRecordActivity.class);
                 break;
 
-            case R.id.locationLayout:
+            case R.id.ll_location:
                 UIHelper.goToAct(context, MerchantAddressMapActivity.class);
                 break;
 
-//            case R.id.locationLayout2:
-//                UIHelper.goToAct(context, BikeLocationActivity.class);
-//                break;
 
             default:
                 break;

@@ -1647,11 +1647,11 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                         for (int i = 0; i < array.length();i++){
                             BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
 
-                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
-                                badtime = bean.getBadtime();
-                                codenum = bean.getCodenum();
-                                totalnum = bean.getTotalnum();
-                            }
+//                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
+//                                badtime = bean.getBadtime();
+//                                codenum = bean.getCodenum();
+//                                totalnum = bean.getTotalnum();
+//                            }
 
 //                            datas.add(bean);
                         }
