@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/ui_main_title"/>
+
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical"-->
+        <!--android:background="@color/white">-->
+
+        <!--<com.qimalocl.manage.core.widget.MyListView-->
+            <!--android:id="@+id/ui_historysRecord_listview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:scrollbars="none"-->
+            <!--android:background="@color/white"-->
+            <!--android:visibility="gone"-->
+            <!--android:divider="@null"/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/ui_historysRecord_msgText"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:gravity="center"-->
+            <!--android:text="请输入车编号搜索"-->
+            <!--android:textColor="@color/gray"-->
+            <!--android:textSize="@dimen/sp16" />-->
+    <!--</RelativeLayout>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/layout_swipe_list" />
+    </LinearLayout>
+
+</LinearLayout>

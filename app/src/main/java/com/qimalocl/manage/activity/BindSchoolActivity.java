@@ -370,7 +370,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
 
             CarSchoolBean bean = getDatas().get(position);
 
-            created_at.setText(bean.getCreated_at());
+            created_at.setText(bean.getUpdated_at());
             car_number.setText("车辆编号："+bean.getCar_number());
             school_name.setText(bean.getSchool_name());
 

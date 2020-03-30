@@ -83,7 +83,8 @@ public class Urls {
 	public static String cyclingorder = host2 + "/cyclingorder";
 	//回收任务 未回收(个人中心) 未修好(个人中心) 列表接口
 	public static String recycletask = host2 + "/carbadaction/recycletask";
-//	https://testnewmapi.7mate.cn/api/carbadaction/recycletask
+	//长期未使用 、修好未使用（个人中心）列表接口
+	public static String long_setgood_unused = host2 + "/car/long_setgood_unused";
 
 	/**上传头像*/
 	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";

@@ -15,9 +15,11 @@ public class BadCarBean {
     private String bad_reason;  //坏车原因
     private String recycle_time;  //回收时间
     private String setgood_time;  //修好时间
+    private String last_user_name;  //最后使用人姓名
 
     private boolean isLoad; //是否加载过
     private boolean isShowDate; //是否显示日期
+
 
     public String getNumber() {
         return number;
@@ -89,6 +91,14 @@ public class BadCarBean {
 
     public void setSetgood_time(String setgood_time) {
         this.setgood_time = setgood_time;
+    }
+
+    public String getLast_user_name() {
+        return last_user_name;
+    }
+
+    public void setLast_user_name(String last_user_name) {
+        this.last_user_name = last_user_name;
     }
 
     public boolean isLoad() {

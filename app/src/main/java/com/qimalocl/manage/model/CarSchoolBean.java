@@ -13,7 +13,7 @@ public class CarSchoolBean {
     private int admin_id;  //调度员id
     private String admin_name;    //调度员姓名
     private String admin_phone;    //调度员手机号
-    private String created_at;    //创建时间
+    private String updated_at;    //绑定时间
 
     public int getId() {
         return id;
@@ -79,11 +79,11 @@ public class CarSchoolBean {
         this.admin_phone = admin_phone;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getUpdated_at() {
+        return updated_at;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
     }
 }

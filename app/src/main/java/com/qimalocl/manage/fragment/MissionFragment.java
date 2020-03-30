@@ -532,7 +532,8 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-        isRefresh = true;
+        isRefresh = false;
+//        isRefresh = true;
     }
 
 

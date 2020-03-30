@@ -41,6 +41,7 @@ import com.qimalocl.manage.BuildConfig;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.ExchangePowerRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
+import com.qimalocl.manage.activity.LongSetgoodUnusedDetailActivity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.MaintenanceRecordActivity;
 import com.qimalocl.manage.activity.ScrappedDetailActivity;
@@ -854,6 +855,26 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                 intent = new Intent();
                 intent.setClass(context, UnGoodUsedDetailActivity.class);
+                intent.putExtra("type", 2);
+                startActivity(intent);
+
+                break;
+
+            case R.id.ll_3:
+//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
+
+                intent = new Intent();
+                intent.setClass(context, LongSetgoodUnusedDetailActivity.class);
+                intent.putExtra("type", 1);
+                startActivity(intent);
+
+                break;
+
+            case R.id.ll_6:
+//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
+
+                intent = new Intent();
+                intent.setClass(context, LongSetgoodUnusedDetailActivity.class);
                 intent.putExtra("type", 2);
                 startActivity(intent);
 

@@ -92,10 +92,21 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         context = this;
 
+        myLocation = new LatLng(31.76446, 119.920594);
 
         codenum =getIntent().getExtras().getString("codenum");
-        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
-        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+        if("".equals(getIntent().getExtras().getString("latitude"))){
+            latitude = 31.76446;
+        }else{
+            latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
+        }
+
+        if("".equals(getIntent().getExtras().getString("longitude"))){
+            longitude = 119.920594;
+        }else{
+            longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+        }
+
         telphone =getIntent().getExtras().getString("telphone");
         time =getIntent().getExtras().getString("time");
 
@@ -104,7 +115,7 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
 
         tvNum.setText(codenum);
         tvTel.setText(telphone);
-        tvTime.setText(time.substring(0,16));
+        tvTime.setText("".equals(time)?"":time.substring(0,16));
 
         myLocation = new LatLng(latitude, longitude);
         addChooseMarker();

@@ -29,7 +29,6 @@ import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.ResultConsel;
-import com.qimalocl.manage.model.SetGoodUsedDetailBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 
 import org.apache.http.Header;
@@ -43,7 +42,7 @@ import java.util.List;
  * Created by Administrator1 on 2017/2/13.
  */
 
-public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener {
 
     private Context context;
@@ -75,7 +74,7 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_un_good_used_detail);
+        setContentView(R.layout.activity_long_setgood_unused_detail);
         context = this;
         data = new ArrayList<>();
 
@@ -89,7 +88,7 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText(type==1?"投放使用":"已修好");
+        title.setText(type==1?"长期未使用":"修好未使用");
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
@@ -201,7 +200,7 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
 
         Log.e("sguda===0", "===");
 
-        HttpHelper.get(context, Urls.recycletask, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.long_setgood_unused, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -388,57 +387,95 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (null == convertView) {
-                convertView = inflater.inflate(R.layout.item_un_good_used_detail, null);
+                convertView = inflater.inflate(R.layout.item_long_setgood_unused_detail, null);
             }
 
             TextView tv_date = BaseViewHolder.get(convertView,R.id.item_date);
             TextView number = BaseViewHolder.get(convertView,R.id.tv_number);
+            TextView last_user_phone = BaseViewHolder.get(convertView,R.id.tv_last_user_phone);
+            TextView last_user_time = BaseViewHolder.get(convertView,R.id.tv_last_user_time);
             TextView bad_reason = BaseViewHolder.get(convertView,R.id.tv_bad_reason);
             TextView bad_time = BaseViewHolder.get(convertView,R.id.tv_bad_time);
             TextView recycle_time = BaseViewHolder.get(convertView,R.id.tv_recycle_time);
+            TextView setgood_time = BaseViewHolder.get(convertView,R.id.tv_setgood_time);
             LinearLayout ll_bad_reason = BaseViewHolder.get(convertView,R.id.ll_bad_reason);
+            LinearLayout ll_bad_time = BaseViewHolder.get(convertView,R.id.ll_bad_time);
             LinearLayout ll_recycle_time = BaseViewHolder.get(convertView,R.id.ll_recycle_time);
+            LinearLayout ll_setgood_time = BaseViewHolder.get(convertView,R.id.ll_setgood_time);
 
             BadCarBean bean = getDatas().get(position);
             number.setText(bean.getNumber());
+            last_user_phone.setText(bean.getLast_user_phone());
+            last_user_time.setText(bean.getLast_user_time());
             bad_reason.setText(bean.getBad_reason());
             bad_time.setText(bean.getBad_time());
             recycle_time.setText(bean.getRecycle_time());
-
+            setgood_time.setText(bean.getSetgood_time());
 
 
             if(type==2){
                 ll_bad_reason.setVisibility(View.VISIBLE);
+                ll_bad_time.setVisibility(View.VISIBLE);
                 ll_recycle_time.setVisibility(View.VISIBLE);
+                ll_setgood_time.setVisibility(View.VISIBLE);
+
+                if(bean.isLoad()){
+                    if(bean.isShowDate()){
+                        tv_date.setVisibility(View.VISIBLE);
+                        tv_date.setText(bean.getSetgood_time().split(" ")[0]);
+                    }else{
+                        tv_date.setVisibility(View.GONE);
+                        tv_date.setText("");
+                    }
+
+                }else{
+                    if(!date.equals(bean.getSetgood_time().split(" ")[0])){
+                        date = bean.getSetgood_time().split(" ")[0];
+                        bean.setShowDate(true);
+
+                        tv_date.setVisibility(View.VISIBLE);
+                        tv_date.setText(bean.getSetgood_time().split(" ")[0]);
+                    }else{
+                        bean.setShowDate(false);
+                        tv_date.setVisibility(View.GONE);
+                        tv_date.setText("");
+                    }
+
+                    bean.setLoad(true);
+                }
             }else{
                 ll_bad_reason.setVisibility(View.GONE);
+                ll_bad_time.setVisibility(View.GONE);
                 ll_recycle_time.setVisibility(View.GONE);
-            }
+                ll_setgood_time.setVisibility(View.GONE);
 
-            if(bean.isLoad()){
-                if(bean.isShowDate()){
-                    tv_date.setVisibility(View.VISIBLE);
-                    tv_date.setText(bean.getBad_time().split(" ")[0]);
+                if(bean.isLoad()){
+                    if(bean.isShowDate()){
+                        tv_date.setVisibility(View.VISIBLE);
+                        tv_date.setText(bean.getLast_user_time().split(" ")[0]);
+                    }else{
+                        tv_date.setVisibility(View.GONE);
+                        tv_date.setText("");
+                    }
+
                 }else{
-                    tv_date.setVisibility(View.GONE);
-                    tv_date.setText("");
+                    if(!date.equals(bean.getLast_user_time().split(" ")[0])){
+                        date = bean.getLast_user_time().split(" ")[0];
+                        bean.setShowDate(true);
+
+                        tv_date.setVisibility(View.VISIBLE);
+                        tv_date.setText(bean.getLast_user_time().split(" ")[0]);
+                    }else{
+                        bean.setShowDate(false);
+                        tv_date.setVisibility(View.GONE);
+                        tv_date.setText("");
+                    }
+
+                    bean.setLoad(true);
                 }
 
-            }else{
-                if(!date.equals(bean.getBad_time().split(" ")[0])){
-                    date = bean.getBad_time().split(" ")[0];
-                    bean.setShowDate(true);
-
-                    tv_date.setVisibility(View.VISIBLE);
-                    tv_date.setText(bean.getBad_time().split(" ")[0]);
-                }else{
-                    bean.setShowDate(false);
-                    tv_date.setVisibility(View.GONE);
-                    tv_date.setText("");
-                }
-
-                bean.setLoad(true);
             }
+
 
 
 //
