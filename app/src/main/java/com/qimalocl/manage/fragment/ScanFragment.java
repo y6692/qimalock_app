@@ -813,6 +813,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
                         bad_reason = bean.getBad_reason();
 
+                        String lock_secretkey = bean.getLock_secretkey();
+                        String lock_password = bean.getLock_password();
+
+                        if("9".equals(type) || "10".equals(type)){
+                            Config.newKey = hexStringToByteArray(lock_secretkey);
+                            Config.passwordnew = hexStringToByteArray(lock_password);
+                        }else if("2".equals(type) || "3".equals(type)){
+                            Config.newKey = Config.newKey2;
+                            Config.passwordnew = Config.passwordnew2;
+                        }
 
                         Log.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order);
 
@@ -1831,10 +1841,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在加载");
+//                    loadingDialog.show();
+//                }
             }
 
             @Override
@@ -2657,7 +2667,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             if (apiClient != null) {
                 apiClient.onDestroy();
             }
-        }else if("2".equals(type) || "3".equals(type) || "9".equals(type)){
+        }else if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)){
             BleManager.getInstance().disconnectAllDevice();
             BleManager.getInstance().destroy();
         }
@@ -2686,7 +2696,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         if ("1".equals(type)) {          //单车机械锁
 //          UIHelper.goToAct(context, CurRoadStartActivity.class);
 //          popupwindow.dismiss();
-        } else if ("2".equals(type) || "3".equals(type) || "9".equals(type)) {    //单车蓝牙锁
+        } else if ("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)) {    //单车蓝牙锁
 
             if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                 ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
@@ -2713,34 +2723,41 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 isOpenLock = true;
 
-                if(!isLookPsdBtn){   //没连上
-
-                    BleManager.getInstance().init(activity.getApplication());
-                    BleManager.getInstance()
-                            .enableLog(true)
-                            .setReConnectCount(10, 5000)
-                            .setConnectOverTime(timeout)
-                            .setOperateTimeout(10000);
-
-//                    if(isMac){
-//                        connect();
+//                if(!isLookPsdBtn){   //没连上
+//
+//                    BleManager.getInstance().init(activity.getApplication());
+//                    BleManager.getInstance()
+//                            .enableLog(true)
+//                            .setReConnectCount(10, 5000)
+//                            .setConnectOverTime(timeout)
+//                            .setOperateTimeout(10000);
+//
+////                    if(isMac){
+////                        connect();
+////                    }else{
+////                        setScanRule();
+////                        scan2();
+////                    }
+//
+//                    connect();
+//                }else{
+////                    BaseApplication.getInstance().getIBLE().openLock();
+//
+//                    if(token==null || "".equals(token)){
+//                        getBleToken();
 //                    }else{
-//                        setScanRule();
-//                        scan2();
+//                        openLock();
 //                    }
+//                }
 
-                    connect();
-                }else{
-//                    BaseApplication.getInstance().getIBLE().openLock();
+                BleManager.getInstance().init(activity.getApplication());
+                BleManager.getInstance()
+                        .enableLog(true)
+                        .setReConnectCount(10, 5000)
+                        .setConnectOverTime(timeout)
+                        .setOperateTimeout(10000);
 
-                    if(token==null || "".equals(token)){
-                        getBleToken();
-                    }else{
-                        openLock();
-                    }
-                }
-
-//                unlock();   //TODO 不支持该操作
+                connect();
 
             }
         }else if ("4".equals(type) || "8".equals(type)) {
@@ -3119,6 +3136,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             getLockStatus();
                             closeLoadingDialog();
+
+                            end2();
+
 //                            m_myHandler.sendEmptyMessage(7);
                         }else if(s1.startsWith("0508")){   //关锁==050801RET：RET取值如下：0x00，锁关闭成功。0x01，锁关闭失败。0x02，锁关闭异常。
                             if ("00".equals(s1.substring(6, 8))) {

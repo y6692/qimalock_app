@@ -151,6 +151,7 @@ public class LockStorageActivity extends MPermissionsActivity {
 
     private int count = 0;
     private String type;
+    private String carType;
     private String name;
     private String mac;
     private boolean isAuto;
@@ -189,22 +190,7 @@ public class LockStorageActivity extends MPermissionsActivity {
     //服务器时间戳，精确到秒，用于锁同步时间
     long serverTime;
 
-    public static byte[] hexStringToByteArray(String str) {
-        if(str == null || str.trim().equals("")) {
-            return new byte[0];
-        }
 
-        byte[] bytes = new byte[str.length() / 2];
-        for(int i = 0; i < str.length() / 2; i++) {
-            String subStr = str.substring(i * 2, i * 2 + 2);
-            bytes[i] = (byte) Integer.parseInt(subStr, 16);
-        }
-
-        Log.e("StringToByte===1", bytes+"==="+bytes[0]);
-
-
-        return bytes;
-    }
 
 
     @Override
@@ -266,9 +252,11 @@ public class LockStorageActivity extends MPermissionsActivity {
         });
 //        type = getIntent().getStringExtra("type");
         type = SharedPreferencesUrls.getInstance().getString("type", "");
-        if("2".equals(type) || "3".equals(type) || "9".equals(type)){
+        if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)){
+            carType = "2";
             name = getIntent().getStringExtra("name");
         }else{
+            carType = "1";
             name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
         }
 
@@ -471,9 +459,8 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                                 tvType.setText("是否入库："+(isStorage==1?"是":"否"));
 
-
                                 if (!TextUtils.isEmpty(mac)) {
-//                              BaseApplication.getInstance().getIBLE().connect(address, this);
+//                                  BaseApplication.getInstance().getIBLE().connect(address, this);
 
                                     loadingDialog.setTitle("正在连接");
                                     loadingDialog.show();
@@ -1741,7 +1728,7 @@ public class LockStorageActivity extends MPermissionsActivity {
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-            params.put("type", type);
+            params.put("type", carType);
             params.put("qrcode", result);    //二维码链接地址
             params.put("lock_no", name);     //车辆编号
             params.put("lock_mac", mac);    //mac地址

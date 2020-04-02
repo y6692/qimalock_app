@@ -398,6 +398,8 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
             TextView bad_time = BaseViewHolder.get(convertView,R.id.tv_bad_time);
             TextView recycle_time = BaseViewHolder.get(convertView,R.id.tv_recycle_time);
             TextView setgood_time = BaseViewHolder.get(convertView,R.id.tv_setgood_time);
+            LinearLayout ll_last_user_phone = BaseViewHolder.get(convertView,R.id.ll_last_user_phone);
+            LinearLayout ll_last_user_time = BaseViewHolder.get(convertView,R.id.ll_last_user_time);
             LinearLayout ll_bad_reason = BaseViewHolder.get(convertView,R.id.ll_bad_reason);
             LinearLayout ll_bad_time = BaseViewHolder.get(convertView,R.id.ll_bad_time);
             LinearLayout ll_recycle_time = BaseViewHolder.get(convertView,R.id.ll_recycle_time);
@@ -414,6 +416,8 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
 
 
             if(type==2){
+                ll_last_user_phone.setVisibility(View.GONE);
+                ll_last_user_time.setVisibility(View.GONE);
                 ll_bad_reason.setVisibility(View.VISIBLE);
                 ll_bad_time.setVisibility(View.VISIBLE);
                 ll_recycle_time.setVisibility(View.VISIBLE);
@@ -444,6 +448,8 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
                     bean.setLoad(true);
                 }
             }else{
+                ll_last_user_phone.setVisibility(View.VISIBLE);
+                ll_last_user_time.setVisibility(View.VISIBLE);
                 ll_bad_reason.setVisibility(View.GONE);
                 ll_bad_time.setVisibility(View.GONE);
                 ll_recycle_time.setVisibility(View.GONE);

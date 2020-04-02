@@ -115,7 +115,7 @@ public class MissionDetailActivity extends SwipeBackActivity implements View.OnC
 
         tvNum.setText(codenum);
         tvTel.setText(telphone);
-        tvTime.setText("".equals(time)?"":time.substring(0,16));
+        tvTime.setText((time==null || "".equals(time))?"":time.substring(0,16));
 
         myLocation = new LatLng(latitude, longitude);
         addChooseMarker();

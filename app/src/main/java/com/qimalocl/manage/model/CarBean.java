@@ -13,6 +13,7 @@ public class CarBean {
     private int lock_status;  //0未知 3离线 非0非3 正常
     private String lock_no;    //lock_no
     private String lock_mac;    //mac地址
+    private String lock_password;    //车锁密碼
     private String lock_secretkey;    //车锁秘钥
     private String electricity;    //电量
     private int carmodel_id;  //车型ID
@@ -83,6 +84,14 @@ public class CarBean {
 
     public void setLock_mac(String lock_mac) {
         this.lock_mac = lock_mac;
+    }
+
+    public String getLock_password() {
+        return lock_password;
+    }
+
+    public void setLock_password(String lock_password) {
+        this.lock_password = lock_password;
     }
 
     public String getLock_secretkey() {

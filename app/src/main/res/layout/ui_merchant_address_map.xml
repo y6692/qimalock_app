@@ -25,8 +25,9 @@
 
         <com.qimalocl.manage.core.widget.ClearEditText
             android:id="@+id/et_name"
-            android:layout_width="216dp"
+            android:layout_width="0dp"
             android:layout_height="@dimen/dp40"
+            android:layout_weight="1"
             android:layout_marginLeft="12dp"
             android:layout_centerInParent="true"
             android:background="@drawable/shape_feedback_edit"
@@ -41,7 +42,7 @@
             android:layout_width="52dp"
             android:layout_height="40dp"
             android:layout_marginLeft="12dp"
-            android:layout_toRightOf="@id/et_name"
+            android:layout_marginRight="30dp"
             android:background="@drawable/shape_search_button"
             android:gravity="center"
             android:textColor="@color/black"
@@ -78,7 +79,6 @@
                 />
 
             <TextView
-
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_toRightOf="@id/et_name"

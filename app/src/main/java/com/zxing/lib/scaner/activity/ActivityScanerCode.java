@@ -80,6 +80,7 @@ import com.qimalocl.manage.model.CarBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.ToastUtil;
+import com.sunshine.blelibrary.config.Config;
 import com.vondear.rxtools.RxAnimationTool;
 import com.vondear.rxtools.RxBeepTool;
 import com.vondear.rxtools.interfaces.OnRxScanerListener;
@@ -445,9 +446,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
 
 		if(isAdd){
-			ivHand.setVisibility(View.GONE);
+			bikeNunBtn.setVisibility(View.GONE);
 		}else{
-			ivHand.setVisibility(View.VISIBLE);
+			bikeNunBtn.setVisibility(View.VISIBLE);
 		}
 
 		mCropLayout = (RelativeLayout) findViewById(R.id.capture_crop_layout);
@@ -1492,6 +1493,17 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                             status = bean.getStatus();
                             can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
                             bad_reason = bean.getBad_reason();
+
+							String lock_secretkey = bean.getLock_secretkey();
+							String lock_password = bean.getLock_password();
+
+							if("9".equals(type) || "10".equals(type)){
+								Config.newKey = hexStringToByteArray(lock_secretkey);
+								Config.passwordnew = hexStringToByteArray(lock_password);
+							}else if("2".equals(type) || "3".equals(type)){
+								Config.newKey = Config.newKey2;
+								Config.passwordnew = Config.passwordnew2;
+							}
 
                             Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason);
 

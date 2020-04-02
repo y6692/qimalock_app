@@ -101,7 +101,6 @@ public class Config {
      * 新的密钥
      * */
     public static byte[] newKey = {30,85,45,80,52,73,60,70,45,75,60,86,10,90,40,42};   //7MA密钥  1E552D5034493C462D4B3C560A5A282A
-
     public static byte[] newKey2 = {30,85,45,80,52,73,60,70,45,75,60,86,10,90,40,42};
 //    public static byte[] key = {36,87,48,82,54,75,26,71,48,80,65,88,12,99,45,23};
     /**
@@ -113,6 +112,7 @@ public class Config {
 //    public static byte[] passwordnew = {0x4D, 0x47, 0x22, 0x3F, 0x38, 0x3B};
 //    public static byte[] passwordnew = {0x28, 0x5, 0x55, 0x28, 0x58, 0x49};  //40,5,85,40,88,73
     public static byte[] passwordnew = {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};    //7MA密码
+    public static byte[] passwordnew2 = {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};    //7MA密码
 //    public static byte[] passwordnew = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
 
 //    323031373135

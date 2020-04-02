@@ -89,7 +89,7 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText(type==1?"投放使用":"已修好");
+        title.setText(type==1?"未回收":"未修好");
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 

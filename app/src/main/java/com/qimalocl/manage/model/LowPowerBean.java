@@ -9,6 +9,7 @@ public class LowPowerBean {
     private int count;  //低电和超低电总数量
     private String xiaoan;  //小安数据
     private String xyt;  //行运兔数据
+    private String tbt;  //泰比特数据
 
     public int getCount() {
         return count;
@@ -32,5 +33,13 @@ public class LowPowerBean {
 
     public void setXyt(String xyt) {
         this.xyt = xyt;
+    }
+
+    public String getTbt() {
+        return tbt;
+    }
+
+    public void setTbt(String tbt) {
+        this.tbt = tbt;
     }
 }

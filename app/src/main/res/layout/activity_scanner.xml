@@ -114,31 +114,6 @@
     </RelativeLayout>
 
 
-    <!--<RelativeLayout-->
-        <!--android:id="@+id/capture_crop_view"-->
-        <!--android:layout_width="220dp"-->
-        <!--android:layout_height="220dp"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:background="@drawable/capture" >-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/capture_scan_line"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentTop="true"-->
-            <!--android:layout_margin="5dp"-->
-            <!--android:background="@drawable/kakalib_scan_ray" />-->
-    <!--</RelativeLayout>-->
-
-    <!--<ImageView-->
-        <!--android:id="@+id/capture_mask_top"-->
-        <!--android:layout_width="220dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_below="@id/two_code_head"-->
-        <!--android:layout_above="@id/capture_crop_view"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:background="@drawable/scan_mask" />-->
-
     <ImageView
         android:id="@+id/bottom_mask"
         android:layout_width="match_parent"
@@ -177,17 +152,6 @@
         android:layout_toRightOf="@id/capture_crop_layout"
         android:background="@drawable/scan_mask" />
 
-    <!--<TextView-->
-        <!--android:id="@+id/activity_qr_scan_warn"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/capture_crop_layout"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_marginTop="@dimen/dp5"-->
-        <!--android:text="@string/scan_tips"-->
-        <!--android:textColor="@android:color/white"-->
-        <!--android:textSize="15sp" />-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -203,19 +167,6 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="40dp">
 
-
-
-            <!--<TextView-->
-            <!--android:id="@+id/loca_show_btnBikeNum"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_marginLeft="30dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:drawableTop="@drawable/top_hand"-->
-            <!--android:gravity="center"-->
-            <!--android:text="手动输入编号"-->
-            <!--android:textColor="#DBD5D5"-->
-            <!--/>-->
 
             <LinearLayout
                 android:id="@+id/top_back"
