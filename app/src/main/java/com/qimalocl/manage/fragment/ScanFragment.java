@@ -101,11 +101,14 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.core.widget.VerticalScrollTextView;
+import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.CarBean;
 import com.qimalocl.manage.model.CarsBean;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.Sentence;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.model.UserIndexBean;
 import com.qimalocl.manage.utils.ToastUtil;
@@ -138,6 +141,8 @@ import com.xiaoantech.sdk.ble.scanner.ScanResult;
 import com.xiaoantech.sdk.listeners.BleCallback;
 import com.xiaoantech.sdk.listeners.BleStateChangeListener;
 import com.xiaoantech.sdk.listeners.ScanResultCallback;
+import com.xiaosu.DataSetAdapter;
+import com.xiaosu.VerticalRollingTextView;
 import com.zxing.lib.scaner.activity.ActivityScanerCode;
 
 import org.apache.http.Header;
@@ -167,7 +172,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private Activity activity;
 
 //    private LoadingDialog loadingDialog;
-    @BindView(R.id.msg) TextView tvMsg;
+    @BindView(R.id.msg) VerticalRollingTextView tvMsg;
     @BindView(R.id.mainUI_msg) LinearLayout llMsg;
     @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
     @BindView(R.id.mainUI_scanCode_lock) LinearLayout scanCodeBtn;
@@ -322,6 +327,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private Button negativeButton;
     public String reason;
 
+    List list2 = new ArrayList<Sentence>();
+//    public static List list2 = new ArrayList<Sentence>();
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
         unbinder = ButterKnife.bind(this, v);
@@ -362,7 +370,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 while (true){
 
                     try {
@@ -378,10 +385,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     }
 
                 }
-
             }
         }).start();
     }
+
+
 
     @Override
     public void onResume() {
@@ -391,10 +399,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         if(!isHidden()){
             threadScan = true;
+//            if(!tvMsg.isRunning() && list2.size()>1){
+//                tvMsg.run();
+//            }
         }else{
             threadScan = false;
+//            if(tvMsg.isRunning()){
+//                tvMsg.stop();
+//            }
+//            if(list2.size()>0){
+//                list2.clear();
+//            }
         }
-
 
 
 
@@ -435,13 +451,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public void onPause() {
         super.onPause();
         threadScan = false;
+        if(tvMsg.isRunning()){
+            tvMsg.stop();
+        }
+//        if(list2.size()>0){
+//            list2.clear();
+//        }
 
-        Log.e("sf===onPause", isPermission+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type);
+        Log.e("sf===onPause", isPermission+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type+"==="+tvMsg.isRunning());
 
 
-
-//        mapView.onPause();
-//        deactivate();
+//      mapView.onPause();
+//      deactivate();
 //		mFirstFix = false;
     }
 
@@ -449,11 +470,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
 
-        Log.e("onHiddenChanged===Scan", mapView+"==="+hidden);
+        Log.e("onHiddenChanged===Scan", mapView+"==="+hidden+"==="+tvMsg.isRunning());
 
         if(hidden){
             //pause
             threadScan = false;
+//            if(tvMsg.isRunning()){
+//                tvMsg.stop();
+//            }
+//            if(list2.size()>0){
+//                list2.clear();
+//            }
 
             mapView.setVisibility(View.GONE);
 
@@ -462,6 +489,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }else{
             //resume
             threadScan = true;
+//            if(!tvMsg.isRunning() && list2.size()>1){
+//                tvMsg.run();
+//            }
+
 
             mapView.setVisibility(View.VISIBLE);
 
@@ -515,17 +546,94 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             Log.e("scan===mReceiver", "==="+action);
 
             if ("data.broadcast.action".equals(action)) {
-                if(tvMsg!=null){
-                    if(intent.getIntExtra("count", 0)!=0){
-                        tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
+//                if(tvMsg!=null){
+//                    if(intent.getIntExtra("count", 0)!=0){
+//                        tvMsg.setText(intent.getStringExtra("codenum")+" 需要回收，请及时完成工作");
+//                    }else{
+//                        tvMsg.setText("");
+//                    }
+//                }
+
+                List<BadCarBean> list = (List<BadCarBean>) intent.getSerializableExtra("datas");
+
+                Log.e("scan===mReceiver1", list.size()+"==="+list);
+
+//                if(list2.size()>0){
+//                    list2.clear();
+//                }
+
+                List list2 = new ArrayList<Sentence>();
+
+                for(int i=0; i<list.size(); i++){
+                    Sentence sen=new Sentence(i,list.get(i).getNumber()+" 需要回收，请及时完成工作");
+                    list2.add(i, sen);
+                }
+
+                Log.e("scan===mReceiver2", list2.size()+"==="+list2);
+
+                //给View传递数据
+//                tvMsg.setList(list2);
+
+//                List<String> textArray = ...;
+//                tvMsg.setDataSetAdapter(new DataSetAdapter<Sentence>(list2) {
+//                    @Override
+//                    protected Sentence text(Sentence s) {
+//                        Log.e("scan===mReceiver3", s+"===");
+//                        return s;
+//                    }
+//                });
+
+//                tvMsg.setDataSetAdapter(new DataSetAdapter() {
+//                    @Override
+//                    protected String text(Object o) {
+//                        Log.e("scan===mReceiver3", o+"===");
+//                        return null;
+//                    }
+//                });
+
+                try{
+                    dataSetAdapter.setData(list2);
+                    tvMsg.setDataSetAdapter(dataSetAdapter);
+
+
+
+                    Log.e("scan===mReceiver4", list2.size()+"==="+tvMsg.isRunning());
+
+                    if(list2.size()>1){
+
+                        if(!tvMsg.isRunning()){
+                            tvMsg.run();
+                        }
+
                     }else{
-                        tvMsg.setText("");
+//                        if(tvMsg.isRunning()){
+//                            tvMsg.stop();
+//                        }
                     }
+                }catch (Exception e){
 
                 }
 
+
+
             }
         }
+    };
+
+
+    DataSetAdapter<Sentence> dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
+        @Override
+        protected String text(Sentence sentence) {
+            Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+
+            if(sentence.getName()==null){
+                return "";
+            }else{
+                return sentence.getName();
+            }
+
+        }
+
     };
 
     private void openGPSSettings() {
@@ -732,6 +840,24 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         setUpLocationStyle();
 
 //        Log.e("zoom==", "=="+aMap.getCameraPosition().zoom);
+
+
+//        mSampleView = (VerticalScrollTextView) findViewById(R.id.sampleView1);
+//        List lst=new ArrayList<Sentence>();
+//        for(int i=0;i<30;i++){
+//            if(i%2==0){
+//                Sentence sen=new Sentence(i,i+"、金球奖三甲揭晓 C罗梅西哈维入围 ");
+//                lst.add(i, sen);
+//            }else{
+//                Sentence sen=new Sentence(i,i+"、公牛欲用三大主力换魔兽？？？？");
+//                lst.add(i, sen);
+//            }
+//        }
+//        //给View传递数据
+//        tvMsg.setList(lst);
+//        //更新View
+//        tvMsg.updateUI();
+
 
         llMsg.setOnClickListener(this);
         rightBtn.setOnClickListener(this);

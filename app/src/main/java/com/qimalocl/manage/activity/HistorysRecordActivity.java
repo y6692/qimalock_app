@@ -244,6 +244,13 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                     Toast.makeText(context,"请输入车辆编号",Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                if(data.size()>0){
+                    data.clear();
+                    myAdapter.notifyDataSetChanged();
+                }
+
+                showPage = 1;
                 initHttp(codenum);
 
                 inputMethodManager.hideSoftInputFromWindow(codeNumEdit.getWindowToken(), 0);
@@ -289,10 +296,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
 
                     Log.e("hra===initHttp1", "==="+responseString);
 
-                    if(data.size()>0){
-                        data.clear();
-                        myAdapter.notifyDataSetChanged();
-                    }
+
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {

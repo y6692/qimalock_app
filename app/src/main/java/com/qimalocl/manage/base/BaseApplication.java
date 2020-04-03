@@ -13,6 +13,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.IBinder;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 import com.fitsleep.sunshinelibrary.utils.Logger;
 import com.fitsleep.sunshinelibrary.utils.ToastUtils;
@@ -31,6 +33,10 @@ public class BaseApplication extends MultiDexApplication {
 	public  static Context context;
 	private static BaseApplication app;
 	private BLEService mBleService;
+	public static int width;
+	public static int height;
+	public static float density;
+
 
 	private PackageInfo packageInfo;
 
@@ -54,6 +60,15 @@ public class BaseApplication extends MultiDexApplication {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		DisplayMetrics metrics = new DisplayMetrics();
+		WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		wm.getDefaultDisplay().getMetrics(metrics);
+		density = metrics.density;
+		width = metrics.widthPixels;
+		height = metrics.heightPixels;
+
+
 		ToastUtils.init(this);
 		initBle();
 	}

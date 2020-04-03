@@ -27,6 +27,7 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.fragment.ScanFragment;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.ToastUtil;
@@ -180,6 +181,10 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
                     if(responseString==null){
                         Intent intent0 = new Intent();
                         setResult(RESULT_OK, intent0);
+
+//                        if(ScanFragment.list2.size()>0){
+//                            ScanFragment.list2.clear();
+//                        }
 
                         SharedPreferencesUrls.getInstance().putString("access_token", "");
 //                        SharedPreferencesUrls.getInstance().putString("iscert", "");

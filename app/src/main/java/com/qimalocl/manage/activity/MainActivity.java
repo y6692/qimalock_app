@@ -197,6 +197,16 @@ public class MainActivity extends BaseActivity{
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+//      must store the new intent unless getIntent() will return the old one
+        setIntent(intent);
+
+        Log.e("ma===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -225,8 +235,11 @@ public class MainActivity extends BaseActivity{
 
         if(flag){
 //            purseFragment.user();
+            missionFragment.initHttp();
             mineFragment.initHttp();
         }
+
+
 
 //        mainFragment.show
 //        tab.setCurrentTab(0);

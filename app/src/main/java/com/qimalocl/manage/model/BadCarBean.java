@@ -1,10 +1,12 @@
 package com.qimalocl.manage.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator1 on 2017/11/9.
  */
 
-public class BadCarBean {
+public class BadCarBean implements Serializable {
 
     private String number;  //车辆编号
     private String last_user_time;  //最后使用时间

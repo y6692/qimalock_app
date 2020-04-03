@@ -96,16 +96,36 @@
                 android:src="@drawable/msg"
                 android:background="#00000000"
                 />
-            <TextView
+
+
+            <!--<com.qimalocl.manage.core.widget.VerticalScrollTextView-->
+                <!--android:id="@+id/msg"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_marginLeft="12dp"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--/>-->
+
+            <com.xiaosu.VerticalRollingTextView
                 android:id="@+id/msg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:text=""
-                android:textSize="@dimen/sp12"
-                android:textColor="@color/tx_black"
-                android:layout_centerInParent="true"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="12dp"/>
+
+
+            <!--<TextView-->
+                <!--android:id="@+id/msg"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="12dp"-->
+                <!--android:text=""-->
+                <!--android:textSize="@dimen/sp12"-->
+                <!--android:textColor="@color/tx_black"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--/>-->
+
+
+
         </LinearLayout>
 
         <LinearLayout

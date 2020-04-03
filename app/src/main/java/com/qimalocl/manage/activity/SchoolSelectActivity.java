@@ -222,7 +222,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
                 intent.putExtra("school_id", school_id);
                 intent.putExtra("school_name", school_name);
                 intent.putExtra("isChangeKey",false);
-                intent.putExtra("isAdd",true);
+//                intent.putExtra("isAdd",true);
                 startActivityForResult(intent, 1);
                 scrollToFinishActivity();
 

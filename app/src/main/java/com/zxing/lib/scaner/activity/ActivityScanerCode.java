@@ -165,6 +165,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private Dialog dialog;
 	private EditText bikeNumEdit;
 	private Button positiveButton,negativeButton;
+	private LinearLayout ll_hand;
 	private LinearLayout lightBtn;
 	private int Tag = 0;
 	private boolean isBindSchool = false;
@@ -444,11 +445,12 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		cancle = (ImageView)findViewById(R.id.iv_cancle);
 		bikeNunBtn = (LinearLayout)findViewById(R.id.loca_show_btnBikeNum);
 		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
+		ll_hand = (LinearLayout)findViewById(R.id.ll_hand);
 
 		if(isAdd){
-			bikeNunBtn.setVisibility(View.GONE);
+			ll_hand.setVisibility(View.GONE);
 		}else{
-			bikeNunBtn.setVisibility(View.VISIBLE);
+			ll_hand.setVisibility(View.VISIBLE);
 		}
 
 		mCropLayout = (RelativeLayout) findViewById(R.id.capture_crop_layout);
@@ -629,14 +631,14 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 			case R.id.activity_qr_scan_lightBtn:
 
-				if (isLight) {
-					isLight = false;
+				if (!isLight) {
+					isLight = true;
 					// 打开
 					ivLight.setImageResource(R.drawable.top_light2);
 
 					mCameraManager.openLight();
 				} else {
-					isLight = true;
+					isLight = false;
 					// 关闭
 					ivLight.setImageResource(R.drawable.top_light);
 					mCameraManager.offLight();

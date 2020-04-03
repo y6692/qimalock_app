@@ -57,6 +57,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import org.apache.http.Header;
 import org.json.JSONArray;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +104,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
 //    private LoadingDialog loadingDialog;
     private Dialog dialog;
-    private List<BadCarBean> datas;
+    private List<BadCarBean> datas = new ArrayList<>();
     private MyAdapter myAdapter;
     private int curPosition = 0;
     private int showPage = 1;
@@ -323,13 +324,26 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         }
     }
 
-    private void initHttp() {
+    public void initHttp() {
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
+//            Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
+//            UIHelper.goToAct(context, LoginActivity.class);
             return;
         }
+
+
+        if(datas.size()>0){
+            datas.clear();
+        }
+
+//        Intent intent = new Intent("data.broadcast.action");
+//        intent.putExtra("datas", (Serializable)datas);
+////      intent.putExtra("codenum", codenum);
+//        intent.putExtra("count", datas.size());
+//        context.sendBroadcast(intent);
+
+
         RequestParams params = new RequestParams();
         params.put("type", 1);
         params.put("page", showPage);
@@ -386,6 +400,8 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
                             Log.e("recycletask===2", "==="+array);
 
+
+
                             if (array.length() == 0 && showPage == 1) {
                                 totalnum = "0";
                                 codenum = "";
@@ -406,23 +422,33 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                             for (int i = 0; i < array.length();i++){
                                 BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
 
-//                                    if(i==0 && bean.getBadtime().compareTo(badtime)<0){
-//                                        badtime = bean.getBadtime();
-//                                        codenum = bean.getCodenum();
-//                                        totalnum = bean.getTotalnum();
-//                                    }
+                                if(i==0 && bean.getBad_time().compareTo(badtime)<0){
+                                    badtime = bean.getBad_time();
+                                    codenum = bean.getNumber();
+//                                    totalnum = bean.getTotalnum();
+                                }
 
                                 datas.add(bean);
                             }
 
-                            Log.e("recycletask===3", totalnum+"==="+codenum);
+                            Log.e("recycletask===3", datas.size()+"==="+totalnum+"==="+codenum);
 
-                            if(!"".equals(totalnum)){
-                                Intent intent = new Intent("data.broadcast.action");
-                                intent.putExtra("codenum", codenum);
-                                intent.putExtra("count", Integer.parseInt(totalnum));
-                                context.sendBroadcast(intent);
+//                            if(!"".equals(totalnum)){
+//                                Intent intent = new Intent("data.broadcast.action");
+//                                intent.putExtra("codenum", codenum);
+//                                intent.putExtra("count", Integer.parseInt(totalnum));
+//                                context.sendBroadcast(intent);
+//                            }
+
+                            if(datas.size()>0){
+
                             }
+
+                            Intent intent = new Intent("data.broadcast.action");
+                            intent.putExtra("datas", (Serializable)datas);
+//                                intent.putExtra("codenum", codenum);
+                            intent.putExtra("count", datas.size());
+                            context.sendBroadcast(intent);
 
 //                            if (result.getFlag().equals("Success")) {
 ////                        JSONArray array = new JSONArray(result.getData());

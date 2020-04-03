@@ -152,30 +152,25 @@
         android:layout_toRightOf="@id/capture_crop_layout"
         android:background="@drawable/scan_mask" />
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/ll_scan"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="40dp">
-
+            android:layout_height="140dp"
+            >
 
             <LinearLayout
                 android:id="@+id/top_back"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="30dp"
+                android:layout_width="60dp"
+                android:layout_height="100dp"
+                android:layout_marginBottom="40dp"
                 android:orientation="vertical"
-                android:gravity="center"
-                android:layout_weight="0.3">
+                android:gravity="center">
 
                 <ImageView
 
@@ -188,65 +183,96 @@
 
             </LinearLayout>
 
+
             <LinearLayout
-                android:id="@+id/loca_show_btnBikeNum"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_weight="1">
+                android:id="@+id/ll_scan"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="40dp"
+                >
 
-                <ImageView
-                    android:id="@+id/iv_hand"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/top_hand"
+                <LinearLayout
+                    android:id="@+id/ll_hand"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    />
+                    android:layout_weight="1">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    <LinearLayout
+                        android:id="@+id/loca_show_btnBikeNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/iv_hand"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/top_hand"
+                            android:gravity="center"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:gravity="center"
+                            android:text="输入编号开锁"
+                            android:textSize="14sp"
+                            android:textColor="#ffffff"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_light"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
                     android:gravity="center"
-                    android:text="输入编号开锁"
-                    android:textSize="14sp"
-                    android:textColor="#ffffff"
-                    />
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:id="@+id/activity_qr_scan_lightBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/iv_light"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/top_light"
+                            android:gravity="center"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:gravity="center"
+                            android:text="打开手电筒"
+                            android:textSize="14sp"
+                            android:textColor="#ffffff"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/activity_qr_scan_lightBtn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginRight="30dp"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/iv_light"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/top_light"
-                    android:gravity="center"
-                    />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center"
-                    android:text="打开手电筒"
-                    android:textSize="14sp"
-                    android:textColor="#ffffff"
-                    />
-
-            </LinearLayout>
 
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:visibility="gone"
@@ -361,6 +387,8 @@
         </LinearLayout>
 
     </LinearLayout>
+
+
 
 
 
