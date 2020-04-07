@@ -6,6 +6,7 @@ public class ResultConsel {
 	public int errcode;
 	public String msg;
 	public String data;
+	public String meta;
 	public String info;
 
 	public int status_code;
@@ -35,6 +36,14 @@ public class ResultConsel {
 	}
 	public void setData(String data) {
 		this.data = data;
+	}
+
+	public String getMeta() {
+		return meta;
+	}
+
+	public void setMeta(String meta) {
+		this.meta = meta;
 	}
 
 	public String getInfo() {

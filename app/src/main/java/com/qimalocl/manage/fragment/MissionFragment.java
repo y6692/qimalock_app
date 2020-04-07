@@ -56,6 +56,7 @@ import com.qimalocl.manage.model.ResultConsel;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -122,7 +123,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
     String badtime="2115-02-08 20:20";
     String codenum="";
-    String totalnum="";
+    int totalnum;
 
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -349,7 +350,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        Log.e("recycletask===0", totalnum+"==="+codenum);
+//        Log.e("recycletask===0", totalnum+"==="+codenum);
 
         HttpHelper.get(context, Urls.recycletask, params, new TextHttpResponseHandler() {
             @Override
@@ -393,17 +394,22 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("recycletask===1", "==="+responseString);
+//                            Log.e("recycletask===1", result.getMeta()+"==="+responseString);
 
 
                             JSONArray array = new JSONArray(result.getData());
 
-                            Log.e("recycletask===2", "==="+array);
+                            JSONObject jsonObject = new JSONObject(result.getMeta());
+                            JSONObject json = new JSONObject(jsonObject.getString("pagination"));
+//                            org.json.JSONObject s = JSON.parseObject(result.getMeta(), JSONObject.class);
+//                            JSONObject s= (JSONObject)JSON.parse(result.getMeta());
+//                            JSONArray array = new JSONArray(result.getMeta());
 
-
+                            totalnum = json.getInt("count");
+//                            Log.e("recycletask===2", totalnum+"==="+array);
 
                             if (array.length() == 0 && showPage == 1) {
-                                totalnum = "0";
+                                totalnum = 0;
                                 codenum = "";
 
                                 footerLayout.setVisibility(View.VISIBLE);
@@ -431,7 +437,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                                 datas.add(bean);
                             }
 
-                            Log.e("recycletask===3", datas.size()+"==="+totalnum+"==="+codenum);
+//                            Log.e("recycletask===3", datas.size()+"==="+totalnum+"==="+codenum);
 
 //                            if(!"".equals(totalnum)){
 //                                Intent intent = new Intent("data.broadcast.action");
@@ -447,7 +453,8 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                             Intent intent = new Intent("data.broadcast.action");
                             intent.putExtra("datas", (Serializable)datas);
 //                                intent.putExtra("codenum", codenum);
-                            intent.putExtra("count", datas.size());
+                            intent.putExtra("updateData", true);
+                            intent.putExtra("count", totalnum);
                             context.sendBroadcast(intent);
 
 //                            if (result.getFlag().equals("Success")) {
@@ -479,6 +486,8 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                            }
                         } catch (Exception e) {
                             e.printStackTrace();
+
+                            Log.e("recycletask===e", e+"===");
                         } finally {
                             swipeRefreshLayout.setRefreshing(false);
                             isRefresh = false;

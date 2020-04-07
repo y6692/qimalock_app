@@ -105,6 +105,7 @@ import com.qimalocl.manage.core.widget.VerticalScrollTextView;
 import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.CarBean;
 import com.qimalocl.manage.model.CarsBean;
+import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
@@ -147,7 +148,9 @@ import com.zxing.lib.scaner.activity.ActivityScanerCode;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -328,7 +331,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public String reason;
 
     List list2 = new ArrayList<Sentence>();
-//    public static List list2 = new ArrayList<Sentence>();
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
@@ -378,7 +380,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         e.printStackTrace();
                     }
 
-                    Log.e("sf===thread", threadScan + "===");
+//                    Log.e("sf===thread", threadScan + "===");
 
                     if(threadScan){
                         m_myHandler.sendEmptyMessage(1);
@@ -412,19 +414,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            }
         }
 
-
-
-//        initNearby(latitude, longitude);
-
-//        mapView.onResume();
-
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-//        if (access_token != null && !"".equals(access_token)){
-//            rightBtn.setText("退出登录");
-//        }else {
-//            rightBtn.setText("登录");
-//        }
 
         closeLoadingDialog();
 
@@ -554,6 +543,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                    }
 //                }
 
+                boolean updateData = intent.getBooleanExtra("updateData", false);
+
+                if(!updateData) return;
+
                 List<BadCarBean> list = (List<BadCarBean>) intent.getSerializableExtra("datas");
 
                 Log.e("scan===mReceiver1", list.size()+"==="+list);
@@ -592,9 +585,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                });
 
                 try{
+
+                    if(tvMsg.isRunning()){
+                        tvMsg.stop();
+                    }
+
                     dataSetAdapter.setData(list2);
                     tvMsg.setDataSetAdapter(dataSetAdapter);
-
 
 
                     Log.e("scan===mReceiver4", list2.size()+"==="+tvMsg.isRunning());
@@ -624,7 +621,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     DataSetAdapter<Sentence> dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
         @Override
         protected String text(Sentence sentence) {
-            Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+//            Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
 
             if(sentence.getName()==null){
                 return "";
@@ -1761,6 +1758,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
 
+                        recycletask();
+
 //                        if (result.getFlag().equals("Success")) {
 //                            curMarker.setIcon(bikeDescripter_blue);
 //
@@ -1778,13 +1777,154 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
+    private void recycletask() {
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+//            Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
+//            UIHelper.goToAct(context, LoginActivity.class);
+            return;
+        }
+
+        RequestParams params = new RequestParams();
+        params.put("type", 1);
+        params.put("page", 1);
+        params.put("pagesize", GlobalConfig.PAGE_SIZE);
+
+        Log.e("sf===recycletask0", "==="+codenum);
+
+        HttpHelper.get(context, Urls.recycletask, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        UIHelper.ToastError(context, throwable.toString());
+                    }
+                });
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                        Log.e("sf===recycletask1", "==="+responseString);
+
+                        JSONArray array = new JSONArray(result.getData());
+
+                        JSONObject jsonObject = new JSONObject(result.getMeta());
+                        JSONObject json = new JSONObject(jsonObject.getString("pagination"));
+                        Log.e("sf===recycletask2", "==="+array);
+
+                        int totalnum = json.getInt("count");
+
+                        List<BadCarBean> list = new ArrayList<>();
+                        for (int i = 0; i < array.length();i++){
+                            BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
+
+                            list.add(bean);
+                        }
+
+                        Log.e("sf===recycletask3", list.size()+"==="+codenum);
+
+
+                        Intent intent = new Intent("data.broadcast.action");
+//                            intent.putExtra("datas", (Serializable)datas);
+                        intent.putExtra("updateData", false);
+                        intent.putExtra("count", totalnum);
+                        context.sendBroadcast(intent);
+
+//                            List<BadCarBean> list = (List<BadCarBean>) intent.getSerializableExtra("datas");
+
+                        Log.e("sf===recycletask4", list.size()+"==="+list);
+
+                        final List list2 = new ArrayList<Sentence>();
+
+                        for(int i=0; i<list.size(); i++){
+                            Sentence sen=new Sentence(i,list.get(i).getNumber()+" 需要回收，请及时完成工作");
+                            list2.add(i, sen);
+                        }
+
+                        Log.e("sf===recycletask5", list2.size()+"==="+list2);
+
+
+                        try{
+
+                            if(tvMsg.isRunning()){
+                                tvMsg.stop();
+                            }
+
+                            Log.e("sf===recycletask6", list2.size()+"==="+tvMsg.isRunning());
+
+
+                            dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
+                                @Override
+                                protected String text(Sentence sentence) {
+//                                    Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+
+                                    if(sentence.getName()==null){
+                                        return "";
+                                    }else{
+                                        return sentence.getName();
+                                    }
+
+                                }
+
+                            };
+
+//                                    dataSetAdapter.setData(list2);
+                            tvMsg.setDataSetAdapter(dataSetAdapter);
+
+
+
+                            if(list2.size()>1){
+
+                                if(!tvMsg.isRunning()){
+                                    tvMsg.run();
+                                }
+
+                            }else{
+
+                                Log.e("sf===recycletask7", list2.size()+"==="+tvMsg.isRunning());
+
+                                tvMsg.stop();
+                            }
+
+//                            m_myHandler.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//
+//
+//                                }
+//                            }, 5 * 1000);
+
+
+                        }catch (Exception e){
+
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    }
+                });
+
+            }
+        });
+    }
+
     private void initHttp(){
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
-//            RequestParams params = new RequestParams();
-//            params.put("uid",uid);
-//            params.put("access_token",access_token);
             HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -1962,7 +2102,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         params.put("type", type);  //0全部 1只看坏车 2只看低电
 
-        Log.e("cars===", type+"==="+carmodel_id);
+//        Log.e("cars===", type+"==="+carmodel_id);
 
         HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
             @Override
@@ -1988,11 +2128,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("cars===0", "==="+responseString);
+//                    Log.e("cars===0", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
 
-                    Log.e("cars===1", "==="+array.length());
+//                    Log.e("cars===1", "==="+array.length());
 
                     for (Marker marker : bikeMarkerList){
                         if (marker != null){
@@ -2277,9 +2417,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
                 UIHelper.goToAct(context, LoginActivity.class);
             }else {
-//                params.put("uid",uid);
-//                params.put("access_token",access_token);
-
                 HttpHelper.get(context, Urls.nearbyEbikeScool, params, new TextHttpResponseHandler() {
                     @Override
                     public void onStart() {
@@ -2574,7 +2711,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                    MainActivity.changeTab(4);
                 }
-
 
                 break;
 
@@ -4510,11 +4646,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
 
-        Log.e("onLocationChanged=0", mListener+"==="+amapLocation);
+//        Log.e("onLocationChanged=0", mListener+"==="+amapLocation);
 
         if (mListener != null && amapLocation != null) {
 
-            Log.e("onLocationChanged=1", latitude +"==="+amapLocation.getLatitude() +">>>"+longitude+"==="+amapLocation.getLongitude());
+//            Log.e("onLocationChanged=1", latitude +"==="+amapLocation.getLatitude() +">>>"+longitude+"==="+amapLocation.getLongitude());
 
             if ((latitude == amapLocation.getLatitude()) && (longitude == amapLocation.getLongitude())) return;
 
@@ -4531,7 +4667,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     SharedPreferencesUrls.getInstance().putString("latitude",""+latitude);
                     SharedPreferencesUrls.getInstance().putString("longitude",""+longitude);
 
-                    Log.e("onLocationChanged=", mFirstFix+"==="+myLocation);
+//                    Log.e("onLocationChanged=", mFirstFix+"==="+myLocation);
 
 //                    Toast.makeText(context,"==="+myLocation, Toast.LENGTH_SHORT).show();
 
@@ -4973,8 +5109,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-//            params.put("uid",uid);
-//            params.put("access_token",access_token);
             params.put("tokencode",result);
             params.put("latitude",latitude);
             params.put("longitude",longitude);
@@ -5020,8 +5154,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-//            params.put("uid",uid);
-//            params.put("access_token",access_token);
             params.put("codenum",result);
             HttpHelper.post(context, Urls.recycle, params, new TextHttpResponseHandler() {
                 @Override
@@ -5057,96 +5189,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
-//    private void lock(String result){
-//
-////        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-//        if (access_token == null || "".equals(access_token)){
-//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-//            UIHelper.goToAct(context, LoginActivity.class);
-//        }else {
-//            RequestParams params = new RequestParams();
-////            params.put("uid",uid);
-////            params.put("access_token",access_token);
-//            params.put("codenum",result);
-//            HttpHelper.post(context, Urls.lock, params, new TextHttpResponseHandler() {
-//                @Override
-//                public void onStart() {
-//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                        loadingDialog.setTitle("正在提交");
-//                        loadingDialog.show();
-//                    }
-//                }
-//                @Override
-//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
-//                    UIHelper.ToastError(context, throwable.toString());
-//                }
-//                @Override
-//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-//                    try {
-//                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-//                        if (result.getFlag().equals("Success")) {
-//                            Toast.makeText(context,"恭喜您，锁定成功",Toast.LENGTH_SHORT).show();
-//                        }else {
-//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-//                        }
-//                    } catch (Exception e) {
-//                    }
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
-//                }
-//            });
-//        }
-//    }
-//    private void unLock(String result){
-//
-////        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-//        if (access_token == null || "".equals(access_token)){
-//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-//            UIHelper.goToAct(context, LoginActivity.class);
-//        }else {
-//            RequestParams params = new RequestParams();
-////            params.put("uid",uid);
-////            params.put("access_token",access_token);
-//            params.put("codenum",result);
-//            HttpHelper.post(context, Urls.unLock, params, new TextHttpResponseHandler() {
-//                @Override
-//                public void onStart() {
-//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                        loadingDialog.setTitle("正在提交");
-//                        loadingDialog.show();
-//                    }
-//                }
-//                @Override
-//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
-//                    UIHelper.ToastError(context, throwable.toString());
-//                }
-//                @Override
-//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-//                    try {
-//                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-//                        if (result.getFlag().equals("Success")) {
-//                            Toast.makeText(context,"恭喜您，解锁成功",Toast.LENGTH_SHORT).show();
-//                        }else {
-//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-//                        }
-//                    } catch (Exception e) {
-//                    }
-//                    if (loadingDialog != null && loadingDialog.isShowing()){
-//                        loadingDialog.dismiss();
-//                    }
-//                }
-//            });
-//        }
-//    }
 
     private void endCar(String result){
 
@@ -5156,8 +5198,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-//            params.put("uid",uid);
-//            params.put("access_token",access_token);
             params.put("tokencode",result);
             HttpHelper.post(context, Urls.endCar, params, new TextHttpResponseHandler() {
                 @Override
@@ -5193,30 +5233,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            try{
-//                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-//                customBuilder.setTitle("温馨提示").setMessage("确认退出吗?")
-//                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.cancel();
-//                            }
-//                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                        AppManager.getAppManager().AppExit(context);
-//                    }
-//                });
-//                customBuilder.create().show();
-//                return true;
-//            }catch (Exception e){
-//
-//            }
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

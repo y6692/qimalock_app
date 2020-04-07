@@ -1715,14 +1715,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			}
 		});
 
-//		String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-//		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-//		if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)){
-//			Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
-//			UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
-//		}else {
-//
-//		}
 	}
 
 //	PreviewCallback previewCb = new PreviewCallback() {
