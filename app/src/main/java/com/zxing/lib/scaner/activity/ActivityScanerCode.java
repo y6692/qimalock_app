@@ -1485,7 +1485,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                             lock_name = bean.getLock_name();	//车锁名称(英文)
                             lock_title = bean.getLock_title();	//车锁名称(中文)
                             deviceuuid = bean.getVendor_lock_id();
-                            lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常
+                            lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常 1已上锁 2已开锁
                             lock_no = bean.getLock_no();
                             m_nowMac = bean.getLock_mac();
                             bleid = bean.getLock_secretkey();
