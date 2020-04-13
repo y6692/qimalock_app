@@ -132,7 +132,6 @@
                     android:text="@string/wx_auth"
                     />
 
-
                 <RadioGroup
                     android:id="@+id/rg_type"
                     android:layout_width="match_parent"
