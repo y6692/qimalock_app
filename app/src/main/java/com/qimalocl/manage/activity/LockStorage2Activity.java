@@ -45,6 +45,7 @@ import com.qimalocl.manage.core.widget.ClearEditText;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.model.BleDevice;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.ToastUtil;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
@@ -198,9 +199,9 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
         codenum = getIntent().getStringExtra("codenum");
 
 
-        hexStringToByteArray(Config.keyMap.get(address.replaceAll(":", "")));
+//        hexStringToByteArray(Config.keyMap.get(address.replaceAll(":", "")));
 
-//        BaseApplication.getInstance().getIBLE().setChangKey(false);
+//        BaseApplication.getInstance().getIBLE().setChangKey(true);
 
         Log.e("LockStorage2Activity===", name+"==="+address+"==="+codenum);
 
@@ -237,6 +238,12 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                         BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
 
                         BaseApplication.getInstance().getIBLE().setChangKey(true);
+
+                        if (loadingDialog != null && loadingDialog.isShowing()) {
+                            loadingDialog.dismiss();
+                        }
+
+                        ToastUtil.showMessageApp(context, "密钥修改成功");
 
 //                        BaseApplication.getInstance().getIBLE().disconnect();
 //
@@ -300,6 +307,9 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                         if (loadingDialog != null && loadingDialog.isShowing()) {
                             loadingDialog.dismiss();
                         }
+
+                        ToastUtil.showMessageApp(context, "密码修改成功");
+
                     }
                 }, 2000);
 
@@ -496,7 +506,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                     } else {
                         Toast.makeText(context, "密钥修改成功", Toast.LENGTH_LONG).show();
 
-                        changKey();
+//                        changKey();
                     }
                     if (loadingDialog != null && loadingDialog.isShowing()) {
                         loadingDialog.dismiss();
@@ -507,7 +517,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                     } else {
                         if (isPwd) {
                             Toast.makeText(context, "密码修改成功", Toast.LENGTH_SHORT).show();
-                            changPsd();
+//                            changPsd();
                         }
 
                     }

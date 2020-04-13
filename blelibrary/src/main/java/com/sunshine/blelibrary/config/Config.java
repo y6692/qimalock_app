@@ -106,12 +106,12 @@ public class Config {
 //    public static byte[] key = {(byte)0x56, (byte)0x6C, (byte)0x23, 0x00, (byte)0x35, (byte)0xBB, (byte)0xE3, (byte)0x82, (byte)0x7C, (byte)0xE4, (byte)0x07, (byte)0x78, (byte)0x56, 0x7B, 0x3A, (byte)0x7A};
 //    public static byte[] key = {(byte)0x80, (byte)0xD7, (byte)0xCC, 0x01, (byte)0x6B, (byte)0xFB, (byte)0xEF, (byte)0x70, (byte)0xF7, (byte)0x3F, (byte)0xEF, (byte)0x36, (byte)0x7F, (byte)0xD3, 0x6A, (byte)0xFC};
 
-    public static byte[] key = {(byte)0xA8, (byte)0x0D, (byte)0xEF, (byte)0x01, (byte)0x22, (byte)0xE5, (byte)0xF6, (byte)0x25, (byte)0xCC, (byte)0xC1, (byte)0xF7, (byte)0x6A, (byte)0xF7, (byte)0x7B, (byte)0x77, (byte)0x94};
+//    public static byte[] key = {(byte)0xA8, (byte)0x0D, (byte)0xEF, (byte)0x01, (byte)0x22, (byte)0xE5, (byte)0xF6, (byte)0x25, (byte)0xCC, (byte)0xC1, (byte)0xF7, (byte)0x6A, (byte)0xF7, (byte)0x7B, (byte)0x77, (byte)0x94};
 
 
 //    80 D7 CC 01 6B FB EF 70 F7 3F EF 36 7F D3 6A FC
 
-//    public static byte[] key = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};   //物联锁原始密钥
+    public static byte[] key = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};   //物联锁原始密钥
 //    十六进制：20 57 2f 52 36 4b 3f 47 30 50 41 58 11 63 2d 2b
 
 //    public static byte[] key = {32,87,47,82,54,75,63,71,45,75,60,86,10,90,40,42};
