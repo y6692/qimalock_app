@@ -1,7 +1,363 @@
 package com.qimalocl.manage.activity;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
+import com.fitsleep.sunshinelibrary.utils.ToastUtils;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.qimalocl.manage.core.common.HttpHelper;
+import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.core.common.UIHelper;
+import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.model.CarsBean;
+import com.qimalocl.manage.model.NearbyBean;
+import com.qimalocl.manage.model.ResultConsel;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+
 public class BackUp {
 }
+
+//    private void initNearby(double latitude, double longitude){
+//        RequestParams params = new RequestParams();
+//        params.put("latitude",latitude);
+//        params.put("longitude",longitude);
+//
+//        Log.e("initNearby===", latitude+"==="+carmodel_id);
+//
+//        if(carmodel_id==1){
+//            params.put("type", 1);
+//            HttpHelper.get(context, Urls.nearby, params, new TextHttpResponseHandler() {
+//                @Override
+//                public void onStart() {
+//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                        loadingDialog.setTitle("正在加载");
+//                        loadingDialog.show();
+//                    }
+//                }
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                    if (loadingDialog != null && loadingDialog.isShowing()){
+//                        loadingDialog.dismiss();
+//                    }
+//                    UIHelper.ToastError(context, throwable.toString());
+//                }
+//
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//                    try {
+//                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//                        if (result.getFlag().equals("Success")) {
+//                            JSONArray array = new JSONArray(result.getData());
+//
+//                            Log.e("initNearby===Bike", "==="+array.length());
+//
+//                            for (Marker marker : bikeMarkerList){
+//                                if (marker != null){
+//                                    marker.remove();
+//                                }
+//                            }
+//                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+//                                bikeMarkerList.clear();
+//                            }
+//                            if (0 == array.length()){
+//                                ToastUtils.showMessage("附近没有单车");
+//                            } else {
+//                                for (int i = 0; i < array.length(); i++){
+//                                    NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
+//                                    // 加入自定义标签
+//                                    MarkerOptions bikeMarkerOption = new MarkerOptions().position(new LatLng(
+//                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
+//                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+//                                    bikeMarkerList.add(bikeMarker);
+//
+//
+//
+//                                }
+//                            }
+//                        } else {
+//                            ToastUtils.showMessage(result.getMsg());
+//                        }
+//                    } catch (Exception e) {
+//
+//                    }
+//                    if (loadingDialog != null && loadingDialog.isShowing()){
+//                        loadingDialog.dismiss();
+//                    }
+//                }
+//            });
+//        }else{
+//            String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//            if (access_token == null || "".equals(access_token)){
+//                Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//                UIHelper.goToAct(context, LoginActivity.class);
+//            }else {
+//                HttpHelper.get(context, Urls.nearbyEbikeScool, params, new TextHttpResponseHandler() {
+//                    @Override
+//                    public void onStart() {
+//                        m_myHandler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                                    loadingDialog.setTitle("正在加载");
+//                                    loadingDialog.show();
+//                                }
+//                            }
+//                        });
+//                    }
+//                    @Override
+//                    public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+//
+//                        m_myHandler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                if (loadingDialog != null && loadingDialog.isShowing()){
+//                                    loadingDialog.dismiss();
+//                                }
+//                                UIHelper.ToastError(context, throwable.toString());
+//                            }
+//                        });
+//                    }
+//
+//                    @Override
+//                    public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+//                        m_myHandler.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//
+//                                    Log.e("nearbyEbikeScool===", "==="+responseString);
+//
+//                                    if (result.getFlag().equals("Success")) {
+//                                        JSONArray array = new JSONArray(result.getData());
+//
+//                                        if (curMarker != null){
+//                                            curMarker.remove();
+//                                        }
+//
+//                                        for (Marker marker : bikeMarkerList){
+//                                            if (marker != null){
+//                                                marker.remove();
+//                                            }
+//                                        }
+//                                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+//                                            bikeMarkerList.clear();
+//                                        }
+//                                        if (0 == array.length()){
+//                                            Toast.makeText(context,"附近没有电单车",Toast.LENGTH_SHORT).show();
+//                                        }else {
+//                                            for (int i = 0; i < array.length(); i++){
+//                                                NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
+//                                                // 加入自定义标签
+//
+//                                                MarkerOptions bikeMarkerOption = null;
+//                                                if("4".equals(bean.getType())){
+//                                                    bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+//                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+//                                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
+//
+//                                                }else{
+//                                                    bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
+//                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+//                                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+//                                                }
+//
+//                                                if(switcher.isChecked() || switcher_bad.isChecked()){
+//                                                    if(switcher.isChecked()){
+//                                                        if("2".equals(bean.getQuantity_level()) || "3".equals(bean.getQuantity_level()) || "4".equals(bean.getQuantity_level())){
+//                                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+//                                                            bikeMarkerList.add(bikeMarker);
+//                                                        }
+//                                                    }
+//
+//                                                    if(switcher_bad.isChecked()){
+//                                                        if("6".equals(bean.getQuantity_level())){
+//                                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+//                                                            bikeMarkerList.add(bikeMarker);
+//                                                        }
+//                                                    }
+//                                                }else{
+//
+//                                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+//                                                    bikeMarkerList.add(bikeMarker);
+//                                                }
+//
+//                                                if(bean.getQuantity_level_2_count_xyt() != null){
+//                                                    tvYellow_xyt.setText("黄色："+bean.getQuantity_level_2_count_xyt());
+//                                                }
+//                                                if(bean.getQuantity_level_3_count_xyt() != null){
+//                                                    tvRed_xyt.setText("红色："+bean.getQuantity_level_3_count_xyt());
+//                                                }
+//
+//                                                if(bean.getQuantity_level_2_count_xa() != null){
+//                                                    tvYellow_xa.setText("黄色："+bean.getQuantity_level_2_count_xa());
+//                                                }
+//                                                if(bean.getQuantity_level_3_count_xa() != null){
+//                                                    tvRed_xa.setText("红色："+bean.getQuantity_level_3_count_xa());
+//                                                }
+//
+////                                                Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
+//
+////                                    if("80001651".equals(bean.getCodenum())){
+////                                        Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
+////                                    }
+//
+//                                            }
+//                                        }
+//                                    } else {
+//                                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                                    }
+//                                } catch (Exception e) {
+//                                }
+//                                if (loadingDialog != null && loadingDialog.isShowing()){
+//                                    loadingDialog.dismiss();
+//                                }
+//                            }
+//                        });
+//
+//                    }
+//                });
+//            }
+//
+//        }
+//    }
+
+//    private void carsLoop(){
+//        RequestParams params = new RequestParams();
+//
+//        int type = 0;
+//        if(switcher_bad.isChecked()){
+//            type = 1;
+//        }
+//
+//        if(switcher.isChecked()){
+//            if(switcher_bad.isChecked()){
+//                type = 3;
+//            }else{
+//                type = 2;
+//            }
+//        }
+//
+//
+//        params.put("type", type);  //0全部 1只看坏车 2只看低电
+//
+//        Log.e("carsLoop===", type+"==="+carmodel_id);
+//
+//        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
+//            @Override
+//            public void onStart() {
+////                if (loadingDialog != null && !loadingDialog.isShowing()) {
+////                    loadingDialog.setTitle("正在加载");
+////                    loadingDialog.show();
+////                }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
+//                UIHelper.ToastError(context, throwable.toString());
+//
+//                Log.e("carsLoop===fail", "==="+throwable.toString());
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//                try {
+//                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//
+//                    Log.e("carsLoop===0", "==="+responseString);
+//
+//                    JSONArray array = new JSONArray(result.getData());
+//
+//                    Log.e("carsLoop===1", "==="+array.length());
+//
+//                    for (Marker marker : bikeMarkerList){
+//                        if (marker != null){
+//                            marker.remove();
+//                        }
+//                    }
+//
+//                    if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+//                        bikeMarkerList.clear();
+//                    }
+//
+//                    if (0 == array.length()){
+//                        ToastUtils.showMessage("附近没有单车");
+//                    } else {
+//                        for (int i = 0; i < array.length(); i++){
+//
+//                            CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
+//
+//                            Log.e("carsLoop===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
+//
+//                            // 加入自定义标签
+//                            MarkerOptions bikeMarkerOption = null;
+//
+//                            int lock_id = bean.getLock_id();
+//
+//                            if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
+//                                if(lock_id==4 || lock_id==8){
+//
+//                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+//                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+//                                            .icon(bean.getLevel()==1?bikeDescripter_green:bean.getLevel()==2?bikeDescripter_yellow:bean.getLevel()==3?bikeDescripter_red:bean.getLevel()==4?bikeDescripter_blue:bikeDescripter_brown);
+//
+//                                }else if(lock_id==7){
+//                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+//                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+//                                            .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+//
+//                                }else{
+//                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+//                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+//                                            .icon(bean.getLevel()==0?bikeDescripter:bikeDescripter_bad);
+//
+//                                }
+//
+//                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+//                                bikeMarkerList.add(bikeMarker);
+//                            }
+//
+////                            if("40004690".equals(bean.getNumber())){
+////                                Log.e("cars===3", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+////                            }
+////
+////                            if("30005053".equals(bean.getNumber())){
+////                                Log.e("cars===4", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+////                            }
+////
+////                            if("40001".equals(bean.getNumber())){
+////                                Log.e("cars===5", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+////                            }
+//                        }
+//                    }
+//
+//
+////                    if (result.getFlag().equals("Success")) {
+////
+////                    } else {
+////                        ToastUtils.showMessage(result.getMsg());
+////                    }
+//                } catch (Exception e) {
+//
+//                }
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
+//            }
+//        });
+//
+//
+//    }
 
 //        initNearby(latitude, longitude);
 

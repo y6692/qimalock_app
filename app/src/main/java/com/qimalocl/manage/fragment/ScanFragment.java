@@ -228,6 +228,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private BitmapDescriptor bikeDescripter_xa_green;
     private BitmapDescriptor bikeDescripter_xa_blue;
     private BitmapDescriptor bikeDescripter_xa_brown;
+    private BitmapDescriptor bikeDescripter_tbt_red;
+    private BitmapDescriptor bikeDescripter_tbt_yellow;
+    private BitmapDescriptor bikeDescripter_tbt_green;
+    private BitmapDescriptor bikeDescripter_tbt_blue;
+    private BitmapDescriptor bikeDescripter_tbt_brown;
     private Handler handler = new Handler();
     private Marker centerMarker;
     private boolean isMovingMarker = false;
@@ -800,6 +805,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
         bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
         bikeDescripter_bad = BitmapDescriptorFactory.fromResource(R.drawable.bike_bad_icon);
+
         bikeDescripter_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_red_icon);
         bikeDescripter_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_yellow_icon);
         bikeDescripter_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_green_icon);
@@ -811,6 +817,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         bikeDescripter_xa_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_green_icon);
         bikeDescripter_xa_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_blue_icon);
         bikeDescripter_xa_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_brown_icon);
+
+        bikeDescripter_tbt_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_red_icon);
+        bikeDescripter_tbt_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_yellow_icon);
+        bikeDescripter_tbt_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_green_icon);
+        bikeDescripter_tbt_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_blue_icon);
+        bikeDescripter_tbt_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_brown_icon);
 
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
@@ -925,7 +937,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         lock_name = bean.getLock_name();	//车锁名称(英文)
                         lock_title = bean.getLock_title();	//车锁名称(中文)
                         deviceuuid = bean.getVendor_lock_id();
-                        lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常
+                        lock_status = bean.getLock_status();	//0未知 1已上锁 2已开锁 3离线
                         lock_no = bean.getLock_no();
                         m_nowMac = bean.getLock_mac();
                         bleid = bean.getLock_secretkey();
@@ -1227,7 +1239,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
-        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");
+        tv_lock_status.setText(lock_status==0?"未知":lock_status==1?"已上锁":lock_status==2?"已开锁":lock_status==3?"离线":"正常");
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
         tv_bad_reason.setText("损坏部位："+bad_reason);
@@ -1260,7 +1272,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad2.setVisibility(View.GONE);
         }
 
+        if(lock_status==2){
+            lock_switcher.setChecked(true);
+        }else{
+            lock_switcher.setChecked(false);
+        }
+
+
         Log.e("initmPopup===2", lock_status+"==="+can_finish_order+"==="+status);
+
+
 
         lock_switcher.setOnClickListener(this);     //TODO 行运兔电单车的弹窗开关锁按钮无效
         ll_power_exchange.setOnClickListener(this);
@@ -1465,7 +1486,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
         TextView tv_deviceuuid = customView.findViewById(R.id.tv_deviceuuid);
-        TextView tv_lock_status = customView.findViewById(R.id.tv_lock_status);
+        tv_lock_status = customView.findViewById(R.id.tv_lock_status);
         TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
         TextView tv_electricity = customView.findViewById(R.id.tv_electricity);
 
@@ -1483,7 +1504,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
-        tv_lock_status.setText(lock_status==0?"未知":lock_status==3?"离线":"正常");
+        tv_lock_status.setText(lock_status==0?"未知":lock_status==1?"已上锁":lock_status==2?"已开锁":lock_status==3?"离线":"正常");
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
         tv_bad_reason.setText("损坏部位："+bad_reason);
@@ -1498,6 +1519,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad.setVisibility(View.VISIBLE);
         }else{
             ll_bad.setVisibility(View.GONE);
+        }
+
+        if(lock_status==2){
+            lock_switcher.setChecked(true);
+        }else{
+            lock_switcher.setChecked(false);
         }
 
         // 获取截图的Bitmap
@@ -2159,7 +2186,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             int lock_id = bean.getLock_id();
 
                             if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
-                                if(lock_id==4 || lock_id==8){
+                                if(lock_id==4){
 
                                     bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
                                             Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
@@ -2169,6 +2196,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
                                             Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
                                             .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+
+                                }else if(lock_id==8){
+                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                            .icon(bean.getLevel()==1?bikeDescripter_tbt_green:bean.getLevel()==2?bikeDescripter_tbt_yellow:bean.getLevel()==3?bikeDescripter_tbt_red:bean.getLevel()==4?bikeDescripter_tbt_blue:bikeDescripter_tbt_brown);
 
                                 }else{
                                     bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
@@ -2213,340 +2245,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     }
 
-    private void carsLoop(){
-        RequestParams params = new RequestParams();
-
-        int type = 0;
-        if(switcher_bad.isChecked()){
-            type = 1;
-        }
-
-        if(switcher.isChecked()){
-            if(switcher_bad.isChecked()){
-                type = 3;
-            }else{
-                type = 2;
-            }
-        }
-
-
-        params.put("type", type);  //0全部 1只看坏车 2只看低电
-
-        Log.e("carsLoop===", type+"==="+carmodel_id);
-
-        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
-            @Override
-            public void onStart() {
-//                if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                    loadingDialog.setTitle("正在加载");
-//                    loadingDialog.show();
-//                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
-
-                Log.e("carsLoop===fail", "==="+throwable.toString());
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-                    Log.e("carsLoop===0", "==="+responseString);
-
-                    JSONArray array = new JSONArray(result.getData());
-
-                    Log.e("carsLoop===1", "==="+array.length());
-
-                    for (Marker marker : bikeMarkerList){
-                        if (marker != null){
-                            marker.remove();
-                        }
-                    }
-
-                    if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                        bikeMarkerList.clear();
-                    }
-
-                    if (0 == array.length()){
-                        ToastUtils.showMessage("附近没有单车");
-                    } else {
-                        for (int i = 0; i < array.length(); i++){
-
-                            CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
-
-                            Log.e("carsLoop===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
-
-                            // 加入自定义标签
-                            MarkerOptions bikeMarkerOption = null;
-
-                            int lock_id = bean.getLock_id();
-
-                            if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
-                                if(lock_id==4 || lock_id==8){
-
-                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
-                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                            .icon(bean.getLevel()==1?bikeDescripter_green:bean.getLevel()==2?bikeDescripter_yellow:bean.getLevel()==3?bikeDescripter_red:bean.getLevel()==4?bikeDescripter_blue:bikeDescripter_brown);
-
-                                }else if(lock_id==7){
-                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
-                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                            .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
-
-                                }else{
-                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
-                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                            .icon(bean.getLevel()==0?bikeDescripter:bikeDescripter_bad);
-
-                                }
-
-                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                bikeMarkerList.add(bikeMarker);
-                            }
-
-//                            if("40004690".equals(bean.getNumber())){
-//                                Log.e("cars===3", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
-//                            }
-//
-//                            if("30005053".equals(bean.getNumber())){
-//                                Log.e("cars===4", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
-//                            }
-//
-//                            if("40001".equals(bean.getNumber())){
-//                                Log.e("cars===5", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
-//                            }
-                        }
-                    }
-
-
-//                    if (result.getFlag().equals("Success")) {
-//
-//                    } else {
-//                        ToastUtils.showMessage(result.getMsg());
-//                    }
-                } catch (Exception e) {
-
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-            }
-        });
-
-
-    }
-
-    private void initNearby(double latitude, double longitude){
-        RequestParams params = new RequestParams();
-        params.put("latitude",latitude);
-        params.put("longitude",longitude);
-
-        Log.e("initNearby===", latitude+"==="+carmodel_id);
-
-        if(carmodel_id==1){
-            params.put("type", 1);
-            HttpHelper.get(context, Urls.nearby, params, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在加载");
-                        loadingDialog.show();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                        if (result.getFlag().equals("Success")) {
-                            JSONArray array = new JSONArray(result.getData());
-
-                            Log.e("initNearby===Bike", "==="+array.length());
-
-                            for (Marker marker : bikeMarkerList){
-                                if (marker != null){
-                                    marker.remove();
-                                }
-                            }
-                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                                bikeMarkerList.clear();
-                            }
-                            if (0 == array.length()){
-                                ToastUtils.showMessage("附近没有单车");
-                            } else {
-                                for (int i = 0; i < array.length(); i++){
-                                    NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
-                                    // 加入自定义标签
-                                    MarkerOptions bikeMarkerOption = new MarkerOptions().position(new LatLng(
-                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
-                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                    bikeMarkerList.add(bikeMarker);
 
 
 
-                                }
-                            }
-                        } else {
-                            ToastUtils.showMessage(result.getMsg());
-                        }
-                    } catch (Exception e) {
-
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()){
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        }else{
-            String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-            if (access_token == null || "".equals(access_token)){
-                Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
-                UIHelper.goToAct(context, LoginActivity.class);
-            }else {
-                HttpHelper.get(context, Urls.nearbyEbikeScool, params, new TextHttpResponseHandler() {
-                    @Override
-                    public void onStart() {
-                        m_myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                                    loadingDialog.setTitle("正在加载");
-                                    loadingDialog.show();
-                                }
-                            }
-                        });
-                    }
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
-
-                        m_myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (loadingDialog != null && loadingDialog.isShowing()){
-                                    loadingDialog.dismiss();
-                                }
-                                UIHelper.ToastError(context, throwable.toString());
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, final String responseString) {
-                        m_myHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-                                    Log.e("nearbyEbikeScool===", "==="+responseString);
-
-                                    if (result.getFlag().equals("Success")) {
-                                        JSONArray array = new JSONArray(result.getData());
-
-                                        if (curMarker != null){
-                                            curMarker.remove();
-                                        }
-
-                                        for (Marker marker : bikeMarkerList){
-                                            if (marker != null){
-                                                marker.remove();
-                                            }
-                                        }
-                                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                                            bikeMarkerList.clear();
-                                        }
-                                        if (0 == array.length()){
-                                            Toast.makeText(context,"附近没有电单车",Toast.LENGTH_SHORT).show();
-                                        }else {
-                                            for (int i = 0; i < array.length(); i++){
-                                                NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
-                                                // 加入自定义标签
-
-                                                MarkerOptions bikeMarkerOption = null;
-                                                if("4".equals(bean.getType())){
-                                                    bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_green:"2".equals(bean.getQuantity_level())?bikeDescripter_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_red:"4".equals(bean.getQuantity_level())?bikeDescripter_blue:bikeDescripter_brown);
-
-                                                }else{
-                                                    bikeMarkerOption = new MarkerOptions().title(bean.getCodenum()+"-"+bean.getQuantity()+"%").position(new LatLng(
-                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                            .icon("1".equals(bean.getQuantity_level())?bikeDescripter_xa_green:"2".equals(bean.getQuantity_level())?bikeDescripter_xa_yellow:"3".equals(bean.getQuantity_level())?bikeDescripter_xa_red:"4".equals(bean.getQuantity_level())?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
-                                                }
-
-                                                if(switcher.isChecked() || switcher_bad.isChecked()){
-                                                    if(switcher.isChecked()){
-                                                        if("2".equals(bean.getQuantity_level()) || "3".equals(bean.getQuantity_level()) || "4".equals(bean.getQuantity_level())){
-                                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                                            bikeMarkerList.add(bikeMarker);
-                                                        }
-                                                    }
-
-                                                    if(switcher_bad.isChecked()){
-                                                        if("6".equals(bean.getQuantity_level())){
-                                                            Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                                            bikeMarkerList.add(bikeMarker);
-                                                        }
-                                                    }
-                                                }else{
-
-                                                    Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                                    bikeMarkerList.add(bikeMarker);
-                                                }
-
-                                                if(bean.getQuantity_level_2_count_xyt() != null){
-                                                    tvYellow_xyt.setText("黄色："+bean.getQuantity_level_2_count_xyt());
-                                                }
-                                                if(bean.getQuantity_level_3_count_xyt() != null){
-                                                    tvRed_xyt.setText("红色："+bean.getQuantity_level_3_count_xyt());
-                                                }
-
-                                                if(bean.getQuantity_level_2_count_xa() != null){
-                                                    tvYellow_xa.setText("黄色："+bean.getQuantity_level_2_count_xa());
-                                                }
-                                                if(bean.getQuantity_level_3_count_xa() != null){
-                                                    tvRed_xa.setText("红色："+bean.getQuantity_level_3_count_xa());
-                                                }
-
-//                                                Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
-
-//                                    if("80001651".equals(bean.getCodenum())){
-//                                        Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
-//                                    }
-
-                                            }
-                                        }
-                                    } else {
-                                        Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (Exception e) {
-                                }
-                                if (loadingDialog != null && loadingDialog.isShowing()){
-                                    loadingDialog.dismiss();
-                                }
-                            }
-                        });
-
-                    }
-                });
-            }
-
-        }
-    }
 
     private void setUpMap() {
         aMap.setLocationSource(this);// 设置定位监听
@@ -4226,6 +3927,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             ToastUtil.showMessageApp(context,"恭喜您,关锁成功!");
 
+                            tv_lock_status.setText("已关锁");
+
 //                            n=0;
 //                            carLoopClose();
 
@@ -4274,6 +3977,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             Log.e("mf===unlock1", carmodel_id+ "===" + type + "===" + codenum + "===" + responseString + "===" + result.data);
 
                             ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
+
+                            tv_lock_status.setText("已开锁");
 
 //                            popupwindow.dismiss();
 

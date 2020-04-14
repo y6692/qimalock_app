@@ -1061,7 +1061,7 @@ public class LockStorageActivity extends MPermissionsActivity {
     }
 
     void showDialog(){
-        if(isStorage>0){
+        if(isStorage==0){
             CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
             customBuilder.setTitle("温馨提示").setMessage("开锁成功，是否进行入库")
                     .setNegativeButton("取消", new DialogInterface.OnClickListener() {

@@ -30,7 +30,7 @@ public class HttpHelper {
 
 	static {
 
-		client.setTimeout(15000); // 设置链接超时，如果不设置，默认为10s
+		client.setTimeout(30000); // 设置链接超时，如果不设置，默认为10s
 		client.setUserAgent("Mozilla/5.0 (Linux; U; Android " + android.os.Build.VERSION.RELEASE + "; zh-cn; "
 				+ android.os.Build.MODEL + ") AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30");
 	}
