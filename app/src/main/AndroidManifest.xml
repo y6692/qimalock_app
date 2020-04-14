@@ -75,7 +75,7 @@
         android:theme="@style/AppTheme"
         android:hardwareAccelerated="true"
         android:largeHeap="true"
-
+        android:configChanges="fontScale"
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         >

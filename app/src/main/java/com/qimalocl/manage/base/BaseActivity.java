@@ -2,6 +2,8 @@ package com.qimalocl.manage.base;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -45,6 +47,34 @@ public class BaseActivity extends BaseFragmentActivity {
 //			// 透明导航栏
 //			getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 //		}
+
+//		Configuration cfg = getResources().getConfiguration();
+//		cfg.fontScale=1;
+	}
+
+	//字体适配解决方案
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		if (newConfig.fontScale != 1)//非默认值
+			getResources();
+
+		Log.e("ba===1", "===");
+
+		super.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	public Resources getResources() {
+		Resources res = super.getResources();
+		if (res.getConfiguration().fontScale != 1) {//非默认值
+			Configuration newConfig = new Configuration();
+			newConfig.setToDefaults();//设置默认
+			res.updateConfiguration(newConfig, res.getDisplayMetrics());
+		}
+
+		Log.e("ba===2", res+"==="+res.getConfiguration().fontScale);
+
+		return res;
 	}
 	
 	@Override
