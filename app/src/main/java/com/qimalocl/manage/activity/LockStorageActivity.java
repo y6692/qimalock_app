@@ -128,7 +128,6 @@ public class LockStorageActivity extends MPermissionsActivity implements OnConne
     private Context context = this;
     private String codenum = "";
 
-
     private boolean isChangePsd = false;
 
     @Override
