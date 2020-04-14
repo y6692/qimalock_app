@@ -1,0 +1,139 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+	package
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:3:11-40
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:1-55:12
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:5:5-78
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:5:22-76
+uses-permission#android.permission.INTERNET
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:6:5-66
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:6:22-64
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:7:5-80
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:7:22-78
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:8:5-78
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:8:22-76
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:9:5-75
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:9:22-73
+uses-permission#android.permission.CALL_PHONE
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:10:5-68
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:10:22-66
+uses-permission#android.permission.REQUEST_INSTALL_PACKAGES
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:11:5-82
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:11:22-80
+uses-permission#android.permission.READ_PHONE_STATE
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:14:5-74
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:14:22-72
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:15:5-80
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:15:22-78
+uses-permission#android.permission.VIBRATE
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:17:5-65
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:17:22-63
+uses-permission#android.permission.FLASHLIGHT
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:19:5-68
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:19:22-66
+uses-permission#android.permission.CAMERA
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:21:5-64
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:21:22-62
+uses-feature#android.hardware.camera
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:23:5-59
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:23:19-57
+uses-feature#android.hardware.camera.autofocus
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:25:5-69
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:25:19-67
+application
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:28:5-54:19
+	android:supportsRtl
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:31:9-36
+	android:label
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:30:9-41
+	android:allowBackup
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:29:9-35
+activity#com.vondear.rxtools.activity.ActivityWebView
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:32:9-36:20
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:32:19-78
+intent-filter#category:name:android.intent.category.DEFAULT
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:33:13-35:29
+category#android.intent.category.DEFAULT
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:34:17-75
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:34:27-73
+activity#com.vondear.rxtools.activity.ActivityBase
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:37:9-38:20
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:37:19-75
+activity#com.vondear.rxtools.activity.ActivityScanerCode
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:39:9-40:20
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:39:19-81
+activity#com.vondear.rxtools.activity.ActivityCodeTool
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:41:9-42:20
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:41:19-79
+provider#android.support.v4.content.FileProvider
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:44:9-52:20
+	android:grantUriPermissions
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:48:13-47
+	android:authorities
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:46:13-64
+	android:exported
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:47:13-37
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:45:13-67
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:49:13-51:53
+	android:resource
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:51:17-51
+	android:name
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml:50:17-67
+uses-sdk
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+		ADDED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml
+		INJECTED from D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\AndroidManifest.xml

@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3" xmlns:ns1="http://schemas.android.com/tools"><dataSet config="main$Generated" generated="true"><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res"/><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\build\generated\res\rs\debug"/><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\build\generated\res\resValues\debug"/></dataSet><dataSet config="main" generated-set="main$Generated"><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res"><file name="anim_marquee_in" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\anim\anim_marquee_in.xml" qualifiers="" type="anim"/><file name="anim_marquee_out" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\anim\anim_marquee_out.xml" qualifiers="" type="anim"/><file name="translate_anim" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\anim\translate_anim.xml" qualifiers="" type="anim"/><file name="aa_dialog_bg" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\aa_dialog_bg.xml" qualifiers="" type="drawable"/><file name="animation_loading" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\animation_loading.xml" qualifiers="" type="drawable"/><file name="selector_checkbox_sure_cancle" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\selector_checkbox_sure_cancle.xml" qualifiers="" type="drawable"/><file name="shadow" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\shadow.xml" qualifiers="" type="drawable"/><file name="shape_gray_circle_bg" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\shape_gray_circle_bg.xml" qualifiers="" type="drawable"/><file name="shape_round_gray_bored" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\shape_round_gray_bored.xml" qualifiers="" type="drawable"/><file name="shape_round_white" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\shape_round_white.xml" qualifiers="" type="drawable"/><file name="shape_small_round_blue" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\shape_small_round_blue.xml" qualifiers="" type="drawable"/><file name="shape_small_round_blue1" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\shape_small_round_blue1.xml" qualifiers="" type="drawable"/><file name="wheel_bg" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\wheel_bg.xml" qualifiers="" type="drawable"/><file name="wheel_val_holo" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable\wheel_val_holo.xml" qualifiers="" type="drawable"/><file name="capture" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\capture.png" qualifiers="hdpi-v4" type="drawable"/><file name="code_icon" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\code_icon.png" qualifiers="hdpi-v4" type="drawable"/><file name="ic_check_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\ic_check_white_48dp.png" qualifiers="hdpi-v4" type="drawable"/><file name="ic_clear_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\ic_clear_white_48dp.png" qualifiers="hdpi-v4" type="drawable"/><file name="ic_error_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\ic_error_outline_white_48dp.png" qualifiers="hdpi-v4" type="drawable"/><file name="ic_info_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\ic_info_outline_white_48dp.png" qualifiers="hdpi-v4" type="drawable"/><file name="kakalib_scan_ray" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\kakalib_scan_ray.png" qualifiers="hdpi-v4" type="drawable"/><file name="linecode_icon" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\linecode_icon.png" qualifiers="hdpi-v4" type="drawable"/><file name="scan_mask" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\scan_mask.png" qualifiers="hdpi-v4" type="drawable"/><file name="sign_ban_30" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\sign_ban_30.png" qualifiers="hdpi-v4" type="drawable"/><file name="sign_check_30" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\sign_check_30.png" qualifiers="hdpi-v4" type="drawable"/><file name="toast_frame" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-hdpi\toast_frame.9.png" qualifiers="hdpi-v4" type="drawable"/><file name="image_loading_01" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-ldpi\image_loading_01.png" qualifiers="ldpi-v4" type="drawable"/><file name="image_loading_02" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-ldpi\image_loading_02.png" qualifiers="ldpi-v4" type="drawable"/><file name="image_loading_03" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-ldpi\image_loading_03.png" qualifiers="ldpi-v4" type="drawable"/><file name="image_loading_04" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-ldpi\image_loading_04.png" qualifiers="ldpi-v4" type="drawable"/><file name="image_loading_05" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-ldpi\image_loading_05.png" qualifiers="ldpi-v4" type="drawable"/><file name="image_loading_06" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-ldpi\image_loading_06.png" qualifiers="ldpi-v4" type="drawable"/><file name="toast_frame" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-ldpi\toast_frame.9.png" qualifiers="ldpi-v4" type="drawable"/><file name="ic_check_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-mdpi\ic_check_white_48dp.png" qualifiers="mdpi-v4" type="drawable"/><file name="ic_clear_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-mdpi\ic_clear_white_48dp.png" qualifiers="mdpi-v4" type="drawable"/><file name="ic_error_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-mdpi\ic_error_outline_white_48dp.png" qualifiers="mdpi-v4" type="drawable"/><file name="ic_info_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-mdpi\ic_info_outline_white_48dp.png" qualifiers="mdpi-v4" type="drawable"/><file name="toast_frame" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-mdpi\toast_frame.9.png" qualifiers="mdpi-v4" type="drawable"/><file name="anim_heart" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\anim_heart.png" qualifiers="xhdpi-v4" type="drawable"/><file name="anim_heart_border" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\anim_heart_border.png" qualifiers="xhdpi-v4" type="drawable"/><file name="flicker" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\flicker.png" qualifiers="xhdpi-v4" type="drawable"/><file name="ic_check_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\ic_check_white_48dp.png" qualifiers="xhdpi-v4" type="drawable"/><file name="ic_clear_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\ic_clear_white_48dp.png" qualifiers="xhdpi-v4" type="drawable"/><file name="ic_error_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\ic_error_outline_white_48dp.png" qualifiers="xhdpi-v4" type="drawable"/><file name="ic_info_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\ic_info_outline_white_48dp.png" qualifiers="xhdpi-v4" type="drawable"/><file name="previous_icon" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\previous_icon.png" qualifiers="xhdpi-v4" type="drawable"/><file name="progress_hint_bg" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\progress_hint_bg.9.png" qualifiers="xhdpi-v4" type="drawable"/><file name="seat_gray" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\seat_gray.png" qualifiers="xhdpi-v4" type="drawable"/><file name="seat_green" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\seat_green.png" qualifiers="xhdpi-v4" type="drawable"/><file name="seat_sold" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\seat_sold.png" qualifiers="xhdpi-v4" type="drawable"/><file name="toast_frame" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xhdpi\toast_frame.9.png" qualifiers="xhdpi-v4" type="drawable"/><file name="circle_bar_code" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\circle_bar_code.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="circle_capture" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\circle_capture.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="circle_qr_code" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\circle_qr_code.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_check_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\ic_check_white_48dp.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_clear_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\ic_clear_white_48dp.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_error_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\ic_error_outline_white_48dp.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_info_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\ic_info_outline_white_48dp.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="logo" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\logo.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="next" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\next.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="popup_imply" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\popup_imply.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="set" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\set.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="s_img" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\s_img.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="s_left_jiantou" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\s_left_jiantou.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="s_light" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\s_light.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="toast_frame" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\toast_frame.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_down" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_down.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_down_left" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_down_left.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_down_right" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_down_right.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_left" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_left.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_right" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_right.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_up" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_up.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_up_left" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_up_left.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_arrow_up_right" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_arrow_up_right.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="tooltip_no_arrow" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\tooltip_no_arrow.9.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="transparent_bg" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxhdpi\transparent_bg.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_check_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxxhdpi\ic_check_white_48dp.png" qualifiers="xxxhdpi-v4" type="drawable"/><file name="ic_clear_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxxhdpi\ic_clear_white_48dp.png" qualifiers="xxxhdpi-v4" type="drawable"/><file name="ic_error_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxxhdpi\ic_error_outline_white_48dp.png" qualifiers="xxxhdpi-v4" type="drawable"/><file name="ic_info_outline_white_48dp" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\drawable-xxxhdpi\ic_info_outline_white_48dp.png" qualifiers="xxxhdpi-v4" type="drawable"/><file name="activity_code_tool" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\activity_code_tool.xml" qualifiers="" type="layout"/><file name="activity_scaner_code" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\activity_scaner_code.xml" qualifiers="" type="layout"/><file name="activity_webview" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\activity_webview.xml" qualifiers="" type="layout"/><file name="color_preview" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\color_preview.xml" qualifiers="" type="layout"/><file name="color_selector" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\color_selector.xml" qualifiers="" type="layout"/><file name="color_widget" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\color_widget.xml" qualifiers="" type="layout"/><file name="dialog_camero_show" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_camero_show.xml" qualifiers="" type="layout"/><file name="dialog_edittext_sure_false" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_edittext_sure_false.xml" qualifiers="" type="layout"/><file name="dialog_loading_progress_acfun_video" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_loading_progress_acfun_video.xml" qualifiers="" type="layout"/><file name="dialog_loading_spinkit" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_loading_spinkit.xml" qualifiers="" type="layout"/><file name="dialog_picker_pictrue" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_picker_pictrue.xml" qualifiers="" type="layout"/><file name="dialog_scaleview" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_scaleview.xml" qualifiers="" type="layout"/><file name="dialog_shape_loading_view" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_shape_loading_view.xml" qualifiers="" type="layout"/><file name="dialog_shape_loading_view1" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_shape_loading_view1.xml" qualifiers="" type="layout"/><file name="dialog_sure" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_sure.xml" qualifiers="" type="layout"/><file name="dialog_sure_false" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_sure_false.xml" qualifiers="" type="layout"/><file name="dialog_year_month_day" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\dialog_year_month_day.xml" qualifiers="" type="layout"/><file name="image" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\image.xml" qualifiers="" type="layout"/><file name="include_rx_title" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\include_rx_title.xml" qualifiers="" type="layout"/><file name="include_webview" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\include_webview.xml" qualifiers="" type="layout"/><file name="item_listview_popup" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\item_listview_popup.xml" qualifiers="" type="layout"/><file name="layout_auto_imageview" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\layout_auto_imageview.xml" qualifiers="" type="layout"/><file name="layout_icon_round_corner_progress_bar" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\layout_icon_round_corner_progress_bar.xml" qualifiers="" type="layout"/><file name="layout_round_corner_progress_bar" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\layout_round_corner_progress_bar.xml" qualifiers="" type="layout"/><file name="layout_text_round_corner_progress_bar" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\layout_text_round_corner_progress_bar.xml" qualifiers="" type="layout"/><file name="picker_edit" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\picker_edit.xml" qualifiers="" type="layout"/><file name="popupwindow_layout" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\popupwindow_layout.xml" qualifiers="" type="layout"/><file name="popup_imply" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\popup_imply.xml" qualifiers="" type="layout"/><file name="rx_netspeed_view" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\rx_netspeed_view.xml" qualifiers="" type="layout"/><file name="toast_layout" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\layout\toast_layout.xml" qualifiers="" type="layout"/><file name="beep" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\raw\beep.ogg" qualifiers="" type="raw"/><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\array.xml" qualifiers=""><array name="waveSideBarLetters">
+        <item>\u0023</item>
+        <item>\u2606</item>
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+        <item>H</item>
+        <item>I</item>
+        <item>J</item>
+        <item>K</item>
+        <item>L</item>
+        <item>M</item>
+        <item>N</item>
+        <item>O</item>
+        <item>P</item>
+        <item>Q</item>
+        <item>R</item>
+        <item>S</item>
+        <item>T</item>
+        <item>U</item>
+        <item>V</item>
+        <item>W</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>Z</item>
+    </array></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\attrs.xml" qualifiers=""><declare-styleable name="RxShapeLoadingView">
+
+        <attr format="string" name="loadingText"/>
+        <attr format="reference" name="loadingTextAppearance"/>
+    </declare-styleable><declare-styleable name="RxRoundProgress">
+        <attr format="color" name="roundColor"/>
+        <attr format="color" name="roundProgressColor"/>
+        <attr format="dimension" name="roundWidth"/>
+        <attr format="color" name="textColor"/>
+        <attr format="dimension" name="textSize1"/>
+        <attr format="integer" name="max"/>
+        <attr format="boolean" name="textIsDisplayable"/>
+        <attr name="style">
+            <enum name="STROKE" value="0"/>
+            <enum name="FILL" value="1"/>
+        </attr>
+    </declare-styleable><declare-styleable name="AbstractWheelView">
+        <attr format="integer" name="visibleItems"/>
+        <attr format="boolean" name="isAllVisible"/>
+        <attr format="integer" name="itemOffsetPercent"/>
+        <attr format="dimension" name="itemsPadding"/>
+        <attr format="integer" name="selectionDividerDimmedAlpha"/>
+        <attr format="integer" name="selectionDividerActiveAlpha"/>
+        <attr format="reference" name="selectionDivider"/>
+        <attr format="integer" name="itemsDimmedAlpha"/>
+        <attr format="boolean" name="isCyclic"/>
+    </declare-styleable><declare-styleable name="WheelHorizontalView">
+        <attr format="dimension" name="selectionDividerWidth"/>
+    </declare-styleable><declare-styleable name="WheelVerticalView">
+        <attr format="dimension" name="selectionDividerHeight"/>
+    </declare-styleable><attr format="reference" name="abstractWheelViewStyle"/><declare-styleable name="RxAutoImageView">
+        <attr format="reference" name="ImageSrc"/>
+    </declare-styleable><declare-styleable name="RxTitle">
+        <attr format="string" name="title"/>
+        <attr format="color" name="titleColor"/>
+        <attr format="dimension" name="titleSize"/>
+        <attr format="boolean" name="titleVisibility"/>
+
+        <attr format="string" name="leftText"/>
+        <attr format="color" name="leftTextColor"/>
+        <attr format="dimension" name="leftTextSize"/>
+        <attr format="boolean" name="leftTextVisibility"/>
+
+        <attr format="string" name="rightText"/>
+        <attr format="color" name="rightTextColor"/>
+        <attr format="dimension" name="rightTextSize"/>
+        <attr format="boolean" name="rightTextVisibility"/>
+
+        <attr format="reference" name="leftIcon"/>
+        <attr format="boolean" name="leftIconVisibility"/>
+
+        <attr format="reference" name="rightIcon"/>
+        <attr format="boolean" name="rightIconVisibility"/>
+    </declare-styleable><declare-styleable name="RxNetSpeedView">
+        <attr format="color" name="RxTextColor"/>
+        <attr format="dimension" name="RxTextSize"/>
+        <attr format="boolean" name="isMulti"/>
+    </declare-styleable><declare-styleable name="ticker_TickerView">
+        <attr format="reference|integer" name="ticker_animationDuration"/>
+        <attr format="reference|boolean" name="ticker_animateMeasurementChange"/>
+
+        
+        <attr name="android:gravity" ns1:ignore="ResourceName"/>
+        <attr name="android:textAppearance" ns1:ignore="ResourceName"/>
+        <attr name="android:textColor" ns1:ignore="ResourceName"/>
+        <attr name="android:textSize" ns1:ignore="ResourceName"/>
+    </declare-styleable><declare-styleable name="FlikerProgressBar">
+        <attr format="dimension" name="textSize"/>
+        <attr format="color" name="loadingColor"/>
+        <attr format="color" name="stopColor"/>
+        <attr format="color" name="finishColor"/>
+        <attr format="dimension" name="radius"/>
+        <attr format="dimension" name="borderWidth"/>
+    </declare-styleable><declare-styleable name="RoundCornerProgress">
+        <attr format="boolean" name="rcReverse"/>
+        <attr format="float" name="rcProgress"/>
+        <attr format="float" name="rcMax"/>
+        <attr format="float" name="rcSecondaryProgress"/>
+        <attr format="dimension" name="rcBackgroundPadding"/>
+        <attr format="dimension" name="rcRadius"/>
+        <attr format="color" name="rcProgressColor"/>
+        <attr format="color" name="rcSecondaryProgressColor"/>
+        <attr format="color" name="rcBackgroundColor"/>
+    </declare-styleable><declare-styleable name="IconRoundCornerProgress">
+        <attr format="integer" name="rcIconSrc"/>
+        <attr format="dimension" name="rcIconSize"/>
+        <attr format="dimension" name="rcIconWidth"/>
+        <attr format="dimension" name="rcIconHeight"/>
+        <attr format="dimension" name="rcIconPadding"/>
+        <attr format="dimension" name="rcIconPaddingLeft"/>
+        <attr format="dimension" name="rcIconPaddingRight"/>
+        <attr format="dimension" name="rcIconPaddingTop"/>
+        <attr format="dimension" name="rcIconPaddingBottom"/>
+        <attr format="color" name="rcIconBackgroundColor"/>
+    </declare-styleable><declare-styleable name="TextRoundCornerProgress">
+        <attr format="color" name="rcTextProgressColor"/>
+        <attr format="dimension" name="rcTextProgressSize"/>
+        <attr format="dimension" name="rcTextProgressMargin"/>
+        <attr format="string" name="rcTextProgress"/>
+    </declare-styleable><declare-styleable name="ShoppingView">
+        <attr format="color" name="sv_bg_color"/>
+        <attr format="string" name="sv_text"/>
+        <attr format="dimension" name="sv_text_size"/>
+        <attr format="integer" name="sv_duration"/>
+    </declare-styleable><declare-styleable name="lwvWheelView">
+        <attr format="color|reference" name="lwvHighlightColor"/>
+        <attr format="color|reference" name="lwvMarkColor"/>
+        <attr format="color|reference" name="lwvMarkTextColor"/>
+        <attr format="float" name="lwvIntervalFactor"/>
+        <attr format="float" name="lwvMarkRatio"/>
+        <attr format="dimension" name="lwvCursorSize"/>
+        <attr format="dimension" name="lwvMarkTextSize"/>
+        <attr format="dimension" name="lwvCenterMarkTextSize"/>
+        <attr format="string|reference" name="lwvAdditionalCenterMark"/>
+    </declare-styleable><declare-styleable name="RxShineButton">
+        <attr format="color" name="btn_color"/>
+        <attr format="color" name="btn_fill_color"/>
+        <attr format="integer" name="shine_count"/>
+        <attr format="float" name="shine_turn_angle"/>
+        <attr format="float" name="small_shine_offset_angle"/>
+        <attr format="boolean" name="enable_flashing"/>
+        <attr format="boolean" name="allow_random_color"/>
+        <attr format="color" name="small_shine_color"/>
+        <attr format="color" name="big_shine_color"/>
+        <attr format="integer" name="shine_animation_duration"/>
+        <attr format="integer" name="click_animation_duration"/>
+        <attr format="float" name="shine_distance_multiple"/>
+        <attr format="dimension" name="shine_size"/>
+    </declare-styleable><declare-styleable name="RxPorterImageView">
+        <attr format="integer|reference" name="siShape"/>
+    </declare-styleable><declare-styleable name="SeatTableView">
+        <attr format="reference" name="seat_checked"/>
+        <attr format="reference" name="seat_sold"/>
+        <attr format="reference" name="seat_available"/>
+        <attr format="color" name="overview_checked"/>
+        <attr format="color" name="overview_sold"/>
+        <attr format="color" name="txt_color"/>
+    </declare-styleable><declare-styleable name="RxCardStackView">
+        <attr format="dimension" name="stackOverlapGaps"/>
+        <attr format="dimension" name="stackOverlapGapsCollapse"/>
+        <attr format="dimension" name="stackHeaderHeight"/>
+        <attr format="integer" name="stackDuration"/>
+        <attr format="integer" name="stackNumBottomShow"/>
+        <attr name="stackAnimationType">
+            <flag name="allDown" value="0"/>
+            <flag name="upDown" value="1"/>
+            <flag name="upDownStack" value="2"/>
+        </attr>
+    </declare-styleable><declare-styleable name="RxSwipeCaptcha">
+        <attr format="dimension" name="captchaWidth"/>
+        <attr format="dimension" name="captchaHeight"/>
+        <attr format="dimension" name="matchDeviation"/>
+    </declare-styleable><declare-styleable name="RxHeartLayout">
+        <attr format="dimension" name="initX"/>
+        <attr format="dimension" name="initY"/>
+        <attr format="dimension" name="xRand"/>
+        <attr format="dimension" name="animLengthRand"/>
+        <attr format="dimension" name="xPointFactor"/>
+        <attr format="dimension" name="animLength"/>
+        <attr format="dimension" name="heart_width"/>
+        <attr format="dimension" name="heart_height"/>
+        <attr format="integer" name="bezierFactor"/>
+        <attr format="integer" name="anim_duration"/>
+    </declare-styleable><declare-styleable name="WaveSideBarView">
+        <attr format="color|reference" name="sidebarTextColor"/>
+        <attr format="color|reference" name="sidebarBackgroundColor"/>
+        <attr format="color|reference" name="sidebarChooseTextColor"/>
+        <attr format="dimension" name="sidebarTextSize"/>
+        <attr format="dimension" name="sidebarLargeTextSize"/>
+        <attr format="dimension" name="sidebarRadius"/>
+        <attr format="dimension" name="sidebarBallRadius"/>
+    </declare-styleable><declare-styleable name="RxSeekBar">
+        <attr format="float" name="maxProgress"/>
+        <attr format="float" name="minProgress"/>
+        <attr format="float" name="reserve"/>
+        <attr format="integer" name="cells"/>
+        <attr format="boolean" name="hideProgressHint"/>
+        <attr format="boolean" name="isHintHolder"/>
+        <attr format="color" name="lineColorSelected"/>
+        <attr format="color" name="lineColorEdge"/>
+        <attr format="color" name="thumbPrimaryColor"/>
+        <attr format="color" name="thumbSecondaryColor"/>
+        <attr format="reference" name="markTextArray"/>
+        <attr format="reference" name="seekBarResId"/>
+        
+        <attr format="reference" name="progressHintResId"/>
+        <attr format="dimension" name="textPadding"/>
+        <attr format="dimension" name="textSize2"/>
+        <attr format="dimension" name="hintBGHeight"/>
+        <attr format="dimension" name="hintBGWith"/>
+        <attr format="dimension" name="hintBGPadding"/>
+        <attr format="dimension" name="seekBarHeight"/>
+        <attr format="dimension" name="thumbSize"/>
+        <attr format="enum" name="cellMode">
+            <enum name="number" value="0"/>
+            <enum name="other" value="1"/>
+        </attr>
+        <attr format="enum" name="seekBarMode">
+            <enum name="single" value="1"/>
+            <enum name="range" value="2"/>
+        </attr>
+
+    </declare-styleable><attr format="reference" name="SpinKitViewStyle"/><declare-styleable name="SpinKitView">
+        <attr name="SpinKit_Style">
+            <enum name="RotatingPlane" value="0"/>
+            <enum name="DoubleBounce" value="1"/>
+            <enum name="Wave" value="2"/>
+            <enum name="WanderingCubes" value="3"/>
+            <enum name="Pulse" value="4"/>
+            <enum name="ChasingDots" value="5"/>
+            <enum name="ThreeBounce" value="6"/>
+            <enum name="Circle" value="7"/>
+            <enum name="CubeGrid" value="8"/>
+            <enum name="FadingCircle" value="9"/>
+            <enum name="FoldingCube" value="10"/>
+            <enum name="RotatingCircle" value="11"/>
+            <enum name="MultiplePulse" value="12"/>
+            <enum name="PulseRing" value="13"/>
+            <enum name="MultiplePulseRing" value="14"/>
+        </attr>
+        <attr format="color" name="SpinKit_Color"/>
+    </declare-styleable><declare-styleable name="RxScaleImageView">
+        <attr format="reference" name="src"/>
+        <attr format="string" name="assetName"/>
+        <attr format="boolean" name="panEnabled"/>
+        <attr format="boolean" name="zoomEnabled"/>
+        <attr format="boolean" name="quickScaleEnabled"/>
+        <attr format="color" name="tileBackgroundColor"/>
+    </declare-styleable><declare-styleable name="RxCobwebView">
+
+        <attr format="color" name="spiderColor"/>
+        <attr format="color" name="spiderRadiusColor"/>
+        <attr format="color" name="spiderLevelColor"/>
+        <attr format="boolean" name="spiderLevelStroke"/>
+        <attr format="boolean" name="spiderRotate"/>
+        <attr format="float" name="spiderLevelStrokeWidth"/>
+        <attr format="integer" name="spiderMaxLevel"/>
+        <attr format="dimension" name="spiderNameSize"/>
+
+    </declare-styleable><declare-styleable name="ColorPickerPreference">
+        <attr format="boolean" name="alphaSlider"/>
+        <attr format="boolean" name="lightnessSlider"/>
+        <attr format="integer" name="density"/>
+        <attr format="integer" name="initialColor"/>
+        <attr format="enum" name="wheelType">
+            <enum name="FLOWER" value="0"/>
+            <enum name="CIRCLE" value="1"/>
+        </attr>
+        <attr format="reference" name="lightnessSliderView"/>
+        <attr format="reference" name="alphaSliderView"/>
+        <attr format="integer" name="pickerColorEditTextColor"/>
+        <attr format="reference|string" name="pickerTitle"/>
+        <attr format="reference|string" name="pickerButtonOk"/>
+        <attr format="reference|string" name="pickerButtonCancel"/>
+    </declare-styleable><declare-styleable name="RxRotateBar">
+        <attr format="string" name="ratingCenterTitle"/>
+        <attr format="dimension" name="centerTitleSize"/>
+        <attr format="integer" name="ratingMax"/>
+        <attr format="color" name="ratingUnratedColor"/>
+        <attr format="color" name="ratingRatedColor"/>
+        <attr format="color" name="ratingTitleColor"/>
+        <attr format="color" name="ratingOutlineColor"/>
+        <attr format="color" name="ratingDefaultColor"/>
+        <attr format="boolean" name="ratingTitleVisible"/>
+        <attr format="color" name="ratingCenterColor"/>
+    </declare-styleable></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\colors.xml" qualifiers=""><color name="white">#FFFFFFFF</color><color name="black">#FF000000</color><color name="yellow">#FFFF00</color><color name="red">#ff0000</color><color name="hot_pink">#FD4C5B</color><color name="blue">#3F51B5</color><color name="SUCCESS_COLOR">#388E3C</color><color name="mi_green">#52BA97</color><color name="f0">#f0f0f0</color><color name="e">#EEEEEE</color><color name="c">#CCCCCC</color><color name="_8c">#8c8c8c</color><color name="a5">#A5A5A5</color><color name="brown">#7a583e</color><color name="brown2">#b19282</color><color name="transparent">#00000000</color><color name="shadow25">#25808080</color><color name="triangle">#aa72d572</color><color name="circle">#aa738ffe</color><color name="rect">#aae84e40</color><color name="green">#008000</color><color name="gray">#808080</color><color name="slateblue">#6A5ACD</color><color name="royalblue">#4169E1</color><color name="lightseagreen">#20B2AA</color><color name="teal">#008080</color><color name="round_corner_progress_bar_background_default">#5f5f5f</color><color name="round_corner_progress_bar_progress_default">#7f7f7f</color><color name="round_corner_progress_bar_secondary_progress_default">@android:color/transparent
+    </color><color name="custom_progress_orange_progress">#ffff8800</color><color name="colorBackground">#FF4081</color><color name="colorText">#FFFFFF</color></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\dimens.xml" qualifiers=""><dimen name="heart_anim_bezier_x_rand">40.0dp</dimen><dimen name="heart_anim_init_x">50.0dp</dimen><dimen name="heart_anim_init_y">25.0dp</dimen><dimen name="heart_anim_length">100.0dp</dimen><dimen name="heart_anim_length_rand">150.0dp</dimen><dimen name="heart_anim_x_point_factor">30.0dp</dimen><dimen name="heart_size_height">27.3dp</dimen><dimen name="heart_size_width">32.5dp</dimen><dimen name="textSize_sidebar">10sp</dimen><dimen name="large_textSize_sidebar">32sp</dimen><dimen name="textSize_sidebar_padding">20sp</dimen><dimen name="radius_sidebar">20dp</dimen><dimen name="ball_radius_sidebar">24dp</dimen><dimen name="default_slider_height">36dp</dimen><dimen name="default_slider_margin">24dp</dimen><dimen name="default_slider_bar_height">4dp</dimen><dimen name="default_slider_handler_radius">10dp</dimen><dimen name="default_preview_height">40dp</dimen><dimen name="default_preview_image_height">36dp</dimen><dimen name="default_slider_margin_btw_title">20dp</dimen></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\ids.xml" qualifiers=""><item name="auto_focus" type="id"/><item name="decode" type="id"/><item name="decode_failed" type="id"/><item name="decode_succeeded" type="id"/><item name="quit" type="id"/><item name="restart_preview" type="id"/></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\integers.xml" qualifiers=""><integer name="heart_anim_bezier_factor">6</integer><integer name="anim_duration">3000</integer></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\strings.xml" qualifiers=""><string name="app_name">RxTools</string><string name="android_origin">Android是一种基于Linux的自由及开放源代码的操作系统，主要使用于移动设备，如智能手机和平板电脑，由Google公司和开放手机联盟领导及开发。尚未有统一中文名称，中国大陆地区较多人使用“安卓”或“安致”。Android操作系统最初由Andy Rubin开发，主要支持手机。2005年8月由Google收购注资。2007年11月，Google与84家硬件制造商、软件开发商及电信营运商组建开放手机联盟共同研发改良Android系统。随后Google以Apache开源许可证的授权方式，发布了Android的源代码。第一部Android智能手机发布于2008年10月。Android逐渐扩展到平板电脑及其他领域上，如电视、数码相机、游戏机等。2011年第一季度，Android在全球的市场份额首次超过塞班系统，跃居全球第一。 2013年的第四季度，Android平台手机的全球市场份额已经达到78.1%。[1] 2013年09月24日谷歌开发的操作系统Android在迎来了5岁生日，全世界采用这款系统的设备数量已经达到10亿台。</string><string name="number_letter">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values\styles.xml" qualifiers=""><style name="TickerTextAppearance">
+        <item name="android:textColor">@color/f0</item>
+        <item name="android:textSize">50sp</item>
+    </style><style name="SpinKitView">
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:minWidth">48dip</item>
+        <item name="android:maxWidth">48dip</item>
+        <item name="android:minHeight">48dip</item>
+        <item name="android:maxHeight">48dip</item>
+    </style><style name="SpinKitView.CubeGrid">
+        <item name="SpinKit_Style">CubeGrid</item>
+    </style></file><file path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\values-w820dp\dimens.xml" qualifiers="w820dp-v13"/><file name="file_paths" path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\main\res\xml\file_paths.xml" qualifiers="" type="xml"/></source><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\build\generated\res\rs\debug"/><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\build\generated\res\resValues\debug"/></dataSet><dataSet config="debug$Generated" generated="true"><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\debug\res"/></dataSet><dataSet config="debug" generated-set="debug$Generated"><source path="D:\AndroidStudioProjects\qimalock_app\RxTools-library\src\debug\res"/></dataSet><mergedItems><configuration qualifiers=""><declare-styleable name="SeatTableView"><attr format="reference" name="seat_checked"/><attr format="reference" name="seat_sold"/><attr format="reference" name="seat_available"/><attr format="color" name="overview_checked"/><attr format="color" name="overview_sold"/><attr format="color" name="txt_color"/></declare-styleable><declare-styleable name="ticker_TickerView"><attr format="reference|integer" name="ticker_animationDuration"/><attr format="reference|boolean" name="ticker_animateMeasurementChange"/><attr name="android:gravity" ns1:ignore="ResourceName"/><attr name="android:textAppearance" ns1:ignore="ResourceName"/><attr name="android:textColor" ns1:ignore="ResourceName"/><attr name="android:textSize" ns1:ignore="ResourceName"/></declare-styleable><declare-styleable name="WheelHorizontalView"><attr format="dimension" name="selectionDividerWidth"/></declare-styleable><declare-styleable name="RxCardStackView"><attr format="dimension" name="stackOverlapGaps"/><attr format="dimension" name="stackOverlapGapsCollapse"/><attr format="dimension" name="stackHeaderHeight"/><attr format="integer" name="stackDuration"/><attr format="integer" name="stackNumBottomShow"/><attr name="stackAnimationType">
+            <flag name="allDown" value="0"/>
+            <flag name="upDown" value="1"/>
+            <flag name="upDownStack" value="2"/>
+        </attr></declare-styleable><declare-styleable name="RxTitle"><attr format="string" name="title"/><attr format="color" name="titleColor"/><attr format="dimension" name="titleSize"/><attr format="boolean" name="titleVisibility"/><attr format="string" name="leftText"/><attr format="color" name="leftTextColor"/><attr format="dimension" name="leftTextSize"/><attr format="boolean" name="leftTextVisibility"/><attr format="string" name="rightText"/><attr format="color" name="rightTextColor"/><attr format="dimension" name="rightTextSize"/><attr format="boolean" name="rightTextVisibility"/><attr format="reference" name="leftIcon"/><attr format="boolean" name="leftIconVisibility"/><attr format="reference" name="rightIcon"/><attr format="boolean" name="rightIconVisibility"/></declare-styleable><declare-styleable name="IconRoundCornerProgress"><attr format="integer" name="rcIconSrc"/><attr format="dimension" name="rcIconSize"/><attr format="dimension" name="rcIconWidth"/><attr format="dimension" name="rcIconHeight"/><attr format="dimension" name="rcIconPadding"/><attr format="dimension" name="rcIconPaddingLeft"/><attr format="dimension" name="rcIconPaddingRight"/><attr format="dimension" name="rcIconPaddingTop"/><attr format="dimension" name="rcIconPaddingBottom"/><attr format="color" name="rcIconBackgroundColor"/></declare-styleable><declare-styleable name="RoundCornerProgress"><attr format="boolean" name="rcReverse"/><attr format="float" name="rcProgress"/><attr format="float" name="rcMax"/><attr format="float" name="rcSecondaryProgress"/><attr format="dimension" name="rcBackgroundPadding"/><attr format="dimension" name="rcRadius"/><attr format="color" name="rcProgressColor"/><attr format="color" name="rcSecondaryProgressColor"/><attr format="color" name="rcBackgroundColor"/></declare-styleable><declare-styleable name="ShoppingView"><attr format="color" name="sv_bg_color"/><attr format="string" name="sv_text"/><attr format="dimension" name="sv_text_size"/><attr format="integer" name="sv_duration"/></declare-styleable><declare-styleable name="TextRoundCornerProgress"><attr format="color" name="rcTextProgressColor"/><attr format="dimension" name="rcTextProgressSize"/><attr format="dimension" name="rcTextProgressMargin"/><attr format="string" name="rcTextProgress"/></declare-styleable><declare-styleable name="RxSwipeCaptcha"><attr format="dimension" name="captchaWidth"/><attr format="dimension" name="captchaHeight"/><attr format="dimension" name="matchDeviation"/></declare-styleable><declare-styleable name="RxSeekBar"><attr format="float" name="maxProgress"/><attr format="float" name="minProgress"/><attr format="float" name="reserve"/><attr format="integer" name="cells"/><attr format="boolean" name="hideProgressHint"/><attr format="boolean" name="isHintHolder"/><attr format="color" name="lineColorSelected"/><attr format="color" name="lineColorEdge"/><attr format="color" name="thumbPrimaryColor"/><attr format="color" name="thumbSecondaryColor"/><attr format="reference" name="markTextArray"/><attr format="reference" name="seekBarResId"/><attr format="reference" name="progressHintResId"/><attr format="dimension" name="textPadding"/><attr format="dimension" name="textSize2"/><attr format="dimension" name="hintBGHeight"/><attr format="dimension" name="hintBGWith"/><attr format="dimension" name="hintBGPadding"/><attr format="dimension" name="seekBarHeight"/><attr format="dimension" name="thumbSize"/><attr format="enum" name="cellMode">
+            <enum name="number" value="0"/>
+            <enum name="other" value="1"/>
+        </attr><attr format="enum" name="seekBarMode">
+            <enum name="single" value="1"/>
+            <enum name="range" value="2"/>
+        </attr></declare-styleable><declare-styleable name="AbstractWheelView"><attr format="integer" name="visibleItems"/><attr format="boolean" name="isAllVisible"/><attr format="integer" name="itemOffsetPercent"/><attr format="dimension" name="itemsPadding"/><attr format="integer" name="selectionDividerDimmedAlpha"/><attr format="integer" name="selectionDividerActiveAlpha"/><attr format="reference" name="selectionDivider"/><attr format="integer" name="itemsDimmedAlpha"/><attr format="boolean" name="isCyclic"/></declare-styleable><declare-styleable name="RxNetSpeedView"><attr format="color" name="RxTextColor"/><attr format="dimension" name="RxTextSize"/><attr format="boolean" name="isMulti"/></declare-styleable><declare-styleable name="RxRotateBar"><attr format="string" name="ratingCenterTitle"/><attr format="dimension" name="centerTitleSize"/><attr format="integer" name="ratingMax"/><attr format="color" name="ratingUnratedColor"/><attr format="color" name="ratingRatedColor"/><attr format="color" name="ratingTitleColor"/><attr format="color" name="ratingOutlineColor"/><attr format="color" name="ratingDefaultColor"/><attr format="boolean" name="ratingTitleVisible"/><attr format="color" name="ratingCenterColor"/></declare-styleable><declare-styleable name="WaveSideBarView"><attr format="color|reference" name="sidebarTextColor"/><attr format="color|reference" name="sidebarBackgroundColor"/><attr format="color|reference" name="sidebarChooseTextColor"/><attr format="dimension" name="sidebarTextSize"/><attr format="dimension" name="sidebarLargeTextSize"/><attr format="dimension" name="sidebarRadius"/><attr format="dimension" name="sidebarBallRadius"/></declare-styleable><declare-styleable name="RxHeartLayout"><attr format="dimension" name="initX"/><attr format="dimension" name="initY"/><attr format="dimension" name="xRand"/><attr format="dimension" name="animLengthRand"/><attr format="dimension" name="xPointFactor"/><attr format="dimension" name="animLength"/><attr format="dimension" name="heart_width"/><attr format="dimension" name="heart_height"/><attr format="integer" name="bezierFactor"/><attr format="integer" name="anim_duration"/></declare-styleable><declare-styleable name="SpinKitView"><attr name="SpinKit_Style">
+            <enum name="RotatingPlane" value="0"/>
+            <enum name="DoubleBounce" value="1"/>
+            <enum name="Wave" value="2"/>
+            <enum name="WanderingCubes" value="3"/>
+            <enum name="Pulse" value="4"/>
+            <enum name="ChasingDots" value="5"/>
+            <enum name="ThreeBounce" value="6"/>
+            <enum name="Circle" value="7"/>
+            <enum name="CubeGrid" value="8"/>
+            <enum name="FadingCircle" value="9"/>
+            <enum name="FoldingCube" value="10"/>
+            <enum name="RotatingCircle" value="11"/>
+            <enum name="MultiplePulse" value="12"/>
+            <enum name="PulseRing" value="13"/>
+            <enum name="MultiplePulseRing" value="14"/>
+        </attr><attr format="color" name="SpinKit_Color"/></declare-styleable><declare-styleable name="RxShineButton"><attr format="color" name="btn_color"/><attr format="color" name="btn_fill_color"/><attr format="integer" name="shine_count"/><attr format="float" name="shine_turn_angle"/><attr format="float" name="small_shine_offset_angle"/><attr format="boolean" name="enable_flashing"/><attr format="boolean" name="allow_random_color"/><attr format="color" name="small_shine_color"/><attr format="color" name="big_shine_color"/><attr format="integer" name="shine_animation_duration"/><attr format="integer" name="click_animation_duration"/><attr format="float" name="shine_distance_multiple"/><attr format="dimension" name="shine_size"/></declare-styleable><declare-styleable name="RxAutoImageView"><attr format="reference" name="ImageSrc"/></declare-styleable><declare-styleable name="FlikerProgressBar"><attr format="dimension" name="textSize"/><attr format="color" name="loadingColor"/><attr format="color" name="stopColor"/><attr format="color" name="finishColor"/><attr format="dimension" name="radius"/><attr format="dimension" name="borderWidth"/></declare-styleable><declare-styleable name="RxRoundProgress"><attr format="color" name="roundColor"/><attr format="color" name="roundProgressColor"/><attr format="dimension" name="roundWidth"/><attr format="color" name="textColor"/><attr format="dimension" name="textSize1"/><attr format="integer" name="max"/><attr format="boolean" name="textIsDisplayable"/><attr name="style">
+            <enum name="STROKE" value="0"/>
+            <enum name="FILL" value="1"/>
+        </attr></declare-styleable><declare-styleable name="RxPorterImageView"><attr format="integer|reference" name="siShape"/></declare-styleable><declare-styleable name="WheelVerticalView"><attr format="dimension" name="selectionDividerHeight"/></declare-styleable><declare-styleable name="lwvWheelView"><attr format="color|reference" name="lwvHighlightColor"/><attr format="color|reference" name="lwvMarkColor"/><attr format="color|reference" name="lwvMarkTextColor"/><attr format="float" name="lwvIntervalFactor"/><attr format="float" name="lwvMarkRatio"/><attr format="dimension" name="lwvCursorSize"/><attr format="dimension" name="lwvMarkTextSize"/><attr format="dimension" name="lwvCenterMarkTextSize"/><attr format="string|reference" name="lwvAdditionalCenterMark"/></declare-styleable><declare-styleable name="RxShapeLoadingView"><attr format="string" name="loadingText"/><attr format="reference" name="loadingTextAppearance"/></declare-styleable><declare-styleable name="RxCobwebView"><attr format="color" name="spiderColor"/><attr format="color" name="spiderRadiusColor"/><attr format="color" name="spiderLevelColor"/><attr format="boolean" name="spiderLevelStroke"/><attr format="boolean" name="spiderRotate"/><attr format="float" name="spiderLevelStrokeWidth"/><attr format="integer" name="spiderMaxLevel"/><attr format="dimension" name="spiderNameSize"/></declare-styleable><declare-styleable name="ColorPickerPreference"><attr format="boolean" name="alphaSlider"/><attr format="boolean" name="lightnessSlider"/><attr format="integer" name="density"/><attr format="integer" name="initialColor"/><attr format="enum" name="wheelType">
+            <enum name="FLOWER" value="0"/>
+            <enum name="CIRCLE" value="1"/>
+        </attr><attr format="reference" name="lightnessSliderView"/><attr format="reference" name="alphaSliderView"/><attr format="integer" name="pickerColorEditTextColor"/><attr format="reference|string" name="pickerTitle"/><attr format="reference|string" name="pickerButtonOk"/><attr format="reference|string" name="pickerButtonCancel"/></declare-styleable><declare-styleable name="RxScaleImageView"><attr format="reference" name="src"/><attr format="string" name="assetName"/><attr format="boolean" name="panEnabled"/><attr format="boolean" name="zoomEnabled"/><attr format="boolean" name="quickScaleEnabled"/><attr format="color" name="tileBackgroundColor"/></declare-styleable></configuration></mergedItems></merger>
