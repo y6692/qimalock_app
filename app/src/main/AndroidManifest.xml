@@ -66,6 +66,7 @@
     <uses-permission android:name="android.permission.FLASHLIGHT" /> <!-- 闪光灯权限 -->
     <uses-permission android:name="andorid.permission.CHANGE_CONFIGURATION" />
 
+
     <application
         android:name=".base.BaseApplication"
         android:allowBackup="true"
