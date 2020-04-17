@@ -616,7 +616,11 @@ public class ImageUtils {
         paint.setStrokeWidth(borderWidth);
         canvas.drawRect(rec, paint);
         canvas.drawBitmap(src, borderWidth / 2, borderWidth / 2, null);
-        canvas.save(Canvas.ALL_SAVE_FLAG);
+//        canvas.save(Canvas.ALL_SAVE_FLAG);
+
+        int LAYER_FLAGS = Canvas.ALL_SAVE_FLAG;
+        canvas.saveLayerAlpha(0, 0, borderWidth, borderWidth, 0xff, LAYER_FLAGS);
+
         canvas.restore();
         if (!src.isRecycled()) src.recycle();
         return out;

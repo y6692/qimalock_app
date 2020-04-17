@@ -210,10 +210,6 @@ public class MainActivity extends BaseActivity{
     public void onResume() {
         super.onResume();
 
-
-
-
-
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
 
         boolean flag = getIntent().getBooleanExtra("flag", false);
