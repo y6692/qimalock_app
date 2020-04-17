@@ -616,6 +616,7 @@ public class ImageUtils {
         paint.setStrokeWidth(borderWidth);
         canvas.drawRect(rec, paint);
         canvas.drawBitmap(src, borderWidth / 2, borderWidth / 2, null);
+
 //        canvas.save(Canvas.ALL_SAVE_FLAG);
 
         int LAYER_FLAGS = Canvas.ALL_SAVE_FLAG;
