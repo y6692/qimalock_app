@@ -113,6 +113,8 @@ public class DeviceListActivity extends MPermissionsActivity implements OnDevice
                 }else{
                     BaseApplication.getInstance().getIBLE().setChangKey(false);
                     BaseApplication.getInstance().getIBLE().setChangPsd(false);
+//                    BaseApplication.getInstance().getIBLE().setChangKey(true);
+//                    BaseApplication.getInstance().getIBLE().setChangPsd(true);
                     IntentUtils.startActivity(DeviceListActivity.this, LockStorage2Activity.class, bundle);
                 }
 

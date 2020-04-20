@@ -199,7 +199,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
         codenum = getIntent().getStringExtra("codenum");
 
 
-//        hexStringToByteArray(Config.keyMap.get(address.replaceAll(":", "")));
+        hexStringToByteArray(Config.keyMap.get(address.replaceAll(":", "")));
 
 //        BaseApplication.getInstance().getIBLE().setChangKey(true);
 
