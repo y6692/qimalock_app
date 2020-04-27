@@ -8,6 +8,7 @@ package com.qimalocl.manage.core.common;
  * @version v1.0 2016-4-7
  */
 public class Urls {
+
 	public static String HTTP = "http://";
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
