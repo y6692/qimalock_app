@@ -58,6 +58,7 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
+import com.qimalocl.manage.core.widget.MarqueTextView;
 import com.qimalocl.manage.model.DatasBean;
 import com.qimalocl.manage.model.LowPowerBean;
 import com.qimalocl.manage.model.LowPowerDetailBean;
@@ -107,7 +108,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ImageView settingImage;
     private ImageView headerImageView;
     private ImageView authState;
-    private TextView userName, schoolName, roleName, tv_delivered_cars, tv_is_using_cars, tv_longtime_not_used_cars, tv_not_recycled_cars, tv_not_fixed_cars, tv_fixed_not_used_cars;
+    private TextView userName, roleName, tv_delivered_cars, tv_is_using_cars, tv_longtime_not_used_cars, tv_not_recycled_cars, tv_not_fixed_cars, tv_fixed_not_used_cars;
+
+
+    private MarqueTextView schoolName;
 
     private LinearLayout ll_1, ll_2, ll_3, ll_4, ll_5, ll_6, curRouteLayout, hisRouteLayout;
     private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, changePhoneLayout, authLayout, inviteLayout;
@@ -145,6 +149,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private int low_count_xyt;
     private int ultra_low_count_tbt;
     private int low_count_tbt;
+
+    String role = "";
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mine, null);
@@ -240,6 +246,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         userName = getActivity().findViewById(R.id.personUI_userName);
         schoolName = getActivity().findViewById(R.id.personUI_schoolName);
         roleName = getActivity().findViewById(R.id.personUI_roleName);
+        schoolName.setSelected(true);
 
         iv_isRead = getActivity().findViewById(R.id.iv_isRead);
 
@@ -1066,6 +1073,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         public boolean handleMessage(Message mes) {
             switch (mes.what) {
                 case 0:
+//                    roleName.setText(roles[0]);
+                    roleName.setText(role);
+                    roleName.setSelected(true);
                     break;
 
                 default:
@@ -1273,37 +1283,44 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 }
 
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        Log.e("minef===initHttp1", "==="+responseString);
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Log.e("minef===initHttp1", "==="+responseString);
 
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
+                                UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
 //                            myPurse.setText(bean.getMoney());
 //                            myIntegral.setText(bean.getPoints());
-                        userName.setText(bean.getName());
+                                userName.setText(bean.getName());
 
-                        String[] schools = bean.getSchools();
+                                String[] schools = bean.getSchools();
 
-                        Log.e("minef===initHttp2", schools+"===");
+                                Log.e("minef===initHttp2", schools+"===");
 
-                        if(schools!=null && schools.length>0){
+                                if(schools!=null && schools.length>0){
 
-                            Log.e("minef===initHttp3", schools[0]+"===");
+                                    Log.e("minef===initHttp3", schools[0]+"===");
 
-                            SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+                                    SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
 
-                            schoolName.setText(bean2.getName());
-                        }
+                                    schoolName.setText(bean2.getName());
+                                }
 
-                        String[] roles = bean.getRoles();
-                        if(roles!=null && roles.length>0){
+                                String[] roles = bean.getRoles();
+                                if(roles!=null && roles.length>0){
 
-                            Log.e("minef===initHttp4", roles[0]+"==="+roles[1]);
+                                    Log.e("minef===initHttp4", "===");
 
-                            roleName.setText(roles[0]);
-                        }
+                                    role = roles[0];
+                                    roleName.setText(roles[0]);
+                                    roleName.setSelected(true);
+
+//                                    m_myHandler.sendEmptyMessage(0);
+                                }
 
 //                        if(bean.getUnread_count()==0){
 //                            iv_isRead.setVisibility(View.GONE);
@@ -1318,7 +1335,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                        history_order_h5_title = bean.getHistory_order_h5_title();
 //                        history_order_h5_url = bean.getHistory_order_h5_url();
 
-                        //TODO  3
+                                //TODO  3
 //                            if (bean.getHeadimg() != null && !"".equals(bean.getHeadimg())) {
 //                                if ("gif".equalsIgnoreCase(bean.getHeadimg().substring(bean.getHeadimg().lastIndexOf(".") + 1, bean.getHeadimg().length()))) {
 //                                    Glide.with(getActivity()).load(Urls.host + bean.getHeadimg()).asGif().centerCrop().into(headerImageView);
@@ -1327,12 +1344,15 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                }
 //                            }
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()) {
-                        loadingDialog.dismiss();
-                    }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()) {
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
                 }
             });
         } else {

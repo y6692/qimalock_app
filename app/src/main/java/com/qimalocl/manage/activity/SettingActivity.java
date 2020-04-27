@@ -3,6 +3,8 @@ package com.qimalocl.manage.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -52,6 +54,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
     private TextView title;
 
     private LoadingDialog loadingDialog;
+    private TextView tv_version;
     private Button logoutBtn;
 
     public static boolean isForeground = false;
@@ -128,11 +131,23 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
-//        change_phone = (TextView) findViewById(R.id.loginUI_change_phone);
+        tv_version = (TextView) findViewById(R.id.tv_version);
         logoutBtn = (Button) findViewById(R.id.settingUI_btn);
 
         backImg.setOnClickListener(this);
         logoutBtn.setOnClickListener(this);
+
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            if("https://testnewmapi.7mate.cn/api".equals(Urls.host2)){
+                tv_version.setText("测试版本"+info.versionName);
+            }else{
+                tv_version.setText("生产版本"+info.versionName);
+            }
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     @Override

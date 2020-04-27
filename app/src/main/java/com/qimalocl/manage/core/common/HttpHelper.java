@@ -130,6 +130,13 @@ public class HttpHelper {
 		client.get(context, url, params, responseHandler);
 	}
 
+    public static void put(Context context, String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+
+        addHeader(context);
+
+        client.put(context, url, params, responseHandler);
+    }
+
 	public static void post(Context context, String url, AsyncHttpResponseHandler responseHandler) {
 
 		addHeader(context);

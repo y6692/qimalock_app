@@ -96,14 +96,34 @@
                             android:layout_height="wrap_content"
                             android:gravity="center">
 
-                            <TextView
-                                android:id="@+id/personUI_userName"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:textSize="@dimen/sp16"
-                                android:textColor="@color/white"
-                                android:text=""/>
+                                android:layout_marginTop="9dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    android:id="@+id/personUI_userName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:textSize="@dimen/sp16"
+                                    android:textColor="@color/white"
+                                    android:text=""/>
+
+                                <TextView
+                                    android:id="@+id/personUI_roleName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="25dp"
+                                    android:layout_marginLeft="16dp"
+                                    android:textSize="@dimen/sp16"
+                                    android:textColor="@color/white"
+                                    android:text=""/>
+
+                            </LinearLayout>
+
+
 
                             <LinearLayout
                                 android:id="@+id/ll_backBtn"
@@ -130,22 +150,22 @@
                             android:gravity="center_vertical">
 
 
-                            <TextView
+                            <com.qimalocl.manage.core.widget.MarqueTextView
                                 android:id="@+id/personUI_schoolName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="25dp"
                                 android:textSize="@dimen/sp16"
                                 android:textColor="@color/white"
+                                android:singleLine="true"
+                                android:ellipsize="marquee"
+                                android:marqueeRepeatLimit="marquee_forever"
                                 android:text=""/>
 
-                            <TextView
-                                android:id="@+id/personUI_roleName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="25dp"
-                                android:layout_marginLeft="16dp"
-                                android:textSize="@dimen/sp16"
-                                android:textColor="@color/white"
-                                android:text=""/>
+                            <!--android:focusable="true"-->
+                            <!--android:focusableInTouchMode="true"-->
+                            <!--android:scrollHorizontally="true"-->
+
+
 
                         </LinearLayout>
 

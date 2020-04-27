@@ -3,7 +3,6 @@ package com.qimalocl.manage.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,23 +10,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -43,7 +35,6 @@ import com.clj.fastble.exception.BleException;
 import com.fitsleep.sunshinelibrary.utils.ConvertUtils;
 import com.fitsleep.sunshinelibrary.utils.DialogUtils;
 import com.fitsleep.sunshinelibrary.utils.EncryptUtils;
-import com.fitsleep.sunshinelibrary.utils.Logger;
 import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
 import com.fitsleep.sunshinelibrary.utils.UtilSharedPreference;
@@ -73,27 +64,22 @@ import com.sofi.blelocker.library.protocol.IConnectResponse;
 import com.sofi.blelocker.library.protocol.IEmptyResponse;
 import com.sofi.blelocker.library.protocol.IGetRecordResponse;
 import com.sofi.blelocker.library.protocol.IGetStatusResponse;
-import com.sofi.blelocker.library.utils.BluetoothLog;
 import com.sofi.blelocker.library.utils.StringUtils;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
-import com.sunshine.blelibrary.inter.OnConnectionListener;
-import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
 import com.sunshine.blelibrary.mode.BatteryTxOrder;
 import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
 import com.sunshine.blelibrary.mode.GetTokenTxOrder;
+import com.sunshine.blelibrary.mode.KeyTxOrder;
 import com.sunshine.blelibrary.mode.OpenLockTxOrder;
 import com.sunshine.blelibrary.mode.Order;
+import com.sunshine.blelibrary.mode.PasswordTxOrder;
 import com.sunshine.blelibrary.mode.XinbiaoTxOrder;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
 import com.zxing.lib.scaner.activity.ActivityScanerCode;
 import com.zxing.lib.scaner.activity.AddCarCaptureAct;
 
 import org.apache.http.Header;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -104,7 +90,7 @@ import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
 
 //已改密钥密码
 @SuppressLint("NewApi")
-public class LockStorageActivity extends MPermissionsActivity {
+public class LockStorageTestActivity extends MPermissionsActivity {
     @BindView(R.id.tv_name)
     TextView tvName;
     @BindView(R.id.tv_address)
@@ -144,8 +130,12 @@ public class LockStorageActivity extends MPermissionsActivity {
     Button btStatus;
     @BindView(R.id.bt_wx)
     Button btWx;
+
+    @BindView(R.id.change_key_btn)
+    Button changeKeyBtn;
     @BindView(R.id.change_psd_btn)
     Button changePsdBtn;
+
     @BindView(R.id.edbikeNum)
     ClearEditText edbikeNum;
 
@@ -190,13 +180,46 @@ public class LockStorageActivity extends MPermissionsActivity {
     //服务器时间戳，精确到秒，用于锁同步时间
     long serverTime;
 
+    public byte[] hexStringToByteArray2(String str) {
+        if(str == null || str.trim().equals("")) {
+            return new byte[0];
+        }
 
+        byte[] bytes = new byte[str.length() / 2];
+        for(int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 16);
+        }
 
+        Log.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[1]+"==="+bytes[5]);
+
+        Config.newKey = bytes;
+
+        return bytes;
+    }
+
+    public byte[] hexStringToByteArray3(String str) {
+        if(str == null || str.trim().equals("")) {
+            return new byte[0];
+        }
+
+        byte[] bytes = new byte[str.length() / 2];
+        for(int i = 0; i < str.length() / 2; i++) {
+            String subStr = str.substring(i * 2, i * 2 + 2);
+            bytes[i] = (byte) Integer.parseInt(subStr, 16);
+        }
+
+        Log.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[1]+"==="+bytes[5]);
+
+        Config.key = bytes;
+
+        return bytes;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lock_storage);
+        setContentView(R.layout.activity_lock_storage_test);
 
         Log.e("onCreate===", "===");
 
@@ -263,8 +286,6 @@ public class LockStorageActivity extends MPermissionsActivity {
         mac = getIntent().getStringExtra("mac");
         codenum = getIntent().getStringExtra("codenum");
 
-
-
 //        BaseApplication.getInstance().getIBLE().setChangKey(true);
 //        BaseApplication.getInstance().getIBLE().setChangPsd(true);
         BaseApplication.getInstance().getIBLE().setChangKey(false);
@@ -281,86 +302,138 @@ public class LockStorageActivity extends MPermissionsActivity {
         Log.e("LockStorageActivity===", name+"==="+mac+"==="+codenum);
 
 
+        changeKeyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //修改密码
+                Log.e("ls2a===changeKeyBtn", "===");
+
+                hexStringToByteArray2(Config.keyMap.get(mac.replaceAll(":", "")));
+
+
+                //修改密钥
+                loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
+                loadingDialog.show();
+
+//                byte[] bytes2 = {Config.key[0], Config.key[1], Config.key[2], Config.key[3], Config.key[4], Config.key[5], Config.key[6], Config.key[7]};
+//
+//                setKey(Order.TYPE.RESET_KEY, bytes2);
+////                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes2);
+//
+//                m_myHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        byte[] bytes1 = {Config.key[8], Config.key[9], Config.key[10], Config.key[11], Config.key[12], Config.key[13], Config.key[14], Config.key[15]};
+//
+//                        setKey(Order.TYPE.RESET_KEY2, bytes1);
+////                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
+//
+//                        BaseApplication.getInstance().getIBLE().setChangKey(false);
+//
+//                        if (loadingDialog != null && loadingDialog.isShowing()) {
+//                            loadingDialog.dismiss();
+//                        }
+//
+//                        ToastUtil.showMessageApp(context, "密钥修改成功");
+//
+//                    }
+//                }, 2000);
+
+
+                byte[] bytes2 = {Config.newKey[0], Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4], Config.newKey[5], Config.newKey[6], Config.newKey[7]};
+                setKey(Order.TYPE.RESET_KEY, bytes2);
+//                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes2);
+
+                m_myHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        byte[] bytes1 = {Config.newKey[8], Config.newKey[9], Config.newKey[10], Config.newKey[11], Config.newKey[12], Config.newKey[13], Config.newKey[14], Config.newKey[15]};
+                        setKey(Order.TYPE.RESET_KEY2, bytes1);
+//                        BaseApplication.getInstance().getIBLE().setChangKey(true);
+
+                        if (loadingDialog != null && loadingDialog.isShowing()) {
+                            loadingDialog.dismiss();
+                        }
+
+                        ToastUtil.showMessageApp(context, "密钥修改成功");
+
+                        Config.key = Config.newKey;
+
+                    }
+                }, 500);
+
+
+            }
+        });
+
         changePsdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //修改密码
 //                if ("1".equals(pwd)) {
 
-                Log.e("lsa===changePsdBtn", "===");
+                Log.e("ls2a===changePsdBtn", "===");
 
-                codenum = "40002000";
+
 
 //                isChangePsd = true;
+
+                //修改密码
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密码");
                 loadingDialog.show();
 
-                byte[] bytes = {Config.key[0],
-                        Config.key[1], Config.key[2], Config.key[3], Config.key[4],
-                        Config.key[5], Config.key[6], Config.key[7]};
-                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
+                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
+                setPsd(Order.TYPE.RESET_PASSWORD, bytes);
+//                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
+
+                Config.passwordnew = new byte[]{0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
 
                 m_myHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        byte[] bytes1 = {Config.key[8],
-                                Config.key[9], Config.key[10], Config.key[11], Config.key[12],
-                                Config.key[13], Config.key[14], Config.key[15]};
-                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
 
-                        BaseApplication.getInstance().getIBLE().setChangKey(false);
+                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1], Config.passwordnew[2], Config.passwordnew[3], Config.passwordnew[4], Config.passwordnew[5]};
+                        setPsd(Order.TYPE.RESET_PASSWORD2, bytes);
+//                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
+
+
+                        if (loadingDialog != null && loadingDialog.isShowing()) {
+                            loadingDialog.dismiss();
+                        }
+
+                        ToastUtil.showMessageApp(context, "密码修改成功");
+
                     }
                 }, 2000);
 
-//                byte[] bytes = {Config.newKey[0],
-//                        Config.newKey[1], Config.newKey[2], Config.newKey[3], Config.newKey[4],
-//                        Config.newKey[5], Config.newKey[6], Config.newKey[7]};
-//                BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes);
-//                m_myHandler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        byte[] bytes1 = {Config.newKey[8],
-//                                Config.newKey[9], Config.newKey[10], Config.newKey[11], Config.newKey[12],
-//                                Config.newKey[13], Config.newKey[14], Config.newKey[15]};
-//                        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
-//                    }
-//                }, 2000);
 
 
-//                byte[] bytes = {Config.password[0], Config.password[1], Config.password[2], Config.password[3], Config.password[4], Config.password[5]};
-////                byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-////                        Config.passwordnew[2], Config.passwordnew[3],
-////                        Config.passwordnew[4], Config.passwordnew[5]};
-////                byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
-////                        Config.passwordnew2[2], Config.passwordnew2[3],
-////                        Config.passwordnew2[4], Config.passwordnew2[5]};
-//                BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
-//
-//                m_myHandler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        byte[] bytes = {Config.passwordnew[0], Config.passwordnew[1],
-//                                Config.passwordnew[2], Config.passwordnew[3],
-//                                Config.passwordnew[4], Config.passwordnew[5]};
-//
-////                        byte[] bytes = {Config.passwordnew2[0], Config.passwordnew2[1],
-////                                Config.passwordnew2[2], Config.passwordnew2[3],
-////                                Config.passwordnew2[4], Config.passwordnew2[5]};
-//
-////                        BaseApplication.getInstance().getIBLE().setChangKey(false);
-//
-//                        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD2, bytes);
-//                    }
-//                }, 2000);
-//                }else {
-//                    Toast.makeText(context,"此设备密码已修改",Toast.LENGTH_SHORT).show();
-//                }
             }
         });
 
 
-        lock_info();
+//        lock_info();
+
+//        Config.key = Config.newKey2;
+//        Config.password = Config.passwordnew2;
+
+        hexStringToByteArray3(Config.keyMap.get(mac.replaceAll(":", "")));
+        Config.password = new byte[]{0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
+
+        m_myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+//                    if(isMac){
+//                        connect();
+//                    }else{
+//
+//                        setScanRule();
+//                        scan();
+//                    }
+
+                connect();
+            }
+        }, 2 * 1000);
 
     }
 
@@ -407,8 +480,11 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                                     if("2".equals(type) || "3".equals(type) || "9".equals(type)){
 
-                                        Config.key = hexStringToByteArray(bean.getLock_secretkey());
-                                        Config.password = hexStringToByteArray(bean.getLock_password());
+//                                        Config.key = hexStringToByteArray(bean.getLock_secretkey());
+//                                        Config.password = hexStringToByteArray(bean.getLock_password());
+
+                                        Config.key = Config.newKey2;
+                                        Config.password = Config.passwordnew2;
 
                                         m_myHandler.postDelayed(new Runnable() {
                                             @Override
@@ -485,7 +561,7 @@ public class LockStorageActivity extends MPermissionsActivity {
             }
 
             @Override
-            public void onConnectFail(com.clj.fastble.data.BleDevice bleDevice, BleException exception) {
+            public void onConnectFail(BleDevice bleDevice, BleException exception) {
                 Log.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
 
 //                Toast.makeText(context, "连接失败", Toast.LENGTH_LONG).show();
@@ -497,7 +573,7 @@ public class LockStorageActivity extends MPermissionsActivity {
             }
 
             @Override
-            public void onConnectSuccess(com.clj.fastble.data.BleDevice device, BluetoothGatt gatt, int status) {
+            public void onConnectSuccess(BleDevice device, BluetoothGatt gatt, int status) {
                 if (loadingDialog != null && loadingDialog.isShowing()) {
                     loadingDialog.dismiss();
                 }
@@ -544,9 +620,11 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                         byte[] mingwen = EncryptUtils.Decrypt(x, Config.key);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
 
-                        Log.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
 
                         String s1 = ConvertUtils.bytes2HexString(mingwen);
+
+                        Log.e("onCharacteristicChanged", s1+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
+
 
                         if(s1.startsWith("0602")){      //获取token
 
@@ -624,7 +702,7 @@ public class LockStorageActivity extends MPermissionsActivity {
             }
 
             @Override
-            public void onDisConnected(boolean isActiveDisConnected, com.clj.fastble.data.BleDevice bleDevice, BluetoothGatt gatt, int status) {
+            public void onDisConnected(boolean isActiveDisConnected, BleDevice bleDevice, BluetoothGatt gatt, int status) {
 
                 isConnect = false;
                 Log.e("connect=onDisConnected", "==="+isActiveDisConnected);
@@ -696,6 +774,51 @@ public class LockStorageActivity extends MPermissionsActivity {
             @Override
             public void onWriteFailure(BleException exception) {
                 Log.e("getLockStatus=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
+    void setKey(Order.TYPE type, byte[] bytes){
+        Log.e("setKey===", type+"==="+isConnect+"==="+mac+"==="+token);
+
+//        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes2);
+        String s = new KeyTxOrder(type, bytes).generateString();  //06010101490E602E46311640422E5238
+
+//        CD33DEC4CCE7CCA4 D3CAAADE4D774FAB
+        Log.e("setKey===1", "==="+s);  //070108 CD33DEC4CCE7CCA4 E193CEE2 41
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("setKey==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("setKey=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
+    void setPsd(Order.TYPE type, byte[] bytes){
+//        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
+        String s = new PasswordTxOrder(type, bytes).generateString();  //06010101490E602E46311640422E5238
+
+        Log.e("setPsd===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                Log.e("setPsd==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                Log.e("setPsd=onWriteFa", "==="+exception);
             }
         });
     }
@@ -1593,7 +1716,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                     if (permissions[0].equals(Manifest.permission.CAMERA)){
                         try {
                             Intent intent = new Intent();
-                            intent.setClass(LockStorageActivity.this, AddCarCaptureAct.class);
+                            intent.setClass(LockStorageTestActivity.this, AddCarCaptureAct.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivityForResult(intent, 1);
                         } catch (Exception e) {

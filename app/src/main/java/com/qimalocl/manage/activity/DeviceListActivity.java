@@ -1,7 +1,13 @@
 package com.qimalocl.manage.activity;
 
 import android.Manifest;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleScanCallback;
@@ -33,6 +40,7 @@ import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.utils.ParseLeAdvData;
 import com.qimalocl.manage.utils.SortComparator;
+import com.qimalocl.manage.utils.ToastUtil;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
 
@@ -78,6 +86,8 @@ public class DeviceListActivity extends MPermissionsActivity{
 
     private Thread thread;
 
+    BluetoothAdapter mBluetoothAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,30 +108,23 @@ public class DeviceListActivity extends MPermissionsActivity{
 
         initWidget();
 
-
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-
                 while (isThread){
-
                     try {
                         Thread.sleep(1 * 20);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
-
-
                     if(isFresh){
-//                    Log.e("dla===thread", isFresh + "===");
+//                      Log.e("dla===thread", isFresh + "===");
 
                         degree = (degree+30)%360;
                         m_myHandler.sendEmptyMessage(1);
                     }
-
                 }
-
             }
         });
         thread.start();
@@ -158,6 +161,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                 Log.e("dla===", "==="+isChange);
 
                 IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+//                IntentUtils.startActivity(DeviceListActivity.this, LockStorageTestActivity.class, bundle);
 
 //                if(isChange){
 //                    BaseApplication.getInstance().getIBLE().setChangKey(true);
@@ -232,8 +236,6 @@ public class DeviceListActivity extends MPermissionsActivity{
                     adapterList.add(device);
 //                    bleDevice = new BleDevice(device);
 //                    bleDeviceList.add(bleDevice);
-
-
 
 //                    mAdapter.notifyDataSetChanged();
 
@@ -310,14 +312,105 @@ public class DeviceListActivity extends MPermissionsActivity{
 
         mAdapter.notifyDataSetChanged();
 
-//        scanDevice();
-        new Handler().postDelayed(new Runnable() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+        }
+        //蓝牙锁
+        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+
+        if (mBluetoothAdapter == null) {
+            ToastUtil.showMessageApp(context, "获取蓝牙失败");
+            return;
+        }
+        if (!mBluetoothAdapter.isEnabled()) {
+//            isPermission = false;
+//            closeLoadingDialog2();
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 188);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    scanDevice();
+                }
+            }, 500);
+        }
+
+
+
+    }
+
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+
+        m_myHandler.post(new Runnable() {
             @Override
             public void run() {
-                scanDevice();
+                Log.e("dla===requestCode", requestCode+"==="+resultCode+"==="+data);
+
+                switch (requestCode) {
+
+
+                    case 188:
+
+                        if (resultCode == RESULT_OK) {
+//                            closeLoadingDialog();
+
+                            Log.e("dla===188", requestCode+"==="+resultCode+"==="+data);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    scanDevice();
+                                }
+                            }, 500);
+
+//                            isPermission = true;
+//
+//                            if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                                loadingDialog.setTitle("正在唤醒车锁");
+//                                loadingDialog.show();
+//                            }
+//
+//                            Log.e("188===", isAgain+"==="+isConnect+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
+//
+//                            initParams();
+//
+//
+//                            Log.e("188===order", isAgain+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
+//
+//
+//                            open_lock();
+
+                        }else{
+                            ToastUtil.showMessageApp(context, "需要打开蓝牙");
+
+//                            Log.e("188===fail", oid+"===");
+
+//                            if(popupwindow!=null){
+//                                popupwindow.dismiss();
+//                            }
+//
+//                            closeLoadingDialog2();
+
+                        }
+                        break;
+
+
+                    default:
+
+                        break;
+
+                }
             }
-        }, 500);
+        });
+
     }
+
+
 
     @OnClick(R.id.mainUI_title_backBtn)
     void back() {

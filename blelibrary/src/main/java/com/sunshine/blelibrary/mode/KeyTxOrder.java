@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.Arrays;
 
 /**
- * 修改密码
+ * 修改密钥
  * Created by sunshine on 2017/2/24.
  */
 

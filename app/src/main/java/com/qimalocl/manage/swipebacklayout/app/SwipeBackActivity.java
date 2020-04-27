@@ -18,6 +18,7 @@ import com.qimalocl.manage.base.BaseFragmentActivity;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.swipebacklayout.SwipeBackLayout;
+import com.sunshine.blelibrary.config.Config;
 
 
 public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBackActivityBase {
@@ -80,6 +81,7 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 
 		Log.e("StringToByte===1", bytes+"==="+bytes[0]);
 
+		Config.key = bytes;
 
 		return bytes;
 	}

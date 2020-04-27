@@ -75,7 +75,7 @@ public class SplashActivity extends BaseActivity {
 		super.onCreate(bundle);
 		setContentView(R.layout.main_enter);
 		loadingImage = (ImageView) findViewById(R.id.plash_loading_main);
-		initHttp();
+//		initHttp();
 
 		init();
 	}
@@ -89,23 +89,6 @@ public class SplashActivity extends BaseActivity {
 				if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
 					requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},101);
 				} else {
-//					CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//					customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开位置权限！")
-//							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog, int which) {
-//									dialog.cancel();
-//									finishMine();
-//								}
-//							}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int which) {
-//							dialog.cancel();
-//							requestPermissions(
-//									new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-//									101);
-//						}
-//					});
-//					customBuilder.create().show();
-
 					requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},101);
 				}
 				return;
@@ -126,22 +109,6 @@ public class SplashActivity extends BaseActivity {
 				if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
 					requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 100);
 				} else {
-//					CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//					customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开设备信息权限！")
-//							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog, int which) {
-//									dialog.cancel();
-//									finishMine();
-//								}
-//							}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int which) {
-//							dialog.cancel();
-//							SplashActivity.this.requestPermissions(
-//									new String[] { Manifest.permission.READ_PHONE_STATE }, 100);
-//						}
-//					});
-//					customBuilder.create().show();
-
 					requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 100);
 				}
 				return;
@@ -152,29 +119,9 @@ public class SplashActivity extends BaseActivity {
 			int checkPermission = this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
 			if (checkPermission != PackageManager.PERMISSION_GRANTED) {
 				if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-					requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-							Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+					requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
 				} else {
-//					CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//					customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开存储空间权限！")
-//							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog, int which) {
-//									dialog.cancel();
-//									finishMine();
-//								}
-//							}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int which) {
-//							dialog.cancel();
-//							SplashActivity.this.requestPermissions(
-//									new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
-//											Manifest.permission.WRITE_EXTERNAL_STORAGE },
-//									0);
-//						}
-//					});
-//					customBuilder.create().show();
-
-					requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-							Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+					requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
 				}
 				return;
 			}
@@ -187,8 +134,6 @@ public class SplashActivity extends BaseActivity {
 					requestPermissions(new String[]{Manifest.permission.CAMERA}, 102);
 				} else {
 					requestPermissions(new String[]{Manifest.permission.CAMERA}, 102);
-
-
 				}
 				return;
 			}
@@ -362,7 +307,6 @@ public class SplashActivity extends BaseActivity {
 	AMapLocationListener locationListener = new AMapLocationListener() {
 		@Override
 		public void onLocationChanged(AMapLocation loc) {
-
 
 			if (null != loc) {
 				if (0.0 != loc.getLongitude() && 0.0 != loc.getLongitude()) {
@@ -589,31 +533,6 @@ public class SplashActivity extends BaseActivity {
 		switch (requestCode) {
 			case 0:
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//						int checkPermission = this.checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
-//						if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-//							if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-//								requestPermissions(new String[] { Manifest.permission.READ_PHONE_STATE }, 100);
-//							} else {
-//								CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//								customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开存储空间权限！")
-//										.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//											public void onClick(DialogInterface dialog, int which) {
-//												dialog.cancel();
-//												finishMine();
-//											}
-//										}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//									public void onClick(DialogInterface dialog, int which) {
-//										dialog.cancel();
-//										SplashActivity.this.requestPermissions(
-//												new String[] { Manifest.permission.READ_PHONE_STATE }, 100);
-//									}
-//								});
-//								customBuilder.create().show();
-//							}
-//							return;
-//						}
-//					}
 					init();
 				} else {
 					CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
@@ -639,36 +558,6 @@ public class SplashActivity extends BaseActivity {
 				return;
 			case 100:
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-					// <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
-//					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//						int checkPermission = this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-//						if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-//							if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-//								requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
-//										Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
-//							} else {
-//								CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//								customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开设备信息权限！")
-//										.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//											public void onClick(DialogInterface dialog, int which) {
-//												dialog.cancel();
-//												finishMine();
-//											}
-//										}).setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//									public void onClick(DialogInterface dialog, int which) {
-//										dialog.cancel();
-//										SplashActivity.this.requestPermissions(
-//												new String[] { Manifest.permission.READ_EXTERNAL_STORAGE,
-//														Manifest.permission.WRITE_EXTERNAL_STORAGE },
-//												0);
-//									}
-//								});
-//								customBuilder.create().show();
-//							}
-//							return;
-//						}
-//					}
 					init();
 				} else {
 //					showDialog();
@@ -725,26 +614,6 @@ public class SplashActivity extends BaseActivity {
 				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 					init();
 				}else {
-//					CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-//					customBuilder.setTitle("温馨提示").setMessage("您需要在设置里定位权限！")
-//							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//								public void onClick(DialogInterface dialog, int which) {
-//									dialog.cancel();
-//									finishMine();
-//								}
-//							}).setPositiveButton("去设置", new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int which) {
-//							dialog.cancel();
-//							Intent localIntent = new Intent();
-//							localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//							localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-//							localIntent.setData(Uri.fromParts("package", getPackageName(), null));
-//							startActivity(localIntent);
-//							finishMine();
-//						}
-//					});
-//					customBuilder.create().show();
-
 					CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
 					customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
 							.setNegativeButton("取消", new DialogInterface.OnClickListener() {

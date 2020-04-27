@@ -90,6 +90,8 @@ import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.BindSchoolActivity;
 import com.qimalocl.manage.activity.ClientManager;
 import com.qimalocl.manage.activity.DeviceSelectActivity;
+import com.qimalocl.manage.activity.DotSelectActivity;
+import com.qimalocl.manage.activity.GetDotActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.TestXiaoanActivity;
@@ -335,6 +337,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private Button negativeButton;
     public String reason;
 
+    private int switchType;
+
     List list2 = new ArrayList<Sentence>();
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -418,7 +422,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                list2.clear();
 //            }
         }
-
 
         closeLoadingDialog();
 
@@ -602,6 +605,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     Log.e("scan===mReceiver4", list2.size()+"==="+tvMsg.isRunning());
 
                     if(list2.size()>1){
+                        llMsg.setVisibility(View.VISIBLE);
 
                         if(!tvMsg.isRunning()){
                             tvMsg.run();
@@ -611,6 +615,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        if(tvMsg.isRunning()){
 //                            tvMsg.stop();
 //                        }
+
+                        if(list2.size()==1){
+                            llMsg.setVisibility(View.VISIBLE);
+                        }else if(list2.size()==0){
+                            llMsg.setVisibility(View.GONE);
+                        }
+
                     }
                 }catch (Exception e){
 
@@ -633,9 +644,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             }else{
                 return sentence.getName();
             }
-
         }
-
     };
 
     private void openGPSSettings() {
@@ -722,7 +731,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 return;
             }
         }
-
 
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
@@ -1913,6 +1921,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
                             if(list2.size()>1){
+                                llMsg.setVisibility(View.VISIBLE);
 
                                 if(!tvMsg.isRunning()){
                                     tvMsg.run();
@@ -1923,6 +1932,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 Log.e("sf===recycletask7", list2.size()+"==="+tvMsg.isRunning());
 
                                 tvMsg.stop();
+
+                                if(list2.size()==1){
+                                    llMsg.setVisibility(View.VISIBLE);
+                                }else if(list2.size()==0){
+                                    llMsg.setVisibility(View.GONE);
+                                }
                             }
 
 //                            m_myHandler.postDelayed(new Runnable() {
@@ -2114,20 +2129,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void cars(){
         RequestParams params = new RequestParams();
 
-        int type = 0;
+        switchType = 0;
         if(switcher_bad.isChecked()){
-            type = 1;
+            switchType = 1;
         }
 
         if(switcher.isChecked()){
             if(switcher_bad.isChecked()){
-                type = 3;
+                switchType = 3;
             }else{
-                type = 2;
+                switchType = 2;
             }
         }
 
-        params.put("type", type);  //0全部 1只看坏车 2只看低电
+        params.put("type", switchType);  //0全部 1只看坏车 2只看低电
 
 //        Log.e("cars===", type+"==="+carmodel_id);
 
@@ -2155,7 +2170,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-//                    Log.e("cars===0", "==="+responseString);
+                    Log.e("cars===0", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
 
@@ -2172,7 +2187,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     }
 
                     if (0 == array.length()){
-                        ToastUtils.showMessage("附近没有单车");
+                        if(switchType==0){
+                            ToastUtils.showMessage("附近没有车辆");
+                        }else if(switchType==1){
+                            ToastUtils.showMessage("附近没有损坏车辆");
+                        }else if(switchType==2){
+                            ToastUtils.showMessage("附近没有低电车辆");
+                        }else if(switchType==3){
+                            ToastUtils.showMessage("附近没有低电和损坏车辆");
+                        }
+
                     } else {
                         for (int i = 0; i < array.length(); i++){
 
@@ -2501,6 +2525,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.mainUI_getDotLayout:
 //                UIHelper.goToAct(context, DotSelectActivity.class);
+//                UIHelper.goToAct(context, GetDotActivity.class);
                 break;
 
             case R.id.mainUI_testXALayout:
@@ -2512,6 +2537,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.mainUI_inStorageLayout:
+                end2();
                 UIHelper.goToAct(context, DeviceSelectActivity.class);
                 break;
 
@@ -3012,9 +3038,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             popupwindow.dismiss();
                         }
                     }
-
                 }
-
             }
 
             @Override
@@ -3091,7 +3115,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                                getBattery();
                             }
 
-
                         }else if(s1.startsWith("0502")){    //开锁
                             Log.e("openLock===", "==="+s1);
 
@@ -3100,7 +3123,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             getLockStatus();
                             closeLoadingDialog();
 
-                            end2();
+//                            end2();
 
 //                            m_myHandler.sendEmptyMessage(7);
                         }else if(s1.startsWith("0508")){   //关锁==050801RET：RET取值如下：0x00，锁关闭成功。0x01，锁关闭失败。0x02，锁关闭异常。
@@ -3152,6 +3175,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 isEndBtn = false;
                             }
 
+//                            end2();
                         }else if(s1.startsWith("058502")){
 
                             Log.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
@@ -4384,9 +4408,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        Toast.makeText(context,"==="+leveltemp, Toast.LENGTH_SHORT).show();
 
                         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
-
                         accuracy = amapLocation.getAccuracy();
-
                         addChooseMarker();
                         addCircle(myLocation, amapLocation.getAccuracy());//添加定位精度圆
 
@@ -4630,8 +4652,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         openGPSSettings();
                         break;
 
-
-
                     case 188:
 
                         if (resultCode == RESULT_OK) {
@@ -4645,7 +4665,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             }
 
                             Log.e("188===", isAgain+"==="+isConnect+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
-
 
                             initParams();
 

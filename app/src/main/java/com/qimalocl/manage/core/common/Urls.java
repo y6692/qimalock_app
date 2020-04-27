@@ -13,8 +13,18 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-//    public static String host2 = HTTPS + "newmapi.7mate.cn/api";
-	public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
+    public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+//	public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
+
+	//附近的车辆接口
+	public static String car_nearby = host2 + "/car/";
+	//电子围栏接口
+	public static String parking_ranges = host2 + "/parking_ranges";
+
+	//	编辑电子围栏接口	put\删除电子围栏接口	DELETE
+	public static String edit_parking = host2 + "/parking/";
+	//	获取电子围栏接口	get\新建电子围栏接口	post
+	public static String parking = host2 + "/parking";
 
 	//获取验证码接口
 	public static String verificationcode = host2 + "/verificationcode";

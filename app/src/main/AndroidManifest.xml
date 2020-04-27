@@ -344,6 +344,11 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
         <activity
+            android:name=".activity.LockStorageTestActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+
+        <activity
             android:name="com.zxing.lib.scaner.activity.ActivityScanerCode"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />

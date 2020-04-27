@@ -49,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.amap.api.location.AMapLocation;
@@ -88,7 +89,10 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.LngLatBean;
 import com.qimalocl.manage.model.NearbyBean;
+import com.qimalocl.manage.model.ParkingBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.SchoolListBean;
+import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.utils.JsonUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.sunshine.blelibrary.config.Config;
@@ -107,11 +111,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cn.jock.pickerview.view.view.OptionsPickerView;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.KEYGUARD_SERVICE;
@@ -119,7 +126,10 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 @SuppressLint("NewApi")
 public class GetDotActivity extends MPermissionsActivity implements View.OnClickListener, LocationSource,
-        AMapLocationListener, AMap.OnCameraChangeListener, AMap.OnMapTouchListener {
+        AMapLocationListener, AMap.OnCameraChangeListener, AMap.OnMapTouchListener
+        , AMap.OnMapClickListener, AMap.OnMapLongClickListener{
+
+    int mode = 0;
 
     Unbinder unbinder;
 
@@ -133,11 +143,18 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     private LoadingDialog loadingDialog1;
     public static boolean isForeground = false;
 
-    private ImageView leftBtn;
+    private LinearLayout leftBtn;
+    private LinearLayout rightBtn;
+    private LinearLayout ll_top;
+    private EditText et_dot_name;
+    private LinearLayout ll_school_name;
+    private TextView tv_school_name;
     private EditText et_name;
     private ImageView myLocationBtn, linkBtn;
     private LinearLayout scanLock, myCommissionLayout, myLocationLayout, linkLayout;
     private ImageView closeBtn;
+
+    private int school_id;
 
     protected AMap aMap;
     protected BitmapDescriptor successDescripter;
@@ -213,6 +230,9 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     public List<String> macList;
     public List<String> macList2;
     public List<Polygon> pOptions;
+    public List<ParkingBean> parkingList = new ArrayList<>();
+    private Map<Integer, Polygon> parking_map = new HashMap<>();
+    private Map<Integer, Polygon> polygon_map = new HashMap<>();
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback;
     private int n=0;
@@ -227,9 +247,29 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     public double referLatitude = 0.0;
     public double referLongitude = 0.0;
 
-    private List<LngLatBean> list = new ArrayList<LngLatBean>();
-    private String json_LngLat;
+//    private List<LngLatBean> list = new ArrayList<LngLatBean>();
+    private List<LatLng> list = new ArrayList<LatLng>();
+    private List<Marker> listMarker = new ArrayList<Marker>();
+    private int pid;
+    private String json_LngLat = "";
     private boolean isSubmit = true;
+
+    Polygon polygon;
+    Polygon del_polygon;
+
+
+    CustomDialog.Builder customBuilder;
+    private CustomDialog customDialog;
+    private CustomDialog customDialog2;
+
+    Marker delMarker;
+
+    private OptionsPickerView pvOptions;
+    private ArrayList<String> item = new ArrayList<>();
+    private ArrayList<SchoolListBean> data = new ArrayList<>();
+
+    private boolean isUpdate;
+    private boolean isAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,9 +282,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         WindowManager.LayoutParams winParams = getWindow().getAttributes();
         winParams.flags |= (WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-
         carType = getIntent().getIntExtra("carType", 1);
-
 
         isContainsList = new ArrayList<>();
         macList = new ArrayList<>();
@@ -257,126 +295,593 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         mapView.onCreate(savedInstanceState);
 
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                m_myHandler.sendEmptyMessage(1);
-//            }
-//        }).start();
-
         initView();
 
-        ToastUtil.showMessage(context, SharedPreferencesUrls.getInstance().getString("userName", "") + "===" + SharedPreferencesUrls.getInstance().getString("uid", "") + "<==>" + SharedPreferencesUrls.getInstance().getString("access_token", ""));
+        customBuilder = new CustomDialog.Builder(context);
+        customBuilder.setTitle("温馨提示").setMessage("是否删除该点位？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
-//        customBuilder = new CustomDialog.Builder(context);
-//        customBuilder.setType(1).setTitle("温馨提示").setMessage("当前行程已停止计费，客服正在加紧处理，请稍等\n客服电话：0519—86999222");
-//        customDialog = customBuilder.create();
-//
-//        CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-//        customBuilder.setTitle("温馨提示").setMessage("还车须至校内地图红色区域，或打开手机GPS并重启软件再试")
-//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
-//        customDialog3 = customBuilder.create();
-//
-//        customBuilder = new CustomDialog.Builder(context);
-//        customBuilder.setTitle("温馨提示").setMessage("还车须至校内地图红色区域")
-//                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
-//        customDialog4 = customBuilder.create();
+//                        list.add(centerMarker.getPosition());
+//                        listMarker.add(dotMarker);
+
+                        list.remove(delMarker.getPosition());
+                        listMarker.remove(delMarker);
+                        delMarker.remove();
+
+                        try {
+                            json_LngLat = JsonUtil.objectToJson(list);
+
+                            Log.e("del===2", list.size()+"==="+listMarker.size()+"==="+json_LngLat);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        if(listMarker.size()>=3){
+                            List<LatLng> list2 = new ArrayList<>();
+
+                            for (int j = 0; j < listMarker.size(); j ++){
+                                list2.add(listMarker.get(j).getPosition());
+                            }
+
+                            PolygonOptions pOption = new PolygonOptions();
+                            pOption.addAll(list2);
+
+                            if(polygon!=null){
+                                polygon.remove();
+                            }
+
+                            polygon = aMap.addPolygon(pOption.strokeWidth(3)
+                                    .strokeColor(Color.argb(128, 255, 167, 243))    //#FFA7F3   50%
+                                    .fillColor(Color.argb(76, 0, 128, 255)));    //#0080FF   30%
+                        }else{
+                            polygon.remove();
+                        }
+
+                        dialog.cancel();
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        customDialog = customBuilder.create();
+
+
+        customBuilder = new CustomDialog.Builder(context);
+        customBuilder.setTitle("温馨提示").setMessage("是否删除该电子围栏？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        delete_parking();
+
+                        dialog.cancel();
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        customDialog2 = customBuilder.create();
 
     }
 
+    private void initView() {
+        openGPSSettings();
 
-    private void schoolRange(){
-//        if(isHidden) return;
-
-        Log.e("main===schoolRange0", "==="+carType);
-
-        RequestParams params = new RequestParams();
-        params.put("type", carType);
-
-        HttpHelper.get(context, Urls.schoolRange, params, new TextHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
+        if (Build.VERSION.SDK_INT >= 23) {
+            int checkPermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+            if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_ASK_PERMISSIONS);
+                } else {
+                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_ASK_PERMISSIONS);
                 }
+                return;
             }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
-            }
+        }
+
+        loadingDialog = new LoadingDialog(context);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+
+        loadingDialog1 = new LoadingDialog(context);
+        loadingDialog1.setCancelable(false);
+        loadingDialog1.setCanceledOnTouchOutside(false);
+
+        leftBtn =  (LinearLayout)findViewById(R.id.ll_backBtn);
+        rightBtn =  (LinearLayout)findViewById(R.id.ll_rightBtn);
+        ll_top =  (LinearLayout)findViewById(R.id.ll_top);
+        et_dot_name =  (EditText)findViewById(R.id.getDot_et_dot_name);
+        ll_school_name =  (LinearLayout)findViewById(R.id.ll_school_name);
+        tv_school_name =  (TextView)findViewById(R.id.getDot_tv_school_name);
+        myLocationLayout =  (LinearLayout)findViewById(R.id.mainUI_myLocationLayout);
+        confirmLayout = (LinearLayout)findViewById(R.id.getDot_confirmLayout);
+        cancelLayout = (LinearLayout)findViewById(R.id.getDot_cancelLayout);
+        submitLayout = (LinearLayout)findViewById(R.id.getDot_submitLayout);
+
+        ll_top.setVisibility(View.GONE);
+        myLocationLayout.setVisibility(View.GONE);
+        confirmLayout.setVisibility(View.GONE);
+        isUpdate = false;
+        isAdd = false;
+
+        pvOptions = new OptionsPickerView(context,false);
+        pvOptions.setTitle("交易类型");
+
+
+        pvOptions.setPicker(item);
+        pvOptions.setCyclic(false, false, false);
+        pvOptions.setSelectOptions(0, 0, 0);
+
+        pvOptions.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-//                if(isHidden) return;
+            public void onOptionsSelect(int options1, int option2, int options3) {
 
-                try {
-                    Log.e("main===schoolRange1", "==="+carType);
+                school_id = data.get(options1).getId();
 
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-                        JSONArray jsonArray = new JSONArray(result.getData());
-                        if (!isContainsList.isEmpty() || 0 != isContainsList.size()){
-                            isContainsList.clear();
-                        }
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            List<LatLng> list = new ArrayList<>();
-                            for (int j = 0; j < jsonArray.getJSONArray(i).length(); j ++){
-                                JSONObject jsonObject = jsonArray.getJSONArray(i).getJSONObject(j);
-                                LatLng latLng = new LatLng(Double.parseDouble(jsonObject.getString("latitude")),
-                                        Double.parseDouble(jsonObject.getString("longitude")));
-                                list.add(latLng);
-                            }
-                            Polygon polygon = null;
-                            PolygonOptions pOption = new PolygonOptions();
-                            pOption.addAll(list);
+//                order_type = options1;
+                tv_school_name.setText(data.get(options1).getName());
 
-                            if(carType == 1){
-                                polygon = aMap.addPolygon(pOption.strokeWidth(2)
-                                        .strokeColor(Color.argb(160, 255, 0, 0))
-                                        .fillColor(Color.argb(160, 255, 0, 0)));
-                            }else{
-                                polygon = aMap.addPolygon(pOption.strokeWidth(2)
-                                        .strokeColor(Color.argb(160, 0, 255, 0))
-                                        .fillColor(Color.argb(160, 0, 255, 0)));
-                            }
-
-
-//                            polygon = aMap.addPolygon(pOption.strokeWidth(2)
-//                                    .strokeColor(Color.argb(160, 0, 0, 255))
-//                                    .fillColor(Color.argb(160, 0, 0, 255)));
-
-//                            polygon = aMap.addPolygon(pOption.strokeWidth(2)
-//                                    .strokeColor(Color.argb(255, 0, 255, 0))
-//                                    .fillColor(Color.argb(255, 0, 255, 0)));
-
-                            pOptions.add(polygon);
-
-                            isContainsList.add(polygon.contains(myLocation));
-
-
-                        }
-                    }else {
-                        ToastUtil.showMessageApp(context,result.getMsg());
-                    }
-                }catch (Exception e){
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
             }
         });
+
+        getSchoolList();
+
+
+        if(aMap==null){
+            aMap = mapView.getMap();
+            setUpMap();
+        }
+
+        aMap.setMapType(AMap.MAP_TYPE_NAVI);
+        aMap.getUiSettings().setZoomControlsEnabled(false);
+        aMap.getUiSettings().setMyLocationButtonEnabled(false);
+        aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
+        aMap.getUiSettings().setLogoBottomMargin(-50);
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(25f);// 设置缩放监听
+        aMap.moveCamera(cameraUpdate);
+        successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
+        successDescripter2 = BitmapDescriptorFactory.fromResource(R.drawable.pin_icon);
+        bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
+
+        aMap.setOnMapClickListener(this);
+        aMap.setOnMapLongClickListener(this);
+
+        aMap.setOnMapTouchListener(this);
+        setUpLocationStyle();
+
+        leftBtn.setOnClickListener(this);
+        rightBtn.setOnClickListener(this);
+        ll_school_name.setOnClickListener(this);
+        myLocationLayout.setOnClickListener(this);
+        confirmLayout.setOnClickListener(this);
+        cancelLayout.setOnClickListener(this);
+        submitLayout.setOnClickListener(this);
+
+        rightBtn.setEnabled(true);
+
+        aMap.setOnMarkerDragListener(new AMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+                Log.e("onMarkerDragStart===", marker+"==="+marker.getPosition()+"==="+list.contains(marker.getPosition()));
+
+//                listMarker.remove(marker);
+
+//                marker.setPosition(myLocation);
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+                Log.e("onMarkerDrag===", marker+"==="+marker.getPosition());
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                Log.e("onMarkerDragEnd===", listMarker.size()+"==="+marker+"==="+marker.getPosition()+"==="+polygon);
+
+//                listMarker.add(marker);
+
+                if(listMarker.size()>=3){
+                    List<LatLng> list2 = new ArrayList<>();
+
+                    for (int j = 0; j < listMarker.size(); j ++){
+                        list2.add(listMarker.get(j).getPosition());
+                    }
+
+                    list = list2;
+                    json_LngLat = JsonUtil.objectToJson(list2);
+
+                    PolygonOptions pOption = new PolygonOptions();
+                    pOption.addAll(list2);
+
+                    if(polygon!=null){
+                        polygon.remove();
+                    }
+
+                    polygon = aMap.addPolygon(pOption.strokeWidth(3)
+                            .strokeColor(Color.argb(128, 255, 167, 243))    //#FFA7F3   50%
+                            .fillColor(Color.argb(76, 0, 128, 255)));    //#0080FF   30%
+
+                    polygon_map.put(pid, polygon);
+
+                    Log.e("onMarkerDragEnd===1", polygon_map.size()+"==="+polygon_map);
+                }
+
+            }
+        });
+
+        aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                Log.e("onMarkerClick===", referLatitude+"==="+referLongitude+"==="+marker.getPosition().latitude+"==="+marker.getPosition().longitude);
+
+                if(marker.getTitle()!=null && !"".equals(marker.getTitle())){
+//                    ll_top.setVisibility(View.GONE);
+//                    ll_top_navi.setVisibility(View.VISIBLE);
+//                    isNavi = true;
+//
+//                    Log.e("onMarkerClick===1", ll_top_navi.isShown()+"==="+marker.getTitle()+"==="+marker.getTitle().split("-")[0]);
+//
+//                    markerPosition = marker.getPosition();
+//                    tv_navi_name.setText(marker.getTitle());
+                }
+
+                delMarker = marker;
+                customDialog.show();
+
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public void onMapLongClick(LatLng point) {
+        Log.e("onMapLongClick===", listMarker.size() + "===" + point.latitude+"===" + point.longitude+"===" + point);
+
+        if(isAdd || isUpdate){
+            return;
+        }
+
+        for (int i = 0; i < parkingList.size(); i ++){
+
+            ParkingBean bean = parkingList.get(i);
+
+            if(bean.getPolygon().contains(point)){
+//                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
+
+                for (int j = 0; j < listMarker.size(); j ++){
+                    listMarker.get(j).remove();
+                }
+
+                if(listMarker.size()>0){
+                    listMarker.clear();
+                }
+
+                pid = bean.getId();
+                et_dot_name.setText(bean.getName());
+                school_id = bean.getSchool_id();
+                tv_school_name.setText(bean.getSchool_name());
+                del_polygon = bean.getPolygon();
+                json_LngLat = JsonUtil.objectToJson(del_polygon.getPoints());
+
+                Log.e("onMapLongClick===3", pid+"==="+json_LngLat);
+
+                customDialog2.show();
+
+            }
+        }
+
+//        for (int key : parking_map.keySet()) {
+//        }
+
+    }
+
+    @Override
+    public void onMapClick(LatLng point) {
+//        Log.e("onMapClick===", ll_top.isShown()+"===" + routeOverLay+"===" + ll_top_navi+"===" + point.latitude+"===" + point.longitude+"===" + point);
+        Log.e("onMapClick===", listMarker.size() + "===" + point.latitude+"===" + point.longitude+"===" + point);
+
+//        if(polygon!=null){
+//            polygon.remove();
+//        }
+
+        if(isAdd && !isUpdate){
+            return;
+        }
+
+
+        for (int i = 0; i < parkingList.size(); i ++){
+
+            ParkingBean bean = parkingList.get(i);
+
+            if(bean.getPolygon().contains(point)){
+//                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
+
+
+                for (int j = 0; j < listMarker.size(); j ++){
+                    listMarker.get(j).remove();
+                }
+
+                if(listMarker.size()>0){
+                    listMarker.clear();
+                }
+
+                pid = bean.getId();
+                et_dot_name.setText(bean.getName());
+                school_id = bean.getSchool_id();
+                tv_school_name.setText(bean.getSchool_name());
+                polygon = bean.getPolygon();
+                list = polygon.getPoints();
+
+                list.remove(list.size()-1);
+
+                json_LngLat = JsonUtil.objectToJson(list);
+
+                Log.e("onMapClick===4", list.size()+"==="+json_LngLat);
+
+                for (int j = 0; j < list.size(); j ++){
+                    MarkerOptions centerMarkerOption = new MarkerOptions().position(list.get(j)).icon(successDescripter2);
+                    dotMarker = aMap.addMarker(centerMarkerOption);
+                    dotMarker.setDraggable(true);
+
+                    listMarker.add(dotMarker);
+                }
+
+                rightBtn.setEnabled(false);
+                ll_top.setVisibility(View.VISIBLE);
+                myLocationLayout.setVisibility(View.VISIBLE);
+                confirmLayout.setVisibility(View.VISIBLE);
+
+                isUpdate = true;
+                isAdd = false;
+
+            }
+        }
+
+//        for (int key : parking_map.keySet()) {
+//
+////            Log.e("onMapClick===1", key + "===" + parking_map.get(key));
+//
+//            if(parking_map.get(key).contains(point)){
+////                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
+//                Log.e("onMapClick===3", key+"==="+JsonUtil.objectToJson(parking_map.get(key).getPoints()));
+//
+//                pid = key;
+//
+//            }
+//        }
+
+//        for ( int i = 0; i < pOptions.size(); i++){
+//
+////            isContainsList.add(pOptions.get(i).contains(new LatLng(Double.parseDouble(bean.getLatitude()), Double.parseDouble(bean.getLongitude()))));
+//
+//            if(pOptions.get(i).contains(point)){
+//                Log.e("onMapClick===2", "==="+pOptions.get(i).getPoints());
+//            }
+//
+////            Log.e("onMapClick===1", pOptions.get(i)+"==="+pOptions.get(i).contains(point));
+////            Log.e("onMapClick===1", pOptions.get(i).contains(point)+"===");
+//
+////            isContainsList.add(pOptions.get(i).contains(point));
+//
+//        }
+
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        switch (view.getId()){
+            case R.id.ll_backBtn:
+                finishMine();
+                break;
+
+            case R.id.ll_rightBtn:
+                rightBtn.setEnabled(false);
+                ll_top.setVisibility(View.VISIBLE);
+                myLocationLayout.setVisibility(View.VISIBLE);
+                confirmLayout.setVisibility(View.VISIBLE);
+
+                isUpdate = false;
+                isAdd = true;
+
+                break;
+
+            case R.id.ll_school_name:
+                pvOptions.show();
+                break;
+
+            case R.id.mainUI_myLocationLayout:
+                if (myLocation != null) {
+                    CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
+                    aMap.animateCamera(update);
+                }
+                break;
+
+            case R.id.getDot_confirmLayout:
+                Log.e("confirmLayout===", referLatitude+"==="+referLongitude);
+
+//                MarkerOptions centerMarkerOption = new MarkerOptions().position(new LatLng(centerMarker.getPosition().latitude, centerMarker.getPosition().longitude)).icon(successDescripter2);
+
+                MarkerOptions centerMarkerOption;
+                if(mode==1){
+                    centerMarkerOption = new MarkerOptions().position(centerMarker.getPosition()).icon(successDescripter2);
+                }else{
+                    centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter2);
+                }
+
+                dotMarker = aMap.addMarker(centerMarkerOption);
+                dotMarker.setDraggable(true);
+
+                if(mode==1){
+                    list.add(centerMarker.getPosition());
+                }else{
+                    list.add(myLocation);
+                }
+
+
+                listMarker.add(dotMarker);
+
+                try {
+                    json_LngLat = JsonUtil.objectToJson(list);
+
+                    Log.e("confirmLayout===2", list.size()+"==="+listMarker.size()+"==="+json_LngLat);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if(list.size()>=3){
+                    List<LatLng> list2 = new ArrayList<>();
+
+
+                    for (int j = 0; j < listMarker.size(); j ++){
+//                        LatLng latLng = new LatLng(listMarker.get(j).getPosition(), list.get(j).getLng());
+                        list2.add(listMarker.get(j).getPosition());
+                    }
+
+                    PolygonOptions pOption = new PolygonOptions();
+                    pOption.addAll(list2);
+
+                    if(polygon!=null){
+                        polygon.remove();
+                    }
+
+                    polygon = aMap.addPolygon(pOption.strokeWidth(3)
+                            .strokeColor(Color.argb(128, 255, 167, 243))    //#FFA7F3   50%
+                            .fillColor(Color.argb(76, 0, 128, 255)));    //#0080FF   30%
+                }
+
+
+                break;
+
+            case R.id.getDot_cancelLayout:
+
+//                Log.e("cancelLayout===", centerMarker.getPosition()+"==="+centerMarker.getPosition().latitude+"==="+centerMarker.getPosition().longitude+"==="+referLongitude+"==="+referLatitude);
+
+//                if(dotMarker!=null){
+//                    dotMarker.remove();
+//                }
+//
+//                if(list!=null && list.size()>=1){
+//                    list.remove(list.size()-1);
+//                }
+
+                refresh();
+
+                break;
+
+            case R.id.getDot_submitLayout:
+
+//                if("".equals(et_name.getText().toString())){
+//                    ToastUtil.showMessageApp(context, "名称不能为空！");
+//                    return;
+//                }
+
+                if(isSubmit){
+                    isSubmit = false;
+
+                    if(isUpdate && !isAdd){
+                        update_parking();
+                    }else if(!isUpdate && isAdd){
+                        add_parking();
+                    }
+
+
+//                    submit();
+                }else{
+                    ToastUtil.showMessageApp(context, "不能重复提交！");
+                }
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void getSchoolList(){
+
+        Log.e("getSchoolList===", "===");
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
+        if (access_token != null && !"".equals(access_token)) {
+            HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在加载");
+                        loadingDialog.show();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        Log.e("getSchoolList===1", "==="+responseString);
+
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                        UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
+
+                        String[] schools = bean.getSchools();
+
+                        Log.e("getSchoolList===2", schools+"===");
+
+//                        if (schoolList.size() != 0 || !schoolList.isEmpty()){
+//                            schoolList.clear();
+//                        }
+                        if (item.size() != 0 || !item.isEmpty()){
+                            item.clear();
+                        }
+
+                        for (int i = 0; i < schools.length;i++){
+                            SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
+
+                            Log.e("getSchoolList===3", bean2.getId()+"==="+bean2.getName());
+
+//                            schoolList.add(bean2);
+                            data.add(bean2);
+                            item.add(bean2.getName());
+
+
+                            if(i==0){
+                                school_id = bean2.getId();
+                                tv_school_name.setText(bean2.getName());
+                            }
+                        }
+
+//                        setFooterType(2);
+//
+//                        Log.e("getSchoolList===3", datas.size()+"==="+schoolList.size());
+//
+//                        myAdapter.notifyDataSetChanged();
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(context, "请先登录账号", Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }
+
     }
 
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
@@ -443,144 +948,607 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         }
     }
 
-    /**附近车接口 */
-    private void initNearby(double latitude, double longitude){
+//    /**附近车接口 */
+//    private void initNearby(double latitude, double longitude){
+//
+////        if(isHidden) return;
+//
+//        Log.e("main===initNearby0", latitude+"==="+longitude);
+//
+//        RequestParams params = new RequestParams();
+//        params.put("latitude",latitude);
+//        params.put("longitude",longitude);
+//        params.put("type", 1);
+//        HttpHelper.get(context, Urls.nearby, params, new TextHttpResponseHandler() {
+//            @Override
+//            public void onStart() {
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在加载");
+//                    loadingDialog.show();
+//                }
+//            }
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
+//                UIHelper.ToastError(context, throwable.toString());
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//
+////                if(isHidden) return;
+//
+//                try {
+//                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//                    if (result.getFlag().equals("Success")) {
+//                        JSONArray array = new JSONArray(result.getData());
+//
+//                        Log.e("initNearby===Bike", "==="+array.length());
+//
+//                        for (Marker marker : bikeMarkerList){
+//                            if (marker != null){
+//                                marker.remove();
+//                            }
+//                        }
+//                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+//                            bikeMarkerList.clear();
+//                        }
+//                        if (0 == array.length()){
+//                            ToastUtils.showMessage("附近没有单车");
+//                        }else {
+//                            for (int i = 0; i < array.length(); i++){
+//                                NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
+//                                // 加入自定义标签
+//                                MarkerOptions bikeMarkerOption = new MarkerOptions().position(new LatLng(
+//                                        Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
+//                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+//                                bikeMarkerList.add(bikeMarker);
+//                            }
+//                        }
+//                    } else {
+//                        ToastUtils.showMessage(result.getMsg());
+//                    }
+//                } catch (Exception e) {
+//
+//                }
+//                if (loadingDialog != null && loadingDialog.isShowing()){
+//                    loadingDialog.dismiss();
+//                }
+//            }
+//        });
+//    }
 
-//        if(isHidden) return;
+//    public void initNearby(final double latitude, final double longitude){
+    public void parking(){
 
-        Log.e("main===initNearby0", latitude+"==="+longitude);
+//        Log.e("gda===parking", latitude+"==="+longitude+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+//
+//        if(latitude==0.0 || longitude==0.0) return;
+//
+//        RequestParams params = new RequestParams();
+//        params.put("latitude", latitude);
+//        params.put("longitude", longitude);
 
-        RequestParams params = new RequestParams();
-        params.put("latitude",latitude);
-        params.put("longitude",longitude);
-        params.put("type", 1);
-        HttpHelper.get(context, Urls.nearby, params, new TextHttpResponseHandler() {
+
+        Log.e("gda===parking", "==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+
+        HttpHelper.get(context, Urls.parking, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在加载");
-                    loadingDialog.show();
-                }
+                onStartCommon("正在加载");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.e("gda===parking1", "==="+responseString);
+
+                            final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            m_myHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        if (1==1 || result.getFlag().equals("Success")) {
+                                            final JSONArray jsonArray = new JSONArray(result.getData());
+
+                                            Log.e("gda===parking2", jsonArray.length()+"==="+jsonArray);
+
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    try{
+
+//                                                        for (Marker marker : bikeMarkerList){
+//                                                            if (marker != null){
+//                                                                marker.remove();
+//                                                            }
+//                                                        }
+//                                                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+//                                                            bikeMarkerList.clear();
+//                                                        }
+
+                                                        for (int key : polygon_map.keySet()) {
+                                                            polygon_map.get(key).remove();
+                                                        }
+
+                                                        if(polygon!=null){
+                                                            polygon.remove();
+                                                        }
+
+                                                        for ( int i = 0; i < parkingList.size(); i++){
+                                                            parkingList.get(i).getPolygon().remove();
+                                                        }
+//
+                                                        if (!parkingList.isEmpty() || 0 != parkingList.size()){
+                                                            parkingList.clear();
+                                                        }
+
+                                                        if (0 == jsonArray.length()){
+                                                            ToastUtil.showMessageApp(context, "没有电子围栏");
+                                                        }else {
+                                                            for (int i = 0; i < jsonArray.length(); i++) {
+                                                                List<LatLng> list = new ArrayList<>();
+                                                                List<LatLng> list2 = new ArrayList<>();
+                                                                int flag=0;
+
+
+                                                                JSONObject jsonObject = new JSONObject(jsonArray.getJSONObject(i).getString("parking"));
+                                                                JSONArray jsonArray2 = new JSONArray(jsonObject.getString("ranges"));;
+
+                                                                Log.e("gda===parking3", jsonObject.length()+"==="+jsonObject);
+                                                                Log.e("gda===parking4", jsonArray2.length()+"==="+jsonArray2);
+
+                                                                for (int j = 0; j < jsonArray2.length(); j++) {
+                                                                    LatLng latLng = new LatLng(Double.parseDouble(jsonArray2.getJSONObject(j).getString("latitude")), Double.parseDouble(jsonArray2.getJSONObject(j).getString("longitude")));
+
+                                                                    flag=0;
+                                                                    list.add(latLng);
+                                                                }
+
+//                                                                if("3".equals(jsonObject.getString("name"))){
+//                                                                    Log.e("gda===parking5", list.size()+"==="+list);
+//                                                                }
+
+                                                                Polygon polygon = null;
+                                                                PolygonOptions pOption = new PolygonOptions();
+
+                                                                pOption.addAll(list);
+
+                                                                polygon = aMap.addPolygon(pOption.strokeWidth(3)
+                                                                        .strokeColor(Color.argb(128, 255, 167, 243))    //#FFA7F3   50%
+                                                                        .fillColor(Color.argb(76, 0, 128, 255)));    //#0080FF   30%
+
+
+                                                                int id = jsonObject.getInt("id");
+                                                                String name = jsonObject.getString("name");
+                                                                int school_id = jsonObject.getInt("school_id");
+                                                                String school_name = jsonObject.getString("school_name");
+
+                                                                ParkingBean parkingBean = new ParkingBean();
+                                                                parkingBean.setId(id);
+                                                                parkingBean.setName(name);
+                                                                parkingBean.setSchool_id(school_id);
+                                                                parkingBean.setSchool_name(school_name);
+                                                                parkingBean.setPolygon(polygon);
+
+                                                                parkingList.add(parkingBean);
+
+//                                                                pOptions.add(polygon);
+//                                                                parking_map.put(id, polygon);
+
+                                                            }
+
+
+                                                        }
+
+                                                        Log.e("main_b===parking_r5", isContainsList.size()+"==="+isContainsList.contains(true)+"==="+pOptions.size()+"==="+pOptions);
+
+                                                        if (loadingDialog != null && loadingDialog.isShowing()){
+                                                            loadingDialog.dismiss();
+                                                        }
+                                                    }catch (Exception e){
+                                                        if (loadingDialog != null && loadingDialog.isShowing()){
+                                                            loadingDialog.dismiss();
+                                                        }
+                                                    }
+                                                }
+                                            }).start();
+
+                                        }else {
+                                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                                loadingDialog.dismiss();
+                                            }
+                                            ToastUtil.showMessageApp(context,result.getMsg());
+                                        }
+                                    }catch (Exception e){
+
+                                        if (loadingDialog != null && loadingDialog.isShowing()){
+                                            loadingDialog.dismiss();
+                                        }
+                                    }
+
+//                                  isInitNearby = false;
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+
+                    }
+                });
+            }
+        });
+
+    }
+
+    public void delete_parking(){
+
+        Log.e("gda===delete_parking", pid+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+
+        HttpHelper.delete(context, Urls.edit_parking+pid, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                onStartCommon("正在加载");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.e("gda===delete_parking1", "==="+responseString);
+
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            ToastUtil.showMessageApp(context, result.getMessage());
+
+                            if(result.getStatus_code()==200){
+                                del_polygon.remove();
+                                parking();
+                            }else{
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                            }
+
+
+
+                        } catch (Exception e) {
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    public void update_parking(){
+
+        Log.e("gda===update_parking", school_id+"==="+json_LngLat+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+
+        RequestParams params = new RequestParams();
+        params.put("name", et_dot_name.getText().toString());
+        params.put("school_id", school_id);
+        params.put("ranges", json_LngLat);   // [{"longitude":119.912488,"latitude":31.756865},{"longitude":119.912402,"latitude":31.755952}]
+
+        HttpHelper.put(context, Urls.edit_parking+pid, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                onStartCommon("正在加载");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+
+                isSubmit = true;
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.e("gda===update_parking1", "==="+responseString);
+
+                            final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            ToastUtil.showMessageApp(context, result.getMessage());
+
+                            if(result.getStatus_code()==200){
+                                refresh();
+                            }else{
+                                isSubmit = true;
+
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                            }
+                        } catch (Exception e) {
+                            isSubmit = true;
+
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    public void add_parking(){
+
+        Log.e("gda===add_parking", "==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+
+        RequestParams params = new RequestParams();
+        params.put("name", et_dot_name.getText().toString());
+        params.put("school_id", school_id);
+        params.put("ranges", json_LngLat);   // [{"longitude":119.912488,"latitude":31.756865},{"longitude":119.912402,"latitude":31.755952}]
+
+        HttpHelper.post(context, Urls.parking, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                onStartCommon("正在加载");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+
+                isSubmit = true;
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.e("gda===add_parking1", "==="+responseString);
+
+                            final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            ToastUtil.showMessageApp(context, result.getMessage());
+
+                            if(result.getStatus_code()==200){
+                                refresh();
+                            }else{
+                                isSubmit = true;
+
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            isSubmit = true;
+
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+
+                    }
+                });
+            }
+        });
+
+    }
+
+    void refresh(){
+
+        for (int i = 0; i < listMarker.size(); i ++){
+            listMarker.get(i).remove();
+        }
+
+        list.clear();
+        listMarker.clear();
+
+        rightBtn.setEnabled(true);
+        ll_top.setVisibility(View.GONE);
+        myLocationLayout.setVisibility(View.GONE);
+        confirmLayout.setVisibility(View.GONE);
+
+        isUpdate = false;
+        isAdd = false;
+
+        isSubmit = true;
+
+        et_dot_name.setText("");
+
+        parking();
+    }
+
+    void parking_ranges(final double latitude, final double longitude){
+
+        RequestParams params = new RequestParams();
+        params.put("latitude", latitude);
+        params.put("longitude", longitude);
+
+        HttpHelper.get2(context, Urls.parking_ranges, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+//                if(!isHidden){
+//                    onStartCommon("正在加载");
+//                }
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
+                onFailureCommon("bf===parking_ranges", throwable.toString());
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
 
-//                if(isHidden) return;
+                Log.e("main_b===parking_r0", "==="+responseString);
 
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-                        JSONArray array = new JSONArray(result.getData());
+                final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        Log.e("initNearby===Bike", "==="+array.length());
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (1==1 || result.getFlag().equals("Success")) {
+                                final JSONArray jsonArray = new JSONArray(result.getData());
 
-                        for (Marker marker : bikeMarkerList){
-                            if (marker != null){
-                                marker.remove();
+                                Log.e("main_b===parking_r1", jsonArray.length()+"==="+jsonArray);
+
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try{
+
+                                            for (Marker marker : bikeMarkerList){
+                                                if (marker != null){
+                                                    marker.remove();
+                                                }
+                                            }
+                                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                                                bikeMarkerList.clear();
+                                            }
+
+//                                            for ( int i = 0; i < pOptionsNear.size(); i++){
+//                                                pOptionsNear.get(i).remove();
+//                                            }
+//
+//                                            if (!pOptionsNear.isEmpty() || 0 != pOptionsNear.size()){
+//                                                pOptionsNear.clear();
+//                                            }
+//
+//                                            if (0 == jsonArray.length()){
+//                                                ToastUtils.show("附近没有停车点");
+//                                            }else {
+//                                                for (int i = 0; i < jsonArray.length(); i++) {
+//                                                    List<LatLng> list = new ArrayList<>();
+//                                                    List<LatLng> list2 = new ArrayList<>();
+//                                                    int flag=0;
+//
+//                                                    JSONArray jsonArray2 = new JSONArray(jsonArray.getJSONObject(i).getString("ranges"));;
+//                                                    JSONObject jsonObject = new JSONObject(jsonArray.getJSONObject(i).getString("parking"));
+//
+//                                                    for (int j = 0; j < jsonArray2.length(); j++) {
+//                                                        LatLng latLng = new LatLng(Double.parseDouble(jsonArray2.getJSONObject(j).getString("latitude")), Double.parseDouble(jsonArray2.getJSONObject(j).getString("longitude")));
+//
+//                                                        flag=0;
+//                                                        list.add(latLng);
+//                                                    }
+//
+////                                                    Log.e("main_b===schoolRange3", "==="+list.size());
+//
+//                                                    Polygon polygon = null;
+//                                                    PolygonOptions pOption = new PolygonOptions();
+//
+//                                                    pOption.addAll(list);
+//
+//                                                    polygon = aMap.addPolygon(pOption
+//                                                            .strokeWidth(2)
+//                                                            .strokeColor(Color.argb(255, 0, 135, 255))
+//                                                            .fillColor(Color.argb(77, 0, 173, 255)));
+//
+//
+//                                                    LatLng latLng = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
+//                                                    marker_park_Option.title(jsonObject.getString("name")).position(latLng);
+//                                                    Marker bikeMarker = aMap.addMarker(marker_park_Option);
+//                                                    bikeMarkerList.add(bikeMarker);
+//                                                    bikeMarker.setDraggable(true);
+//
+//                                                    pOptionsNear.add(polygon);
+////                                                      isContainsList.add(polygon.contains(myLocation));
+//
+//                                                }
+//
+//                                                Log.e("main_b===parking_r4", type+"==="+unauthorized_code+"==="+isContainsList.size()+"==="+isContainsList.contains(true)+"==="+pOptions.size()+"==="+pOptions);
+//
+//                                                View view = View.inflate(context, R.layout.marker_info_layout, null);
+//                                                iv_marker = view.findViewById(R.id.iv);
+//                                                if(unauthorized_code==6){
+//                                                    if("10".equals(type)){
+//                                                        iv_marker.setImageResource(R.drawable.marker3);
+//                                                    }else{
+//                                                        iv_marker.setImageResource(R.drawable.marker2);
+//                                                    }
+//                                                }else{
+//                                                    iv_marker.setImageResource(R.drawable.marker1);
+//                                                }
+//                                                tv_car_count = view.findViewById(R.id.tv_car_count);
+//                                                tv_car_count.setText((car_count>99?99:car_count)+"辆");
+//                                                centerMarkerOption = new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromView(view));
+//
+//                                                if(centerMarker!=null){
+//                                                    centerMarker.remove();
+//                                                }
+//
+//                                                if(isHidden) return;
+//                                                centerMarker = aMap.addMarker(centerMarkerOption);
+//                                                centerMarker.setDraggable(true);
+//
+//                                            }
+//
+//                                            Log.e("main_b===parking_r5", isContainsList.size()+"==="+isContainsList.contains(true)+"==="+pOptions.size()+"==="+pOptions);
+//
+//                                            if (loadingDialog != null && loadingDialog.isShowing()){
+//                                                loadingDialog.dismiss();
+//                                            }
+                                        }catch (Exception e){
+                                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                                loadingDialog.dismiss();
+                                            }
+                                        }
+                                    }
+                                }).start();
+
+                            }else {
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                                ToastUtil.showMessageApp(context,result.getMsg());
+                            }
+                        }catch (Exception e){
+
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
                             }
                         }
-                        if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                            bikeMarkerList.clear();
-                        }
-                        if (0 == array.length()){
-                            ToastUtils.showMessage("附近没有单车");
-                        }else {
-                            for (int i = 0; i < array.length(); i++){
-                                NearbyBean bean = JSON.parseObject(array.getJSONObject(i).toString(), NearbyBean.class);
-                                // 加入自定义标签
-                                MarkerOptions bikeMarkerOption = new MarkerOptions().position(new LatLng(
-                                        Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude()))).icon(bikeDescripter);
-                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                bikeMarkerList.add(bikeMarker);
-                            }
-                        }
-                    } else {
-                        ToastUtils.showMessage(result.getMsg());
+
+//                        isInitNearby = false;
                     }
-                } catch (Exception e) {
+                });
 
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
             }
         });
     }
 
-    private void initView() {
-        openGPSSettings();
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            int checkPermission = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-            if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_ASK_PERMISSIONS);
-                } else {
-                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_ASK_PERMISSIONS);
-                }
-                return;
-            }
-        }
-
-        loadingDialog = new LoadingDialog(context);
-        loadingDialog.setCancelable(false);
-        loadingDialog.setCanceledOnTouchOutside(false);
-
-//        lockLoading = new LoadingDialog(context);
-//        lockLoading.setCancelable(false);
-//        lockLoading.setCanceledOnTouchOutside(false);
-
-        loadingDialog1 = new LoadingDialog(context);
-        loadingDialog1.setCancelable(false);
-        loadingDialog1.setCanceledOnTouchOutside(false);
-
-//        dialog = new Dialog(context, R.style.Theme_AppCompat_Dialog);
-//        View dialogView = LayoutInflater.from(context).inflate(R.layout.ui_frist_view, null);
-//        dialog.setContentView(dialogView);
-//        dialog.setCanceledOnTouchOutside(false);
-
-        leftBtn =  (ImageView)findViewById(R.id.getDot_leftBtn);
-        et_name =  (EditText)findViewById(R.id.getDot_et_name);
-        myLocationLayout =  (LinearLayout)findViewById(R.id.mainUI_myLocationLayout);
-        confirmLayout = (LinearLayout)findViewById(R.id.getDot_confirmLayout);
-        cancelLayout = (LinearLayout)findViewById(R.id.getDot_cancelLayout);
-        submitLayout = (LinearLayout)findViewById(R.id.getDot_submitLayout);
-
-        if(aMap==null){
-            aMap = mapView.getMap();
-            setUpMap();
-        }
-
-        aMap.setMapType(AMap.MAP_TYPE_NAVI);
-        aMap.getUiSettings().setZoomControlsEnabled(false);
-        aMap.getUiSettings().setMyLocationButtonEnabled(false);
-        aMap.getUiSettings().setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_RIGHT);// 设置地图logo显示在右下方
-        aMap.getUiSettings().setLogoBottomMargin(-50);
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(25f);// 设置缩放监听
-        aMap.moveCamera(cameraUpdate);
-        successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
-        successDescripter2 = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed2);
-        bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
-
-        aMap.setOnMapTouchListener(this);
-        setUpLocationStyle();
-
-        leftBtn.setOnClickListener(this);
-        myLocationLayout.setOnClickListener(this);
-        confirmLayout.setOnClickListener(this);
-        cancelLayout.setOnClickListener(this);
-        submitLayout.setOnClickListener(this);
-
-    }
 
 
     @Override
@@ -597,62 +1565,6 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             return;
         }
 
-//        closeBroadcast();
-//        getFeedbackStatus();
-//
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid", "");
-//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
-//        String specialdays = SharedPreferencesUrls.getInstance().getString("specialdays", "");
-//        if (uid == null || "".equals(uid) || access_token == null || "".equals(access_token)) {
-//            authBtn.setVisibility(View.VISIBLE);
-//            authBtn.setText("您还未登录，点我快速登录");
-//            authBtn.setEnabled(true);
-//            cartBtn.setVisibility(View.GONE);
-//            refreshLayout.setVisibility(View.GONE);
-//            rechargeBtn.setVisibility(View.GONE);
-//        } else {
-//            refreshLayout.setVisibility(View.VISIBLE);
-//            if (SharedPreferencesUrls.getInstance().getString("iscert", "") != null && !"".equals(SharedPreferencesUrls.getInstance().getString("iscert", ""))) {
-//                switch (Integer.parseInt(SharedPreferencesUrls.getInstance().getString("iscert", ""))) {
-//                    case 1:
-//                        authBtn.setEnabled(true);
-//                        authBtn.setVisibility(View.VISIBLE);
-//                        authBtn.setText("您还未认证，点我快速认证");
-//                        break;
-//                    case 2:
-//                        getCurrentorder1(uid, access_token);
-//                        break;
-//                    case 3:
-//                        authBtn.setEnabled(true);
-//                        authBtn.setVisibility(View.VISIBLE);
-//                        authBtn.setText("认证被驳回，请重新认证");
-//                        break;
-//                    case 4:
-//                        authBtn.setEnabled(false);
-//                        authBtn.setVisibility(View.VISIBLE);
-//                        authBtn.setText("认证审核中");
-//                        break;
-//                }
-//            } else {
-//                authBtn.setVisibility(View.GONE);
-//            }
-//            if ("0.00".equals(SharedPreferencesUrls.getInstance().getString("money", ""))
-//                    || "0".equals(SharedPreferencesUrls.getInstance().getString("money", "")) || SharedPreferencesUrls.getInstance().getString("money", "") == null ||
-//                    "".equals(SharedPreferencesUrls.getInstance().getString("money", ""))) {
-//                rechargeBtn.setVisibility(View.VISIBLE);
-//            } else {
-//                rechargeBtn.setVisibility(View.GONE);
-//            }
-//
-//            if (("0".equals(specialdays) || specialdays == null || "".equals(specialdays))
-//                    && ("0".equals(specialdays) || specialdays == null || "".equals(specialdays))) {
-//                cartBtn.setVisibility(View.GONE);
-//            } else {
-//                cartBtn.setVisibility(View.VISIBLE);
-//                cartBtn.setText("免费" + specialdays + "天,每次前一个小时免费,点击续费");
-//            }
-//
-//        }
     }
 
 
@@ -794,21 +1706,27 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                         Log.e("main===Changed>>>1", "》》》");
 
                         mFirstFix = false;
-                        schoolRange();
+//                        schoolRange();
 //                        initNearby(amapLocation.getLatitude(), amapLocation.getLongitude());
+                        parking();
                         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
-                        addChooseMarker();
+
+                        if(mode==1){
+                            addChooseMarker();
+                        }
+//
+
                     } else {
 //                        centerMarker.remove();
                         mCircle.remove();
 //                        centerMarker=null;
 
-                        if (!isContainsList.isEmpty() || 0 != isContainsList.size()) {
-                            isContainsList.clear();
-                        }
-                        for (int i = 0; i < pOptions.size(); i++) {
-                            isContainsList.add(pOptions.get(i).contains(myLocation));
-                        }
+//                        if (!isContainsList.isEmpty() || 0 != isContainsList.size()) {
+//                            isContainsList.clear();
+//                        }
+//                        for (int i = 0; i < pOptions.size(); i++) {
+//                            isContainsList.add(pOptions.get(i).contains(myLocation));
+//                        }
                     }
 
                     ToastUtil.showMessage(context, isContainsList.contains(true) + "======" + near);
@@ -1005,84 +1923,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         }
     }
 
-    @Override
-    public void onClick(View view) {
-        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
-        switch (view.getId()){
-            case R.id.getDot_leftBtn:
-                finishMine();
-                break;
 
-            case R.id.mainUI_myLocationLayout:
-                if (myLocation != null) {
-                    CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
-                    aMap.animateCamera(update);
-                }
-                break;
-
-            case R.id.getDot_confirmLayout:
-                Log.e("confirmLayout===", referLatitude+"==="+referLongitude);
-
-                MarkerOptions centerMarkerOption = new MarkerOptions().position(new LatLng(centerMarker.getPosition().latitude, centerMarker.getPosition().longitude)).icon(successDescripter2);
-                dotMarker = aMap.addMarker(centerMarkerOption);
-
-                LngLatBean bean = new LngLatBean();
-                bean.setLng(centerMarker.getPosition().longitude);
-                bean.setLat(centerMarker.getPosition().latitude);
-
-                list.add(bean);
-
-                try {
-                    json_LngLat = JsonUtil.objectToJson(list);
-
-                    Log.e("confirmLayout===2", "==="+json_LngLat);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-//                for (int j = 0; j < jsonArray.getJSONArray(i).length(); j ++){
-//                JSONObject jsonObject = jsonArray.getJSONArray(i).getJSONObject(j);
-//                JSONObject json = JSONObject.fromObject(stu);
-//                JSONArray array = JSONArray.
-
-                break;
-
-            case R.id.getDot_cancelLayout:
-
-//                Log.e("cancelLayout===", centerMarker.getPosition()+"==="+centerMarker.getPosition().latitude+"==="+centerMarker.getPosition().longitude+"==="+referLongitude+"==="+referLatitude);
-
-                if(dotMarker!=null){
-                    dotMarker.remove();
-                }
-
-                if(list!=null && list.size()>=1){
-                    list.remove(list.size()-1);
-                }
-
-                break;
-
-            case R.id.getDot_submitLayout:
-
-                if("".equals(et_name.getText().toString())){
-                    ToastUtil.showMessageApp(context, "名称不能为空！");
-                    return;
-                }
-
-                if(isSubmit){
-                    isSubmit = false;
-
-                    submit();
-                }else{
-                    ToastUtil.showMessageApp(context, "不能重复提交！");
-                }
-
-                break;
-
-            default:
-                break;
-        }
-    }
 
     protected void submit(){
         Log.e("main===submit",json_LngLat+"==="+referLatitude+"==="+referLongitude);
@@ -1122,8 +1963,8 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //                        json_LngLat = JsonUtil.jsonToObject().objectToJson(list);
 
                         for (int j = 0; j < list.size(); j ++){
-                            LatLng latLng = new LatLng(list.get(j).getLat(), list.get(j).getLng());
-                            list2.add(latLng);
+//                            LatLng latLng = new LatLng(list.get(j).getLat(), list.get(j).getLng());
+                            list2.add(list.get(j));
                         }
 //                        for (int j = 0; j < json_LngLat.getJSONArray(i).length(); j ++){
 //                            JSONObject jsonObject = jsonArray.getJSONArray(i).getJSONObject(j);
@@ -1177,17 +2018,6 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     };
 
-
-//    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            Log.e("broadcastReceiver===1", "==="+intent);
-//
-//            getCurrentorder1(SharedPreferencesUrls.getInstance().getString("uid", ""), SharedPreferencesUrls.getInstance().getString("access_token", ""));
-//            getFeedbackStatus();
-//        }
-//    };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1291,6 +2121,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             isUp = false;
         }
     }
+
 
 
     private class MyAsyncTask extends AsyncTask<Void, Void, Void> {

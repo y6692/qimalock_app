@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true">
+    <include
+        layout="@layout/ui_main_title"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="11dp">
+        <com.qimalocl.manage.core.widget.ReboundScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp30"
+                android:layout_marginLeft="23dp">
+
+                <com.qimalocl.manage.core.widget.ClearEditText
+                    android:visibility="gone"
+                    android:id="@+id/edbikeNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp45"
+                    android:background="@drawable/shape_feedback"
+                    android:drawableRight="@drawable/delete_selector"
+                    android:hint="请输入车辆的编号"
+                    android:inputType="numberDecimal"
+                    android:paddingBottom="0dp"
+                    android:paddingLeft="@dimen/dp20"
+                    android:paddingRight="0dp"
+                    android:textColorHint="#989898"
+                    android:textSize="@dimen/sp14"
+                    android:layout_marginLeft="@dimen/dp15"
+                    android:layout_marginRight="@dimen/dp15"/>
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="锁名："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16"/>
+
+                <TextView
+                    android:id="@+id/tv_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:gravity="center"
+                    android:text="MAC地址："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16" />
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:gravity="center"
+                    android:text="@string/connect_status"
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16"/>
+
+                <TextView
+                    android:id="@+id/tv_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:gravity="center"
+                    android:text="是否入库："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16"/>
+
+                <TextView
+                    android:id="@+id/tv_battery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:gravity="center"
+                    android:text="电池电量："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16"/>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_version"
+                    style="@style/text_style"
+                    android:text="@string/device_version" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_cz"
+                    style="@style/text_style"
+                    android:text="@string/current_cz" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/open_count"
+                    style="@style/text_style"
+                    android:text="@string/open_count" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/bt_open"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginRight="48dp"
+                        android:layout_marginLeft="48dp"
+                        android:layout_weight="1"
+                        android:textAllCaps="false"
+                        android:background="@drawable/btn_bcg_normal"
+                        android:textColor="@color/white"
+                        android:text="检校车锁"
+                        android:textSize="@dimen/sp16"
+                        android:gravity="center"/>
+
+                    <CheckBox
+                        android:visibility="gone"
+                        android:id="@+id/bt_auto"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@drawable/box_text_color"
+                        android:layout_weight="1"
+                        android:text="@string/auto_open"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:visibility="gone"
+                    android:id="@+id/bt_status"
+                    style="@style/button_style"
+                    android:text="@string/lock_status"/>
+
+                <Button
+                    android:id="@+id/change_key_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="50dp"
+                    android:text="修改开锁密钥" />
+
+                <Button
+                    android:id="@+id/change_psd_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="50dp"
+                    android:text="修改开锁密码" />
+
+
+                <Button
+                    android:visibility="gone"
+                    android:id="@+id/bt_close"
+                    style="@style/button_style"
+                    android:text="@string/reset_lock"/>
+                <Button
+                    android:visibility="gone"
+                    android:id="@+id/bt_wx"
+                    style="@style/button_style"
+                    android:text="@string/wx_auth"/>
+
+                <RadioGroup
+                    android:visibility="gone"
+                    android:id="@+id/rg_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rb_mt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="@string/mts" />
+
+                    <RadioButton
+                        android:id="@+id/rb_yx"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="@string/ys"
+                        android:visibility="gone"/>
+                </RadioGroup>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/app_version"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom|center"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:padding="5dp"
+                    android:text="Version：" />
+            </LinearLayout>
+        </com.qimalocl.manage.core.widget.ReboundScrollView>
+    </LinearLayout>
+</LinearLayout>

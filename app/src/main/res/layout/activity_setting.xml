@@ -19,13 +19,14 @@
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_version"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:layout_marginLeft="32dp"
-            android:text="更换手机号"
+            android:text=""
             android:textColor="@color/tx_black"
             android:textSize="16sp"
+            android:gravity="center"
             android:lineSpacingExtra="6dp"/>
 
         <Button

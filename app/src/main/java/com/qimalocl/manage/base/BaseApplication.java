@@ -87,21 +87,21 @@ public class BaseApplication extends MultiDexApplication {
 	private void initBle() {
 		Intent intent = new Intent(this, BLEService.class);
 		boolean bindService = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-		if (bindService){
-		}
-		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
-			ToastUtils.showMessage("不支持BLE");
-			return;
-		}
-		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-		BluetoothAdapter mBluetoothAdapter = bluetoothManager.getAdapter();
-		if (mBluetoothAdapter ==null){
-			ToastUtils.showMessage("不支持BLE");
-			return;
-		}
-		if (!mBluetoothAdapter.isEnabled()){
-			mBluetoothAdapter.enable();
-		}
+//		if (bindService){
+//		}
+//		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
+//			ToastUtils.showMessage("不支持BLE");
+//			return;
+//		}
+//		final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+//		BluetoothAdapter mBluetoothAdapter = bluetoothManager.getAdapter();
+//		if (mBluetoothAdapter ==null){
+//			ToastUtils.showMessage("不支持BLE");
+//			return;
+//		}
+//		if (!mBluetoothAdapter.isEnabled()){
+//			mBluetoothAdapter.enable();
+//		}
 	}
 
 	private ServiceConnection mServiceConnection = new ServiceConnection() {

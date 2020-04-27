@@ -188,15 +188,27 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            JSONObject jsonObject = new JSONObject(result.getData());
+                            if(result.getStatus_code()==0){
+                                JSONObject jsonObject = new JSONObject(result.getData());
 
-                            if("".equals(jsonObject.getString("latitude"))){
-                                myLocation = new LatLng(31.76446, 119.920594);
+                                if("".equals(jsonObject.getString("latitude"))){
+                                    myLocation = new LatLng(31.76446, 119.920594);
+                                }else{
+                                    myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
+                                }
+                                addChooseMarker();
+                                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+
                             }else{
-                                myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
+
+                                ToastUtil.showMessageApp(context, result.getMessage());
+                                if(centerMarker!=null){
+                                    centerMarker.remove();
+                                    centerMarker = null;
+                                }
+
                             }
-                            addChooseMarker();
-                            aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+
 
 //                            if (result.getFlag().equals("Success")){
 //                                JSONObject jsonObject = new JSONObject(result.getData());
@@ -492,24 +504,31 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
     }
     private void addChooseMarker() {
         // 加入自定义标签
-        MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter);
-        centerMarker = aMap.addMarker(centerMarkerOption);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                CameraUpdate update = CameraUpdateFactory.zoomTo(16);
-                aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
-                    @Override
-                    public void onFinish() {
-                    }
 
-                    @Override
-                    public void onCancel() {
+        if(centerMarker==null){
+            MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter);
+            centerMarker = aMap.addMarker(centerMarkerOption);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    CameraUpdate update = CameraUpdateFactory.zoomTo(16);
+                    aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
+                        @Override
+                        public void onFinish() {
+                        }
 
-                    }
-                });
-            }
-        }, 1000);
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
+                }
+            }, 1000);
+        }else{
+            centerMarker.setPosition(myLocation);
+        }
+
+
     }
 
     @Override
