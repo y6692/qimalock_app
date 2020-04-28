@@ -154,6 +154,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     private LinearLayout scanLock, myCommissionLayout, myLocationLayout, linkLayout;
     private ImageView closeBtn;
 
+    String dot_name;
     private int school_id;
 
     protected AMap aMap;
@@ -271,6 +272,8 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     private boolean isUpdate;
     private boolean isAdd;
 
+    ParkingBean parkingBean;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -348,20 +351,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         customDialog = customBuilder.create();
 
 
-        customBuilder = new CustomDialog.Builder(context);
-        customBuilder.setTitle("温馨提示").setMessage("是否删除该电子围栏？")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        delete_parking();
 
-                        dialog.cancel();
-                    }
-                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        customDialog2 = customBuilder.create();
 
     }
 
@@ -406,7 +396,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         isAdd = false;
 
         pvOptions = new OptionsPickerView(context,false);
-        pvOptions.setTitle("交易类型");
+        pvOptions.setTitle("选择学校");
 
 
         pvOptions.setPicker(item);
@@ -500,11 +490,38 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                         polygon.remove();
                     }
 
+//                    ParkingBean parkingBean2 = parkingBean;
+//                    parkingList.remove(parkingBean);
+
                     polygon = aMap.addPolygon(pOption.strokeWidth(3)
                             .strokeColor(Color.argb(128, 255, 167, 243))    //#FFA7F3   50%
                             .fillColor(Color.argb(76, 0, 128, 255)));    //#0080FF   30%
 
+//                    parkingBean2.setPolygon(polygon);
+//                    parkingList.add(parkingBean2);
+
+
+                    parkingBean.setPolygon(polygon);
                     polygon_map.put(pid, polygon);
+
+
+//                    parkingList
+//
+//                    int id = jsonObject.getInt("id");
+//                    String name = jsonObject.getString("name");
+//                    int school_id = jsonObject.getInt("school_id");
+//                    String school_name = jsonObject.getString("school_name");
+//
+//                    ParkingBean parkingBean = new ParkingBean();
+//                    parkingBean.setId(id);
+//                    parkingBean.setName(name);
+//                    parkingBean.setSchool_id(school_id);
+//                    parkingBean.setSchool_name(school_name);
+//                    parkingBean.setPolygon(polygon);
+//
+//                    parkingList.add(parkingBean);
+
+
 
                     Log.e("onMarkerDragEnd===1", polygon_map.size()+"==="+polygon_map);
                 }
@@ -547,9 +564,9 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
         for (int i = 0; i < parkingList.size(); i ++){
 
-            ParkingBean bean = parkingList.get(i);
+            parkingBean = parkingList.get(i);
 
-            if(bean.getPolygon().contains(point)){
+            if(parkingBean.getPolygon().contains(point)){
 //                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
 
                 for (int j = 0; j < listMarker.size(); j ++){
@@ -560,15 +577,30 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     listMarker.clear();
                 }
 
-                pid = bean.getId();
-                et_dot_name.setText(bean.getName());
-                school_id = bean.getSchool_id();
-                tv_school_name.setText(bean.getSchool_name());
-                del_polygon = bean.getPolygon();
+                pid = parkingBean.getId();
+                dot_name = parkingBean.getName();
+                et_dot_name.setText(parkingBean.getName());
+                school_id = parkingBean.getSchool_id();
+                tv_school_name.setText(parkingBean.getSchool_name());
+                del_polygon = parkingBean.getPolygon();
                 json_LngLat = JsonUtil.objectToJson(del_polygon.getPoints());
 
-                Log.e("onMapLongClick===3", pid+"==="+json_LngLat);
+                Log.e("onMapLongClick===3", pid+"==="+dot_name+"==="+json_LngLat);
 
+                customBuilder = new CustomDialog.Builder(context);
+                customBuilder.setTitle("温馨提示").setMessage("是否删除"+dot_name+"电子围栏？")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                delete_parking();
+
+                                dialog.cancel();
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                customDialog2 = customBuilder.create();
                 customDialog2.show();
 
             }
@@ -595,11 +627,12 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
         for (int i = 0; i < parkingList.size(); i ++){
 
-            ParkingBean bean = parkingList.get(i);
+//            parkingBean = parkingList.get(i);
 
-            if(bean.getPolygon().contains(point)){
+            if(parkingList.get(i).getPolygon().contains(point)){
 //                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
 
+                parkingBean = parkingList.get(i);
 
                 for (int j = 0; j < listMarker.size(); j ++){
                     listMarker.get(j).remove();
@@ -609,18 +642,18 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     listMarker.clear();
                 }
 
-                pid = bean.getId();
-                et_dot_name.setText(bean.getName());
-                school_id = bean.getSchool_id();
-                tv_school_name.setText(bean.getSchool_name());
-                polygon = bean.getPolygon();
+                pid = parkingBean.getId();
+                et_dot_name.setText(parkingBean.getName());
+                school_id = parkingBean.getSchool_id();
+                tv_school_name.setText(parkingBean.getSchool_name());
+                polygon = parkingBean.getPolygon();
                 list = polygon.getPoints();
 
                 list.remove(list.size()-1);
 
                 json_LngLat = JsonUtil.objectToJson(list);
 
-                Log.e("onMapClick===4", list.size()+"==="+json_LngLat);
+                Log.e("onMapClick===4", list.size()+"==="+parkingBean.getName()+"==="+json_LngLat);
 
                 for (int j = 0; j < list.size(); j ++){
                     MarkerOptions centerMarkerOption = new MarkerOptions().position(list.get(j)).icon(successDescripter2);
