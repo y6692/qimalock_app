@@ -1062,6 +1062,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_electricity = customView.findViewById(R.id.tv_electricity);
         tv_lock_status = customView.findViewById(R.id.tv_lock_status);
         LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_get_state = customView.findViewById(R.id.ll_get_state);
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
@@ -1081,7 +1082,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_status.setText("");
         tv_bad_reason.setText("损坏部位："+bad_reason);      //TODO 损坏部位没有使用后台该车最新的坏车原因
         tv_bad_reason2.setText("损坏部位："+bad_reason);
-
 
 
         if(can_finish_order==1){
@@ -1134,6 +1134,23 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         popupwindow.setOutsideTouchable(false);
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+
+
+        ll_get_state.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在唤醒车锁");
+                    loadingDialog.show();
+                }
+
+                isOpenLock = false;
+                connect();
+
+//                getLockStatus();
+            }
+        });
 
 
 
@@ -1231,7 +1248,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
         tv_electricity = customView.findViewById(R.id.tv_electricity);
 
-        lock_switcher = customView.findViewById(R.id.lock_switcher);
+//        lock_switcher = customView.findViewById(R.id.lock_switcher);
+        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_close_lock = customView.findViewById(R.id.ll_close_lock);
         LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
         LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
@@ -1280,18 +1299,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad2.setVisibility(View.GONE);
         }
 
-        if(lock_status==2){
-            lock_switcher.setChecked(true);
-        }else{
-            lock_switcher.setChecked(false);
-        }
+//        if(lock_status==2){
+//            lock_switcher.setChecked(true);
+//        }else{
+//            lock_switcher.setChecked(false);
+//        }
 
 
         Log.e("initmPopup===2", lock_status+"==="+can_finish_order+"==="+status);
 
 
 
-        lock_switcher.setOnClickListener(this);     //TODO 行运兔电单车的弹窗开关锁按钮无效
+//        lock_switcher.setOnClickListener(this);     //TODO 行运兔电单车的弹窗开关锁按钮无效
+        ll_open_lock.setOnClickListener(this);
+        ll_close_lock.setOnClickListener(this);
         ll_power_exchange.setOnClickListener(this);
         ll_car_search.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
@@ -1498,7 +1519,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
         TextView tv_electricity = customView.findViewById(R.id.tv_electricity);
 
-        lock_switcher = customView.findViewById(R.id.lock_switcher);
+//        lock_switcher = customView.findViewById(R.id.lock_switcher);
+        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_close_lock = customView.findViewById(R.id.ll_close_lock);
         LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
         LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
@@ -1529,11 +1552,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad.setVisibility(View.GONE);
         }
 
-        if(lock_status==2){
-            lock_switcher.setChecked(true);
-        }else{
-            lock_switcher.setChecked(false);
-        }
+//        if(lock_status==2){
+//            lock_switcher.setChecked(true);
+//        }else{
+//            lock_switcher.setChecked(false);
+//        }
 
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
@@ -1584,7 +1607,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            }
 //        };
 
-        lock_switcher.setOnClickListener(this);
+//        lock_switcher.setOnClickListener(this);
+        ll_open_lock.setOnClickListener(this);
+        ll_close_lock.setOnClickListener(this);
         ll_power_exchange.setOnClickListener(this);
         ll_car_search.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
@@ -2525,7 +2550,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.mainUI_getDotLayout:
 //                UIHelper.goToAct(context, DotSelectActivity.class);
-//                UIHelper.goToAct(context, GetDotActivity.class);
+                UIHelper.goToAct(context, GetDotActivity.class);
                 break;
 
             case R.id.mainUI_testXALayout:
@@ -2588,7 +2613,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.ll_open_lock:
-                open_lock();
+                if(carmodel_id==1){
+                    open_lock();
+                }else{
+                    unlock();
+                }
+
+                break;
+
+            case R.id.ll_close_lock:
+                lock();
                 break;
 
             case R.id.ll_end_order:
@@ -2708,45 +2742,47 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 startActivityForResult(enableBtIntent, 188);
             } else {
 
-                Log.e("order===2",  isLookPsdBtn + "===" + type + "===" + isMac);
+                Log.e("order===2",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
 
                 isOpenLock = true;
 
-//                if(!isLookPsdBtn){   //没连上
-//
-//                    BleManager.getInstance().init(activity.getApplication());
-//                    BleManager.getInstance()
-//                            .enableLog(true)
-//                            .setReConnectCount(10, 5000)
-//                            .setConnectOverTime(timeout)
-//                            .setOperateTimeout(10000);
-//
-////                    if(isMac){
-////                        connect();
-////                    }else{
-////                        setScanRule();
-////                        scan2();
-////                    }
-//
-//                    connect();
-//                }else{
-////                    BaseApplication.getInstance().getIBLE().openLock();
-//
-//                    if(token==null || "".equals(token)){
-//                        getBleToken();
+                if("10".equals(type)){
+                    BleManager.getInstance().init(activity.getApplication());
+                    BleManager.getInstance()
+                            .enableLog(true)
+                            .setReConnectCount(0, 5000)
+//                            .setOperateTimeout(10000)
+                            .setConnectOverTime(timeout);
+
+                    connect();
+                }else{
+                    if(!isLookPsdBtn){   //没连上
+
+                        BleManager.getInstance().init(activity.getApplication());
+                        BleManager.getInstance()
+                                .enableLog(true)
+                                .setReConnectCount(0, 5000)
+//                                .setOperateTimeout(10000)
+                                .setConnectOverTime(timeout);
+
+//                    if(isMac){
+//                        connect();
 //                    }else{
-//                        openLock();
+//                        setScanRule();
+//                        scan2();
 //                    }
-//                }
 
-                BleManager.getInstance().init(activity.getApplication());
-                BleManager.getInstance()
-                        .enableLog(true)
-                        .setReConnectCount(10, 5000)
-                        .setConnectOverTime(timeout)
-                        .setOperateTimeout(10000);
+                        connect();
+                    }else{
+//                    BaseApplication.getInstance().getIBLE().openLock();
 
-                connect();
+                        if(token==null || "".equals(token)){
+                            getBleToken();
+                        }else{
+                            openLock();
+                        }
+                    }
+                }
 
             }
         }else if ("4".equals(type) || "8".equals(type)) {
@@ -3034,8 +3070,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     }else{
                         Toast.makeText(context,"蓝牙连接失败，重启软件试试吧！",Toast.LENGTH_LONG).show();
 //                        car_notification(isOpenLock?1:isAgain?2:isEndBtn?3:0, 2, 0);      //TODO
-                        if(popupwindow!=null){
-                            popupwindow.dismiss();
+//                        if(popupwindow!=null){
+//                            popupwindow.dismiss();
+//                        }
+
+                        if("10".equals(type)){
+//                          BleManager.getInstance().disconnect();
+                            BleManager.getInstance().disconnectAllDevice();
+//                          BleManager.getInstance().destroy();
+
+                            isOpenLock=false;
+                            connect();
                         }
                     }
                 }
@@ -3082,7 +3127,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         Log.e("onCharacteristicChanged", "===0");
 
-
                         byte[] x = new byte[16];
                         System.arraycopy(data, 0, x, 0, 16);
 
@@ -3112,7 +3156,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 openLock();
                             }else{
                                 getLockStatus();
-//                                getBattery();
                             }
 
                         }else if(s1.startsWith("0502")){    //开锁
@@ -3226,7 +3269,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             public void onDisConnected(boolean isActiveDisConnected, BleDevice bleDevice, BluetoothGatt gatt, int status) {
 
                 isLookPsdBtn = false;
-                Log.e("connect=onDisConnected", "==="+isActiveDisConnected);
+                Log.e("connect=onDisConnected", type+"==="+isActiveDisConnected);
+
+//                if("10".equals(type)){
+////                    BleManager.getInstance().disconnect();
+//                    BleManager.getInstance().disconnectAllDevice();
+////                    BleManager.getInstance().destroy();
+//
+//                    isOpenLock=false;
+//                    connect();
+//                }
+
+//                ToastUtil.showMessageApp(context,"蓝牙连接已断开");
 
 //                    if (isActiveDisConnected) {
 //                        Toast.makeText(MainActivity.this, getString(R.string.active_disconnected), Toast.LENGTH_LONG).show();

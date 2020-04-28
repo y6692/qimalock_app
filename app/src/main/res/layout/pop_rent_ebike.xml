@@ -197,6 +197,7 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/ll_lock_switcher"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -213,6 +214,7 @@
                     <!--/>-->
 
                 <Switch
+
                     android:id="@+id/lock_switcher"
                     android:layout_width="50dp"
                     android:layout_height="30dp"
@@ -226,6 +228,62 @@
                     android:layout_marginTop="2dp"
                     android:gravity="center"
                     android:text="关    开"
+                    android:textSize="14sp"
+                    android:textColor="@color/tx_black"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_open_lock"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:onClick="btn"
+                android:layout_weight="1">
+
+                <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/open_lock_icon"
+                android:gravity="center"
+                />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:text="开锁"
+                    android:textSize="14sp"
+                    android:textColor="@color/tx_black"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_close_lock"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:onClick="btn"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/close_lock_icon"
+                    android:gravity="center"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:text="关锁"
                     android:textSize="14sp"
                     android:textColor="@color/tx_black"
                     />

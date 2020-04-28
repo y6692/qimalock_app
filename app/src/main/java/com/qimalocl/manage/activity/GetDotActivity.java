@@ -400,7 +400,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         submitLayout = (LinearLayout)findViewById(R.id.getDot_submitLayout);
 
         ll_top.setVisibility(View.GONE);
-        myLocationLayout.setVisibility(View.GONE);
+//        myLocationLayout.setVisibility(View.GONE);
         confirmLayout.setVisibility(View.GONE);
         isUpdate = false;
         isAdd = false;
@@ -632,7 +632,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
                 rightBtn.setEnabled(false);
                 ll_top.setVisibility(View.VISIBLE);
-                myLocationLayout.setVisibility(View.VISIBLE);
+//                myLocationLayout.setVisibility(View.VISIBLE);
                 confirmLayout.setVisibility(View.VISIBLE);
 
                 isUpdate = true;
@@ -683,7 +683,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             case R.id.ll_rightBtn:
                 rightBtn.setEnabled(false);
                 ll_top.setVisibility(View.VISIBLE);
-                myLocationLayout.setVisibility(View.VISIBLE);
+//                myLocationLayout.setVisibility(View.VISIBLE);
                 confirmLayout.setVisibility(View.VISIBLE);
 
                 isUpdate = false;
@@ -1117,9 +1117,9 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                                                                     list.add(latLng);
                                                                 }
 
-//                                                                if("3".equals(jsonObject.getString("name"))){
-//                                                                    Log.e("gda===parking5", list.size()+"==="+list);
-//                                                                }
+                                                                if("江理工中德宿舍".equals(jsonObject.getString("name"))){
+                                                                    Log.e("gda===parking5", list.size()+"==="+list);
+                                                                }
 
                                                                 Polygon polygon = null;
                                                                 PolygonOptions pOption = new PolygonOptions();
@@ -1376,7 +1376,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
         rightBtn.setEnabled(true);
         ll_top.setVisibility(View.GONE);
-        myLocationLayout.setVisibility(View.GONE);
+//        myLocationLayout.setVisibility(View.GONE);
         confirmLayout.setVisibility(View.GONE);
 
         isUpdate = false;
@@ -1388,168 +1388,6 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
         parking();
     }
-
-    void parking_ranges(final double latitude, final double longitude){
-
-        RequestParams params = new RequestParams();
-        params.put("latitude", latitude);
-        params.put("longitude", longitude);
-
-        HttpHelper.get2(context, Urls.parking_ranges, params, new TextHttpResponseHandler() {
-            @Override
-            public void onStart() {
-//                if(!isHidden){
-//                    onStartCommon("正在加载");
-//                }
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                onFailureCommon("bf===parking_ranges", throwable.toString());
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-
-                Log.e("main_b===parking_r0", "==="+responseString);
-
-                final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (1==1 || result.getFlag().equals("Success")) {
-                                final JSONArray jsonArray = new JSONArray(result.getData());
-
-                                Log.e("main_b===parking_r1", jsonArray.length()+"==="+jsonArray);
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try{
-
-                                            for (Marker marker : bikeMarkerList){
-                                                if (marker != null){
-                                                    marker.remove();
-                                                }
-                                            }
-                                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                                                bikeMarkerList.clear();
-                                            }
-
-//                                            for ( int i = 0; i < pOptionsNear.size(); i++){
-//                                                pOptionsNear.get(i).remove();
-//                                            }
-//
-//                                            if (!pOptionsNear.isEmpty() || 0 != pOptionsNear.size()){
-//                                                pOptionsNear.clear();
-//                                            }
-//
-//                                            if (0 == jsonArray.length()){
-//                                                ToastUtils.show("附近没有停车点");
-//                                            }else {
-//                                                for (int i = 0; i < jsonArray.length(); i++) {
-//                                                    List<LatLng> list = new ArrayList<>();
-//                                                    List<LatLng> list2 = new ArrayList<>();
-//                                                    int flag=0;
-//
-//                                                    JSONArray jsonArray2 = new JSONArray(jsonArray.getJSONObject(i).getString("ranges"));;
-//                                                    JSONObject jsonObject = new JSONObject(jsonArray.getJSONObject(i).getString("parking"));
-//
-//                                                    for (int j = 0; j < jsonArray2.length(); j++) {
-//                                                        LatLng latLng = new LatLng(Double.parseDouble(jsonArray2.getJSONObject(j).getString("latitude")), Double.parseDouble(jsonArray2.getJSONObject(j).getString("longitude")));
-//
-//                                                        flag=0;
-//                                                        list.add(latLng);
-//                                                    }
-//
-////                                                    Log.e("main_b===schoolRange3", "==="+list.size());
-//
-//                                                    Polygon polygon = null;
-//                                                    PolygonOptions pOption = new PolygonOptions();
-//
-//                                                    pOption.addAll(list);
-//
-//                                                    polygon = aMap.addPolygon(pOption
-//                                                            .strokeWidth(2)
-//                                                            .strokeColor(Color.argb(255, 0, 135, 255))
-//                                                            .fillColor(Color.argb(77, 0, 173, 255)));
-//
-//
-//                                                    LatLng latLng = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
-//                                                    marker_park_Option.title(jsonObject.getString("name")).position(latLng);
-//                                                    Marker bikeMarker = aMap.addMarker(marker_park_Option);
-//                                                    bikeMarkerList.add(bikeMarker);
-//                                                    bikeMarker.setDraggable(true);
-//
-//                                                    pOptionsNear.add(polygon);
-////                                                      isContainsList.add(polygon.contains(myLocation));
-//
-//                                                }
-//
-//                                                Log.e("main_b===parking_r4", type+"==="+unauthorized_code+"==="+isContainsList.size()+"==="+isContainsList.contains(true)+"==="+pOptions.size()+"==="+pOptions);
-//
-//                                                View view = View.inflate(context, R.layout.marker_info_layout, null);
-//                                                iv_marker = view.findViewById(R.id.iv);
-//                                                if(unauthorized_code==6){
-//                                                    if("10".equals(type)){
-//                                                        iv_marker.setImageResource(R.drawable.marker3);
-//                                                    }else{
-//                                                        iv_marker.setImageResource(R.drawable.marker2);
-//                                                    }
-//                                                }else{
-//                                                    iv_marker.setImageResource(R.drawable.marker1);
-//                                                }
-//                                                tv_car_count = view.findViewById(R.id.tv_car_count);
-//                                                tv_car_count.setText((car_count>99?99:car_count)+"辆");
-//                                                centerMarkerOption = new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromView(view));
-//
-//                                                if(centerMarker!=null){
-//                                                    centerMarker.remove();
-//                                                }
-//
-//                                                if(isHidden) return;
-//                                                centerMarker = aMap.addMarker(centerMarkerOption);
-//                                                centerMarker.setDraggable(true);
-//
-//                                            }
-//
-//                                            Log.e("main_b===parking_r5", isContainsList.size()+"==="+isContainsList.contains(true)+"==="+pOptions.size()+"==="+pOptions);
-//
-//                                            if (loadingDialog != null && loadingDialog.isShowing()){
-//                                                loadingDialog.dismiss();
-//                                            }
-                                        }catch (Exception e){
-                                            if (loadingDialog != null && loadingDialog.isShowing()){
-                                                loadingDialog.dismiss();
-                                            }
-                                        }
-                                    }
-                                }).start();
-
-                            }else {
-                                if (loadingDialog != null && loadingDialog.isShowing()){
-                                    loadingDialog.dismiss();
-                                }
-                                ToastUtil.showMessageApp(context,result.getMsg());
-                            }
-                        }catch (Exception e){
-
-                            if (loadingDialog != null && loadingDialog.isShowing()){
-                                loadingDialog.dismiss();
-                            }
-                        }
-
-//                        isInitNearby = false;
-                    }
-                });
-
-            }
-        });
-    }
-
-
-
 
     @Override
     public void onResume() {
@@ -1925,79 +1763,6 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
 
 
-    protected void submit(){
-        Log.e("main===submit",json_LngLat+"==="+referLatitude+"==="+referLongitude);
-
-        RequestParams params = new RequestParams();
-        params.put("lng_lat", json_LngLat);
-        params.put("area_name", et_name.getText().toString());
-        params.put("type", carType);
-        HttpHelper.post(context, Urls.addSchoolRange, params, new TextHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                if (loadingDialog != null && !loadingDialog.isShowing()) {
-                    loadingDialog.setTitle("正在提交");
-                    loadingDialog.show();
-                }
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-                UIHelper.ToastError(context, throwable.toString());
-            }
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.e("submit===","==="+responseString);
-                try {
-                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-                    if (result.getFlag().equals("Success")) {
-
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
-                        }
-
-                        List<LatLng> list2 = new ArrayList<>();
-
-//                        json_LngLat = JsonUtil.jsonToObject().objectToJson(list);
-
-                        for (int j = 0; j < list.size(); j ++){
-//                            LatLng latLng = new LatLng(list.get(j).getLat(), list.get(j).getLng());
-                            list2.add(list.get(j));
-                        }
-//                        for (int j = 0; j < json_LngLat.getJSONArray(i).length(); j ++){
-//                            JSONObject jsonObject = jsonArray.getJSONArray(i).getJSONObject(j);
-//                            LatLng latLng = new LatLng(Double.parseDouble(jsonObject.getString("latitude")),
-//                                    Double.parseDouble(jsonObject.getString("longitude")));
-//                            list2.add(latLng);
-//                        }
-//                        Polygon polygon = null;
-                        PolygonOptions pOption = new PolygonOptions();
-                        pOption.addAll(list2);
-
-                        aMap.addPolygon(pOption.strokeWidth(2)
-                                .strokeColor(Color.argb(255, 0, 0, 255))
-                                .fillColor(Color.argb(255, 0, 0, 255)));
-
-                        ToastUtil.showMessageApp(context, "提交成功");
-
-
-//                        submitLayout.setEnabled(false);
-
-                    }else {
-                        ToastUtil.showMessageApp(context, result.getMsg());
-                    }
-                }catch (Exception e){
-
-                }
-                if (loadingDialog != null && loadingDialog.isShowing()){
-                    loadingDialog.dismiss();
-                }
-            }
-        });
-    }
-
     private final LocationListener locationListener = new LocationListener() {
 
         @Override
@@ -2178,75 +1943,6 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         myLocationStyle.strokeColor(android.R.color.transparent);
         aMap.setMyLocationStyle(myLocationStyle);
     }
-
-
-
-
-//    private void schoolrangeList(){
-//        RequestParams params = new RequestParams();
-//        HttpHelper.get(context, schoolrangeList, params, new TextHttpResponseHandler() {
-//            @Override
-//            public void onStart() {
-//                if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                    loadingDialog.setTitle("正在加载");
-//                    loadingDialog.show();
-//                }
-//            }
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                if (loadingDialog != null && loadingDialog.isShowing()){
-//                    loadingDialog.dismiss();
-//                }
-//                UIHelper.ToastError(context, throwable.toString());
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-//                try {
-//                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-//                    if (result.getFlag().equals("Success")) {
-//                        JSONArray jsonArray = new JSONArray(result.getData());
-//                        if (!isContainsList.isEmpty() || 0 != isContainsList.size()){
-//                            isContainsList.clear();
-//                        }
-//                        for (int i = 0; i < jsonArray.length(); i++) {
-//                            List<LatLng> list = new ArrayList<>();
-//                            for (int j = 0; j < jsonArray.getJSONArray(i).length(); j ++){
-//                                JSONObject jsonObject = jsonArray.getJSONArray(i).getJSONObject(j);
-//                                LatLng latLng = new LatLng(Double.parseDouble(jsonObject.getString("latitude")),
-//                                        Double.parseDouble(jsonObject.getString("longitude")));
-//                                list.add(latLng);
-//                            }
-//                            Polygon polygon = null;
-//                            PolygonOptions pOption = new PolygonOptions();
-//                            pOption.addAll(list);
-////                            polygon = aMap.addPolygon(pOption.strokeWidth(2)
-////                                    .strokeColor(Color.argb(160, 255, 0, 0))
-////                                    .fillColor(Color.argb(160, 255, 0, 0)));
-//
-////                            polygon = aMap.addPolygon(pOption.strokeWidth(2)
-////                                    .strokeColor(Color.argb(160, 0, 0, 255))
-////                                    .fillColor(Color.argb(160, 0, 0, 255)));
-//
-//                            polygon = aMap.addPolygon(pOption.strokeWidth(2)
-//                                    .strokeColor(Color.argb(255, 0, 255, 0))
-//                                    .fillColor(Color.argb(255, 0, 255, 0)));
-//
-//                            pOptions.add(polygon);
-//                            isContainsList.add(polygon.contains(myLocation));
-//                        }
-//                    }else {
-//                        ToastUtil.showMessageApp(context,result.getMsg());
-//                    }
-//                }catch (Exception e){
-//                }
-//                if (loadingDialog != null && loadingDialog.isShowing()){
-//                    loadingDialog.dismiss();
-//                }
-//            }
-//        });
-//    }
-
 
 
 

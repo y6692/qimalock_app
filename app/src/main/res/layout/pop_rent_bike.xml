@@ -172,8 +172,7 @@
             android:layout_marginBottom="34dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:onClick="btn"
-            android:weightSum="2">
+            android:onClick="btn">
 
 
             <LinearLayout
@@ -199,6 +198,35 @@
                     android:layout_marginTop="2dp"
                     android:gravity="center"
                     android:text="点击开锁"
+                    android:textSize="14sp"
+                    android:textColor="@color/tx_black"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_get_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:onClick="btn"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/open_lock_icon"
+                    android:gravity="center"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:text="获取状态"
                     android:textSize="14sp"
                     android:textColor="@color/tx_black"
                     />

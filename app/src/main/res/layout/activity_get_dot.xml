@@ -226,7 +226,7 @@
                         android:layout_height="32dp"
                         android:paddingLeft="6dp"
                         android:background="@drawable/shape_et_name"
-                        android:hint="请输入名称"
+                        android:hint="请输入电子围栏名称"
                         android:textSize="14sp"
                         />
                 </LinearLayout>
