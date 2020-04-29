@@ -598,7 +598,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         tvMsg.stop();
                     }
 
-                    dataSetAdapter.setData(list2);
+//                    dataSetAdapter.setData(list2);
+
+                    dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
+                        @Override
+                        protected String text(Sentence sentence) {
+//                          Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+
+                            if(sentence.getName()==null){
+                                return "";
+                            }else{
+                                return sentence.getName();
+                            }
+                        }
+                    };
+
                     tvMsg.setDataSetAdapter(dataSetAdapter);
 
 
@@ -634,18 +648,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     };
 
 
-    DataSetAdapter<Sentence> dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
-        @Override
-        protected String text(Sentence sentence) {
-//            Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
-
-            if(sentence.getName()==null){
-                return "";
-            }else{
-                return sentence.getName();
-            }
-        }
-    };
+    DataSetAdapter<Sentence> dataSetAdapter;
+//    DataSetAdapter<Sentence> dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
+//        @Override
+//        protected String text(Sentence sentence) {
+////            Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+//
+//            if(sentence.getName()==null){
+//                return "";
+//            }else{
+//                return sentence.getName();
+//            }
+//        }
+//    };
 
     private void openGPSSettings() {
         if (checkGPSIsOpen()) {

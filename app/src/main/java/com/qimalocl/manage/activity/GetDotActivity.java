@@ -722,6 +722,10 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                 isUpdate = false;
                 isAdd = true;
 
+                et_dot_name.setText("");
+                json_LngLat = "";
+                getSchoolList();
+
                 break;
 
             case R.id.ll_school_name:
@@ -1150,9 +1154,9 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                                                                     list.add(latLng);
                                                                 }
 
-                                                                if("江理工中德宿舍".equals(jsonObject.getString("name"))){
-                                                                    Log.e("gda===parking5", list.size()+"==="+list);
-                                                                }
+//                                                                if("江理工中德宿舍".equals(jsonObject.getString("name"))){
+//                                                                    Log.e("gda===parking5", list.size()+"==="+list);
+//                                                                }
 
                                                                 Polygon polygon = null;
                                                                 PolygonOptions pOption = new PolygonOptions();
@@ -1168,12 +1172,16 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                                                                 String name = jsonObject.getString("name");
                                                                 int school_id = jsonObject.getInt("school_id");
                                                                 String school_name = jsonObject.getString("school_name");
+                                                                String school_area = jsonObject.getString("school_area");
+                                                                if(!"".equals(school_area)){
+                                                                    school_area = "("+school_area+")";
+                                                                }
 
                                                                 ParkingBean parkingBean = new ParkingBean();
                                                                 parkingBean.setId(id);
                                                                 parkingBean.setName(name);
                                                                 parkingBean.setSchool_id(school_id);
-                                                                parkingBean.setSchool_name(school_name);
+                                                                parkingBean.setSchool_name(school_name+school_area);
                                                                 parkingBean.setPolygon(polygon);
 
                                                                 parkingList.add(parkingBean);

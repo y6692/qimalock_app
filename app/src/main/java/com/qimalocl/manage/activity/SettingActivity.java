@@ -139,10 +139,10 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-            if("https://testnewmapi.7mate.cn/api".equals(Urls.host2)){
-                tv_version.setText("测试版本"+info.versionName);
+            if("https://newmapi.7mate.cn/api".equals(Urls.host2)){
+                tv_version.setText("生产版本v"+info.versionName);
             }else{
-                tv_version.setText("生产版本"+info.versionName);
+                tv_version.setText("测试版本v"+info.versionName);
             }
 
         } catch (PackageManager.NameNotFoundException e) {

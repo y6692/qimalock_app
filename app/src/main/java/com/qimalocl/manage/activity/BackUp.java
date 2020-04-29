@@ -21,6 +21,8 @@ import com.qimalocl.manage.model.ResultConsel;
 import org.apache.http.Header;
 import org.json.JSONArray;
 
+//public static String host2 = HTTPS + "testnewmapi.7mate.cn/api";
+
 public class BackUp {
 }
 
