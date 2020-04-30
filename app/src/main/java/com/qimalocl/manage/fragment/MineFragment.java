@@ -24,6 +24,7 @@ import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,6 +153,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
     String role = "";
 
+    private boolean isLowPowerLayout;
+
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mine, null);
         unbinder = ButterKnife.bind(this, v);
@@ -194,6 +197,24 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        imageWith = (int)(getActivity().getWindowManager().getDefaultDisplay().getWidth() * 0.8);
 
         initView();
+
+        View view = getView();
+        if (view != null) {
+
+        }
+
+//        view.setFocusableInTouchMode(true);
+//        view.requestFocus();
+//        view.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+//                    Log.e("minef===Created", "===");
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
     }
 
     @Override
@@ -351,6 +372,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                superVip.setVisibility(View.VISIBLE);
 //            }
         }
+
+
 
     }
 
@@ -899,7 +922,27 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
             case R.id.personUI_lowPowerLayout:
 //                carbatteryaction_lowpower();
-                initmPopupWindowView();
+
+//                onStartCommon("正在加载");
+
+                Log.e("_lowPowerLayout===", isLowPowerLayout+"==="+popupwindow);
+
+//                if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                    loadingDialog.setTitle("正在加载");
+//                    loadingDialog.show();
+//                }
+
+
+//                if(!isLowPowerLayout){
+//                    isLowPowerLayout = true;
+//                    initmPopupWindowView();
+//                }
+
+//                if(popupwindow==null || (popupwindow!=null && !popupwindow.isShowing())){
+                if(popupwindow==null || !popupwindow.isShowing()){
+                    initmPopupWindowView();
+                }
+
                 break;
 
             case R.id.personUI_scrappedLayout:
@@ -913,6 +956,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 break;
 
             case R.id.popupWindow_back:
+                isLowPowerLayout = false;
                 popupwindow.dismiss();
                 break;
 
@@ -1109,6 +1153,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
         iv_popup_window_back.setOnClickListener(this);
 
+
+
         // 获取截图的Bitmap
         Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
         if (bitmap != null) {
@@ -1130,8 +1176,41 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
+//        popupwindow.setFocusable(false);// 这个很重要
+//        popupwindow.setOutsideTouchable(false);
+//        customView.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                Log.e("popup===onKey", "==="+keyCode);
+//
+//                if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+
+        isLowPowerLayout = false;
+
+        customView.setFocusable(true);
+        customView.setFocusableInTouchMode(true);
+        customView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.e("popup===onKey", "==="+keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                    dismissPopupWindow();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         Log.e("initmPopup===", "===");
 
+//        if (loadingDialog != null && loadingDialog.isShowing()) {
+//            loadingDialog.dismiss();
+//        }
 
 
     }

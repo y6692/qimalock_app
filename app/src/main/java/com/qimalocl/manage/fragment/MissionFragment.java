@@ -149,8 +149,6 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
                 while (true){
 
-
-
                     try {
                         Thread.sleep(30*1000);
                     } catch (InterruptedException e) {
@@ -394,8 +392,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-//                            Log.e("recycletask===1", result.getMeta()+"==="+responseString);
-
+                            Log.e("recycletask===1", result.getMeta()+"==="+responseString);
 
                             JSONArray array = new JSONArray(result.getData());
 

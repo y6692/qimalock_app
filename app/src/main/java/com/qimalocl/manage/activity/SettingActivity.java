@@ -158,12 +158,8 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
                 scrollToFinishActivity();
                 break;
             case R.id.settingUI_btn:
-
                 customDialog.show();
                 break;
-
-
-
         }
     }
 

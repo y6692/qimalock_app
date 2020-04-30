@@ -72,7 +72,7 @@ public class BaseActivity extends BaseFragmentActivity {
 			res.updateConfiguration(newConfig, res.getDisplayMetrics());
 		}
 
-		Log.e("ba===2", res+"==="+res.getConfiguration().fontScale);
+//		Log.e("ba===2", res+"==="+res.getConfiguration().fontScale);
 
 		return res;
 	}
