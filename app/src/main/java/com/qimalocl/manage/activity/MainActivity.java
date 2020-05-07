@@ -503,6 +503,8 @@ public class MainActivity extends BaseActivity{
     public void onDestroy() {
         super.onDestroy();
 
+        Log.e("main==onDestroy", "===");
+
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
             mReceiver = null;

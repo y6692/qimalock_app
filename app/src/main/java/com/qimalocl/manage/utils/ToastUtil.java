@@ -56,7 +56,7 @@ public class ToastUtil {
      * @param len
      */
     public static void showMessage(final Context context, final CharSequence msg, final int len) {
-        Log.e("showMessage===", "==="+msg);
+//        Log.e("showMessage===", "==="+msg);
 
         if (msg == null || msg.equals("")) {
             return;
@@ -65,7 +65,7 @@ public class ToastUtil {
             @Override
             public void run() {
                 synchronized (synObj) { //加上同步是为了每个toast只要有机会显示出来
-                    Log.e("showMessage===2", toast+"==="+msg);
+                    Log.e("showMessage===", toast+"==="+msg);
 
                     if (toast != null) {
                         //toast.cancel();

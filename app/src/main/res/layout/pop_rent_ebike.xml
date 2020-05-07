@@ -192,8 +192,7 @@
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:onClick="btn">
+            android:layout_centerHorizontal="true">
 
 
             <LinearLayout
@@ -203,7 +202,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <!--<ImageView-->
@@ -240,7 +238,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView
@@ -268,7 +265,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView
@@ -297,7 +293,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView
@@ -325,7 +320,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView
@@ -353,7 +347,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView
@@ -381,7 +374,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="btn"
                 android:layout_weight="1">
 
                 <ImageView

@@ -19,8 +19,8 @@ android {
         applicationId "com.qimalocl.manage"
         minSdkVersion 18
         targetSdkVersion 28
-        versionCode 202
-        versionName "2.0.2"
+        versionCode 203
+        versionName "2.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
 
@@ -29,6 +29,11 @@ android {
         ndk {
             abiFilters 'armeabi-v7a'
         }
+
+        dexOptions {
+            javaMaxHeapSize '4g'
+        }
+
     }
 
     signingConfigs {

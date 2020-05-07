@@ -1534,7 +1534,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                                     }
                                 });
 
-//							customBuilder.setMessage("是否绑定"+codenum+"到"+school_name+"？");
+//								customBuilder.setMessage("是否绑定"+codenum+"到"+school_name+"？");
                                 customDialog = customBuilder.create();
                                 customDialog.show();
 
