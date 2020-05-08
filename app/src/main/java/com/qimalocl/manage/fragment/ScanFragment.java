@@ -2208,7 +2208,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     });
 
-    private void cars(final boolean isFresh){
+    public void cars(final boolean isFresh){
 
         new Thread(new Runnable() {
             @Override
@@ -3521,6 +3521,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onWriteFailure(BleException exception) {
                 Log.e("getBleToken=onWriteFail", "==="+exception);
+
+                if("3".equals(type)){
+                    if(isOpenLock){
+                        unlock();
+                    }else{
+                        Toast.makeText(context,"蓝牙连接失败，重启软件试试吧！",Toast.LENGTH_LONG).show();
+                    }
+                }else{
+                    Toast.makeText(context,"蓝牙连接失败，重启软件试试吧！",Toast.LENGTH_LONG).show();
+                }
+
             }
         });
     }
@@ -3636,9 +3647,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                    loadingDialogWithHelp.dismiss();
 //                }
 
-                        if(popupwindow!=null){
-                            popupwindow.dismiss();
-                        }
+//                        if(popupwindow!=null){
+//                            popupwindow.dismiss();
+//                        }
 
                         Toast.makeText(context,"蓝牙连接失败，重启软件试试吧！",Toast.LENGTH_LONG).show();
                         closeLoadingDialog();
@@ -3660,7 +3671,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         Log.e("connectDeviceLP===", "Success==="+profile);
 
-                        getStateLP();
+                        if(isOpenLock){
+                            getStateLP();
+                        }else{
+                            queryOpenState();
+                        }
+//                        getStateLP();
                     }
                 });
 
@@ -3940,6 +3956,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         if("锁已开".equals(Code.toString(code))){
                             ToastUtil.showMessageApp(context,"锁已打开");
+                            tv_lock_status.setText("已开锁");
                         }
 
                         closeLoadingDialog();
@@ -4280,9 +4297,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             Log.e("mf===unlock1", carmodel_id+ "===" + type + "===" + codenum + "===" + responseString + "===" + result.data);
 
-                            ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
+                            if(result.getStatus_code()==200){
+                                ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
+                                tv_lock_status.setText("已开锁");
+                            }else{
+                                ToastUtil.showMessageApp(context,result.getMessage());
+                            }
 
-                            tv_lock_status.setText("已开锁");
 
 //                            popupwindow.dismiss();
 

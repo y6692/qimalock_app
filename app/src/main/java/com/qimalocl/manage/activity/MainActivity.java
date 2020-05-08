@@ -231,6 +231,7 @@ public class MainActivity extends BaseActivity{
 
         if(flag){
 //            purseFragment.user();
+            scanFragment.cars(true);
             missionFragment.initHttp();
             mineFragment.initHttp();
         }
