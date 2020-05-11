@@ -3599,8 +3599,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void openLock() {
         String s = new OpenLockTxOrder().generateString();
 
-//        s= s.substring(0, 18) + token + s.substring(26, 32);
-
         Log.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
