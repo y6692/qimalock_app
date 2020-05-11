@@ -3596,6 +3596,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         });
     }
 
+
     private void openLock() {
         String s = new OpenLockTxOrder().generateString();
 
