@@ -43,6 +43,19 @@ import com.qimalocl.manage.utils.SortComparator;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
+import com.tbit.tbitblesdk.Bike.TbitBle;
+import com.tbit.tbitblesdk.Bike.model.BikeState;
+import com.tbit.tbitblesdk.Bike.services.command.callback.StateCallback;
+import com.tbit.tbitblesdk.Bike.util.BikeUtil;
+import com.tbit.tbitblesdk.bluetooth.scanner.ScanBuilder;
+import com.tbit.tbitblesdk.bluetooth.scanner.ScannerCallback;
+import com.tbit.tbitblesdk.bluetooth.scanner.decorator.FilterNameCallback;
+import com.tbit.tbitblesdk.bluetooth.scanner.decorator.LogCallback;
+import com.tbit.tbitblesdk.bluetooth.scanner.decorator.NoneRepeatCallback;
+import com.tbit.tbitblesdk.protocol.Packet;
+import com.tbit.tbitblesdk.protocol.callback.PacketCallback;
+import com.tbit.tbitblesdk.protocol.callback.ResultCallback;
+import com.tbit.tbitblesdk.user.entity.W206State;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -129,6 +142,193 @@ public class DeviceListActivity extends MPermissionsActivity{
         });
         thread.start();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.e("dla===onResume", "==="+macList.size());
+
+        if(macList.size()>0){
+            macList.clear();
+            adapterList.clear();
+        }
+
+        mAdapter.notifyDataSetChanged();
+
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+        }
+        //蓝牙锁
+        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+
+        if (mBluetoothAdapter == null) {
+            ToastUtil.showMessageApp(context, "获取蓝牙失败");
+            return;
+        }
+        if (!mBluetoothAdapter.isEnabled()) {
+//            isPermission = false;
+//            closeLoadingDialog2();
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 188);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+//                    scanDevice();
+                    scanDevice2();
+                }
+            }, 500);
+        }
+    }
+
+    void scanDevice2() {
+//              TbitBle.initialize(MainActivity.this, new MyProtocolAdapter());
+        TbitBle.initialize(context, new SecretProtocolAdapter());
+
+        // 添加装饰器
+        // 方式一：
+        // 过滤设备名字的装饰器
+////      FilterNameCallback filterNameCallback = new FilterNameCallback(DEVICE_NAME, scannerCallback);
+//        FilterNameCallback filterNameCallback = new FilterNameCallback("[DD-EBIKE]", scannerCallback);
+//        // 确保结果非重复的装饰器
+//        NoneRepeatCallback noneRepeatCallback = new NoneRepeatCallback(filterNameCallback);
+//        // 收集日志的装饰器，这个最好放在最外层包裹
+//        LogCallback logCallback = new LogCallback(noneRepeatCallback);
+//
+//
+//
+//        // 方式二：(与上述效果相同)
+//        ScanBuilder builder = new ScanBuilder(scannerCallback);
+//        ScannerCallback decoratedCallback = builder
+//                .setFilter("[DD-EBIKE]")
+//                .setRepeatable(false)
+//                .setLogMode(true)
+//                .build();
+//
+//        // 开始扫描(目前同一时间仅支持启动一个扫描),返回状态码
+//        int code = TbitBle.startScan(decoratedCallback, 10000);
+
+//        int code = TbitBle.startScan(scannerCallback, 10000);
+//
+//        machineId = "003486809";    //===CGFDV0ETMGTWGHUB
+
+        TbitBle.connect("003486809", "83869c8326fb65283df234855ce3c481a0d3227799bc15be8ac76a0eece6362a", new ResultCallback() {
+            @Override
+            public void onResult(int resultCode) {
+                // 连接回应
+                Log.e("connect===onResult", resultCode+"===");
+
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //// 解锁
+                        TbitBle.unlock(new ResultCallback() {
+                            @Override
+                            public void onResult(int resultCode) {
+                                // 解锁回应
+
+                                Log.e("unlock===onResult", resultCode+"===");
+                            }
+                        });
+                    }
+                });
+
+//
+//// 上锁
+//            TbitBle.lock(new ResultCallback() {
+//                @Override
+//                public void onResult(int resultCode) {
+//                    // 上锁回应
+//                }
+//            });
+
+
+            }
+        }, new StateCallback() {
+            @Override
+            public void onStateUpdated(BikeState bikeState) {
+                Log.e("connect=onStateUpdated", bikeState+"===");
+
+
+                // 连接成功状态更新
+                // 通过车辆状态获取设备特定信息
+                W206State w206State = (W206State) TbitBle.getConfig().getResolver().resolveCustomState(bikeState);
+            }
+        });
+    }
+
+    ScannerCallback scannerCallback = new ScannerCallback() {
+        @Override
+        public void onScanStart() {
+            Log.e("ma===", "onScanStart: ");
+        }
+
+        @Override
+        public void onScanStop() {
+            Log.e("ma===", "onScanStop: ");
+        }
+
+        @Override
+        public void onScanCanceled() {
+            Log.e("ma===", "onScanCanceled: ");
+        }
+
+        @Override
+        public void onDeviceFounded(BluetoothDevice bluetoothDevice, int i, byte[] bytes) {
+
+            Log.e("ma===onDeviceFounded", bluetoothDevice+"==="+bytes+"==="+TbitBle.getBleConnectionState());
+
+            String machineId = BikeUtil.resolveMachineIdByAdData(bytes);
+
+
+
+            if (!TextUtils.isEmpty(machineId)) {
+//                        showLog("扫描到设备: " + bluetoothDevice.getAddress()+ " | " + machineId);
+                Log.e("ma===onDeviceFounded1", machineId+"==="+bluetoothDevice.getName()+"==="+bluetoothDevice.getAddress()+"==="+bluetoothDevice.getUuids());
+
+
+//                TbitBle.commonCommand((byte)0x03, (byte)0x02, new Byte[]{0x01}, new ResultCallback() {
+//                    @Override
+//                    public void onResult(int resultCode) {
+//                        // 发送状态回复
+//                        Log.e("connect===onResult", resultCode+"===");
+//                    }
+//                }, new PacketCallback() {
+//                    @Override
+//                    public void onPacketReceived(Packet packet) {
+//                        // 收到packet回复
+//                        Log.e("connect=onPacketRec", packet+"===");
+//                    }
+//                });
+
+//                003486809===CGFDV0ETMGTWGHUB
+                machineId = "003486809";    //===CGFDV0ETMGTWGHUB
+
+                TbitBle.connect(machineId, "83869c8326fb65283df234855ce3c481a0d3227799bc15be8ac76a0eece6362a", new ResultCallback() {
+                    @Override
+                    public void onResult(int resultCode) {
+                        // 连接回应
+                        Log.e("connect===onResult", resultCode+"===");
+                    }
+                }, new StateCallback() {
+                    @Override
+                    public void onStateUpdated(BikeState bikeState) {
+                        Log.e("connect=onStateUpdated", bikeState+"===");
+
+
+                        // 连接成功状态更新
+                        // 通过车辆状态获取设备特定信息
+                        W206State w206State = (W206State) TbitBle.getConfig().getResolver().resolveCustomState(bikeState);
+                    }
+                });
+
+            }
+        }
+    };
 
     private void initWidget() {
         parseLeAdvData = new ParseLeAdvData();
@@ -218,7 +418,7 @@ public class DeviceListActivity extends MPermissionsActivity{
             public void onLeScan(BleDevice device) {
                 super.onLeScan(device);
 
-                Log.e("dla===onLeScan", type+"==="+device.getName()+"==="+device.getMac()+"==="+macList.contains(device.getMac())+"==="+macList.contains("03:92:63:60:9B:3C"));
+                Log.e("dla===onLeScan", type+"==="+device.getName()+"==="+device.getMac()+"==="+device.getDevice()+"==="+macList.contains(device.getMac())+"==="+macList.contains("03:92:63:60:9B:3C"));
 
 //                if (!bluetoothDeviceList.contains(device)){
 //                    bluetoothDeviceList.add(device);
@@ -274,7 +474,9 @@ public class DeviceListActivity extends MPermissionsActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        BleManager.getInstance().cancelScan();
+//        BleManager.getInstance().cancelScan();
+
+        TbitBle.destroy();
 
         Log.e("dla===onDestroy", "===");
 
@@ -295,52 +497,7 @@ public class DeviceListActivity extends MPermissionsActivity{
         handler.removeCallbacksAndMessages(null);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-
-
-        Log.e("dla===onResume", "==="+macList.size());
-
-        if(macList.size()>0){
-            macList.clear();
-            adapterList.clear();
-
-
-        }
-
-        mAdapter.notifyDataSetChanged();
-
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
-        }
-        //蓝牙锁
-        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        if (mBluetoothAdapter == null) {
-            ToastUtil.showMessageApp(context, "获取蓝牙失败");
-            return;
-        }
-        if (!mBluetoothAdapter.isEnabled()) {
-//            isPermission = false;
-//            closeLoadingDialog2();
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, 188);
-        } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    scanDevice();
-                }
-            }, 500);
-        }
-
-
-
-    }
 
 
     @Override

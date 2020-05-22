@@ -2336,7 +2336,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                     Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
                                                     .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
 
-                                        }else if(lock_id==8){
+                                        }else if(lock_id==8 || lock_id==11){
                                             bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
                                                     Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
                                                     .icon(bean.getLevel()==1?bikeDescripter_tbt_green:bean.getLevel()==2?bikeDescripter_tbt_yellow:bean.getLevel()==3?bikeDescripter_tbt_red:bean.getLevel()==4?bikeDescripter_tbt_blue:bikeDescripter_tbt_brown);
@@ -2848,8 +2848,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ClientManager.getClient().disconnect(m_nowMac);
             ClientManager.getClient().disconnect(m_nowMac);
 
-            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
-            ClientManager.getClient().unnotifyClose(m_nowMac, mCloseListener);
+//            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
+//            ClientManager.getClient().unnotifyClose(m_nowMac, mCloseListener);
 //            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener2);
 
         }else if("4".equals(type) || "8".equals(type)){
@@ -2877,6 +2877,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        lock_no = "GpDTxe7<a";
 
 //        initParams();
+
+        Log.e("open_lock===",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
 
         m_myHandler.post(new Runnable() {
             @Override
@@ -2921,7 +2923,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             BleManager.getInstance()
                                     .enableLog(true)
                                     .setReConnectCount(0, 5000)
-//                            .setOperateTimeout(10000)
+//                                  .setOperateTimeout(10000)
                                     .setConnectOverTime(timeout);
 
                             connect();
@@ -3768,6 +3770,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     }else{
                         isLookPsdBtn = false;
 
+                        ToastUtil.showMessageApp(context,"蓝牙连接已断开");
 //                        ToastUtil.showMessageApp(context,"设备断开连接");
                     }
 
@@ -3807,11 +3810,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        SharedPreferencesUrls.getInstance().putString("tempStat","1");
 //                    }
 
-                    queryOpenState();
+                    ToastUtil.showMessageApp(context,"锁已关闭");
+                    tv_lock_status.setText("已关锁");
 
+//                    queryOpenState();
                     getBleRecord2();
-
-
 
 //                    ClientManager.getClient().disconnect(m_nowMac);
 //                    ClientManager.getClient().unnotifyClose(m_nowMac, mCloseListener);
@@ -3995,6 +3998,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         }
 
+//                        getBleRecord();
                         closeLoadingDialog();
                     }
                 });
@@ -4065,6 +4069,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             openBleLock(null);
 
+
+
                         }catch (Exception e){
                             closeLoadingDialog();
                         }
@@ -4106,13 +4112,31 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             public void onResponseSuccess() {
                 Log.e("openLock===Success", "===");
 
-                queryOpenState();
+//                m_myHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                    }
+//                }, 2000);
 
-                getBleRecord();
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
 
-                closeLoadingDialog();
+//                        queryOpenState();
+                        ToastUtil.showMessageApp(context,"锁已打开");
 
-                isFinish = true;
+                        tv_lock_status.setText("已开锁");
+
+                        getBleRecord();
+
+                        closeLoadingDialog();
+
+                        isFinish = true;
+                    }
+                });
+
+
 
 //                ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
 
