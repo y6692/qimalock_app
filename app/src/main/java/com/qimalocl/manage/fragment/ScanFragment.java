@@ -2143,21 +2143,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                    ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
 
                     if(!isLookPsdBtn){
-//                        SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
-//                                .searchBluetoothLeDevice(0)
-//                                .build();
-//
-//
-//                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                            Log.e("usecar===1", "===");
-//
-//                            break;
-//                        }
-//
-//
-//                        ClientManager.getClient().search(request, mSearchResponse);
+                        SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
+                                .searchBluetoothLeDevice(0)
+                                .build();
 
-                        connectDeviceLP();
+
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            Log.e("usecar===1", "===");
+
+                            break;
+                        }
+
+
+                        ClientManager.getClient().search(request, mSearchResponse);
+
+//                        connectDeviceLP();
                         ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
                         ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
 
@@ -3717,7 +3717,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         ClientManager.getClient().stopSearch();
 
-//                        connectDeviceLP();
+                        connectDeviceLP();
 //
 //                        ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
                     }
