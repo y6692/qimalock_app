@@ -2848,6 +2848,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ClientManager.getClient().disconnect(m_nowMac);
             ClientManager.getClient().disconnect(m_nowMac);
 
+
 //            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
 //            ClientManager.getClient().unnotifyClose(m_nowMac, mCloseListener);
 //            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener2);
