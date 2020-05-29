@@ -2143,21 +2143,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                    ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
 
                     if(!isLookPsdBtn){
-                        SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
-                                .searchBluetoothLeDevice(0)
-                                .build();
+//                        SearchRequest request = new SearchRequest.Builder()      //duration为0时无限扫描
+//                                .searchBluetoothLeDevice(0)
+//                                .build();
+//
+//
+//                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                            Log.e("usecar===1", "===");
+//
+//                            break;
+//                        }
+//
+//
+//                        ClientManager.getClient().search(request, mSearchResponse);
 
-
-                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            Log.e("usecar===1", "===");
-
-                            break;
-                        }
-
-
-                        ClientManager.getClient().search(request, mSearchResponse);
-
-//                        connectDeviceLP();
+                        connectDeviceLP();
                         ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
                         ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
 
@@ -3623,12 +3623,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     //泺平===连接设备
     private void connectDeviceLP() {
         BleConnectOptions options = new BleConnectOptions.Builder()
-                .setConnectRetry(0)
-                .setConnectTimeout(timeout)
-                .setServiceDiscoverRetry(1)
-                .setServiceDiscoverTimeout(10000)
-                .setEnableNotifyRetry(1)
-                .setEnableNotifyTimeout(10000)
+                .setConnectRetry(4)
+                .setConnectTimeout(2000)
+//                .setConnectRetry(0)
+//                .setConnectTimeout(timeout)
+//                .setServiceDiscoverRetry(0)
+//                .setServiceDiscoverTimeout(10000)
+//                .setEnableNotifyRetry(0)
+//                .setEnableNotifyTimeout(10000)
                 .build();
 
         ClientManager.getClient().connect(m_nowMac, options, new IConnectResponse() {
@@ -3717,7 +3719,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         ClientManager.getClient().stopSearch();
 
-                        connectDeviceLP();
+//                        connectDeviceLP();
 //
 //                        ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
                     }
