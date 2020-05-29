@@ -70,7 +70,6 @@ public class Urls {
 	//低电数量接口
 	public static String carbatteryaction_lowpower = host2 + "/carbatteryaction/lowpower";
 
-
 	//维保统计接口
 	public static String carbadaction_count = host2 + "/carbadaction/count";
 	//	已回收 投放使用 已修好列表接口
