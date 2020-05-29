@@ -30,26 +30,28 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/bt0"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_button"
+            android:gravity="center"
+            android:text="物联锁"
+            android:textColor="#FD545B"
+            android:textSize="@dimen/sp18" />
+
+        <Button
             android:id="@+id/bt1"
             android:layout_width="match_parent"
             android:layout_height="42dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_button"
             android:gravity="center"
             android:text="SK_lock"
             android:textColor="#FD545B"
             android:textSize="@dimen/sp18"/>
 
-        <Button
-            android:visibility="gone"
-            android:id="@+id/bt1_2"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_button"
-            android:gravity="center"
-            android:text="物联锁入库_已改密钥密码"
-            android:textColor="#FD545B"
-            android:textSize="@dimen/sp18" />
+
 
         <Button
             android:id="@+id/bt2"

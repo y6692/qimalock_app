@@ -1507,7 +1507,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								Config.passwordnew = Config.passwordnew2;
 							}
 
-                            Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason);
+                            Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason+"==="+Config.newKey[0]+"==="+Config.passwordnew[0]);
 
                             if(isBindSchool){
 

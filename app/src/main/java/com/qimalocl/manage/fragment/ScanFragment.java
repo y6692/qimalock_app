@@ -2915,7 +2915,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         startActivityForResult(enableBtIntent, 188);
                     } else {
 
-                        Log.e("order===2",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
+                        Log.e("order===2",  m_nowMac+ "===" + isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
 
                         isOpenLock = true;
 
@@ -3211,7 +3211,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        loadingDialog.setTitle("正在连接");
 //        loadingDialog.show();
 
-        Log.e("connect===", carmodel_id+"==="+type+"==="+isLookPsdBtn);
+        Log.e("connect===", m_nowMac+"==="+carmodel_id+"==="+type+"==="+isLookPsdBtn);
 
 //        BleManager.getInstance().cancelScan();
 

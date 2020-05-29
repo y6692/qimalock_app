@@ -295,7 +295,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
-        titleText.setText("入库");
+        titleText.setText("锁信息");
         tvName.setText("锁名：" + name);
         tvAddress.setText("MAC地址：" + mac);
 
@@ -306,10 +306,11 @@ public class LockStorageTestActivity extends MPermissionsActivity {
             @Override
             public void onClick(View v) {
                 //修改密码
-                Log.e("ls2a===changeKeyBtn", "===");
+                Log.e("lsta===changeKeyBtn", "===");
 
                 hexStringToByteArray2(Config.keyMap.get(mac.replaceAll(":", "")));
 
+                Log.e("lsta===changeKeyBtn_1", "==="+Config.newKey);
 
                 //修改密钥
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
@@ -406,8 +407,6 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                     }
                 }, 2000);
 
-
-
             }
         });
 
@@ -417,8 +416,8 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 //        Config.key = Config.newKey2;
 //        Config.password = Config.passwordnew2;
 
-        hexStringToByteArray3(Config.keyMap.get(mac.replaceAll(":", "")));
-        Config.password = new byte[]{0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
+//        hexStringToByteArray3(Config.keyMap.get(mac.replaceAll(":", "")));
+//        Config.password = new byte[]{0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
 
         m_myHandler.postDelayed(new Runnable() {
             @Override
@@ -1515,7 +1514,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
             }else{
                 connect();
             }
-        }else{
+        }else if("5".equals(type) || "6".equals(type)){
             if(isConnect){
                 ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
                     @Override

@@ -30,6 +30,8 @@ import java.io.File;
  *
  */
 public class BaseApplication extends MultiDexApplication {
+	public static String mode = "";	//"t":改密钥密码模式 	"":正常模式
+
 	public  static Context context;
 	private static BaseApplication app;
 	private BLEService mBleService;

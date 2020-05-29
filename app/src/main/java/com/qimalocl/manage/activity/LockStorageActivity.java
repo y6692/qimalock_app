@@ -191,8 +191,6 @@ public class LockStorageActivity extends MPermissionsActivity {
     long serverTime;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -388,7 +386,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                     @Override
                     public void run() {
                         try {
-                            Log.e("lock_info===","==="+responseString);
+                            Log.e("lock_info===1","==="+responseString);
 
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -409,6 +407,8 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                                         Config.key = hexStringToByteArray(bean.getLock_secretkey());
                                         Config.password = hexStringToByteArray(bean.getLock_password());
+
+                                        Log.e("lock_info===2",type+"==="+bean.getLock_secretkey()+"==="+Config.key[0]+"==="+Config.key[1]+"==="+Config.password[0]+"==="+Config.password[1]);
 
                                         m_myHandler.postDelayed(new Runnable() {
                                             @Override

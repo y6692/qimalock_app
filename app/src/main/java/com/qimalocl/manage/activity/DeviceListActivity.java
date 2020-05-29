@@ -177,8 +177,8 @@ public class DeviceListActivity extends MPermissionsActivity{
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-//                    scanDevice();
-                    scanDevice2();
+                    scanDevice();
+//                    scanDevice2();
                 }
             }, 500);
         }
@@ -360,8 +360,12 @@ public class DeviceListActivity extends MPermissionsActivity{
 
                 Log.e("dla===", "==="+isChange);
 
-                IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
-//                IntentUtils.startActivity(DeviceListActivity.this, LockStorageTestActivity.class, bundle);
+                if("t".equals(BaseApplication.mode)){
+                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageTestActivity.class, bundle);
+                }else{
+                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+                }
+
 
 //                if(isChange){
 //                    BaseApplication.getInstance().getIBLE().setChangKey(true);
@@ -427,7 +431,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                    bleDeviceList.add(bleDevice);
 //                }
 
-                if (device.getName()!=null && !macList.contains(device.getMac()) && (("9".equals(type) && device.getName().startsWith("SNLock-") || (("5".equals(type) || "6".equals(type)) && device.getName().startsWith("bike:")))) ){
+                if (device.getName()!=null && !macList.contains(device.getMac()) && ( ("2".equals(type) && device.getName().startsWith("NokeLock")) || ("9".equals(type) && device.getName().startsWith("SNLock-")) || (("5".equals(type) || "6".equals(type)) && device.getName().startsWith("bike:")) ) ) {
 
                     Log.e("dla===onLeScan2", device+"==="+device.getMac()+"==="+adapterList.contains(device));
 
@@ -476,7 +480,7 @@ public class DeviceListActivity extends MPermissionsActivity{
         super.onDestroy();
 //        BleManager.getInstance().cancelScan();
 
-        TbitBle.destroy();
+//        TbitBle.destroy();
 
         Log.e("dla===onDestroy", "===");
 

@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -17,7 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fitsleep.sunshinelibrary.utils.IntentUtils;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.widget.CustomDialog;
@@ -28,10 +31,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class DeviceSelectActivity extends Activity {
+    @BindView(R.id.bt0)
+    Button bt0;
     @BindView(R.id.bt1)
     Button bt1;
-    @BindView(R.id.bt1_2)
-    Button bt1_2;
     @BindView(R.id.bt2)
     Button bt2;
     @BindView(R.id.bt3)
@@ -64,11 +67,29 @@ public class DeviceSelectActivity extends Activity {
         context = this;
 
         titleText.setText("入库");
+
+        if("t".equals(BaseApplication.mode)){
+            bt0.setVisibility(View.VISIBLE);
+        }else{
+            bt0.setVisibility(View.GONE);
+        }
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
     void back() {
         finish();
+    }
+
+    @OnClick(R.id.bt0)
+    void bt0() {
+        SharedPreferencesUrls.getInstance().putString("type", "2");
+
+        Intent intent = new Intent();
+        intent.setClass(context, DeviceListActivity.class);
+//        intent.putExtra("isChange",false);
+        intent.putExtra("title", bt0.getText());
+        startActivity(intent);
+//        UIHelper.goToAct(context, DeviceListActivity.class);
     }
 
     @OnClick(R.id.bt1)
@@ -83,16 +104,7 @@ public class DeviceSelectActivity extends Activity {
 //        UIHelper.goToAct(context, DeviceListActivity.class);
     }
 
-    @OnClick(R.id.bt1_2)
-    void bt1_2() {
 
-
-        Intent intent = new Intent();
-        intent.setClass(context, DeviceListActivity.class);
-//        intent.putExtra("isChange",false);
-        startActivity(intent);
-//        UIHelper.goToAct(context, DeviceListActivity.class);
-    }
 
     @OnClick(R.id.bt2)
     void bt2() {

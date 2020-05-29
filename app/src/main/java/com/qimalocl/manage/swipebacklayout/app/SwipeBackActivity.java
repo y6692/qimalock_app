@@ -81,7 +81,7 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 
 		Log.e("StringToByte===1", bytes+"==="+bytes[0]);
 
-		Config.key = bytes;
+//		Config.key = bytes;
 
 		return bytes;
 	}

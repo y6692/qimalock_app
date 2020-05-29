@@ -56,6 +56,14 @@ public class Config {
         keyMap.put("285688E4C7A4", "CD33DEC4CCE7CCA4D3CAAADE4D774FAB");
         keyMap.put("039263609B3C", "4733F500D3BF6F2CFE9EE76AE77EFEFB");
         keyMap.put("1F589CD575BA", "D69DF45515F7FEEA69C79C7FFB7D114A"); //1f589cd575ba
+
+        keyMap.put("26A715283910", "077EBC28583DF733871BFFE5FFFF4E61");
+        keyMap.put("3EFD7A3FADD3", "2E23772DFCAFFA4B2A7B7BC6F79327EC");
+        keyMap.put("0962DB63BF90", "F5333D23B5FFFF902B91DB61FABF9A22");
+        keyMap.put("3BA5A47E63A1", "ADE349624367BE801C3EE563CFD907E1");
+
+        keyMap.put("171269D2A8AC", "E1167B80DAAC6FBC917CE969F9FC117A");
+        keyMap.put("07E628FB22BC", "BC800E2250BE293A24D57DE09EF74A1D");
     }
 
 //    1106 022102423925    56 0D 23 00 34 3D 46 04 7D 46 06 79 56 7F 3B 7B
@@ -84,7 +92,7 @@ public class Config {
 //    public static byte[] key = {(byte)0x55, (byte)0x11, (byte)0x22, 0x01, (byte)0x2A, (byte)0x73, (byte)0x29, (byte)0x32, (byte)0x5A, (byte)0x69, (byte)0x23, (byte)0x56, (byte)0x54, 0x7F, 0x44, (byte)0x58};
 //    public static byte[] key = {(byte)0x56, (byte)0x55, (byte)0x23, 0x21, (byte)0x48, (byte)0x7D, (byte)0x26, (byte)0x59, (byte)0x60, (byte)0xB3, (byte)0x1B, (byte)0x5C, (byte)0x77, 0x7B, 0x27, (byte)0x5E};
 //    public static byte[] key = {(byte)0x56, (byte)0x6C, (byte)0x23, 0x00, (byte)0x35, (byte)0xBB, (byte)0xE3, (byte)0x82, (byte)0x7C, (byte)0xE4, (byte)0x07, (byte)0x78, (byte)0x56, 0x7B, 0x3A, (byte)0x7A};
-    public static byte[] key = {(byte)0x80, (byte)0xD7, (byte)0xCC, 0x01, (byte)0x6B, (byte)0xFB, (byte)0xEF, (byte)0x70, (byte)0xF7, (byte)0x3F, (byte)0xEF, (byte)0x36, (byte)0x7F, (byte)0xD3, 0x6A, (byte)0xFC};
+//    public static byte[] key = {(byte)0x80, (byte)0xD7, (byte)0xCC, 0x01, (byte)0x6B, (byte)0xFB, (byte)0xEF, (byte)0x70, (byte)0xF7, (byte)0x3F, (byte)0xEF, (byte)0x36, (byte)0x7F, (byte)0xD3, 0x6A, (byte)0xFC};
 
 
 //    80 D7 CC 01 6B FB EF 70 F7 3F EF 36 7F D3 6A FC
@@ -97,7 +105,10 @@ public class Config {
 //    public static byte[] newkey = {32,87,47,82,54,75,63,71,48,80,65,88,17,99,45,43};
 //    public static byte[] newKey = {74,50,90,95,30,21,61,17,80,46,99,94,4,73,1,15};
 //    public static byte[] newKey = {51,30,65,57,44,45,22,71,35,63,23,82,36,96,76,11};
-    public static byte[] password = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};   //物联锁原始密码
+//    public static byte[] password = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};   //物联锁原始密码
+
+    public static byte[] key = {30,85,45,80,52,73,60,70,45,75,60,86,10,90,40,42};   ////7MA密钥
+    public static byte[] password= {0x32, 0x30, 0x31, 0x37, 0x31, 0x35};    //7MA密码
 
 //    public static byte[] password = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
