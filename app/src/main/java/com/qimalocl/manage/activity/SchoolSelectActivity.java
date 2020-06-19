@@ -33,6 +33,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.zxing.lib.scaner.activity.ActivityScanerCode;
 
 import org.apache.http.Header;
@@ -165,7 +166,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
         school_name = bean.getName();
 
 
-        Log.e("ssa===onItemClick", bean.getId()+"==="+bean.getName());
+        LogUtil.e("ssa===onItemClick", bean.getId()+"==="+bean.getName());
 
         et_school.removeTextChangedListener(tw);
         et_school.setText(bean.getName());
@@ -177,7 +178,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 //        setResult(RESULT_OK, rIntent);
 //        scrollToFinishActivity();
 //
-//        Log.e("ssa===onItemClick2", bean.getId()+"==="+bean.getName());
+//        LogUtil.e("ssa===onItemClick2", bean.getId()+"==="+bean.getName());
     }
 
     @Override
@@ -213,7 +214,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
             case R.id.schoolSelectUI_btn:
 //                UIHelper.goToAct(context, ActivityScanerCode.class);
 
-                Log.e("ssa===onClick", school_id+"===");
+                LogUtil.e("ssa===onClick", school_id+"===");
 
                 Intent intent = new Intent();
                 intent.setClass(context, ActivityScanerCode.class);
@@ -232,7 +233,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 //        setResult(RESULT_OK, rIntent);
 //        scrollToFinishActivity();
 //
-//        Log.e("ssa===onItemClick2", bean.getId()+"==="+bean.getName());
+//        LogUtil.e("ssa===onItemClick2", bean.getId()+"==="+bean.getName());
 
                 break;
 
@@ -249,7 +250,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
     }
 
     private void querySchoolList(){
-        Log.e("onClick===et", "==="+et_school.getText());
+        LogUtil.e("onClick===et", "==="+et_school.getText());
 
         myAdapter.getDatas().clear();
 
@@ -271,7 +272,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 
     private void getSchoolList(){
 
-        Log.e("getSchoolList===", "===");
+        LogUtil.e("getSchoolList===", "===");
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
         if (access_token != null && !"".equals(access_token)) {
@@ -295,7 +296,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
-                        Log.e("getSchoolList===1", "==="+responseString);
+                        LogUtil.e("getSchoolList===1", "==="+responseString);
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -303,7 +304,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 
                         String[] schools = bean.getSchools();
 
-                        Log.e("getSchoolList===2", schools+"===");
+                        LogUtil.e("getSchoolList===2", schools+"===");
 
                         if (schoolList.size() != 0 || !schoolList.isEmpty()){
                             schoolList.clear();
@@ -321,13 +322,13 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 
                         setFooterType(2);
 
-                        Log.e("getSchoolList===3", datas.size()+"==="+schoolList.size());
+                        LogUtil.e("getSchoolList===3", datas.size()+"==="+schoolList.size());
 
                         myAdapter.notifyDataSetChanged();
 
 //                        if(schools!=null && schools.length>0){
 //
-//                            Log.e("getSchoolList===3", schools[0]+"===");
+//                            LogUtil.e("getSchoolList===3", schools[0]+"===");
 //
 //                            SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
 //
@@ -337,7 +338,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 //                        String[] roles = bean.getRoles();
 //                        if(roles!=null && roles.length>0){
 //
-//                            Log.e("getSchoolList===4", roles[0]+"==="+roles[1]);
+//                            LogUtil.e("getSchoolList===4", roles[0]+"==="+roles[1]);
 //
 //                            roleName.setText(roles[0]);
 //                        }
@@ -377,7 +378,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 //                        try {
 //                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 //
-//                            Log.e("getSchoolList===", "==="+responseString);
+//                            LogUtil.e("getSchoolList===", "==="+responseString);
 //
 //                            JSONArray JSONArray = new JSONArray(result.getData());
 //                            if (schoolList.size() != 0 || !schoolList.isEmpty()){
@@ -401,7 +402,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
 //
 //                            setFooterType(2);
 //
-//                            Log.e("getSchoolList===2", datas.size()+"==="+schoolList.size());
+//                            LogUtil.e("getSchoolList===2", datas.size()+"==="+schoolList.size());
 //
 //                            myAdapter.notifyDataSetChanged();
 //
@@ -501,7 +502,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
             TextView name = BaseViewHolder.get(convertView, R.id.item_school_name);
             SchoolListBean bean = getDatas().get(position);
 
-            Log.e("SchoolListAdapter===", "==="+bean.getName());
+            LogUtil.e("SchoolListAdapter===", "==="+bean.getName());
 
             name.setText(bean.getName());
             return convertView;

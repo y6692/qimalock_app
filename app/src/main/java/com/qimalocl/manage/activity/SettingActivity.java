@@ -32,6 +32,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.fragment.ScanFragment;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 
 import org.apache.http.Header;
@@ -70,7 +71,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 
         isForeground = true;
         isRefresh = true;
-        Log.e("SA===onCreate", "==="+isRefresh);
+        LogUtil.e("SA===onCreate", "==="+isRefresh);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 //      must store the new intent unless getIntent() will return the old one
         setIntent(intent);
 
-        Log.e("SA===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
+        LogUtil.e("SA===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
 
     }
 
@@ -87,14 +88,14 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
     public void onResume() {
         isForeground = true;
 //        isRefresh = true;
-        Log.e("SA===onResume", "==="+isRefresh);
+        LogUtil.e("SA===onResume", "==="+isRefresh);
         super.onResume();
     }
 
     @Override
     public void onPause() {
 //        isForeground = false;
-        Log.e("SA===onPause", "==="+isRefresh);
+        LogUtil.e("SA===onPause", "==="+isRefresh);
         super.onPause();
     }
 
@@ -103,7 +104,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
     protected void onDestroy() {
 //        isForeground = false;
 
-        Log.e("SA===onDestroy", "==="+isRefresh);
+        LogUtil.e("SA===onDestroy", "==="+isRefresh);
         super.onDestroy();
     }
 
@@ -187,7 +188,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
 
-                    Log.e("logout===", "==="+responseString);
+                    LogUtil.e("logout===", "==="+responseString);
 
                     if(responseString==null){
                         Intent intent0 = new Intent();
@@ -220,7 +221,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 
     private void sendCode() {
 
-        Log.e("verificationcode===0", "==="+telphone);
+        LogUtil.e("verificationcode===0", "==="+telphone);
 
         try{
             RequestParams params = new RequestParams();
@@ -240,7 +241,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     Toast.makeText(context, "fail=="+responseString, Toast.LENGTH_LONG).show();
 
-                    Log.e("verificationcode===fail", throwable.toString()+"==="+responseString);
+                    LogUtil.e("verificationcode===fail", throwable.toString()+"==="+responseString);
 
                     if (loadingDialog != null && loadingDialog.isShowing()){
                         loadingDialog.dismiss();
@@ -254,7 +255,7 @@ public class SettingActivity extends SwipeBackActivity implements View.OnClickLi
 
 //                        Toast.makeText(context, "=="+responseString, Toast.LENGTH_LONG).show();
 
-                        Log.e("verificationcode===", "==="+responseString);
+                        LogUtil.e("verificationcode===", "==="+responseString);
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 

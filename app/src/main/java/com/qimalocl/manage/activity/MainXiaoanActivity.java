@@ -30,6 +30,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.ByteUtil;
 import com.qimalocl.manage.utils.IoBuffer;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.SharePreUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.xiaoantech.sdk.XiaoanBleApiClient;
@@ -135,12 +136,12 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 //        bleService.showValue = true;
 
 //        bleService.connect("34:03:DE:54:E6:C6");  //922
-//        Log.e("connect===", "==="+bleService.connect("34:03:DE:54:E6:C6"));
+//        LogUtil.e("connect===", "==="+bleService.connect("34:03:DE:54:E6:C6"));
 
 
-//        Log.e("connect===", "==="+bleService.connect(mac));   //629
+//        LogUtil.e("connect===", "==="+bleService.connect(mac));   //629
 
-//        Log.e("connect===", "==="+bleService.connect("01:02:03:04:16:10"));
+//        LogUtil.e("connect===", "==="+bleService.connect("01:02:03:04:16:10"));
 
 //        bleService.artifClose();
 
@@ -165,7 +166,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
     @Override
     public void onBackPressed() {
-        Log.e("xa===back2",  "===");
+        LogUtil.e("xa===back2",  "===");
 
         bleService.artifClose();
 
@@ -185,7 +186,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
     @OnClick(R.id.mainUI_title_backBtn)
     void back() {
 
-        Log.e("xa===back",  "===");
+        LogUtil.e("xa===back",  "===");
 
 //        Intent rIntent = new Intent();
 //        rIntent.putExtra("sx", "1");
@@ -223,7 +224,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                         public void run() {
                             try {
 
-                                Log.e("ebikeInfo===", "==="+responseString);
+                                LogUtil.e("ebikeInfo===", "==="+responseString);
 
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                                 if (result.getFlag().equals("Success")) {
@@ -234,7 +235,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
                                     tv.setText("电量："+bean.getElectricity());
 
-                                    Log.e("ebikeInfo===", responseString + "===");
+                                    LogUtil.e("ebikeInfo===", responseString + "===");
                                 }else {
                                     Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
@@ -244,7 +245,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 }
 
                             } catch (Exception e) {
-                                Log.e("Test","异常"+e);
+                                LogUtil.e("Test","异常"+e);
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
@@ -304,7 +305,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 if (result.getFlag().equals("Success")) {
                                     JSONObject jsonObject = new JSONObject(result.getData());
 
-                                    Log.e("b1===", responseString + "===");
+                                    LogUtil.e("b1===", responseString + "===");
 
 //                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
                                 }else {
@@ -330,7 +331,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 }
 
                             } catch (Exception e) {
-                                Log.e("Test","异常"+e);
+                                LogUtil.e("Test","异常"+e);
                             }
 
                             if (loadingDialog != null && loadingDialog.isShowing()){
@@ -393,7 +394,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 if (result.getFlag().equals("Success")) {
                                     JSONObject jsonObject = new JSONObject(result.getData());
 
-                                    Log.e("b2===", responseString + "===");
+                                    LogUtil.e("b2===", responseString + "===");
 
 //                                    Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
                                 }else {
@@ -416,7 +417,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                                             MainXiaoanActivity.this.runOnUiThread(new Runnable() {
                                                                 @Override
                                                                 public void run() {
-                                                                    Log.e("acc : ", response.toString());
+                                                                    LogUtil.e("acc : ", response.toString());
                                                                     ToastUtil.showMessageApp(context,"撤防成功");
                                                                 }
                                                             });
@@ -431,7 +432,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 }
 
                             } catch (Exception e) {
-                                Log.e("Test","异常"+e);
+                                LogUtil.e("Test","异常"+e);
                             }
 
                             if (loadingDialog != null && loadingDialog.isShowing()){
@@ -502,7 +503,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 if (result.getFlag().equals("Success")) {
                                     JSONObject jsonObject = new JSONObject(result.getData());
 
-                                    Log.e("b3===", responseString + "===");
+                                    LogUtil.e("b3===", responseString + "===");
                                 }else {
                                     Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
@@ -512,7 +513,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 }
 
                             } catch (Exception e) {
-                                Log.e("Test","异常"+e);
+                                LogUtil.e("Test","异常"+e);
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
@@ -558,7 +559,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 if (result.getFlag().equals("Success")) {
                                     JSONObject jsonObject = new JSONObject(result.getData());
 
-                                    Log.e("b4===", responseString + "===");
+                                    LogUtil.e("b4===", responseString + "===");
                                 }else {
                                     Toast.makeText(MainXiaoanActivity.this, result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            if (loadingDialog != null && loadingDialog.isShowing()){
@@ -568,7 +569,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                                 }
 
                             } catch (Exception e) {
-                                Log.e("Test","异常"+e);
+                                LogUtil.e("Test","异常"+e);
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
@@ -624,13 +625,13 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("biking===000", "openEbike===="+responseString);
+                            LogUtil.e("biking===000", "openEbike===="+responseString);
 
                             if (result.getFlag().equals("Success")) {
 
                                 JSONObject jsonObject = new JSONObject(result.getData());
 
-                                Log.e("biking===", "openEbike===="+result.getData());
+                                LogUtil.e("biking===", "openEbike===="+result.getData());
 
                                 if ("200".equals(jsonObject.getString("code"))) {
 //                                    ToastUtil.showMessageApp(context,"开锁成功");
@@ -666,7 +667,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
         m_myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e("checkConnect===", "===");
+                LogUtil.e("checkConnect===", "===");
 
                 if(!bleService.connect){
                     cn++;
@@ -685,7 +686,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                     m_myHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e("openLock===4_3", "==="+mac);
+                            LogUtil.e("openLock===4_3", "==="+mac);
 
                             button8();
                             button9();
@@ -704,10 +705,10 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
         m_myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e("openLock2===4_4", bleService.cc+"==="+"B1 25 80 00 00 56 ".equals(bleService.cc));
+                LogUtil.e("openLock2===4_4", bleService.cc+"==="+"B1 25 80 00 00 56 ".equals(bleService.cc));
 
                 if("B1 25 80 00 00 56 ".equals(bleService.cc)){
-                    Log.e("openLock2===4_5", "==="+bleService.cc);
+                    LogUtil.e("openLock2===4_5", "==="+bleService.cc);
                     ToastUtil.showMessageApp(context,"开锁成功");
 
                 }else{
@@ -721,7 +722,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                     loadingDialog.dismiss();
                 }
 
-                Log.e("openLock2===4_6", "==="+bleService.cc);
+                LogUtil.e("openLock2===4_6", "==="+bleService.cc);
 
             }
         }, 500);
@@ -797,7 +798,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                             if (result.getFlag().equals("Success")) {
                                 ToastUtil.showMessage(context,"数据更新成功");
 
-                                Log.e("biking===", "closeEbike===="+responseString);
+                                LogUtil.e("biking===", "closeEbike===="+responseString);
 
                                 if ("0".equals(result.getData())){
 //                                    ToastUtil.showMessageApp(context,"关锁成功");
@@ -833,7 +834,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
         m_myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e("temporaryLock===", "===");
+                LogUtil.e("temporaryLock===", "===");
 
                 if(!bleService.connect){
                     cn++;
@@ -853,7 +854,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                     m_myHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e("temporaryLock===4_3", "==="+mac);
+                            LogUtil.e("temporaryLock===4_3", "==="+mac);
 
                             button8();
                             button9();
@@ -873,10 +874,10 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
         m_myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e("temporaryLock===4_4", bleService.cc+"==="+"B1 2A 80 00 00 5B ".equals(bleService.cc));
+                LogUtil.e("temporaryLock===4_4", bleService.cc+"==="+"B1 2A 80 00 00 5B ".equals(bleService.cc));
 
                 if("B1 2A 80 00 00 5B ".equals(bleService.cc)){
-                    Log.e("temporaryLock===4_5", "==="+bleService.cc);
+                    LogUtil.e("temporaryLock===4_5", "==="+bleService.cc);
 
                     ToastUtil.showMessageApp(context,"关锁成功");
 
@@ -891,7 +892,7 @@ public class MainXiaoanActivity extends SwipeBackActivity implements BleStateCha
                 }
 
 
-                Log.e("temporaryLock===4_6", "==="+bleService.cc);
+                LogUtil.e("temporaryLock===4_6", "==="+bleService.cc);
 
             }
         }, 500);

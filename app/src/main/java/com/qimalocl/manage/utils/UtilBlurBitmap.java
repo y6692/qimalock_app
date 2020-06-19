@@ -71,7 +71,7 @@ public class UtilBlurBitmap {
 
             return outputBitmap;
         } catch (Exception e) {
-            Log.e("Bemboy_Error", "Android版本过低");
+            LogUtil.e("Bemboy_Error", "Android版本过低");
             return null;
         }
     }

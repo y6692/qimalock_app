@@ -25,6 +25,8 @@ package com.loopj.android.http;
 
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.message.BasicHeader;

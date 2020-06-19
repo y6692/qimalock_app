@@ -18,6 +18,7 @@ import com.qimalocl.manage.base.BaseFragmentActivity;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.swipebacklayout.SwipeBackLayout;
+import com.qimalocl.manage.utils.LogUtil;
 import com.sunshine.blelibrary.config.Config;
 
 
@@ -79,7 +80,7 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 			bytes[i] = (byte) Integer.parseInt(subStr, 16);
 		}
 
-		Log.e("StringToByte===1", bytes+"==="+bytes[0]);
+		LogUtil.e("StringToByte===1", bytes+"==="+bytes[0]);
 
 //		Config.key = bytes;
 
@@ -133,7 +134,7 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		Log.e("sba===onTouchEvent", "==="+event.getAction());
+		LogUtil.e("sba===onTouchEvent", "==="+event.getAction());
 
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			try {
@@ -191,7 +192,7 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 					loadingDialog.dismiss();
 				}
 
-				Log.e("onFailureCommon===2", title+"==="+s);
+				LogUtil.e("onFailureCommon===2", title+"==="+s);
 
 				UIHelper.ToastError(context, s);
 			}
@@ -207,7 +208,7 @@ public class SwipeBackActivity extends BaseFragmentActivity implements SwipeBack
 //		} else {
 //			RequestParams params = new RequestParams();
 //			params.add("uid", uid);
-//			Log.e("Test", access_token);
+//			LogUtil.e("Test", access_token);
 //			params.add("access_token", access_token);
 //			HttpHelper.post(AppManager.getAppManager().currentActivity(), Urls.accesslogin, params,
 //					new TextHttpResponseHandler() {

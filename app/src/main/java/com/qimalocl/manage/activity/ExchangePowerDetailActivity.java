@@ -29,6 +29,7 @@ import com.qimalocl.manage.model.ExchangePowerDetailBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -184,7 +185,7 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
         }
     }
     private void initHttp(){
-        Log.e("epda===initHttp", date+"==="+status+"==="+showPage);
+        LogUtil.e("epda===initHttp", date+"==="+status+"==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -218,7 +219,7 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("epda===initHttp1", "==="+responseString);
+                    LogUtil.e("epda===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {
@@ -381,7 +382,7 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
             created_at.setText(bean.getCreated_at());
             finished_time.setText(bean.getFinished_time());
 
-            Log.e("epda===MyAdapter", status+"==="+bean.getNumber()+"==="+bean.getPre_electricity()+"==="+bean.getAft_electricity()+"==="+bean.getCreated_at()+"==="+bean.getFinished_time());
+            LogUtil.e("epda===MyAdapter", status+"==="+bean.getNumber()+"==="+bean.getPre_electricity()+"==="+bean.getAft_electricity()+"==="+bean.getCreated_at()+"==="+bean.getFinished_time());
 
             if(status==0){
                 text_aft_electricity.setText("当前电量：");

@@ -30,6 +30,7 @@ import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.PowerExchangeBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -181,7 +182,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
     }
     private void initHttp(){
 
-        Log.e("epra===initHttp", "==="+showPage);
+        LogUtil.e("epra===initHttp", "==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -213,7 +214,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("epra===initHttp1", "==="+responseString);
+                    LogUtil.e("epra===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {

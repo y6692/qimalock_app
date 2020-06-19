@@ -35,6 +35,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.UserMsgBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.xylitolz.androidverificationcode.view.VerificationCodeView;
 
@@ -100,7 +101,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
 //        width = metrics.widthPixels;
 //        height = metrics.heightPixels;
 //
-//        Log.e("NoteLogin===", metrics.density+"==="+width+"==="+height);
+//        LogUtil.e("NoteLogin===", metrics.density+"==="+width+"==="+height);
 
     }
 
@@ -135,7 +136,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
         icv.setInputCompleteListener(new VerificationCodeView.InputCompleteListener() {
             @Override
             public void inputComplete() {
-                Log.e("icv_input===", icv.getContent()+"===");
+                LogUtil.e("icv_input===", icv.getContent()+"===");
 
                 if(icv.getContent().length()==6){
                     inputMethodManager.hideSoftInputFromWindow(icv.getWindowToken(), 0); // 隐藏
@@ -147,7 +148,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
 
             @Override
             public void deleteContent() {
-                Log.e("icv_delete===", icv.getContent());
+                LogUtil.e("icv_delete===", icv.getContent());
             }
         });
 
@@ -235,7 +236,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
 //        "App_Version": "1.0.0",
 //        "Device_UUID": "B45A95F3-E1DB-44CA-989D-971618140D5E"
 
-        Log.e("verificationcode===0", "==="+telphone);
+        LogUtil.e("verificationcode===0", "==="+telphone);
 
         try{
             RequestParams params = new RequestParams();
@@ -256,7 +257,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
 
 //                        Toast.makeText(context, "=="+responseString, Toast.LENGTH_LONG).show();
 
-                        Log.e("verificationcode===", "==="+responseString);
+                        LogUtil.e("verificationcode===", "==="+responseString);
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -289,7 +290,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     Toast.makeText(context, "fail=="+responseString, Toast.LENGTH_LONG).show();
 
-                    Log.e("verificationcode===fail", throwable.toString()+"==="+responseString);
+                    LogUtil.e("verificationcode===fail", throwable.toString()+"==="+responseString);
 
                     if (loadingDialog != null && loadingDialog.isShowing()){
                         loadingDialog.dismiss();
@@ -304,7 +305,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
     }
 
     private void loginHttp(String telcode) {
-        Log.e("loginHttp===", telphone+"==="+telcode);
+        LogUtil.e("loginHttp===", telphone+"==="+telcode);
 
         RequestParams params = new RequestParams();
         params.put("phone", telphone);
@@ -326,15 +327,15 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
                     @Override
                     public void run() {
                         try {
-                            Log.e("authorizations===", "==="+responseString);
+                            LogUtil.e("authorizations===", "==="+responseString);
 
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("authorizations===1", result.getData()+"==="+result.getStatus_code());
+                            LogUtil.e("authorizations===1", result.getData()+"==="+result.getStatus_code());
 
                             UserMsgBean bean = JSON.parseObject(result.getData(), UserMsgBean.class);
 
-                            Log.e("authorizations===2", bean+"==="+bean.getToken());
+                            LogUtil.e("authorizations===2", bean+"==="+bean.getToken());
 
                             if (null != bean.getToken()) {
                                 SharedPreferencesUrls.getInstance().putString("access_token", "Bearer "+bean.getToken());
@@ -410,7 +411,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
             if (!isEmpty(wifiMac)) {
                 deviceId.append("wifi");
                 deviceId.append(wifiMac);
-                Log.e("getDeviceId : ", deviceId.toString());
+                LogUtil.e("getDeviceId : ", deviceId.toString());
                 return deviceId.toString();
             }
             //IMEI（imei）
@@ -422,7 +423,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
             if(!isEmpty(imei)){
                 deviceId.append("imei");
                 deviceId.append(imei);
-                Log.e("getDeviceId : ", deviceId.toString());
+                LogUtil.e("getDeviceId : ", deviceId.toString());
                 return deviceId.toString();
             }
             //序列号（sn）
@@ -430,7 +431,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
             if(!isEmpty(sn)){
                 deviceId.append("sn");
                 deviceId.append(sn);
-                Log.e("getDeviceId : ", deviceId.toString());
+                LogUtil.e("getDeviceId : ", deviceId.toString());
                 return deviceId.toString();
             }
             //如果上面都没有， 则生成一个id：随机码
@@ -438,13 +439,13 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
             if(!isEmpty(uuid)){
                 deviceId.append("id");
                 deviceId.append(uuid);
-                Log.e("getDeviceId : ", deviceId.toString());
+                LogUtil.e("getDeviceId : ", deviceId.toString());
                 return deviceId.toString();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.e("getDeviceId : ", deviceId.toString());
+        LogUtil.e("getDeviceId : ", deviceId.toString());
         return deviceId.toString();
     }
 

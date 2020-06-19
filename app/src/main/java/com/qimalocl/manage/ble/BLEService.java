@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.qimalocl.manage.utils.ByteUtil;
 import com.qimalocl.manage.utils.IoBuffer;
+import com.qimalocl.manage.utils.LogUtil;
 
 import java.nio.ByteOrder;
 import java.util.UUID;
@@ -65,7 +66,7 @@ public class BLEService {
 //						TextView textView = ((TextView)((BaseActivity)view).findViewById(R.id.readvalue));
 //						textView.setText("connection");
 
-						Log.e("oCS===", "===CONNECTED");
+						LogUtil.e("oCS===", "===CONNECTED");
 
 						connect = true;
 					}
@@ -78,7 +79,7 @@ public class BLEService {
 //						TextView textView = ((TextView)((BaseActivity)view).findViewById(R.id.readvalue));
 //						textView.setText("disconnect");
 
-						Log.e("oCS===", "===DISCONNECTED");
+						LogUtil.e("oCS===", "===DISCONNECTED");
 
 						connect = false;
 					}
@@ -183,7 +184,7 @@ public class BLEService {
 //						textView.setText(ioBuffer.toHexArray(data));
 
 						cc = ioBuffer.toHexArray(data);
-						Log.e("oCC===", data+"==="+ioBuffer.toHexArray(data));
+						LogUtil.e("oCC===", data+"==="+ioBuffer.toHexArray(data));
 					}
 				});
 			}

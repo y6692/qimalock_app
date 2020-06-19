@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.utils.LogUtil;
 
 
 /**
@@ -88,7 +89,7 @@ public class VerificationCodeView extends RelativeLayout {
         textFocusedDrawable = array.getDrawable(R.styleable.VerificationCodeView_vcv_code_bg_focus);
         showPassword = array.getBoolean(R.styleable.VerificationCodeView_vcv_code_input_style, false);
 
-        Log.e("init===", codeNum+"==="+codeWidth +"==="+textDrawable +"==="+textFocusedDrawable);
+        LogUtil.e("init===", codeNum+"==="+codeWidth +"==="+textDrawable +"==="+textFocusedDrawable);
 
         array.recycle();
         //若未设置选中和未选中状态，设置默认
@@ -103,7 +104,7 @@ public class VerificationCodeView extends RelativeLayout {
         initListener();
         resetCursorPosition();
 
-        Log.e("init===1", codeNum+"==="+codeWidth +"==="+textDrawable +"==="+textFocusedDrawable );
+        LogUtil.e("init===1", codeNum+"==="+codeWidth +"==="+textDrawable +"==="+textFocusedDrawable );
     }
 
     /**
@@ -135,7 +136,7 @@ public class VerificationCodeView extends RelativeLayout {
         editText.setBackgroundColor(Color.TRANSPARENT);
         editText.requestFocus();
 
-        Log.e("initView===", codeNum+"==="+codeWidth +"==="+textDrawable +"==="+textFocusedDrawable );
+        LogUtil.e("initView===", codeNum+"==="+codeWidth +"==="+textDrawable +"==="+textFocusedDrawable );
 
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         setCursorRes(R.drawable.cursor);
@@ -161,13 +162,13 @@ public class VerificationCodeView extends RelativeLayout {
             public void afterTextChanged(Editable s) {
                 String content = s.toString();
 
-                Log.e("afterTextChanged===", codeNum+"==="+content);
+                LogUtil.e("afterTextChanged===", codeNum+"==="+content);
 
                 if (!TextUtils.isEmpty(content)) {
 
                     String[] strArray = content.split("");
 
-                    Log.e("afterTextChanged===1", strArray.length+"==="+content);
+                    LogUtil.e("afterTextChanged===1", strArray.length+"==="+content);
 
                     for (int i = 0; i < strArray.length; i++) {
 

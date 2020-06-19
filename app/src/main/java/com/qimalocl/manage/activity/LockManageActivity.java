@@ -54,6 +54,7 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.LogUtil;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
@@ -219,7 +220,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 
         tvAddress.setText("MAC:" + address);
 
-        Log.e("LockManageActivity===", address+"==="+pdk);
+        LogUtil.e("LockManageActivity===", address+"==="+pdk);
 
         if (!TextUtils.isEmpty(address)) {
 //            BaseApplication.getInstance().getIBLE().connect(address, this);
@@ -328,7 +329,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 //                img_loading.startAnimation(operatingAnim);
 //                img_loading.setVisibility(View.VISIBLE);
 //                btn_scan.setText(getString(R.string.stop_scan));
-                Log.e("onScanStarted===", "==="+success);
+                LogUtil.e("onScanStarted===", "==="+success);
 
             }
 
@@ -336,7 +337,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
             public void onLeScan(BleDevice bleDevice) {
                 super.onLeScan(bleDevice);
 
-                Log.e("onLeScan===", bleDevice+"==="+bleDevice.getMac());
+                LogUtil.e("onLeScan===", bleDevice+"==="+bleDevice.getMac());
             }
 
             @Override
@@ -344,7 +345,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 //                mDeviceAdapter.addDevice(bleDevice);
 //                mDeviceAdapter.notifyDataSetChanged();
 
-                Log.e("onScanning===", bleDevice+"==="+bleDevice.getMac());
+                LogUtil.e("onScanning===", bleDevice+"==="+bleDevice.getMac());
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -356,7 +357,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 
                             BleManager.getInstance().cancelScan();
 
-                            Log.e("onScanning===2", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
+                            LogUtil.e("onScanning===2", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
 
                             Toast.makeText(context, "搜索成功", Toast.LENGTH_LONG).show();
 
@@ -380,7 +381,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 //                img_loading.setVisibility(View.INVISIBLE);
 //                btn_scan.setText(getString(R.string.start_scan));
 
-                Log.e("onScanFinished===", scanResultList+"==="+scanResultList.size());
+                LogUtil.e("onScanFinished===", scanResultList+"==="+scanResultList.size());
             }
         });
     }
@@ -392,12 +393,12 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
         BleManager.getInstance().connect(address, new BleGattCallback() {
             @Override
             public void onStartConnect() {
-                Log.e("onStartConnect===", "==="+address);
+                LogUtil.e("onStartConnect===", "==="+address);
             }
 
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
-                Log.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
+                LogUtil.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
 
                 if (loadingDialog != null && loadingDialog.isShowing()) {
                     loadingDialog.dismiss();
@@ -412,12 +413,12 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 //                        bb, true, new BleWriteCallback() {
 //                            @Override
 //                            public void onWriteSuccess(int current, int total, byte[] justWrite) {
-//                                Log.e("onWriteSuccess===", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+//                                LogUtil.e("onWriteSuccess===", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
 //                            }
 //
 //                            @Override
 //                            public void onWriteFailure(BleException exception) {
-//                                Log.e("onWriteFailure===", "==="+exception);
+//                                LogUtil.e("onWriteFailure===", "==="+exception);
 //                            }
 //                        });
             }
@@ -433,7 +434,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 
                 BleManager.getInstance().cancelScan();
 
-                Log.e("onConnectSuccess===", bleDevice.getMac()+"==="+status);
+                LogUtil.e("onConnectSuccess===", bleDevice.getMac()+"==="+status);
                 Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
 
                 tvName.setText("Name:" + name);
@@ -450,19 +451,19 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                 BleManager.getInstance().notify(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f6-0000-1000-8000-00805f9b34fb", new BleNotifyCallback() {
                     @Override
                     public void onNotifySuccess() {
-                        Log.e("onNotifySuccess===", "===");
+                        LogUtil.e("onNotifySuccess===", "===");
                     }
 
                     @Override
                     public void onNotifyFailure(BleException exception) {
-                        Log.e("onNotifyFailure===", "===");
+                        LogUtil.e("onNotifyFailure===", "===");
                     }
 
                     @Override
                     public void onCharacteristicChanged(byte[] data) {
 //                            byte[] values = characteristic.getValue();
 
-                        Log.e("onCharacteristicChanged", "===0");
+                        LogUtil.e("onCharacteristicChanged", "===0");
 
 
                         byte[] x = new byte[16];
@@ -470,7 +471,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 
                         byte[] mingwen = EncryptUtils.Decrypt(x, Config.newKey);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
 
-                        Log.e("onCharacteristicChanged", x.length+"==="+ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
+                        LogUtil.e("onCharacteristicChanged", x.length+"==="+ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
 
                         String s1 = ConvertUtils.bytes2HexString(mingwen);
 
@@ -479,18 +480,18 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                             token = s1.substring(6, 14);    //0602070C0580E001010406C8D6DC1949
                             GlobalParameterUtils.getInstance().setToken(ConvertUtils.hexString2Bytes(token));
 
-                            Log.e("token===", isOpen+"==="+token+"==="+s1);
+                            LogUtil.e("token===", isOpen+"==="+token+"==="+s1);
 
                             if(isOpen){
                                 openLock();
                             }
 
                         }else if(s1.startsWith("0502")){
-                            Log.e("openLock===", "==="+s1);
+                            LogUtil.e("openLock===", "==="+s1);
 
                             Toast.makeText(context, "开锁成功", Toast.LENGTH_LONG).show();
                         }else if(s1.startsWith("0508")){
-                            Log.e("closeLock===1", "==="+s1);
+                            LogUtil.e("closeLock===1", "==="+s1);
 
                             if("00".equals(s1.substring(6, 8))){
                                 Toast.makeText(context, "关闭成功", Toast.LENGTH_LONG).show();
@@ -499,7 +500,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                             }
 
                         }else if(s1.startsWith("050F")){
-                            Log.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
+                            LogUtil.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
 
                             if("01".equals(s1.substring(6, 8))){
                                 Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
@@ -517,7 +518,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
             public void onDisConnected(boolean isActiveDisConnected, BleDevice bleDevice, BluetoothGatt gatt, int status) {
 
                 isConnect = false;
-                Log.e("connect=onDisConnected", "==="+isActiveDisConnected);
+                LogUtil.e("connect=onDisConnected", "==="+isActiveDisConnected);
 
 //                    if (isActiveDisConnected) {
 //                        Toast.makeText(MainActivity.this, getString(R.string.active_disconnected), Toast.LENGTH_LONG).show();
@@ -534,19 +535,19 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
     void getBleToken(){
         String s = new GetTokenTxOrder().generateString();
 
-        Log.e("onConnectSuccess===1", "==="+s);  //1648395B
+        LogUtil.e("onConnectSuccess===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("onWriteSuccess===", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("onWriteSuccess===", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("onWriteFailure===", "==="+exception);
+                LogUtil.e("onWriteFailure===", "==="+exception);
             }
         });
     }
@@ -574,26 +575,26 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                 bb, true, new BleWriteCallback() {
                     @Override
                     public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                        Log.e("onWriteSuccess===", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                        LogUtil.e("onWriteSuccess===", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
                     }
 
                     @Override
                     public void onWriteFailure(BleException exception) {
-                        Log.e("onWriteFailure===", "==="+exception);
+                        LogUtil.e("onWriteFailure===", "==="+exception);
                     }
                 });
 
         BleManager.getInstance().disconnectAllDevice();
         BleManager.getInstance().destroy();
 
-        Log.e("onDestroy===", "===");
+        LogUtil.e("onDestroy===", "===");
     }
 
     @OnClick(R.id.bt_open)
     void open() {
 //        BaseApplication.getInstance().getIBLE().openLock();
 
-        Log.e("open===", "==="+isConnect);
+        LogUtil.e("open===", "==="+isConnect);
 
         isOpen =true;
         if(isConnect){
@@ -614,19 +615,19 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
 
 //        s= s.substring(0, 18) + token + s.substring(26, 32);
 
-        Log.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
+        LogUtil.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("onWriteSuccess===a", current+"==="+total+"==="+justWrite);
+                LogUtil.e("onWriteSuccess===a", current+"==="+total+"==="+justWrite);
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("onWriteFailure===a", "==="+exception);
+                LogUtil.e("onWriteFailure===a", "==="+exception);
             }
         });
     }
@@ -678,7 +679,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
     public void permissionSuccess(int requestCode) {
         super.permissionSuccess(requestCode);
 
-        Log.e("LockManageActivity===", "==="+pdk);
+        LogUtil.e("LockManageActivity===", "==="+pdk);
 
         if (101 == requestCode) {
             Logger.e(getClass().getSimpleName(), "申请成功了");
@@ -717,7 +718,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
         BleManager.getInstance().disconnectAllDevice();
         BleManager.getInstance().destroy();
 
-        Log.e("onBackPressed===", "===");
+        LogUtil.e("onBackPressed===", "===");
 
 
         scrollToFinishActivity();
@@ -740,7 +741,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                     tvVersion.setText(getText(R.string.device_version) + GlobalParameterUtils.getInstance().getVersion());
                     //修改密钥
 
-                    Log.e("LockManageActivity===b", "==="+pdk);
+                    LogUtil.e("LockManageActivity===b", "==="+pdk);
 
                     if ("1".equals(pdk)) {
                         BaseApplication.getInstance().getIBLE().setChangKey(true);
@@ -759,7 +760,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                                 BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY2, bytes1);
                             }
                         }, 2000);
-                        Log.e("LockManageActivity===b2", "==="+pdk);
+                        LogUtil.e("LockManageActivity===b2", "==="+pdk);
                     }
                     break;
                 case Config.BATTERY_ACTION:
@@ -809,7 +810,7 @@ public class LockManageActivity extends MPermissionsActivity implements OnConnec
                     }
                     break;
                 case Config.KEY_ACTION:
-                    Log.e("KEY_ACTION===b", "==="+pdk);
+                    LogUtil.e("KEY_ACTION===b", "==="+pdk);
 
                     if (TextUtils.isEmpty(data)) {
                         Toast.makeText(context, "密钥修改失败", Toast.LENGTH_LONG).show();

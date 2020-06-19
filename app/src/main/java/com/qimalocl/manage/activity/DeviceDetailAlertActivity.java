@@ -42,6 +42,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.Globals;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UIHelper;
 import com.sofi.blelocker.library.Code;
@@ -144,7 +145,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
         type = SharedPreferencesUrls.getInstance().getString("type", "");
 
-        Log.e("DD===onCreate", "==="+type);
+        LogUtil.e("DD===onCreate", "==="+type);
 
         loadingDialog = new LoadingDialog(this);
         loadingDialog.setCancelable(false);
@@ -207,7 +208,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
 
 
-        Log.e("bindData===", name+"==="+mac+"==="+getIntent().getStringExtra("name"));
+        LogUtil.e("bindData===", name+"==="+mac+"==="+getIntent().getStringExtra("name"));
 
 //        mac = "A4:34:F1:7B:BF:A9";
 //        mac = "A4:34:F1:7B:BF:9A";
@@ -264,12 +265,12 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                                         .build();
 
                                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    Log.e("usecar===1", "===");
+                                    LogUtil.e("usecar===1", "===");
 
                                     return;
                                 }
 
-                                Log.e("usecar===2", "===");
+                                LogUtil.e("usecar===2", "===");
 
 //                                                                ClientManager.getClient().stopSearch();
                                 m_myHandler.sendEmptyMessage(0x98);
@@ -414,7 +415,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
     }
 
     protected void rent(){
-        Log.e("rent===000",mac+"==="+name+"==="+keySource);
+        LogUtil.e("rent===000",mac+"==="+name+"==="+keySource);
 
         RequestParams params = new RequestParams();
         params.put("lock_no", name);
@@ -453,7 +454,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("rent===","==="+responseString);
+                        LogUtil.e("rent===","==="+responseString);
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                             if (result.getFlag().equals("Success")) {
@@ -463,7 +464,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                                 keys = bean.getKeys();
                                 serverTime = bean.getServerTime();
 
-                                Log.e("rent===", mac+"==="+encryptionKey+"==="+keys);
+                                LogUtil.e("rent===", mac+"==="+encryptionKey+"==="+keys);
 
                                 openBleLock(null);
                             }else {
@@ -500,7 +501,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             params.put("lock_no", name);    //
             params.put("type", type);    //泺平新锁
 
-            Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+result.split("=")[1]+"==="+mac+"==="+name+"==="+type);
+            LogUtil.e("addCar===", uid+"==="+access_token+"==="+result+"==="+result.split("=")[1]+"==="+mac+"==="+name+"==="+type);
 
             HttpHelper.post(context, Urls.addCar, params, new TextHttpResponseHandler() {
                 @Override
@@ -548,7 +549,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                Log.e("addCar===eee", "==="+e);
+                                LogUtil.e("addCar===eee", "==="+e);
                                 if (loadingDialog != null && loadingDialog.isShowing()){
                                     loadingDialog.dismiss();
                                 }
@@ -593,7 +594,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             case R.id.layLock :
                 UIHelper.showProgress(this, "获取锁状态中");
 
-                Log.e("layLock===0", "==="+mac);
+                LogUtil.e("layLock===0", "==="+mac);
 
 //                ClientManager.getClient().
 
@@ -602,7 +603,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                     public void onResponseSuccess(String version, String keySerial, String macKey, String vol) {
                         keySource = keySerial;
 
-                        Log.e("layLock===1", keySource+"==="+macKey);
+                        LogUtil.e("layLock===1", keySource+"==="+macKey);
 
                         m_myHandler.post(new Runnable() {
                             @Override
@@ -616,7 +617,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                     @Override
                     public void onResponseFail(final int code) {
 
-                        Log.e("layLock===2", "==="+code);
+                        LogUtil.e("layLock===2", "==="+code);
 
                         m_myHandler.post(new Runnable() {
                             @Override
@@ -624,7 +625,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
                                 getBleRecord();
 
-                                Log.e(TAG, Code.toString(code));
+                                LogUtil.e(TAG, Code.toString(code));
                                 UIHelper.dismiss();
                                 UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                             }
@@ -688,7 +689,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             public void onResponseFail(int code) {
                 isStop = false;
 
-                Log.e("connectDevice===", "Fail==="+Code.toString(code));
+                LogUtil.e("connectDevice===", "Fail==="+Code.toString(code));
 //                ToastUtil.showMessageApp(context, Code.toString(code));
             }
 
@@ -699,7 +700,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
                 isStop = true;
 
-                Log.e("connectDevice===", "Success==="+profile);
+                LogUtil.e("connectDevice===", "Success==="+profile);
 
 //                if (Globals.bType == 1) {
 //                    ToastUtil.showMessageApp(context, "正在关锁中");
@@ -723,7 +724,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                     ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
 
 
-                    Log.e("0x98===", "==="+isStop);
+                    LogUtil.e("0x98===", "==="+isStop);
 
                     m_myHandler.postDelayed(new Runnable() {
                         @Override
@@ -783,7 +784,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                     m_myHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e(TAG, Code.toString(code));
+                            LogUtil.e(TAG, Code.toString(code));
                             UIHelper.dismiss();
                             UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                         }
@@ -816,7 +817,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        LogUtil.e(TAG, Code.toString(code));
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
                 });
@@ -854,7 +855,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
     private final SearchResponse mSearchResponse = new SearchResponse() {
         @Override
         public void onSearchStarted() {
-            Log.e("===","DeviceDetailActivity.onSearchStarted");
+            LogUtil.e("===","DeviceDetailActivity.onSearchStarted");
         }
 
         @Override
@@ -862,7 +863,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("onDeviceFounded===",mac + "=== " + device.device.getAddress());
+                    LogUtil.e("onDeviceFounded===",mac + "=== " + device.device.getAddress());
                     if (device.getAddress().contains(mac)) {
                         ClientManager.getClient().stopSearch();
 
@@ -879,13 +880,13 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
         @Override
         public void onSearchStopped() {
-            Log.e("===","DeviceDetailActivity.onSearchStopped");
+            LogUtil.e("===","DeviceDetailActivity.onSearchStopped");
 
         }
 
         @Override
         public void onSearchCanceled() {
-            Log.e("===","DeviceDetailActivity.onSearchCanceled");
+            LogUtil.e("===","DeviceDetailActivity.onSearchCanceled");
 
         }
     };
@@ -919,7 +920,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
     //获取服务器的加密信息
     private void queryStatusServer(String version, String keySerial, String macKey, String vol) {
-        Log.e(TAG, "version:" + version + " keySerial:" + keySerial + " macKey:" + macKey + " vol:" + vol);
+        LogUtil.e(TAG, "version:" + version + " keySerial:" + keySerial + " macKey:" + macKey + " vol:" + vol);
         this.version = version;
         int timestamp = (int) StringUtils.getCurrentTimestamp();
 
@@ -975,7 +976,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
 //        ClientManager.getClient().openLock(mac, "18112348925", resultBean.getServerTime(),
 
-        Log.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
+        LogUtil.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
 
         ClientManager.getClient().openLock(mac,"000000000000", (int) serverTime, keys, encryptionKey, new IEmptyResponse(){
 //        ClientManager.getClient().openLock(mac,"000000000000", resultBean.getServerTime(), resultBean.getKeys(), resultBean.getEncryptionKey(), new IEmptyResponse(){
@@ -984,7 +985,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("openLock===Fail", code+"==="+Code.toString(code));
+                                LogUtil.e("openLock===Fail", code+"==="+Code.toString(code));
                                 UIHelper.dismiss();
                                 UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                                 getBleRecord();
@@ -998,7 +999,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("openLock===Success", "===");
+                                LogUtil.e("openLock===Success", "===");
                                 UIHelper.dismiss();
                                 getBleRecord();
 
@@ -1039,7 +1040,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        LogUtil.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
@@ -1064,7 +1065,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===Success", "===");
+                        LogUtil.e("getBleRecord===Success", "===");
 //                        UIHelper.dismiss();
 //                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
                         deleteBleRecord(bikeTradeNo);
@@ -1078,7 +1079,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===SuccessE", "===");
+                        LogUtil.e("getBleRecord===SuccessE", "===");
 //                        UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, "record empty");
                     }
@@ -1091,7 +1092,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===Fail", Code.toString(code));
+                        LogUtil.e("getBleRecord===Fail", Code.toString(code));
 //                        UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
@@ -1158,7 +1159,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             @Override
             public void onResponseSuccess(String phone, final String bikeTradeNo, String timestamp, String transType, String mackey, String index, final int Major, final int Minor, String vol) {
 
-                Log.e("deleteBleRecord=Success", "===");
+                LogUtil.e("deleteBleRecord=Success", "===");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -1172,7 +1173,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 
             @Override
             public void onResponseSuccessEmpty() {
-                Log.e("deleteBleRecord=SucE", "===");
+                LogUtil.e("deleteBleRecord=SucE", "===");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -1199,7 +1200,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("deleteBleRecord===Fail", Code.toString(code));
+                        LogUtil.e("deleteBleRecord===Fail", Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
@@ -1216,7 +1217,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //        ClientManager.getClient().buzzer(mac, new IEmptyResponse(){
 //                    @Override
 //                    public void onResponseFail(int code) {
-//                        LOG.E(TAG, Code.toString(code));
+//                        LogUtil.e(TAG, Code.toString(code));
 //                        UIHelper.dismiss();
 //                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //                    }
@@ -1241,7 +1242,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                     public void run() {
                         UIHelper.dismiss();
 
-                        Log.e("queryOpenState===", "===="+open);
+                        LogUtil.e("queryOpenState===", "===="+open);
                     }
                 });
 
@@ -1253,7 +1254,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        LogUtil.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailAlertActivity.this, Code.toString(code));
                     }
@@ -1269,7 +1270,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //        ClientManager.getClient().queryRunState(mac, new IQueryRunStateResponse() {
 //            @Override
 //            public void onResponseSuccess(String time, String vol, boolean elec, boolean buzzer, int recordNum) {
-//                LOG.E(TAG, "time:" + time + " vol:" + vol + " elec:" + elec + " buzzer:" + buzzer +
+//                LogUtil.e(TAG, "time:" + time + " vol:" + vol + " elec:" + elec + " buzzer:" + buzzer +
 //                        " recordNum:" + recordNum);
 //                UIHelper.dismiss();
 //                RunState runState = new RunState(time, vol, elec, buzzer, recordNum);
@@ -1278,7 +1279,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1292,7 +1293,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //            @Override
 //            public void onResponseSuccess(String ip, String path, String port, String apn, String ping,
 //                                          String gps) {
-//                LOG.E(TAG, "ip:" + ip + " path:" + path + " port:" + port + " apn:" + apn +
+//                LogUtil.e(TAG, "ip:" + ip + " path:" + path + " port:" + port + " apn:" + apn +
 //                        " ping:" + ping + " gps:" + gps);
 //                UIHelper.dismiss();
 //                GprsConfig gprsConfig = new GprsConfig(ip, path, port, apn, ping, gps);
@@ -1301,7 +1302,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1320,7 +1321,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1339,7 +1340,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1407,7 +1408,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //                commitKeyServer(lockNo, false);
@@ -1427,7 +1428,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1464,7 +1465,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("onNotifyClose===", "====");
+                    LogUtil.e("onNotifyClose===", "====");
 
 //                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
                     tvOpen.setText("开锁");
@@ -1484,7 +1485,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
                 public void run() {
 //                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onConnectStatusChanged %d in %s", status, Thread.currentThread().getName()));
 
-                    Log.e("ConnectStatus===", mac+"===="+(status == STATUS_CONNECTED));
+                    LogUtil.e("ConnectStatus===", mac+"===="+(status == STATUS_CONNECTED));
 
 
                     if(status != STATUS_CONNECTED){
@@ -1511,7 +1512,7 @@ public class DeviceDetailAlertActivity extends Activity implements View.OnClickL
     @Override
     protected void onDestroy() {
 
-        Log.e("onDestroy===", "==="+mac);
+        LogUtil.e("onDestroy===", "==="+mac);
 
         ClientManager.getClient().stopSearch();
         ClientManager.getClient().disconnect(mac);

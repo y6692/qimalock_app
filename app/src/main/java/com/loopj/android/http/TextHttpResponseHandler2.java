@@ -22,6 +22,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 import org.apache.http.Header;
 
 import java.io.UnsupportedEncodingException;
@@ -116,7 +118,7 @@ public abstract class TextHttpResponseHandler2 extends AsyncHttpResponseHandler 
         m_myHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.e("onSuccess===00", responseBytes+"===");
+                LogUtil.e("onSuccess===00", responseBytes+"===");
 
                 String responseString = getResponseString(responseBytes, getCharset());
 

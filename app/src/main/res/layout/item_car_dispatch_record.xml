@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/dp30"
+    android:paddingRight="@dimen/dp30"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="22dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/item_sn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp18"
+                android:textColor="@color/tx_black"
+                android:text=""/>
+
+            <TextView
+                android:id="@+id/item_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/sp16"
+                android:textColor="#666666"
+                android:text=""/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/item_created_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="@dimen/sp14"
+            android:textColor="@color/tx_black"
+            android:text=""/>
+
+        <TextView
+            android:id="@+id/item_end_at"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="@dimen/sp14"
+            android:textColor="@color/tx_black"
+            android:text=""/>
+
+        <TextView
+            android:id="@+id/item_car_numbers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textSize="@dimen/sp14"
+            android:textColor="#666666"
+            android:ellipsize="end"
+            android:lines="2"
+            android:text=""/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="right"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_dispatch_detail"
+                android:layout_width="114dp"
+                android:layout_height="@dimen/dp40"
+                android:background="@drawable/btn_bcg_normal"
+                android:gravity="center"
+                android:maxHeight="0dp"
+                android:text="调运详情"
+                android:textColor="@color/white"
+                android:stateListAnimator="@null"
+                android:textSize="@dimen/sp16" />
+
+            <Button
+                android:visibility="gone"
+                android:id="@+id/btn_confirm_finish"
+                android:layout_width="114dp"
+                android:layout_height="@dimen/dp40"
+                android:layout_marginLeft="17dp"
+                android:background="@drawable/btn_bcg_normal"
+                android:gravity="center"
+                android:maxHeight="0dp"
+                android:text="确认完成"
+                android:textColor="@color/white"
+                android:stateListAnimator="@null"
+                android:textSize="@dimen/sp16" />
+
+
+        </LinearLayout>
+
+
+        
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="#F1F1F1"
+            />
+
+
+    </LinearLayout>
+
+</LinearLayout>

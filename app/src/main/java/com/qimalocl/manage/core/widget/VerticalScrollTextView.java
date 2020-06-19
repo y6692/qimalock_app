@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.model.Sentence;
 import com.qimalocl.manage.model.Sentence;
+import com.qimalocl.manage.utils.LogUtil;
 
 /**
  * @author xushilin
@@ -79,7 +80,7 @@ public class VerticalScrollTextView extends android.support.v7.widget.AppCompatT
 
 		if(list.size()==0) return;
 
-		Log.e("onDraw===", index+"==="+list.get(index)+"==="+list.get(index).getName());
+		LogUtil.e("onDraw===", index+"==="+list.get(index)+"==="+list.get(index).getName());
 
 
 
@@ -109,7 +110,7 @@ public class VerticalScrollTextView extends android.support.v7.widget.AppCompatT
 		mX = w * 0.0f;
 		mY = h;
 
-		Log.e("onSizeChanged===", mY+"==="+ow+"==="+oh);
+		LogUtil.e("onSizeChanged===", mY+"==="+ow+"==="+oh);
 
 		middleY = h * 0.75f;
 	}
@@ -145,7 +146,7 @@ public class VerticalScrollTextView extends android.support.v7.widget.AppCompatT
 					Thread.sleep(time);
 					i++;
 
-					Log.e("updateThread===", i+"==="+getList().size());
+					LogUtil.e("updateThread===", i+"==="+getList().size());
 
 					if(i>=getList().size()){
 						i=0;

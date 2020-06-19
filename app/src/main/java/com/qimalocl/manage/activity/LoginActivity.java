@@ -37,6 +37,7 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 
 import org.apache.http.Header;
@@ -82,7 +83,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
         isForeground = true;
         isRefresh = true;
-        Log.e("LA===onCreate", "==="+isRefresh);
+        LogUtil.e("LA===onCreate", "==="+isRefresh);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 //      must store the new intent unless getIntent() will return the old one
         setIntent(intent);
 
-        Log.e("la===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
+        LogUtil.e("la===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
 
     }
 
@@ -99,14 +100,14 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
     public void onResume() {
         isForeground = true;
 //        isRefresh = true;
-        Log.e("LA===onResume", "==="+isRefresh);
+        LogUtil.e("LA===onResume", "==="+isRefresh);
         super.onResume();
     }
 
     @Override
     public void onPause() {
 //        isForeground = false;
-        Log.e("LA===onPause", "==="+isRefresh);
+        LogUtil.e("LA===onPause", "==="+isRefresh);
         super.onPause();
     }
 
@@ -115,13 +116,13 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
     protected void onDestroy() {
 //        isForeground = false;
 
-        Log.e("LA===onDestroy", "==="+isRefresh);
+        LogUtil.e("LA===onDestroy", "==="+isRefresh);
         super.onDestroy();
     }
 
     private void initView() {
 
-        Log.e("LA===initView", SharedPreferencesUrls.getInstance().getString("userName", "")+"==="+isRefresh);
+        LogUtil.e("LA===initView", SharedPreferencesUrls.getInstance().getString("userName", "")+"==="+isRefresh);
 
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
@@ -143,7 +144,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
             phoneEdit.setText(telphone);
         }
 
-        Log.e("LA===initView2", phoneEdit.getText().toString().trim()+"==="+telphone);
+        LogUtil.e("LA===initView2", phoneEdit.getText().toString().trim()+"==="+telphone);
 
         if (StringUtil.isPhoner(phoneEdit.getText().toString().trim())) {
             SharedPreferencesUrls.getInstance().putString("userName", phoneEdit.getText().toString().trim());
@@ -160,7 +161,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                Log.e("onTextChanged===", count+"==="+phoneEdit.getText());
+//                LogUtil.e("onTextChanged===", count+"==="+phoneEdit.getText());
 
                 if (count == 1) {
                     if (s.length() == 4) {
@@ -191,7 +192,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
             @Override
             public void afterTextChanged(Editable s) {
-//                Log.e("afterTextChanged===", "==="+phoneEdit.getText());
+//                LogUtil.e("afterTextChanged===", "==="+phoneEdit.getText());
 
                 String phone = phoneEdit.getText().toString().trim().replaceAll("\\s+", "");
 
@@ -208,7 +209,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                Log.e("onFocusChange===", hasFocus+"==="+telphone);
+                LogUtil.e("onFocusChange===", hasFocus+"==="+telphone);
 
                 if (hasFocus) {
                     if (telphone.length() == 11) {
@@ -291,7 +292,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
     private void sendCode() {
 
-        Log.e("verificationcode===0", "==="+telphone);
+        LogUtil.e("verificationcode===0", "==="+telphone);
 
         try{
             RequestParams params = new RequestParams();
@@ -311,7 +312,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     Toast.makeText(context, "fail=="+responseString, Toast.LENGTH_LONG).show();
 
-                    Log.e("verificationcode===fail", throwable.toString()+"==="+responseString);
+                    LogUtil.e("verificationcode===fail", throwable.toString()+"==="+responseString);
 
                     if (loadingDialog != null && loadingDialog.isShowing()){
                         loadingDialog.dismiss();
@@ -328,7 +329,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
 //                        Toast.makeText(context, "=="+responseString, Toast.LENGTH_LONG).show();
 
-                                Log.e("verificationcode===", "==="+responseString);
+                                LogUtil.e("verificationcode===", "==="+responseString);
 
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -339,7 +340,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
                                     startActivity(intent);
 //                                    scrollToFinishActivity();
                                 }else{
-                                    Log.e("verificationcode===2", "==="+result.getMessage());
+                                    LogUtil.e("verificationcode===2", "==="+result.getMessage());
                                     ToastUtil.showMessageApp(context, result.getMessage());
 //                                    Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
@@ -367,7 +368,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.e("onKeyDown===", "==="+keyCode);
+        LogUtil.e("onKeyDown===", "==="+keyCode);
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             scrollToFinishActivity();

@@ -28,6 +28,7 @@ import com.clj.fastble.exception.ConnectException;
 import com.clj.fastble.exception.OtherException;
 import com.clj.fastble.exception.TimeoutException;
 import com.clj.fastble.utils.BleLog;
+import com.qimalocl.manage.utils.LogUtil;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -170,10 +171,10 @@ public class BleBluetooth {
         lastState = LastState.CONNECT_CONNECTING;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Log.e("BleBluetooth===1", autoConnect+"==="+Build.VERSION.SDK_INT);
+            LogUtil.e("BleBluetooth===1", autoConnect+"==="+Build.VERSION.SDK_INT);
             bluetoothGatt = bleDevice.getDevice().connectGatt(BleManager.getInstance().getContext(),autoConnect, coreGattCallback, TRANSPORT_LE);
         } else {
-            Log.e("BleBluetooth===2", autoConnect+"==="+Build.VERSION.SDK_INT);
+            LogUtil.e("BleBluetooth===2", autoConnect+"==="+Build.VERSION.SDK_INT);
             bluetoothGatt = bleDevice.getDevice().connectGatt(BleManager.getInstance().getContext(),autoConnect, coreGattCallback);
         }
         if (bluetoothGatt != null) {
@@ -366,7 +367,7 @@ public class BleBluetooth {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
 
-            Log.e("onConnectionStateChange", gatt+"==="+status+"==="+newState);
+            LogUtil.e("onConnectionStateChange", gatt+"==="+status+"==="+newState);
 
             BleLog.i("BluetoothGattCallback：onConnectionStateChange "
                     + '\n' + "status: " + status
@@ -404,7 +405,7 @@ public class BleBluetooth {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
 
-            Log.e("onServicesDiscovered===", gatt+"==="+status);
+            LogUtil.e("onServicesDiscovered===", gatt+"==="+status);
 
             BleLog.i("BluetoothGattCallback：onServicesDiscovered "
                     + '\n' + "status: " + status

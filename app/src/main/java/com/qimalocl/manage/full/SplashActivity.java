@@ -33,6 +33,8 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
+import com.qimalocl.manage.base.AppStatusManager;
+import com.qimalocl.manage.base.Base2Activity;
 import com.qimalocl.manage.base.BaseActivity;
 import com.qimalocl.manage.core.common.AppManager;
 import com.qimalocl.manage.core.common.HttpHelper;
@@ -42,7 +44,9 @@ import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
+import com.qimalocl.manage.model.AppStatus;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -50,7 +54,7 @@ import org.json.JSONArray;
 import java.util.UUID;
 
 @SuppressLint("NewApi")
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends Base2Activity {
 
 	private Context context = this;
 	public static boolean isForeground = false;
@@ -74,6 +78,7 @@ public class SplashActivity extends BaseActivity {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.main_enter);
+//		setContentLayout(R.layout.main_enter);
 		loadingImage = (ImageView) findViewById(R.id.plash_loading_main);
 //		initHttp();
 
@@ -81,7 +86,7 @@ public class SplashActivity extends BaseActivity {
 	}
 
 	private void init() {
-		Log.e("init===1", "===");
+		LogUtil.e("init===1", "===");
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			int checkPermission = this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -95,7 +100,7 @@ public class SplashActivity extends BaseActivity {
 			}
 		}
 
-		Log.e("init===2", "===");
+		LogUtil.e("init===2", "===");
 
 
 		/**
@@ -153,6 +158,7 @@ public class SplashActivity extends BaseActivity {
 
 		String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
 
+		AppStatusManager.getInstance().setAppStatus(AppStatus.STATUS_NORMAL);
 		if("".equals(access_token)){
 			UIHelper.goToAct(context, LoginActivity.class);
 		}else{

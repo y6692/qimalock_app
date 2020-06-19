@@ -18,6 +18,7 @@ import com.http.pdata.PUserLogin;
 import com.http.pdata.PUserRegister;
 import com.qimalocl.manage.utils.Constants;
 import com.qimalocl.manage.utils.Globals;
+import com.qimalocl.manage.utils.LogUtil;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

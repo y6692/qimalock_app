@@ -66,6 +66,7 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -193,7 +194,7 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("requestCode===", "==="+requestCode);
+        LogUtil.e("requestCode===", "==="+requestCode);
 
         switch (requestCode) {
 
@@ -204,7 +205,7 @@ public class QueryFragment extends BaseFragment implements View.OnClickListener{
 					Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                 }
 
-                Log.e("requestCode===1", "==="+resultCode);
+                LogUtil.e("requestCode===1", "==="+resultCode);
                 break;
 
             default:

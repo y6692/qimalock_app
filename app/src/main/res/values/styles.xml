@@ -188,4 +188,9 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowAnimationStyle">@null</item>
     </style>
+
+
+    <style name="TabLayoutTextStyle2">
+        <item name="android:textSize">15sp</item>
+    </style>
 </resources>

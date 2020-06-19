@@ -13,8 +13,9 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-  public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+//  public static String host2 = HTTPS + "newmapi.7mate.cn/api";
 //    public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
+	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
 
 	//附近的车辆接口
 	public static String car_nearby = host2 + "/car/";
@@ -25,6 +26,19 @@ public class Urls {
 	public static String edit_parking = host2 + "/parking/";
 	//	获取电子围栏接口	get\新建电子围栏接口	post
 	public static String parking = host2 + "/parking";
+
+	//	车辆调运相关
+	//	车辆调运记录列表
+	public static String transports = host2 + "/transports";
+	//	创建调运单接口
+	public static String transport = host2 + "/transport";
+	//	车辆调运完成接口
+	public static String transport_finish = host2 + "/transport/";
+
+//	https://testnewmapi.7mate.cn/api/transport/{id}/finish
+
+	//	七牛云图片相关 - 获取上传凭证
+	public static String uploadtoken = host2 + "/qiniu/uploadtoken";
 
 	//获取验证码接口
 	public static String verificationcode = host2 + "/verificationcode";

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.adapters.DeviceListAdapter;
 import com.qimalocl.manage.core.common.UIHelper;
+import com.qimalocl.manage.utils.LogUtil;
 import com.sofi.blelocker.library.connect.listener.BluetoothStateListener;
 import com.sofi.blelocker.library.search.SearchRequest;
 import com.sofi.blelocker.library.search.SearchResult;
@@ -148,14 +149,14 @@ public class DeviceList2Activity extends Activity {
     private final SearchResponse mSearchResponse = new SearchResponse() {
         @Override
         public void onSearchStarted() {
-            Log.e("DeviceList2===", "DeviceListActivity.onSearchStarted");
+            LogUtil.e("DeviceList2===", "DeviceListActivity.onSearchStarted");
             mDevices.clear();
             mAdapter.notifyDataChanged();
         }
 
         @Override
         public void onDeviceFounded(SearchResult device) {
-            Log.e("DeviceList2===", "DeviceListActivity.onDeviceFounded " + device.device.getAddress());
+            LogUtil.e("DeviceList2===", "DeviceListActivity.onDeviceFounded " + device.device.getAddress());
 
             if (!mDevices.contains(device)) {
                 mDevices.add(device);
@@ -174,13 +175,13 @@ public class DeviceList2Activity extends Activity {
 
         @Override
         public void onSearchStopped() {
-            Log.e("DeviceList2===","DeviceListActivity.onSearchStopped");
+            LogUtil.e("DeviceList2===","DeviceListActivity.onSearchStopped");
 
         }
 
         @Override
         public void onSearchCanceled() {
-            Log.e("DeviceList2===","DeviceListActivity.onSearchCanceled");
+            LogUtil.e("DeviceList2===","DeviceListActivity.onSearchCanceled");
 
         }
     };
@@ -222,7 +223,7 @@ public class DeviceList2Activity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.e("DeviceList2===","onDestroy");
+        LogUtil.e("DeviceList2===","onDestroy");
         ClientManager.getClient().unregisterBluetoothStateListener(mBluetoothStateListener);
         ClientManager.getClient().stopSearch();
     }

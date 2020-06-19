@@ -26,6 +26,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 import java.io.IOException;
 
 /**
@@ -116,13 +118,13 @@ public final class CameraManager {
      * @throws IOException Indicates the camera driver failed to open.
      */
     public void openDriver(SurfaceHolder holder) throws IOException {
-        Log.e("openDriver===", "===="+camera);
+        LogUtil.e("openDriver===", "===="+camera);
 
         try{
             if (camera == null) {
                 camera = Camera.open();
 
-                Log.e("openDriver===2", "===="+camera);
+                LogUtil.e("openDriver===2", "===="+camera);
 
                 if (camera == null) {
                     throw new IOException();
@@ -136,10 +138,10 @@ public final class CameraManager {
                 configManager.setDesiredCameraParameters(camera);
                 FlashlightManager.enableFlashlight();
 
-                Log.e("openDriver===3", "===="+camera);
+                LogUtil.e("openDriver===3", "===="+camera);
             }
         }catch (Exception e){
-            Log.e("openDriver===e", "===="+e);
+            LogUtil.e("openDriver===e", "===="+e);
         }
 
 
@@ -154,7 +156,7 @@ public final class CameraManager {
      * Closes the camera driver if still in use.
      */
     public void closeDriver() {
-        Log.e("closeDriver===", "==="+camera);
+        LogUtil.e("closeDriver===", "==="+camera);
 
         if (camera != null) {
             FlashlightManager.disableFlashlight();

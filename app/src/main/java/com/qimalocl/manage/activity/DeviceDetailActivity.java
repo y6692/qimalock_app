@@ -40,6 +40,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.Globals;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UIHelper;
 import com.sofi.blelocker.library.Code;
@@ -141,7 +142,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
         type = SharedPreferencesUrls.getInstance().getString("type", "");
 
-        Log.e("DDA===onCreate", "==="+type);
+        LogUtil.e("DDA===onCreate", "==="+type);
 
         loadingDialog = new LoadingDialog(this);
         loadingDialog.setCancelable(false);
@@ -184,7 +185,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     public void onResume() {
         super.onResume();
 
-        Log.e("DDA===onResume", "==="+type);
+        LogUtil.e("DDA===onResume", "==="+type);
     }
 
     @OnClick(R.id.mainUI_title_backBtn)
@@ -248,7 +249,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             @Override
             public void run() {
 
-                Log.e("DDA===onActivityResult",data+"==="+requestCode);
+                LogUtil.e("DDA===onActivityResult",data+"==="+requestCode);
 
                 switch (requestCode) {
                     case 1:
@@ -273,7 +274,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     }
 
     protected void rent(){
-        Log.e("rent===000",mac+"==="+name+"==="+keySource);
+        LogUtil.e("rent===000",mac+"==="+name+"==="+keySource);
 
         RequestParams params = new RequestParams();
         params.put("lock_no", name);
@@ -282,7 +283,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         HttpHelper.get(this, Urls.rent, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                Log.e("rent===1",mac+"==="+name+"==="+keySource);
+                LogUtil.e("rent===1",mac+"==="+name+"==="+keySource);
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -297,7 +298,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
-                Log.e("rent===2",mac+"==="+name+"==="+keySource);
+                LogUtil.e("rent===2",mac+"==="+name+"==="+keySource);
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -313,12 +314,12 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             }
             @Override
             public void onSuccess(int statusCode, Header[] headers, final String responseString) {
-                Log.e("rent===3",mac+"==="+name+"==="+keySource);
+                LogUtil.e("rent===3",mac+"==="+name+"==="+keySource);
 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("rent===","==="+responseString);
+                        LogUtil.e("rent===","==="+responseString);
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                             if (result.getFlag().equals("Success")) {
@@ -328,7 +329,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                                 keys = bean.getKeys();
                                 serverTime = bean.getServerTime();
 
-                                Log.e("rent===", mac+"==="+encryptionKey+"==="+keys);
+                                LogUtil.e("rent===", mac+"==="+encryptionKey+"==="+keys);
 
                                 openBleLock(null);
                             }else {
@@ -365,7 +366,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             params.put("lock_no", name);    //
             params.put("type", type);    //泺平新锁
 
-            Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+result.split("=")[1]+"==="+mac+"==="+name+"==="+type);
+            LogUtil.e("addCar===", uid+"==="+access_token+"==="+result+"==="+result.split("=")[1]+"==="+mac+"==="+name+"==="+type);
 
             HttpHelper.post(context, Urls.addCar, params, new TextHttpResponseHandler() {
                 @Override
@@ -413,7 +414,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                Log.e("addCar===eee", "==="+e);
+                                LogUtil.e("addCar===eee", "==="+e);
                                 if (loadingDialog != null && loadingDialog.isShowing()){
                                     loadingDialog.dismiss();
                                 }
@@ -437,7 +438,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
         mac = "50:F1:4A:B6:7F:82";
 
-        Log.e("bindData===", name+"==="+mac);
+        LogUtil.e("bindData===", name+"==="+mac);
 
 //        mac = "A4:34:F1:7B:BF:A9";
 //        mac = "A4:34:F1:7B:BF:9A";
@@ -474,12 +475,12 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //                                    .build();
 //
 //                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                                Log.e("usecar===1", "===");
+//                                LogUtil.e("usecar===1", "===");
 //
 //                                return;
 //                            }
 
-                            Log.e("usecar===2", "===");
+                            LogUtil.e("usecar===2", "===");
 
 //                            m_myHandler.sendEmptyMessage(0x98);
 //                            ClientManager.getClient().search(request, mSearchResponse);
@@ -492,7 +493,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                                     ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
 //                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
 
-//                                    Log.e("0x98===", "==="+isStop);
+//                                    LogUtil.e("0x98===", "==="+isStop);
 //
 //                                    m_myHandler.postDelayed(new Runnable() {
 //                                        @Override
@@ -597,7 +598,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             case R.id.layLock :
                 UIHelper.showProgress(this, "获取锁状态中");
 
-                Log.e("onClick===layLock", "==="+mConnected);
+                LogUtil.e("onClick===layLock", "==="+mConnected);
 
                 if(mConnected){
                     ClientManager.getClient().getStatus(mac, new IGetStatusResponse() {
@@ -620,7 +621,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                             m_myHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.e(TAG, Code.toString(code));
+                                    LogUtil.e(TAG, Code.toString(code));
                                     UIHelper.dismiss();
                                     UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                                 }
@@ -720,7 +721,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("connect===fail", Code.toString(code));
+                        LogUtil.e("connect===fail", Code.toString(code));
                         UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                     }
                 });
@@ -733,7 +734,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
                 UIHelper.dismiss();
 
-                Log.e("connect===Success", "===");
+                LogUtil.e("connect===Success", "===");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -764,7 +765,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
     private final SearchResponse mSearchResponse = new SearchResponse() {
         @Override
         public void onSearchStarted() {
-            Log.e("===","DeviceDetailActivity.onSearchStarted");
+            LogUtil.e("===","DeviceDetailActivity.onSearchStarted");
         }
 
         @Override
@@ -772,7 +773,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("===","DeviceDetailActivity.onDeviceFounded " + device.device.getAddress());
+                    LogUtil.e("===","DeviceDetailActivity.onDeviceFounded " + device.device.getAddress());
                     if (device.getAddress().contains(mac)) {
                         ClientManager.getClient().stopSearch();
                         connectDeviceIfNeeded();
@@ -784,13 +785,13 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
         @Override
         public void onSearchStopped() {
-            Log.e("===","DeviceDetailActivity.onSearchStopped");
+            LogUtil.e("===","DeviceDetailActivity.onSearchStopped");
 
         }
 
         @Override
         public void onSearchCanceled() {
-            Log.e("===","DeviceDetailActivity.onSearchCanceled");
+            LogUtil.e("===","DeviceDetailActivity.onSearchCanceled");
 
         }
     };
@@ -824,7 +825,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
     //获取服务器的加密信息
     private void queryStatusServer(String version, String keySerial, String macKey, String vol) {
-        Log.e(TAG, "version:" + version + " keySerial:" + keySerial + " macKey:" + macKey + " vol:" + vol);
+        LogUtil.e(TAG, "version:" + version + " keySerial:" + keySerial + " macKey:" + macKey + " vol:" + vol);
         this.version = version;
         int timestamp = (int) StringUtils.getCurrentTimestamp();
 
@@ -880,7 +881,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
 //        ClientManager.getClient().openLock(mac, "18112348925", resultBean.getServerTime(),
 
-        Log.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
+        LogUtil.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
 
         ClientManager.getClient().openLock(mac,"000000000000", (int) serverTime, keys, encryptionKey, new IEmptyResponse(){
 //        ClientManager.getClient().openLock(mac,"000000000000", resultBean.getServerTime(), resultBean.getKeys(), resultBean.getEncryptionKey(), new IEmptyResponse(){
@@ -889,7 +890,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("scan===openBleLock1", code+"==="+Code.toString(code));
+                                LogUtil.e("scan===openBleLock1", code+"==="+Code.toString(code));
                                 UIHelper.dismiss();
                                 UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                                 getBleRecord();
@@ -900,7 +901,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 
                     @Override
                     public void onResponseSuccess() {
-                        Log.e("scan===openBleLock2", "===");
+                        LogUtil.e("scan===openBleLock2", "===");
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -942,7 +943,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        LogUtil.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                     }
@@ -992,7 +993,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        LogUtil.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                     }
@@ -1096,7 +1097,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        LogUtil.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                     }
@@ -1113,7 +1114,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //        ClientManager.getClient().buzzer(mac, new IEmptyResponse(){
 //                    @Override
 //                    public void onResponseFail(int code) {
-//                        LOG.E(TAG, Code.toString(code));
+//                        LogUtil.e(TAG, Code.toString(code));
 //                        UIHelper.dismiss();
 //                        UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //                    }
@@ -1138,7 +1139,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     public void run() {
                         UIHelper.dismiss();
 
-                        Log.e("queryOpenState===", "===="+open);    //false==关闭     true==打开
+                        LogUtil.e("queryOpenState===", "===="+open);    //false==关闭     true==打开
                     }
                 });
             }
@@ -1148,7 +1149,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, Code.toString(code));
+                        LogUtil.e(TAG, Code.toString(code));
                         UIHelper.dismiss();
                         UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
                     }
@@ -1163,7 +1164,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //        ClientManager.getClient().queryRunState(mac, new IQueryRunStateResponse() {
 //            @Override
 //            public void onResponseSuccess(String time, String vol, boolean elec, boolean buzzer, int recordNum) {
-//                LOG.E(TAG, "time:" + time + " vol:" + vol + " elec:" + elec + " buzzer:" + buzzer +
+//                LogUtil.e(TAG, "time:" + time + " vol:" + vol + " elec:" + elec + " buzzer:" + buzzer +
 //                        " recordNum:" + recordNum);
 //                UIHelper.dismiss();
 //                RunState runState = new RunState(time, vol, elec, buzzer, recordNum);
@@ -1172,7 +1173,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1186,7 +1187,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //            @Override
 //            public void onResponseSuccess(String ip, String path, String port, String apn, String ping,
 //                                          String gps) {
-//                LOG.E(TAG, "ip:" + ip + " path:" + path + " port:" + port + " apn:" + apn +
+//                LogUtil.e(TAG, "ip:" + ip + " path:" + path + " port:" + port + " apn:" + apn +
 //                        " ping:" + ping + " gps:" + gps);
 //                UIHelper.dismiss();
 //                GprsConfig gprsConfig = new GprsConfig(ip, path, port, apn, ping, gps);
@@ -1195,7 +1196,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1214,7 +1215,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1233,7 +1234,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1301,7 +1302,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //                commitKeyServer(lockNo, false);
@@ -1321,7 +1322,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
 //
 //            @Override
 //            public void onResponseFail(int code) {
-//                LOG.E(TAG, Code.toString(code));
+//                LogUtil.e(TAG, Code.toString(code));
 //                UIHelper.dismiss();
 //                UIHelper.showToast(DeviceDetailActivity.this, Code.toString(code));
 //            }
@@ -1358,7 +1359,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("onNotifyClose===", "====");
+                    LogUtil.e("onNotifyClose===", "====");
 
                     BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
                     tvOpen.setText("开锁");
@@ -1378,7 +1379,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                 public void run() {
 //                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onConnectStatusChanged %d in %s", status, Thread.currentThread().getName()));
 
-                    Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
+                    LogUtil.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
 
                     if(status == STATUS_CONNECTED){
                         refreshData(true);
@@ -1411,7 +1412,7 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
         ClientManager.getClient().unregisterConnectStatusListener(mac, mConnectStatusListener);
         super.onDestroy();
 
-        Log.e("DDA===onDestroy", "===");
+        LogUtil.e("DDA===onDestroy", "===");
     }
 
 }

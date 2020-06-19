@@ -94,6 +94,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.utils.JsonUtil;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
@@ -315,7 +316,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                         try {
                             json_LngLat = JsonUtil.objectToJson(list);
 
-                            Log.e("del===2", list.size()+"==="+listMarker.size()+"==="+json_LngLat);
+                            LogUtil.e("del===2", list.size()+"==="+listMarker.size()+"==="+json_LngLat);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -455,7 +456,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         aMap.setOnMarkerDragListener(new AMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
-                Log.e("onMarkerDragStart===", marker+"==="+marker.getPosition()+"==="+list.contains(marker.getPosition()));
+                LogUtil.e("onMarkerDragStart===", marker+"==="+marker.getPosition()+"==="+list.contains(marker.getPosition()));
 
 //                listMarker.remove(marker);
 
@@ -464,12 +465,12 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
             @Override
             public void onMarkerDrag(Marker marker) {
-                Log.e("onMarkerDrag===", marker+"==="+marker.getPosition());
+                LogUtil.e("onMarkerDrag===", marker+"==="+marker.getPosition());
             }
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                Log.e("onMarkerDragEnd===", listMarker.size()+"==="+marker+"==="+marker.getPosition()+"==="+polygon);
+                LogUtil.e("onMarkerDragEnd===", listMarker.size()+"==="+marker+"==="+marker.getPosition()+"==="+polygon);
 
 //                listMarker.add(marker);
 
@@ -523,7 +524,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
 
 
-                    Log.e("onMarkerDragEnd===1", polygon_map.size()+"==="+polygon_map);
+                    LogUtil.e("onMarkerDragEnd===1", polygon_map.size()+"==="+polygon_map);
                 }
 
             }
@@ -533,14 +534,14 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-                Log.e("onMarkerClick===", referLatitude+"==="+referLongitude+"==="+marker.getPosition().latitude+"==="+marker.getPosition().longitude);
+                LogUtil.e("onMarkerClick===", referLatitude+"==="+referLongitude+"==="+marker.getPosition().latitude+"==="+marker.getPosition().longitude);
 
                 if(marker.getTitle()!=null && !"".equals(marker.getTitle())){
 //                    ll_top.setVisibility(View.GONE);
 //                    ll_top_navi.setVisibility(View.VISIBLE);
 //                    isNavi = true;
 //
-//                    Log.e("onMarkerClick===1", ll_top_navi.isShown()+"==="+marker.getTitle()+"==="+marker.getTitle().split("-")[0]);
+//                    LogUtil.e("onMarkerClick===1", ll_top_navi.isShown()+"==="+marker.getTitle()+"==="+marker.getTitle().split("-")[0]);
 //
 //                    markerPosition = marker.getPosition();
 //                    tv_navi_name.setText(marker.getTitle());
@@ -556,7 +557,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     @Override
     public void onMapLongClick(LatLng point) {
-        Log.e("onMapLongClick===", listMarker.size() + "===" + point.latitude+"===" + point.longitude+"===" + point);
+        LogUtil.e("onMapLongClick===", listMarker.size() + "===" + point.latitude+"===" + point.longitude+"===" + point);
 
         if(isAdd || isUpdate){
             return;
@@ -567,7 +568,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
             parkingBean = parkingList.get(i);
 
             if(parkingBean.getPolygon().contains(point)){
-//                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
+//                LogUtil.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
 
                 for (int j = 0; j < listMarker.size(); j ++){
                     listMarker.get(j).remove();
@@ -585,7 +586,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                 del_polygon = parkingBean.getPolygon();
                 json_LngLat = JsonUtil.objectToJson(del_polygon.getPoints());
 
-                Log.e("onMapLongClick===3", pid+"==="+dot_name+"==="+json_LngLat);
+                LogUtil.e("onMapLongClick===3", pid+"==="+dot_name+"==="+json_LngLat);
 
                 customBuilder = new CustomDialog.Builder(context);
                 customBuilder.setTitle("温馨提示").setMessage("是否删除"+dot_name+"电子围栏？")
@@ -613,8 +614,8 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     @Override
     public void onMapClick(LatLng point) {
-//        Log.e("onMapClick===", ll_top.isShown()+"===" + routeOverLay+"===" + ll_top_navi+"===" + point.latitude+"===" + point.longitude+"===" + point);
-        Log.e("onMapClick===", listMarker.size() + "===" + point.latitude+"===" + point.longitude+"===" + point);
+//        LogUtil.e("onMapClick===", ll_top.isShown()+"===" + routeOverLay+"===" + ll_top_navi+"===" + point.latitude+"===" + point.longitude+"===" + point);
+        LogUtil.e("onMapClick===", listMarker.size() + "===" + point.latitude+"===" + point.longitude+"===" + point);
 
 //        if(polygon!=null){
 //            polygon.remove();
@@ -630,7 +631,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //            parkingBean = parkingList.get(i);
 
             if(parkingList.get(i).getPolygon().contains(point)){
-//                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
+//                LogUtil.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
 
                 parkingBean = parkingList.get(i);
 
@@ -653,7 +654,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
                 json_LngLat = JsonUtil.objectToJson(list);
 
-                Log.e("onMapClick===4", list.size()+"==="+parkingBean.getName()+"==="+json_LngLat);
+                LogUtil.e("onMapClick===4", list.size()+"==="+parkingBean.getName()+"==="+json_LngLat);
 
                 for (int j = 0; j < list.size(); j ++){
                     MarkerOptions centerMarkerOption = new MarkerOptions().position(list.get(j)).icon(successDescripter2);
@@ -676,11 +677,11 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
 //        for (int key : parking_map.keySet()) {
 //
-////            Log.e("onMapClick===1", key + "===" + parking_map.get(key));
+////            LogUtil.e("onMapClick===1", key + "===" + parking_map.get(key));
 //
 //            if(parking_map.get(key).contains(point)){
-////                Log.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
-//                Log.e("onMapClick===3", key+"==="+JsonUtil.objectToJson(parking_map.get(key).getPoints()));
+////                LogUtil.e("onMapClick===2", key+"==="+parking_map.get(key).getPoints());
+//                LogUtil.e("onMapClick===3", key+"==="+JsonUtil.objectToJson(parking_map.get(key).getPoints()));
 //
 //                pid = key;
 //
@@ -692,11 +693,11 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 ////            isContainsList.add(pOptions.get(i).contains(new LatLng(Double.parseDouble(bean.getLatitude()), Double.parseDouble(bean.getLongitude()))));
 //
 //            if(pOptions.get(i).contains(point)){
-//                Log.e("onMapClick===2", "==="+pOptions.get(i).getPoints());
+//                LogUtil.e("onMapClick===2", "==="+pOptions.get(i).getPoints());
 //            }
 //
-////            Log.e("onMapClick===1", pOptions.get(i)+"==="+pOptions.get(i).contains(point));
-////            Log.e("onMapClick===1", pOptions.get(i).contains(point)+"===");
+////            LogUtil.e("onMapClick===1", pOptions.get(i)+"==="+pOptions.get(i).contains(point));
+////            LogUtil.e("onMapClick===1", pOptions.get(i).contains(point)+"===");
 //
 ////            isContainsList.add(pOptions.get(i).contains(point));
 //
@@ -740,7 +741,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                 break;
 
             case R.id.getDot_confirmLayout:
-                Log.e("confirmLayout===", referLatitude+"==="+referLongitude);
+                LogUtil.e("confirmLayout===", referLatitude+"==="+referLongitude);
 
 //                MarkerOptions centerMarkerOption = new MarkerOptions().position(new LatLng(centerMarker.getPosition().latitude, centerMarker.getPosition().longitude)).icon(successDescripter2);
 
@@ -766,7 +767,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                 try {
                     json_LngLat = JsonUtil.objectToJson(list);
 
-                    Log.e("confirmLayout===2", list.size()+"==="+listMarker.size()+"==="+json_LngLat);
+                    LogUtil.e("confirmLayout===2", list.size()+"==="+listMarker.size()+"==="+json_LngLat);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -797,7 +798,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
             case R.id.getDot_cancelLayout:
 
-//                Log.e("cancelLayout===", centerMarker.getPosition()+"==="+centerMarker.getPosition().latitude+"==="+centerMarker.getPosition().longitude+"==="+referLongitude+"==="+referLatitude);
+//                LogUtil.e("cancelLayout===", centerMarker.getPosition()+"==="+centerMarker.getPosition().latitude+"==="+centerMarker.getPosition().longitude+"==="+referLongitude+"==="+referLatitude);
 
 //                if(dotMarker!=null){
 //                    dotMarker.remove();
@@ -842,7 +843,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     private void getSchoolList(){
 
-        Log.e("getSchoolList===", "===");
+        LogUtil.e("getSchoolList===", "===");
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
         if (access_token != null && !"".equals(access_token)) {
@@ -866,7 +867,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
-                        Log.e("getSchoolList===1", "==="+responseString);
+                        LogUtil.e("getSchoolList===1", "==="+responseString);
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -874,7 +875,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
                         String[] schools = bean.getSchools();
 
-                        Log.e("getSchoolList===2", schools+"===");
+                        LogUtil.e("getSchoolList===2", schools+"===");
 
 //                        if (schoolList.size() != 0 || !schoolList.isEmpty()){
 //                            schoolList.clear();
@@ -886,7 +887,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                         for (int i = 0; i < schools.length;i++){
                             SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
 
-                            Log.e("getSchoolList===3", bean2.getId()+"==="+bean2.getName());
+                            LogUtil.e("getSchoolList===3", bean2.getId()+"==="+bean2.getName());
 
 //                            schoolList.add(bean2);
                             data.add(bean2);
@@ -901,7 +902,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
 //                        setFooterType(2);
 //
-//                        Log.e("getSchoolList===3", datas.size()+"==="+schoolList.size());
+//                        LogUtil.e("getSchoolList===3", datas.size()+"==="+schoolList.size());
 //
 //                        myAdapter.notifyDataSetChanged();
 
@@ -922,7 +923,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     }
 
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
-        Log.e("main===ChangeFinish_B", isContainsList.contains(true) + "》》》" + cameraPosition.target.latitude + "===" + macList.size()+">>>"+isUp + "===" + cameraPosition.target.latitude);
+        LogUtil.e("main===ChangeFinish_B", isContainsList.contains(true) + "》》》" + cameraPosition.target.latitude + "===" + macList.size()+">>>"+isUp + "===" + cameraPosition.target.latitude);
 
 
         if (isUp){
@@ -990,7 +991,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //
 ////        if(isHidden) return;
 //
-//        Log.e("main===initNearby0", latitude+"==="+longitude);
+//        LogUtil.e("main===initNearby0", latitude+"==="+longitude);
 //
 //        RequestParams params = new RequestParams();
 //        params.put("latitude",latitude);
@@ -1022,7 +1023,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //                    if (result.getFlag().equals("Success")) {
 //                        JSONArray array = new JSONArray(result.getData());
 //
-//                        Log.e("initNearby===Bike", "==="+array.length());
+//                        LogUtil.e("initNearby===Bike", "==="+array.length());
 //
 //                        for (Marker marker : bikeMarkerList){
 //                            if (marker != null){
@@ -1060,7 +1061,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //    public void initNearby(final double latitude, final double longitude){
     public void parking(){
 
-//        Log.e("gda===parking", latitude+"==="+longitude+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+//        LogUtil.e("gda===parking", latitude+"==="+longitude+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
 //
 //        if(latitude==0.0 || longitude==0.0) return;
 //
@@ -1069,7 +1070,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //        params.put("longitude", longitude);
 
 
-        Log.e("gda===parking", "==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+        LogUtil.e("gda===parking", "==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
 
         HttpHelper.get(context, Urls.parking, new TextHttpResponseHandler() {
             @Override
@@ -1089,7 +1090,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     @Override
                     public void run() {
                         try {
-                            Log.e("gda===parking1", "==="+responseString);
+                            LogUtil.e("gda===parking1", "==="+responseString);
 
                             final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -1100,7 +1101,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                                         if (1==1 || result.getFlag().equals("Success")) {
                                             final JSONArray jsonArray = new JSONArray(result.getData());
 
-                                            Log.e("gda===parking2", jsonArray.length()+"==="+jsonArray);
+                                            LogUtil.e("gda===parking2", jsonArray.length()+"==="+jsonArray);
 
                                             new Thread(new Runnable() {
                                                 @Override
@@ -1144,8 +1145,8 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                                                                 JSONObject jsonObject = new JSONObject(jsonArray.getJSONObject(i).getString("parking"));
                                                                 JSONArray jsonArray2 = new JSONArray(jsonObject.getString("ranges"));;
 
-                                                                Log.e("gda===parking3", jsonObject.length()+"==="+jsonObject);
-                                                                Log.e("gda===parking4", jsonArray2.length()+"==="+jsonArray2);
+                                                                LogUtil.e("gda===parking3", jsonObject.length()+"==="+jsonObject);
+                                                                LogUtil.e("gda===parking4", jsonArray2.length()+"==="+jsonArray2);
 
                                                                 for (int j = 0; j < jsonArray2.length(); j++) {
                                                                     LatLng latLng = new LatLng(Double.parseDouble(jsonArray2.getJSONObject(j).getString("latitude")), Double.parseDouble(jsonArray2.getJSONObject(j).getString("longitude")));
@@ -1155,7 +1156,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                                                                 }
 
 //                                                                if("江理工中德宿舍".equals(jsonObject.getString("name"))){
-//                                                                    Log.e("gda===parking5", list.size()+"==="+list);
+//                                                                    LogUtil.e("gda===parking5", list.size()+"==="+list);
 //                                                                }
 
                                                                 Polygon polygon = null;
@@ -1194,7 +1195,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
                                                         }
 
-                                                        Log.e("main_b===parking_r5", isContainsList.size()+"==="+isContainsList.contains(true)+"==="+pOptions.size()+"==="+pOptions);
+                                                        LogUtil.e("main_b===parking_r5", isContainsList.size()+"==="+isContainsList.contains(true)+"==="+pOptions.size()+"==="+pOptions);
 
                                                         if (loadingDialog != null && loadingDialog.isShowing()){
                                                             loadingDialog.dismiss();
@@ -1239,7 +1240,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     public void delete_parking(){
 
-        Log.e("gda===delete_parking", pid+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+        LogUtil.e("gda===delete_parking", pid+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
 
         HttpHelper.delete(context, Urls.edit_parking+pid, new TextHttpResponseHandler() {
             @Override
@@ -1259,7 +1260,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     @Override
                     public void run() {
                         try {
-                            Log.e("gda===delete_parking1", "==="+responseString);
+                            LogUtil.e("gda===delete_parking1", "==="+responseString);
 
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -1290,7 +1291,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     public void update_parking(){
 
-        Log.e("gda===update_parking", school_id+"==="+json_LngLat+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+        LogUtil.e("gda===update_parking", school_id+"==="+json_LngLat+"==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
 
         RequestParams params = new RequestParams();
         params.put("name", et_dot_name.getText().toString());
@@ -1317,7 +1318,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     @Override
                     public void run() {
                         try {
-                            Log.e("gda===update_parking1", "==="+responseString);
+                            LogUtil.e("gda===update_parking1", "==="+responseString);
 
                             final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -1348,7 +1349,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
     public void add_parking(){
 
-        Log.e("gda===add_parking", "==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
+        LogUtil.e("gda===add_parking", "==="+SharedPreferencesUrls.getInstance().getString("access_token",""));
 
         RequestParams params = new RequestParams();
         params.put("name", et_dot_name.getText().toString());
@@ -1375,7 +1376,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     @Override
                     public void run() {
                         try {
-                            Log.e("gda===add_parking1", "==="+responseString);
+                            LogUtil.e("gda===add_parking1", "==="+responseString);
 
                             final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -1435,7 +1436,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         isForeground = true;
         super.onResume();
 
-        Log.e("main===bike", "main====onResume===");
+        LogUtil.e("main===bike", "main====onResume===");
 
         tz = 0;
 
@@ -1487,7 +1488,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
         mListener = listener;
 
-        Log.e("main===b", isContainsList.contains(true) + "===listener===" + mlocationClient);
+        LogUtil.e("main===b", isContainsList.contains(true) + "===listener===" + mlocationClient);
 
 
         if (mlocationClient != null) {
@@ -1554,7 +1555,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
             if ((referLatitude == amapLocation.getLatitude()) && (referLongitude == amapLocation.getLongitude())) return;
 
-            Log.e("main===Changed", isContainsList.contains(true) + "》》》" + near + "===" + macList.size() + "===" + amapLocation.getLatitude() );
+            LogUtil.e("main===Changed", isContainsList.contains(true) + "》》》" + near + "===" + macList.size() + "===" + amapLocation.getLatitude() );
             ToastUtil.showMessage(context, isContainsList.contains(true) + "》》》" + near + "===" + amapLocation.getLatitude() + "===" + amapLocation.getLongitude());
 
             if (amapLocation != null && amapLocation.getErrorCode() == 0) {
@@ -1578,11 +1579,11 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     referLongitude = amapLocation.getLongitude();
                     myLocation = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
 
-                    Log.e("main===Changed>>>0", "》》》"+mFirstFix);
+                    LogUtil.e("main===Changed>>>0", "》》》"+mFirstFix);
 
                     if (mFirstFix) {
 
-                        Log.e("main===Changed>>>1", "》》》");
+                        LogUtil.e("main===Changed>>>1", "》》》");
 
                         mFirstFix = false;
 //                        schoolRange();
@@ -1649,7 +1650,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         screen = true;
         start = true;
 
-        Log.e("main===onStart_b", "===="+mlocationClient);
+        LogUtil.e("main===onStart_b", "===="+mlocationClient);
 
         if (mlocationClient != null) {
             mlocationClient.setLocationListener(this);
@@ -1664,7 +1665,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //                @Override
 //                public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
 //                    k++;
-//                    Log.e("main===LeScan", device + "====" + rssi + "====" + k);
+//                    LogUtil.e("main===LeScan", device + "====" + rssi + "====" + k);
 //
 //                    if (!macList.contains(""+device)){
 //                        macList.add(""+device);
@@ -1699,7 +1700,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         tz = 0;
 
         ToastUtil.showMessage(context, "main====onPause");
-        Log.e("main===", "main====onPause");
+        LogUtil.e("main===", "main====onPause");
 
 //		closeBroadcast();
 
@@ -1711,7 +1712,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         screen = false;
         change = false;
 
-        Log.e("bikeFrag===", "===onStop");
+        LogUtil.e("bikeFrag===", "===onStop");
 
 //		closeBroadcast();
 //
@@ -1754,7 +1755,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         String action = intent.getAction();
         String data = intent.getStringExtra("data");
 
-        Log.e("main===", "handleReceiver===" + action + "===" + data);
+        LogUtil.e("main===", "handleReceiver===" + action + "===" + data);
     }
 
 
@@ -1916,7 +1917,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
 
     public void onTouch(MotionEvent motionEvent) {
-        Log.e("main===onTouch", "===" + motionEvent.getAction());
+        LogUtil.e("main===onTouch", "===" + motionEvent.getAction());
 
 
         if (motionEvent.getAction() == MotionEvent.ACTION_UP ||

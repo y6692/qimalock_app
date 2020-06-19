@@ -32,6 +32,7 @@ import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 
 /**
@@ -122,19 +123,19 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
         m_myHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.e("onSuccess===00", responseBytes+"===");
+                LogUtil.e("onSuccess===00", responseBytes+"===");
 
                 String responseString = getResponseString(responseBytes, getCharset());
 
-                Log.e("onSuccess===0", responseString+"===");
+                LogUtil.e("onSuccess===0", responseString+"===");
 
                 if(responseString!=null && !"".equals(responseString)){
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("onSuccess===1", responseString+"==="+result.getStatus_code());
+                    LogUtil.e("onSuccess===1", responseString+"==="+result.getStatus_code());
 
                     if(result.getStatus_code()==401){
-                        Log.e("onSuccess===2", responseString+"==="+result.getStatus_code());
+                        LogUtil.e("onSuccess===2", responseString+"==="+result.getStatus_code());
 
                         SharedPreferencesUrls.getInstance().putString("access_token", "");
 //                        SharedPreferencesUrls.getInstance().putString("iscert", "");
@@ -145,7 +146,7 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
                         BaseApplication.context.startActivity(intent);
 
                     }else if(result.getStatus_code()==406){
-                        Log.e("onSuccess===3", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
+                        LogUtil.e("onSuccess===3", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
 
 //                        ToastUtil.showMessageApp(BaseApplication.context, result.getMessage());
 
@@ -157,7 +158,7 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 
                     }else{
 
-                        Log.e("onSuccess===4", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
+                        LogUtil.e("onSuccess===4", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
 
 //                        if(result.getStatus_code()!=200){
 //                            ToastUtil.showMessageApp(BaseApplication.context, result.getMessage());
@@ -174,10 +175,10 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 
 //        try {
 //        	String returnStr = new String(responseBytes, "utf-8");
-//        	Log.e("MyTest", "onSuccess:" + returnStr);
+//        	LogUtil.e("MyTest", "onSuccess:" + returnStr);
 //			onSuccess(statusCode, headers, getResponseString(RSAUtils.decryptByPrivateKey(Base64Utils.decode(returnStr), MyKey.cliPrivateKey), "utf-8"));
 //		} catch (Exception e) {
-//			Log.e("MyTest", "successError:" + e.toString());
+//			LogUtil.e("MyTest", "successError:" + e.toString());
 //			e.printStackTrace();
 //		}
     }

@@ -43,6 +43,7 @@ import com.qimalocl.manage.model.HistorysRecordBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TagBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
@@ -407,7 +408,7 @@ public class HistorysRecord2Activity extends SwipeBackActivity implements View.O
             tel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("Test","111111111");
+                    LogUtil.e("Test","111111111");
                     linkTel = bean.getTelphone();
                     if (Build.VERSION.SDK_INT >= 23) {
                         int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);

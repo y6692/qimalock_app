@@ -98,6 +98,7 @@ import com.qimalocl.manage.activity.DotSelectActivity;
 import com.qimalocl.manage.activity.GetDotActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
+import com.qimalocl.manage.activity.MerchantAddressMapActivity;
 import com.qimalocl.manage.activity.TestXiaoanActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
@@ -118,6 +119,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.Sentence;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.model.UserIndexBean;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UtilAnim;
 import com.qimalocl.manage.utils.UtilBitmap;
@@ -136,6 +138,7 @@ import com.sofi.blelocker.library.search.SearchRequest;
 import com.sofi.blelocker.library.search.SearchResult;
 import com.sofi.blelocker.library.search.response.SearchResponse;
 import com.sunshine.blelibrary.config.Config;
+import com.sunshine.blelibrary.mode.Battery2TxOrder;
 import com.sunshine.blelibrary.mode.BatteryTxOrder;
 import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
 import com.sunshine.blelibrary.mode.GetTokenTxOrder;
@@ -169,6 +172,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static com.fitsleep.sunshinelibrary.utils.EncryptUtils.Encrypt;
 import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
+import static com.sofi.blelocker.library.utils.BluetoothUtils.unregisterReceiver;
 
 @SuppressLint("NewApi")
 public class ScanFragment extends BaseFragment implements View.OnClickListener, LocationSource
@@ -250,8 +254,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private List<Marker> bikeMarkerList;
     private boolean isUp = false;
 
-    private static double latitude = 0.0;
-    private static double longitude = 0.0;
+    public static double latitude = 0.0;
+    public static double longitude = 0.0;
     private int isLock = 0;
     private View v;
 
@@ -364,8 +368,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //        registerReceiver(new String[] { LibraryConstants.BROADCAST_UPDATE_USER_INFO });
 
-		IntentFilter filter = new IntentFilter("data.broadcast.action");
-		context.registerReceiver(mReceiver, filter);
+
 
 //        filter = new IntentFilter("data.broadcast.action");
 //        activity.registerReceiver(broadcastReceiver, filter);
@@ -399,7 +402,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        e.printStackTrace();
 //                    }
 //
-////                    Log.e("sf===thread", threadScan + "===");
+////                    LogUtil.e("sf===thread", threadScan + "===");
 //
 //                    if(threadScan){
 //                        m_myHandler.sendEmptyMessage(1);
@@ -417,7 +420,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         super.onResume();
         isForeground = true;
 
-//        Log.e("sf===onResume", isHidden()+ "===" + latitude + "===" + longitude);
+//        LogUtil.e("sf===onResume", isHidden()+ "===" + latitude + "===" + longitude);
 
         if(!isHidden()){
             threadScan = true;
@@ -439,7 +442,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         boolean flag = activity.getIntent().getBooleanExtra("flag", false);
 
 
-        Log.e("sf===onResume", isPermission+"==="+flag+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type);
+        LogUtil.e("sf===onResume", isPermission+"==="+flag+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type);
 
         mapView.onResume();
 
@@ -453,6 +456,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                car_authority();
 //            }
         }
+
+        IntentFilter filter = new IntentFilter("data.broadcast.action");
+        context.registerReceiver(mReceiver, filter);
     }
 
     @Override
@@ -468,8 +474,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //        isForeground = false;
 
-        Log.e("sf===onPause", isPermission+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type+"==="+tvMsg.isRunning());
+        LogUtil.e("sf===onPause", isPermission+"==="+SharedPreferencesUrls.getInstance().getString("access_token", "")+"==="+type+"==="+tvMsg.isRunning());
 
+        if (mReceiver != null) {
+            context.unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
 
 //      mapView.onPause();
 //      deactivate();
@@ -480,7 +490,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
 
-        Log.e("onHiddenChanged===Scan", mapView+"==="+hidden+"==="+tvMsg.isRunning());
+        LogUtil.e("onHiddenChanged===Scan", mapView+"==="+hidden);
 
         if(hidden){
             //pause
@@ -492,7 +502,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                list2.clear();
 //            }
 
-            mapView.setVisibility(View.GONE);
+            if(mapView!=null){
+                mapView.setVisibility(View.GONE);
+            }
+
 
 //            mapView.onPause();
 //            deactivate();
@@ -503,8 +516,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                tvMsg.run();
 //            }
 
+            if(mapView!=null){
+                mapView.setVisibility(View.VISIBLE);
+            }
 
-            mapView.setVisibility(View.VISIBLE);
 
 //            mapView.onResume();
 //
@@ -561,7 +576,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         public void run() {
                             action = intent.getAction();
 
-                            Log.e("scan===mReceiver", "==="+action);
+                            LogUtil.e("scan===mReceiver", "==="+action);
 
                             if ("data.broadcast.action".equals(action)) {
 //                if(tvMsg!=null){
@@ -578,11 +593,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                 List<BadCarBean> list = (List<BadCarBean>) intent.getSerializableExtra("datas");
 
-                                Log.e("scan===mReceiver1", list.size()+"==="+list);
+                                LogUtil.e("scan===mReceiver1", list.size()+"==="+list);
 
-//                if(list2.size()>0){
-//                    list2.clear();
-//                }
+//                              if(list2.size()>0){
+//                                  list2.clear();
+//                              }
 
                                 List list2 = new ArrayList<Sentence>();
 
@@ -591,7 +606,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     list2.add(i, sen);
                                 }
 
-                                Log.e("scan===mReceiver2", list2.size()+"==="+list2);
+                                LogUtil.e("scan===mReceiver2", list2.size()+"==="+list2);
 
                                 //给View传递数据
 //                tvMsg.setList(list2);
@@ -600,7 +615,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                tvMsg.setDataSetAdapter(new DataSetAdapter<Sentence>(list2) {
 //                    @Override
 //                    protected Sentence text(Sentence s) {
-//                        Log.e("scan===mReceiver3", s+"===");
+//                        LogUtil.e("scan===mReceiver3", s+"===");
 //                        return s;
 //                    }
 //                });
@@ -608,7 +623,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                tvMsg.setDataSetAdapter(new DataSetAdapter() {
 //                    @Override
 //                    protected String text(Object o) {
-//                        Log.e("scan===mReceiver3", o+"===");
+//                        LogUtil.e("scan===mReceiver3", o+"===");
 //                        return null;
 //                    }
 //                });
@@ -629,7 +644,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
                                         @Override
                                         protected String text(Sentence sentence) {
-//                                          Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+//                                          LogUtil.e("scan===mReceiver3", sentence+"==="+sentence.getName());
 
                                             if(sentence.getName()==null){
                                                 return "";
@@ -642,7 +657,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     tvMsg.setDataSetAdapter(dataSetAdapter);
                                     tvMsg.setEnabled(true);
 
-                                    Log.e("scan===mReceiver4", list2.size()+"==="+tvMsg.isRunning());
+                                    LogUtil.e("scan===mReceiver4", list2.size()+"==="+tvMsg.isRunning());
 
                                     if(list2.size()>1){
                                         llMsg.setVisibility(View.VISIBLE);
@@ -667,16 +682,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                 }
 
-
-
                             }
                         }
                     });
 
                 }
             }).start();
-
-
 
         }
     };
@@ -686,7 +697,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //    DataSetAdapter<Sentence> dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
 //        @Override
 //        protected String text(Sentence sentence) {
-////            Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+////            LogUtil.e("scan===mReceiver3", sentence+"==="+sentence.getName());
 //
 //            if(sentence.getName()==null){
 //                return "";
@@ -736,7 +747,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         isOpen = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        Log.e("checkGPSIsOpen==","==="+isOpen);
+        LogUtil.e("checkGPSIsOpen==","==="+isOpen);
 
         return isOpen;
     }
@@ -825,7 +836,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
 
-                        Log.e("sf===onC", "==="+type);
+                        LogUtil.e("sf===onC", "==="+type);
 
                         carbadaction(3);
 
@@ -888,7 +899,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 marker.setTitle(marker.getTitle());
 
-                Log.e("onMarkerClick===", marker.getTitle()+"==="+marker.getTitle().split("-")[0]);
+                LogUtil.e("onMarkerClick===", marker.getTitle()+"==="+marker.getTitle().split("-")[0]);
 
 //                codenum = marker.getTitle().split("-")[0];
 //                quantity = marker.getTitle().split("-")[1];
@@ -905,7 +916,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         aMap.setOnMapTouchListener(ScanFragment.this);
         setUpLocationStyle();
 
-//        Log.e("zoom==", "=="+aMap.getCameraPosition().zoom);
+//        LogUtil.e("zoom==", "=="+aMap.getCameraPosition().zoom);
 
 
 //        mSampleView = (VerticalScrollTextView) findViewById(R.id.sampleView1);
@@ -990,7 +1001,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     try {
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        Log.e("sf===lockInfo", "==="+responseString);
+                        LogUtil.e("sf===lockInfo", "==="+responseString);
 
                         CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
 
@@ -1021,7 +1032,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             Config.passwordnew = Config.passwordnew2;
                         }
 
-                        Log.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order);
+                        LogUtil.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order);
 
                         if(carmodel_id==1){
                             initmPopupWindowView();
@@ -1033,7 +1044,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     } catch (Exception e) {
 
 
-                        Log.e("Test","异常"+e);
+                        LogUtil.e("Test","异常"+e);
                     }
 
                     if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1070,7 +1081,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                img_loading.startAnimation(operatingAnim);
 //                img_loading.setVisibility(View.VISIBLE);
 //                btn_scan.setText(getString(R.string.stop_scan));
-                Log.e("mf===onScanStarted", "==="+success);
+                LogUtil.e("mf===onScanStarted", "==="+success);
 
             }
 
@@ -1078,7 +1089,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             public void onLeScan(BleDevice bleDevice) {
                 super.onLeScan(bleDevice);
 
-                Log.e("mf===onLeScan", bleDevice+"==="+bleDevice.getMac());
+                LogUtil.e("mf===onLeScan", bleDevice+"==="+bleDevice.getMac());
             }
 
             @Override
@@ -1086,7 +1097,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                mDeviceAdapter.addDevice(bleDevice);
 //                mDeviceAdapter.notifyDataSetChanged();
 
-                Log.e("mf===onScanning", bleDevice+"==="+bleDevice.getMac());
+                LogUtil.e("mf===onScanning", bleDevice+"==="+bleDevice.getMac());
 
 
             }
@@ -1097,7 +1108,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                img_loading.setVisibility(View.INVISIBLE);
 //                btn_scan.setText(getString(R.string.start_scan));
 
-                Log.e("mf===onScanFinished", scanResultList+"==="+scanResultList.size());
+                LogUtil.e("mf===onScanFinished", scanResultList+"==="+scanResultList.size());
             }
         });
     }
@@ -1127,7 +1138,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
 
-        Log.e("PopupRent===", codenum+"==="+electricity);
+        LogUtil.e("PopupRent===", codenum+"==="+electricity);
 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
@@ -1159,7 +1170,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad2.setVisibility(View.GONE);
         }
 
-        Log.e("initmPopup===", can_finish_order+"==="+status);
+        LogUtil.e("initmPopup===", can_finish_order+"==="+status);
 
         ll_open_lock.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
@@ -1223,7 +1234,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                startActivityForResult(enableBtIntent, 188);
 //            } else {
 //
-//                Log.e("order===2",  "===" + type);
+//                LogUtil.e("order===2",  "===" + type);
 //
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
 //                    loadingDialog.setTitle("正在连接");
@@ -1263,7 +1274,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 startActivityForResult(enableBtIntent, 188);
             } else {
 
-                Log.e("order===2",  "===" + type);
+                LogUtil.e("order===2",  "===" + type);
 
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
 //                    loadingDialog.setTitle("正在连接");
@@ -1352,7 +1363,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        }
 
 
-        Log.e("initmPopup===2", lock_status+"==="+can_finish_order+"==="+status);
+        LogUtil.e("initmPopup===2", lock_status+"==="+can_finish_order+"==="+status);
 
 
 
@@ -1412,7 +1423,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
 
-        Log.e("PopupRent===", codenum+"==="+electricity);
+        LogUtil.e("PopupRent===", codenum+"==="+electricity);
 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
@@ -1432,7 +1443,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad.setVisibility(View.GONE);
         }
 
-        Log.e("initmPopup===", can_finish_order+"==="+status);
+        LogUtil.e("initmPopup===", can_finish_order+"==="+status);
 
         ll_open_lock.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
@@ -1488,7 +1499,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                startActivityForResult(enableBtIntent, 188);
 //            } else {
 //
-//                Log.e("order===2",  type+"===" +isMac );
+//                LogUtil.e("order===2",  type+"===" +isMac );
 //
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
 //                    loadingDialog.setTitle("正在连接");
@@ -1534,7 +1545,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                startActivityForResult(enableBtIntent, 188);
 //            } else {
 //
-//                Log.e("order===2",  "===" + type);
+//                LogUtil.e("order===2",  "===" + type);
 //
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
 //                    loadingDialog.setTitle("正在连接");
@@ -1573,6 +1584,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
         LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
         LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+        LinearLayout ll_location = customView.findViewById(R.id.ll_location);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
         TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
@@ -1665,6 +1677,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         ll_set_recovered.setOnClickListener(this);
         ll_set_ok.setOnClickListener(this);
         iv_popup_window_back.setOnClickListener(this);
+        ll_location.setOnClickListener(this);
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
@@ -1672,7 +1685,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            @Override
 //            public void onDismiss() {
 //                // 改变显示的按钮图片为正常状态
-//                Log.e("onDismiss===", "===");
+//                LogUtil.e("onDismiss===", "===");
 //
 ////                initNearby(latitude, longitude);
 //                cars();
@@ -1705,7 +1718,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //    }
 
     private void ddSearch(){
-        Log.e("ddSearch===", "==="+codenum);
+        LogUtil.e("ddSearch===", "==="+codenum);
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
@@ -1732,7 +1745,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
-                        Log.e("ddSearch===1", "==="+responseString);
+                        LogUtil.e("ddSearch===1", "==="+responseString);
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -1761,7 +1774,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     void battery_unlock() {
 
-        Log.e("battery_unlock===", "==="+codenum);
+        LogUtil.e("battery_unlock===", "==="+codenum);
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
@@ -1790,7 +1803,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     try {
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        Log.e("battery_unlock===1", "==="+responseString);
+                        LogUtil.e("battery_unlock===1", "==="+responseString);
 
                         if(result.getStatus_code()==200){
 //                            m_myHandler.sendEmptyMessage(2);
@@ -1823,7 +1836,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     void carbadaction(int type) {   //
 
-        Log.e("carbadaction===", type+"==="+codenum);
+        LogUtil.e("carbadaction===", type+"==="+codenum);
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
@@ -1856,7 +1869,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     try {
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        Log.e("carbadaction===1", "==="+responseString);
+                        LogUtil.e("carbadaction===1", "==="+responseString);
 
 //                        if(result.getStatus_code()==200){
 //                            curMarker.setIcon(bikeDescripter_blue);
@@ -1898,7 +1911,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         params.put("page", 1);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        Log.e("sf===recycletask0", "==="+codenum);
+        LogUtil.e("sf===recycletask0", "==="+codenum);
 
         HttpHelper.get(context, Urls.recycletask, params, new TextHttpResponseHandler() {
             @Override
@@ -1924,13 +1937,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     try {
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        Log.e("sf===recycletask1", "==="+responseString);
+                        LogUtil.e("sf===recycletask1", "==="+responseString);
 
                         JSONArray array = new JSONArray(result.getData());
 
                         JSONObject jsonObject = new JSONObject(result.getMeta());
                         JSONObject json = new JSONObject(jsonObject.getString("pagination"));
-                        Log.e("sf===recycletask2", "==="+array);
+                        LogUtil.e("sf===recycletask2", "==="+array);
 
                         int totalnum = json.getInt("count");
 
@@ -1941,7 +1954,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             list.add(bean);
                         }
 
-                        Log.e("sf===recycletask3", list.size()+"==="+codenum);
+                        LogUtil.e("sf===recycletask3", list.size()+"==="+codenum);
 
 
                         Intent intent = new Intent("data.broadcast.action");
@@ -1952,7 +1965,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                            List<BadCarBean> list = (List<BadCarBean>) intent.getSerializableExtra("datas");
 
-                        Log.e("sf===recycletask4", list.size()+"==="+list);
+                        LogUtil.e("sf===recycletask4", list.size()+"==="+list);
 
                         final List list2 = new ArrayList<Sentence>();
 
@@ -1961,7 +1974,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             list2.add(i, sen);
                         }
 
-                        Log.e("sf===recycletask5", tvMsg.isRunning()+"==="+list2.size()+"==="+list2);
+                        LogUtil.e("sf===recycletask5", tvMsg.isRunning()+"==="+list2.size()+"==="+list2);
 
 
                         try{
@@ -1972,13 +1985,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 tvMsg.setEnabled(false);
                             }
 
-                            Log.e("sf===recycletask6", list2.size()+"==="+tvMsg.isRunning());
+                            LogUtil.e("sf===recycletask6", list2.size()+"==="+tvMsg.isRunning());
 
 
                             dataSetAdapter = new DataSetAdapter<Sentence>(list2) {
                                 @Override
                                 protected String text(Sentence sentence) {
-//                                    Log.e("scan===mReceiver3", sentence+"==="+sentence.getName());
+//                                    LogUtil.e("scan===mReceiver3", sentence+"==="+sentence.getName());
 
                                     if(sentence.getName()==null){
                                         return "";
@@ -2004,7 +2017,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             }else{
 
-                                Log.e("sf===recycletask7", list2.size()+"==="+tvMsg.isRunning());
+                                LogUtil.e("sf===recycletask7", list2.size()+"==="+tvMsg.isRunning());
 
 //                                tvMsg.stop();
 
@@ -2062,13 +2075,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                                Log.e("initHttp===0", "==="+responseString);
+                                LogUtil.e("initHttp===0", "==="+responseString);
 
                                 UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
 
 //                                String[] schools = bean.getSchools();
 //                                if(schools!=null && schools.length>0){
-//                                    Log.e("initHttp===", "==="+schools[0]);
+//                                    LogUtil.e("initHttp===", "==="+schools[0]);
 //
 ////                                    if("江苏理工学院".equals(schools[0]) || "泰山医学院".equals(schools[0]) || "中国矿业大学（南湖校区）".equals(schools[0]) || "河南财经政法大学".equals(schools[0])){
 ////                                        carmodel_id = 2;
@@ -2129,7 +2142,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 case 0x98://搜索超时
 
-                    Log.e("0x98===", isLookPsdBtn+"==="+isAgain+"==="+isOpenLock+"==="+isEndBtn+"==="+lock_no);
+                    LogUtil.e("0x98===", isLookPsdBtn+"==="+isAgain+"==="+isOpenLock+"==="+isEndBtn+"==="+lock_no);
 
 //                    ClientManager.getClient().stopSearch();
 //                    ClientManager.getClient().disconnect(m_nowMac);
@@ -2149,7 +2162,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //
 //
 //                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                            Log.e("usecar===1", "===");
+//                            LogUtil.e("usecar===1", "===");
 //
 //                            break;
 //                        }
@@ -2251,7 +2264,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
         params.put("car_type", switchType);  //0全部 1只看坏车 2只看低电
 
-        Log.e("cars===", carType+"==="+switchType+"==="+carmodel_id);
+        LogUtil.e("cars===", carType+"==="+switchType+"==="+carmodel_id);
 
 //        Looper.prepare();
         HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
@@ -2273,7 +2286,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 }
                 UIHelper.ToastError(context, throwable.toString());
 
-                Log.e("cars===fail", "==="+throwable.toString());
+                LogUtil.e("cars===fail", "==="+throwable.toString());
             }
 
             @Override
@@ -2289,7 +2302,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         try {
                             final JSONArray array = new JSONArray(result.getData());
 
-                            Log.e("cars===1", array.length()+"==="+bikeMarkerList+"==="+responseString);
+                            LogUtil.e("cars===1", array.length()+"==="+bikeMarkerList+"==="+responseString);
 
                             for (Marker marker : bikeMarkerList){
                                 if (marker != null){
@@ -2317,7 +2330,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                     CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
 
-//                                          Log.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
+//                                          LogUtil.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
 
                                     // 加入自定义标签
                                     MarkerOptions bikeMarkerOption = null;
@@ -2404,15 +2417,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
+        if(mapView!=null){
+            mapView.onDestroy();
+        }
+
         if(null != mlocationClient){
             mlocationClient.onDestroy();
         }
 
-        if (mReceiver != null) {
-            context.unregisterReceiver(mReceiver);
-            mReceiver = null;
-        }
+
 
         deactivate();
     }
@@ -2427,7 +2440,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void addChooseMarker() {
         // 加入自定义标签
-        Log.e("addChooseMarker===", mapView+"==="+myLocation);
+        LogUtil.e("addChooseMarker===", mapView+"==="+myLocation);
 
 //        MarkerOptions centerMarkerOption = new MarkerOptions().position(myLocation).icon(successDescripter);
 //        centerMarker = aMap.addMarker(centerMarkerOption);
@@ -2445,7 +2458,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                     @Override
                     public void onFinish() {
-                        Log.e("animateCamera===", "===");
+                        LogUtil.e("animateCamera===", "===");
                         aMap.setOnCameraChangeListener(ScanFragment.this);
                     }
 
@@ -2477,7 +2490,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
         leveltemp = aMap.getCameraPosition().zoom;
 
-        Log.e("onCameraChangeF===", isUp+"==="+cameraPosition.target.latitude);
+        LogUtil.e("onCameraChangeF===", isUp+"==="+cameraPosition.target.latitude);
         if (isUp){
 
 //            initNearby(cameraPosition.target.latitude, cameraPosition.target.longitude);
@@ -2530,6 +2543,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public void onClick(View v) {
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         switch (v.getId()){
+
             case R.id.mainUI_msg:
                 if (access_token == null || "".equals(access_token)){
                     UIHelper.goToAct(activity, LoginActivity.class);
@@ -2565,9 +2579,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
 
                 if(switcher.isChecked()){
-                    Log.e("biking===switcher1", "onClick==="+switcher.isChecked());
+                    LogUtil.e("biking===switcher1", "onClick==="+switcher.isChecked());
                 }else{
-                    Log.e("biking===switcher2", "onClick==="+switcher.isChecked());
+                    LogUtil.e("biking===switcher2", "onClick==="+switcher.isChecked());
                 }
 
 //                initNearby(latitude, longitude);
@@ -2579,9 +2593,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
 
                 if(switcher_bad.isChecked()){
-                    Log.e("biking===switcher_bad1", "onClick==="+switcher_bad.isChecked());
+                    LogUtil.e("biking===switcher_bad1", "onClick==="+switcher_bad.isChecked());
                 }else{
-                    Log.e("biking===switcher_bad2", "onClick==="+switcher_bad.isChecked());
+                    LogUtil.e("biking===switcher_bad2", "onClick==="+switcher_bad.isChecked());
                 }
 
 //                initNearby(latitude, longitude);
@@ -2593,9 +2607,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
 
                 if(switcher_bike.isChecked()){
-                    Log.e("biking===switcher_bike1", "onClick==="+switcher_bike.isChecked());
+                    LogUtil.e("biking===switcher_bike1", "onClick==="+switcher_bike.isChecked());
                 }else{
-                    Log.e("biking===switcher_bike2", "onClick==="+switcher_bike.isChecked());
+                    LogUtil.e("biking===switcher_bike2", "onClick==="+switcher_bike.isChecked());
                 }
 
 //                initNearby(latitude, longitude);
@@ -2606,9 +2620,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
 
                 if(switcher_ebike.isChecked()){
-                    Log.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
                 }else{
-                    Log.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
                 }
 
 //                initNearby(latitude, longitude);
@@ -2645,7 +2659,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.mainUI_bindSchoolLayout:
                 UIHelper.goToAct(context, BindSchoolActivity.class);
-
                 break;
 
             case R.id.mainUI_inStorageLayout:
@@ -2707,13 +2720,133 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 if(carmodel_id==1){
                     open_lock();
                 }else{
-                    unlock();
+
+                    if ("7".equals(type)) {
+
+
+                        LogUtil.e("mf===7_1", deviceuuid + "==="+m_nowMac);
+
+                        if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                            ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+                            popupwindow.dismiss();
+                        }
+                        //蓝牙锁
+                        BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+
+                        mBluetoothAdapter = bluetoothManager.getAdapter();
+
+                        if (mBluetoothAdapter == null) {
+                            ToastUtil.showMessageApp(context, "获取蓝牙失败");
+                            popupwindow.dismiss();
+                            return;
+                        }
+                        if (!mBluetoothAdapter.isEnabled()) {
+                            isPermission = false;
+                            closeLoadingDialog2();
+                            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                            startActivityForResult(enableBtIntent, 188);
+                        } else {
+                            if (loadingDialog != null && !loadingDialog.isShowing()) {
+                                loadingDialog.setTitle("正在唤醒车锁");
+                                loadingDialog.show();
+                            }
+
+                            XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(context);
+                            builder.setBleStateChangeListener(ScanFragment.this);
+                            builder.setScanResultCallback(ScanFragment.this);
+                            apiClient = builder.build();
+
+                            ScanFragmentPermissionsDispatcher.connectDeviceWithPermissionCheck(ScanFragment.this, deviceuuid);
+
+                            isConnect = false;
+                            m_myHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!isConnect){
+                                        closeLoadingDialog();
+
+                                        LogUtil.e("mf===7==timeout", isConnect + "==="+activity.isFinishing());
+
+                                        unlock();
+                                    }
+                                }
+                            }, timeout);
+                        }
+                    }else{
+                        unlock();
+                    }
+
                 }
+
 
                 break;
 
             case R.id.ll_close_lock:
-                lock();
+                if("7".equals(type)){
+
+                    if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                        ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+                        popupwindow.dismiss();
+                    }
+                    //蓝牙锁
+                    BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+
+                    mBluetoothAdapter = bluetoothManager.getAdapter();
+
+                    if (mBluetoothAdapter == null) {
+                        ToastUtil.showMessageApp(context, "获取蓝牙失败");
+                        popupwindow.dismiss();
+                        return;
+                    }
+                    if (!mBluetoothAdapter.isEnabled()) {
+                        isPermission = false;
+                        closeLoadingDialog2();
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, 188);
+                    } else {
+                        if (loadingDialog != null && !loadingDialog.isShowing()) {
+                            loadingDialog.setTitle("正在唤醒车锁");
+                            loadingDialog.show();
+                        }
+
+                        LogUtil.e("close===onClick_7", "上锁===" + isConnect + "===" + deviceuuid + "===" + apiClient);
+
+                        if(apiClient==null){
+                            XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(context);
+                            builder.setBleStateChangeListener(this);
+                            builder.setScanResultCallback(this);
+                            apiClient = builder.build();
+                        }
+
+                        if(!isConnect){
+                            ScanFragmentPermissionsDispatcher.connectDeviceWithPermissionCheck(this, deviceuuid);
+
+                            isConnect = false;
+                            m_myHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!isConnect){
+
+                                        LogUtil.e("close===7==timeout", "上锁==="+isConnect + "==="+activity.isFinishing());
+
+//                                        if (apiClient != null) {
+//                                            apiClient.disConnect();
+//                                            apiClient.onDestroy();
+//                                            apiClient=null;
+//                                        }
+
+                                        lock();
+                                    }
+                                }
+                            }, timeout);
+                        }else{
+                            xiaoanClose_blue();
+                        }
+                    }
+                }else{
+                    lock();
+                }
+
                 break;
 
             case R.id.ll_end_order:
@@ -2734,6 +2867,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             case R.id.ll_set_ok:
                 carbadaction(2);
                 break;
+
+            case R.id.ll_location:
+                Intent intent = new Intent(context, MerchantAddressMapActivity.class);
+                intent.putExtra("carmodel_id", carmodel_id);
+                intent.putExtra("codenum", codenum);
+                startActivity(intent);
+
+//                UIHelper.goToAct(context, MerchantAddressMapActivity.class);
+                break;
+
             case R.id.tv_set_useless:
                 dialogReason.show();
 //                carbadaction(3);
@@ -2742,10 +2885,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             case R.id.lock_switcher:
 
                 if(lock_switcher.isChecked()){
-                    Log.e("pop===switcher1", "onClick==="+lock_switcher.isChecked());
+                    LogUtil.e("pop===switcher1", "onClick==="+lock_switcher.isChecked());
                     unlock();
                 }else{
-                    Log.e("pop===switcher2", "onClick==="+lock_switcher.isChecked());
+                    LogUtil.e("pop===switcher2", "onClick==="+lock_switcher.isChecked());
                     lock();
                 }
                 break;
@@ -2790,7 +2933,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             startActivityForResult(enableBtIntent, 188);
         } else {
 
-            Log.e("ll_get_state===2",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
+            LogUtil.e("ll_get_state===2",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
 
             isOpenLock = false;
 
@@ -2810,12 +2953,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             if ("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)) {
                 if(!isLookPsdBtn){   //没连上
 
-                    BleManager.getInstance().init(activity.getApplication());
-                    BleManager.getInstance()
-                            .enableLog(true)
-                            .setReConnectCount(0, 5000)
-//                                .setOperateTimeout(10000)
-                            .setConnectOverTime(timeout);
+                    initBle();
 
                     connect();
                 }else{
@@ -2836,7 +2974,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private void end2() {
 
-        Log.e("mf==end2", type+"==="+m_nowMac);
+        LogUtil.e("mf==end2", type+"==="+m_nowMac);
 
         if("5".equals(type)  || "6".equals(type)){
             ClientManager.getClient().stopSearch();
@@ -2879,7 +3017,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //        initParams();
 
-        Log.e("open_lock===",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
+        LogUtil.e("open_lock===",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
 
         m_myHandler.post(new Runnable() {
             @Override
@@ -2915,28 +3053,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         startActivityForResult(enableBtIntent, 188);
                     } else {
 
-                        Log.e("order===2",  m_nowMac+ "===" + isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
+                        LogUtil.e("order===2",  m_nowMac+ "===" + isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
 
                         isOpenLock = true;
 
                         if("10".equals(type)){
-                            BleManager.getInstance().init(activity.getApplication());
-                            BleManager.getInstance()
-                                    .enableLog(true)
-                                    .setReConnectCount(0, 5000)
-//                                  .setOperateTimeout(10000)
-                                    .setConnectOverTime(timeout);
+                            initBle();
 
                             connect();
                         }else{
                             if(!isLookPsdBtn){   //没连上
 
-                                BleManager.getInstance().init(activity.getApplication());
-                                BleManager.getInstance()
-                                        .enableLog(true)
-                                        .setReConnectCount(0, 5000)
-//                                .setOperateTimeout(10000)
-                                        .setConnectOverTime(timeout);
+                                initBle();
 
 //                    if(isMac){
 //                        connect();
@@ -2984,7 +3112,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 //                                    startActivityForResult(enableBtIntent, 188);
 //                                } else {
-//                                    Log.e("mf===4_1", bleid + "==="+m_nowMac);
+//                                    LogUtil.e("mf===4_1", bleid + "==="+m_nowMac);
 //
 //                                    bleService.connect(m_nowMac);
 //
@@ -2993,7 +3121,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 }else if ("5".equals(type) || "6".equals(type)) {      //泺平单车蓝牙锁
 
-                    Log.e("mf===5_1", deviceuuid + "==="+m_nowMac);
+                    LogUtil.e("mf===5_1", deviceuuid + "==="+m_nowMac);
 
 //                    if(BaseApplication.getInstance().isTest()){
 //                        if("40001101".equals(codenum)){
@@ -3035,7 +3163,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                     }
                 }else if ("7".equals(type)) {
-                    Log.e("mf===7_1", deviceuuid + "==="+m_nowMac);
+                    LogUtil.e("mf===7_1", deviceuuid + "==="+m_nowMac);
 
 //                                unlock();
 
@@ -3073,7 +3201,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 if (!isConnect){
                                     closeLoadingDialog();
 
-                                    Log.e("mf===7==timeout", isConnect + "==="+activity.isFinishing());
+                                    LogUtil.e("mf===7==timeout", isConnect + "==="+activity.isFinishing());
 
                                     unlock();
                                 }
@@ -3087,6 +3215,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     }
 
+    void initBle(){
+        BleManager.getInstance().init(activity.getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(4, 2000)
+//              .setOperateTimeout(10000)
+                .setConnectOverTime(timeout);
+    }
+
     void scan2(){
 //      loadingDialog = DialogUtils.getLoadingDialog(context, "正在搜索...");
 //		loadingDialog.setTitle("正在搜索");
@@ -3098,20 +3235,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         BleManager.getInstance().scan(new BleScanCallback() {
             @Override
             public void onScanStarted(boolean success) {
-                Log.e("mf===onScanStarted2", "==="+success);
+                LogUtil.e("mf===onScanStarted2", "==="+success);
             }
 
             @Override
             public void onLeScan(BleDevice bleDevice) {
                 super.onLeScan(bleDevice);
 
-                Log.e("mf===onLeScan2", bleDevice+"==="+bleDevice.getMac());
+                LogUtil.e("mf===onLeScan2", bleDevice+"==="+bleDevice.getMac());
             }
 
             @Override
             public void onScanning(final BleDevice bleDevice) {
 
-                Log.e("mf===onScanning2", m_nowMac+"==="+bleDevice.getMac());
+                LogUtil.e("mf===onScanning2", m_nowMac+"==="+bleDevice.getMac());
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -3126,7 +3263,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             connect();
 
-                            Log.e("onScanning===2_1", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
+                            LogUtil.e("onScanning===2_1", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
 
                         }
                     }
@@ -3137,12 +3274,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onScanFinished(List<BleDevice> scanResultList) {
 
-                Log.e("mf===onScanFinished2", isFind+"==="+type);
+                LogUtil.e("mf===onScanFinished2", isFind+"==="+type);
 
                 if(!isFind){
                     if("3".equals(type)){
 
-                        Log.e("mf===onScanFinished2", isAgain+"==="+isFind+"==="+type);
+                        LogUtil.e("mf===onScanFinished2", isAgain+"==="+isFind+"==="+type);
 
                         unlock();
 
@@ -3161,7 +3298,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     }
 
     private void order_finish(){
-        Log.e("mf===order_finish", "==="+codenum);
+        LogUtil.e("mf===order_finish", "==="+codenum);
 
 //        RequestParams params = new RequestParams();
 //        params.put("number", codenum);
@@ -3174,7 +3311,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.e("mf===order_finish_fail", responseString + "===" + throwable.toString());
+                LogUtil.e("mf===order_finish_fail", responseString + "===" + throwable.toString());
                 onFailureCommon(throwable.toString());
             }
 
@@ -3188,7 +3325,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("mf===order_finish_1", carmodel_id + "===" + responseString + "===" + result.data);
+                            LogUtil.e("mf===order_finish_1", carmodel_id + "===" + responseString + "===" + result.data);
 
                             ToastUtil.showMessageApp(context,result.getMessage());
 
@@ -3211,19 +3348,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        loadingDialog.setTitle("正在连接");
 //        loadingDialog.show();
 
-        Log.e("connect===", m_nowMac+"==="+carmodel_id+"==="+type+"==="+isLookPsdBtn);
+        LogUtil.e("connect===", m_nowMac+"==="+carmodel_id+"==="+type+"==="+isLookPsdBtn);
 
 //        BleManager.getInstance().cancelScan();
 
         BleManager.getInstance().connect(m_nowMac, new BleGattCallback() {
             @Override
             public void onStartConnect() {
-                Log.e("onStartConnect===", "===");
+                LogUtil.e("onStartConnect===", "===");
             }
 
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
-                Log.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
+                LogUtil.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
 
                 isLookPsdBtn = false;
 
@@ -3235,7 +3372,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                    BaseApplication.getInstance().getIBLE().close();
 //                    BaseApplication.getInstance().getIBLE().disconnect();
 
-                    Log.e("0x99===timeout", isLookPsdBtn+"==="+isStop+"==="+type);
+                    LogUtil.e("0x99===timeout", isLookPsdBtn+"==="+isStop+"==="+type);
 
                     if("3".equals(type)){
                         if(isOpenLock){
@@ -3277,7 +3414,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                      BleManager.getInstance().cancelScan();
 
-                        Log.e("onConnectSuccess===", bleDevice.getMac()+"===");
+                        LogUtil.e("onConnectSuccess===", bleDevice.getMac()+"===");
 //                      Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
 
 
@@ -3293,12 +3430,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         BleManager.getInstance().notify(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f6-0000-1000-8000-00805f9b34fb", new BleNotifyCallback() {
                             @Override
                             public void onNotifySuccess() {
-                                Log.e("onNotifySuccess===", "===");
+                                LogUtil.e("onNotifySuccess===", "===");
                             }
 
                             @Override
                             public void onNotifyFailure(BleException exception) {
-                                Log.e("onNotifyFailure===", "===");
+                                LogUtil.e("onNotifyFailure===", "===");
                             }
 
                             @Override
@@ -3308,14 +3445,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 m_myHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Log.e("onCharacteristicChanged", "===0");
+                                        LogUtil.e("onCharacteristicChanged", "===0");
 
                                         byte[] x = new byte[16];
                                         System.arraycopy(data, 0, x, 0, 16);
 
                                         byte[] mingwen = EncryptUtils.Decrypt(x, Config.newKey);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
 
-                                        Log.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
+                                        LogUtil.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
 
                                         String s1 = ConvertUtils.bytes2HexString(mingwen);
 
@@ -3326,12 +3463,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                                          String tvAgain = tv_againBtn.getText().toString().trim();
 
-                                            Log.e("token===", isOpenLock+"==="+token+"==="+s1);
+                                            LogUtil.e("token===", type+"==="+isOpenLock+"==="+token+"==="+s1);
 
                                             m_myHandler.postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    getBattery();
+                                                    if("2".equals(type) || "3".equals(type)){
+                                                        getBattery();
+                                                    }else if("9".equals(type) || "10".equals(type)){
+                                                        getBattery2();
+                                                    }
+
                                                 }
                                             }, 500);
 
@@ -3343,7 +3485,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                             }
 
                                         }else if(s1.startsWith("0502")){    //开锁
-                                            Log.e("d_openLock===", "==="+s1);
+                                            LogUtil.e("d_openLock===", "==="+s1);
 
                                             if(isForeground){
                                                 Toast.makeText(context, "开锁成功", Toast.LENGTH_SHORT).show();
@@ -3365,7 +3507,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                     Toast.makeText(context, "关锁成功", Toast.LENGTH_SHORT).show();
                                                 }
 
-                                                Log.e("closeLock===suc", "===");
+                                                LogUtil.e("closeLock===suc", "===");
 
                                             } else {
 //                                                ToastUtil.showMessageApp(context,"关锁失败");
@@ -3373,13 +3515,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                     Toast.makeText(context, "关锁失败", Toast.LENGTH_SHORT).show();
                                                 }
 
-                                                Log.e("closeLock===fail", "===");
+                                                LogUtil.e("closeLock===fail", "===");
                                             }
 
                                             getLockStatus();
-                                        }else if(s1.startsWith("0202")){    //电量
+                                        }else if(s1.startsWith("020201")){    //电量
 
-                                            Log.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
+                                            LogUtil.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
 
 //                            if (TextUtils.isEmpty(data)) {
 //                                tvCz.setText(R.string.battery_fail);
@@ -3390,8 +3532,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                             tv_electricity.setText(Integer.parseInt(s1.substring(6, 8), 16)+"%");
 
+                                        }else if(s1.startsWith("020202")){    //电量2
+
+                                            LogUtil.e("battery2===", "==="+s1);  //020202 64 00 0E42 0000 E100E040270020
+
+//                            if (TextUtils.isEmpty(data)) {
+//                                tvCz.setText(R.string.battery_fail);
+//                            } else {
+//                                tvCz.setText(R.string.battery_success);
+//                                tvBattery.setText(getText(R.string.battery) + String.valueOf(Integer.parseInt(data, 16)));
+//                            }
+
+                                            tv_electricity.setText(Integer.parseInt(s1.substring(10, 14), 16)/1000f+"V");
+
                                         }else if(s1.startsWith("050F")){   //锁状态
-                                            Log.e("lockState===0", "==="+s1);   //
+                                            LogUtil.e("lockState===0", "==="+s1);   //
 
 
                                             isStop = true;
@@ -3405,7 +3560,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                     Toast.makeText(context, "锁已关闭", Toast.LENGTH_SHORT).show();
                                                 }
 
-                                                Log.e("closeLock===1", "锁已关闭==="+first3);
+                                                LogUtil.e("closeLock===1", "锁已关闭==="+first3);
 
                                                 tv_lock_status.setText("已关锁");
                                             } else {
@@ -3425,7 +3580,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                                          end2();
                                         }else if(s1.startsWith("058502")){
 
-                                            Log.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
+                                            LogUtil.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
 
                                             if("000000000000".equals(s1.substring(2*4, 2*10))){
                                                 major = 0;
@@ -3443,7 +3598,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        EventBus.getDefault().post(BleNotifyEvent(decode));
 
 //                        else if(s1.startsWith("050F")){
-//                            Log.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
+//                            LogUtil.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
 //
 ////                            if("01".equals(s1.substring(6, 8))){
 ////                                Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
@@ -3458,7 +3613,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //
 //                            if ("01".equals(s1.substring(6, 8))) {
 //                                ToastUtil.showMessageApp(context,"锁已关闭");
-//                                Log.e("biking===", "biking===锁已关闭==="+first3);
+//                                LogUtil.e("biking===", "biking===锁已关闭==="+first3);
 //
 //                                if(!isEndBtn) return;
 //
@@ -3483,7 +3638,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             public void onDisConnected(boolean isActiveDisConnected, BleDevice bleDevice, BluetoothGatt gatt, int status) {
 
                 isLookPsdBtn = false;
-                Log.e("connect=onDisConnected", type+"==="+isActiveDisConnected);
+                LogUtil.e("connect=onDisConnected", type+"==="+isActiveDisConnected);
 
 //                if("10".equals(type)){
 ////                    BleManager.getInstance().disconnect();
@@ -3511,19 +3666,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void getBleToken(){
         String s = new GetTokenTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getBleToken===1", "==="+s);  //1648395B
+        LogUtil.e("getBleToken===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getBleToken==onWriteSuc", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getBleToken==onWriteSuc", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getBleToken=onWriteFail", "==="+exception);
+                LogUtil.e("getBleToken=onWriteFail", "==="+exception);
 
                 if("3".equals(type)){
                     if(isOpenLock){
@@ -3542,19 +3697,41 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void getBattery(){
         String s = new BatteryTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getBattery===1", "==="+s);  //1648395B
+        LogUtil.e("getBattery===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getBattery=onWriteFa", "==="+exception);
+                LogUtil.e("getBattery=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
+    private void getBattery2(){
+        LogUtil.e("getBattery2===", "==="+new Battery2TxOrder());  //1648395B
+
+        String s = new Battery2TxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        LogUtil.e("getBattery2===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                LogUtil.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                LogUtil.e("getBattery=onWriteFa", "==="+exception);
             }
         });
     }
@@ -3562,19 +3739,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void getLockStatus(){
         String s = new GetLockStatusTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getLockStatus===1", "==="+isLookPsdBtn);  //1648395B
+        LogUtil.e("getLockStatus===1", "==="+isLookPsdBtn);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getLockStatus==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getLockStatus==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getLockStatus=onWriteFa", "==="+exception);
+                LogUtil.e("getLockStatus=onWriteFa", "==="+exception);
             }
         });
     }
@@ -3582,19 +3759,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void getXinbiao(){
         String s = new XinbiaoTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getXinbiao===1", "==="+s);  //1648395B
+        LogUtil.e("getXinbiao===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getXinbiao==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getXinbiao==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getXinbiao=onWriteFa", "==="+exception);
+                LogUtil.e("getXinbiao=onWriteFa", "==="+exception);
             }
         });
     }
@@ -3603,19 +3780,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void openLock() {
         String s = new OpenLockTxOrder().generateString();
 
-        Log.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
+        LogUtil.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("onWriteSuccess===a", current+"==="+total+"==="+justWrite);
+                LogUtil.e("onWriteSuccess===a", current+"==="+total+"==="+justWrite);
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("onWriteFailure===a", "==="+exception);
+                LogUtil.e("onWriteFailure===a", "==="+exception);
             }
         });
     }
@@ -3643,7 +3820,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         isStop = false;
                         isLookPsdBtn = false;
 
-                        Log.e("connectDeviceLP===", "Fail==="+Code.toString(code));
+                        LogUtil.e("connectDeviceLP===", "Fail==="+Code.toString(code));
 //                ToastUtil.showMessageApp(context, Code.toString(code));
 
 //                closeLoadingDialog();
@@ -3673,7 +3850,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         isStop = true;
                         isLookPsdBtn = true;
 
-                        Log.e("connectDeviceLP===", "Success==="+profile);
+                        LogUtil.e("connectDeviceLP===", "Success==="+profile);
 
                         if(isOpenLock){
                             getStateLP();
@@ -3695,7 +3872,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private final SearchResponse mSearchResponse = new SearchResponse() {
         @Override
         public void onSearchStarted() {
-            Log.e("scan===","DeviceListActivity.onSearchStarted");
+            LogUtil.e("scan===","DeviceListActivity.onSearchStarted");
 //            mDevices.clear();
 //            mAdapter.notifyDataChanged();
         }
@@ -3703,7 +3880,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         @Override
         public void onDeviceFounded(final SearchResult device) {
 
-            Log.e("scan===onDeviceFounded",device.device.getName() + "===" + device.device.getAddress());
+            LogUtil.e("scan===onDeviceFounded",device.device.getName() + "===" + device.device.getAddress());
 
 //            bike:GpDTxe8DGN412
 //            bike:LUPFKsrUyR405
@@ -3715,7 +3892,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 public void run() {
                     if(m_nowMac.equals(device.device.getAddress())){
 
-                        Log.e("scan===stop",device.device.getName() + "===" + device.device.getAddress());
+                        LogUtil.e("scan===stop",device.device.getName() + "===" + device.device.getAddress());
 
                         ClientManager.getClient().stopSearch();
 
@@ -3743,13 +3920,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         @Override
         public void onSearchStopped() {
-            Log.e("scan===","DeviceListActivity.onSearchStopped");
+            LogUtil.e("scan===","DeviceListActivity.onSearchStopped");
 
         }
 
         @Override
         public void onSearchCanceled() {
-            Log.e("scan===","DeviceListActivity.onSearchCanceled");
+            LogUtil.e("scan===","DeviceListActivity.onSearchCanceled");
 
         }
     };
@@ -3759,12 +3936,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         @Override
         public void onConnectStatusChanged(final String mac, final int status) {
 
-//            Log.e("ConnectStatus===", mac+"===="+(status == STATUS_CONNECTED));
+//            LogUtil.e("ConnectStatus===", mac+"===="+(status == STATUS_CONNECTED));
 
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("ConnectStatus===biking", isLookPsdBtn+"==="+mac+"==="+(status == STATUS_CONNECTED)+"==="+m_nowMac);
+                    LogUtil.e("ConnectStatus===biking", isLookPsdBtn+"==="+mac+"==="+(status == STATUS_CONNECTED)+"==="+m_nowMac);
 
                     if(status == STATUS_CONNECTED){
                         isLookPsdBtn = true;
@@ -3804,7 +3981,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("onNotifyClose===", "====");
+                    LogUtil.e("onNotifyClose===", "====");
 
 //                    ToastUtil.showMessageApp(context,"锁已关闭");
 
@@ -3835,7 +4012,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===###", transType+"==Major:"+ Major +"---Minor:"+Minor+"---mackey:"+mackey);
+                        LogUtil.e("getBleRecord===###", transType+"==Major:"+ Major +"---Minor:"+Minor+"---mackey:"+mackey);
 
 //                        if(BaseApplication.getInstance().isTestLog()){
 ////                            macText.setText(Major+"==="+Minor+"==="+macList);
@@ -3861,7 +4038,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onResponseSuccessEmpty() {
 //                ToastUtil.showMessageApp(context, "record empty");
-                Log.e("getBleRecord===", "Success===Empty");
+                LogUtil.e("getBleRecord===", "Success===Empty");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -3876,7 +4053,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===fail", Code.toString(code));
+                        LogUtil.e("getBleRecord===fail", Code.toString(code));
                     }
                 });
             }
@@ -3893,7 +4070,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("deleteBleRecord2===", transType+"==Major:"+ Major +"---Minor:"+Minor);
+                        LogUtil.e("deleteBleRecord2===", transType+"==Major:"+ Major +"---Minor:"+Minor);
 
                         transtype = transType;
                         major = Major;
@@ -3906,7 +4083,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             @Override
             public void onResponseSuccessEmpty() {
-                Log.e("biking=deleteBleRecord2", "Success===Empty");
+                LogUtil.e("biking=deleteBleRecord2", "Success===Empty");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -3920,7 +4097,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("biking=deleteBleRecord2", Code.toString(code));
+                        LogUtil.e("biking=deleteBleRecord2", Code.toString(code));
                     }
                 });
 
@@ -3934,7 +4111,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             public void onResponseSuccess(String version, String keySerial, String macKey, final String vol) {
 //                    quantity = vol+"";
 
-                Log.e("getStatus===", isOpenLock+"===="+vol+"===="+macKey);
+                LogUtil.e("getStatus===", isOpenLock+"===="+vol+"===="+macKey);
                 keySource = keySerial;
 
                 m_myHandler.post(new Runnable() {
@@ -3957,7 +4134,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getStatus===fail", Code.toString(code));
+                        LogUtil.e("getStatus===fail", Code.toString(code));
 
                         if("锁已开".equals(Code.toString(code))){
                             ToastUtil.showMessageApp(context,"锁已打开");
@@ -3976,7 +4153,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     //泺平===还车_查锁是否关闭
     private void queryOpenState() {
-        Log.e("queryOpenState===0", "===="+m_nowMac);
+        LogUtil.e("queryOpenState===0", "===="+m_nowMac);
 
 //        UIHelper.showProgress(this, R.string.collectState);
         ClientManager.getClient().queryOpenState(m_nowMac, new IQueryOpenStateResponse() {
@@ -3987,7 +4164,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("queryOpenState===", "===="+open);
+                        LogUtil.e("queryOpenState===", "===="+open);
 
 
                         if(open) {
@@ -4001,7 +4178,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         }
 
-//                        getBleRecord();
+                        getBleRecord();
                         closeLoadingDialog();
                     }
                 });
@@ -4009,7 +4186,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             @Override
             public void onResponseFail(final int code) {
-                Log.e("queryOpenState===f",  Code.toString(code));
+                LogUtil.e("queryOpenState===f",  Code.toString(code));
 //                UIHelper.dismiss();
 
                 m_myHandler.post(new Runnable() {
@@ -4028,7 +4205,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     //泺平_开锁
     protected void rent(){
 
-        Log.e("rent===000",lock_no+"==="+m_nowMac+"==="+keySource);
+        LogUtil.e("rent===000",lock_no+"==="+m_nowMac+"==="+keySource);
 
         RequestParams params = new RequestParams();
         params.put("lock_no", lock_no);
@@ -4050,7 +4227,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     @Override
                     public void run() {
                         try {
-                            Log.e("rent===","==="+responseString);
+                            LogUtil.e("rent===","==="+responseString);
 
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -4064,7 +4241,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             keys = bean.getKeys();
                             serverTime = bean.getServerTime();
 
-                            Log.e("rent===", m_nowMac+"==="+encryptionKey+"==="+keys);
+                            LogUtil.e("rent===", m_nowMac+"==="+encryptionKey+"==="+keys);
 
 //                                getBleRecord();
 
@@ -4090,7 +4267,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     //泺平===与设备，开锁
     private void openBleLock(RRent.ResultBean resultBean) {
-        Log.e("mf===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
+        LogUtil.e("mf===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
 
         ClientManager.getClient().openLock(m_nowMac,"000000000000", (int) serverTime, keys, encryptionKey, new IEmptyResponse(){
             @Override
@@ -4098,7 +4275,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("openLock===Fail", m_nowMac+"==="+Code.toString(code));
+                        LogUtil.e("openLock===Fail", m_nowMac+"==="+Code.toString(code));
 
                         queryOpenState();
 
@@ -4113,7 +4290,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             @Override
             public void onResponseSuccess() {
-                Log.e("openLock===Success", "===");
+                LogUtil.e("openLock===Success", "===");
 
 //                m_myHandler.postDelayed(new Runnable() {
 //                    @Override
@@ -4153,13 +4330,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     //泺平===与设备，获取记录
     private void getBleRecord() {
 
-        Log.e("getBleRecord===", "###==="+m_nowMac);
+        LogUtil.e("getBleRecord===", "###==="+m_nowMac);
 
         ClientManager.getClient().getRecord(m_nowMac, new IGetRecordResponse() {
 
             @Override
             public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, int Major, int Minor, String vol) {
-                Log.e("getBleRecord===0", transType + "==Major:"+ Major +"---Minor:"+Minor+"==="+bikeTradeNo);
+                LogUtil.e("getBleRecord===0", transType + "==Major:"+ Major +"---Minor:"+Minor+"==="+bikeTradeNo);
                 deleteBleRecord(bikeTradeNo);
 
 //                if (loadingDialog != null && loadingDialog.isShowing()){
@@ -4182,12 +4359,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onResponseSuccessEmpty() {
 //                ToastUtil.showMessageApp(context, "record empty");
-                Log.e("getBleRecord===1", "Success===Empty");
+                LogUtil.e("getBleRecord===1", "Success===Empty");
             }
 
             @Override
             public void onResponseFail(int code) {
-                Log.e("getBleRecord===2", Code.toString(code));
+                LogUtil.e("getBleRecord===2", Code.toString(code));
 //                ToastUtil.showMessageApp(context, Code.toString(code));
             }
         });
@@ -4197,22 +4374,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private void deleteBleRecord(String tradeNo) {
 //        UIHelper.showProgress(this, R.string.delete_bike_record);
         ClientManager.getClient().deleteRecord(m_nowMac, tradeNo, new IGetRecordResponse() {
-//            @Override
-//            public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, String cap, String vol) {
-//                Log.e("scan===deleteBleRecord", "Success===");
-//                deleteBleRecord(bikeTradeNo);
-//            }
 
             @Override
             public void onResponseSuccess(String phone, String bikeTradeNo, String timestamp, String transType, String mackey, String index, int Major, int Minor, String vol) {
-                Log.e("biking=deleteBleRecord", "Major:"+ Major +"---Minor:"+Minor);
+                LogUtil.e("biking=deleteBleRecord", "Major:"+ Major +"---Minor:"+Minor);
                 deleteBleRecord(bikeTradeNo);
             }
 
             @Override
             public void onResponseSuccessEmpty() {
 //                UIHelper.dismiss();
-                Log.e("scan===deleteBleRecord", "Success===Empty");
+                LogUtil.e("scan===deleteBleRecord", "Success===Empty");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -4231,7 +4403,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             @Override
             public void onResponseFail(int code) {
-                Log.e("scan===deleteBleRecord", Code.toString(code));
+                LogUtil.e("scan===deleteBleRecord", Code.toString(code));
 //                ToastUtil.showMessageApp(context, Code.toString(code));
                 popupwindow.dismiss();
             }
@@ -4241,7 +4413,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     //助力车关锁
     private void lock() {
-        Log.e("mf===lock", "===");
+        LogUtil.e("mf===lock", "===");
 
 
 //        RequestParams params = new RequestParams();
@@ -4256,7 +4428,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 
-                Log.e("mf===lock_fail", responseString + "===" + throwable.toString());
+                LogUtil.e("mf===lock_fail", responseString + "===" + throwable.toString());
                 onFailureCommon(throwable.toString());
             }
 
@@ -4270,7 +4442,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("mf===lock_1", carmodel_id + "===" + responseString + "===" + result.data);
+                            LogUtil.e("mf===lock_1", carmodel_id + "===" + responseString + "===" + result.data);
 
                             ToastUtil.showMessageApp(context,"恭喜您,关锁成功!");
 
@@ -4294,7 +4466,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     //助力车开锁
     private void unlock() {
-        Log.e("mf===unlock", "===");
+        LogUtil.e("mf===unlock", "===");
 
 //        isOpenLock = false;
 
@@ -4321,7 +4493,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("mf===unlock1", carmodel_id+ "===" + type + "===" + codenum + "===" + responseString + "===" + result.data);
+                            LogUtil.e("mf===unlock1", carmodel_id+ "===" + type + "===" + codenum + "===" + responseString + "===" + result.data);
 
                             if(result.getStatus_code()==200){
                                 ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
@@ -4353,7 +4525,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     //助力车开锁_轮询
 //    private void carLoopOpen() {
-//        Log.e("mf===carLoopOpen", order_id2+"===" +order_id+"===" + "===" + codenum);
+//        LogUtil.e("mf===carLoopOpen", order_id2+"===" +order_id+"===" + "===" + codenum);
 //
 //        HttpHelper.get(context, Urls.order_detail+order_id2, new TextHttpResponseHandler() {
 //            @Override
@@ -4362,7 +4534,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            }
 //            @Override
 //            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                Log.e("mf===carLoopOpen_fail", responseString + "===" + throwable.toString());
+//                LogUtil.e("mf===carLoopOpen_fail", responseString + "===" + throwable.toString());
 //                onFailureCommon(throwable.toString());
 //            }
 //
@@ -4374,7 +4546,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        try {
 //                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 //
-//                            Log.e("mf===carLoopOpen1", responseString + "===" + result.data);
+//                            LogUtil.e("mf===carLoopOpen1", responseString + "===" + result.data);
 //
 //                            OrderBean bean = JSON.parseObject(result.getData(), OrderBean.class);
 //
@@ -4413,7 +4585,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            m_myHandler.postDelayed(new Runnable() {
 //                @Override
 //                public void run() {
-//                    Log.e("mf===queryCarStatusOpen", "===");
+//                    LogUtil.e("mf===queryCarStatusOpen", "===");
 //
 //                    carLoopOpen();
 //                }
@@ -4429,7 +4601,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     //助力车关锁_轮询
 //    private void carLoopClose() {
-//        Log.e("mf===carLoopClose", order_id2+"===" +order_id+"===" + isAgain+"===" + codenum);
+//        LogUtil.e("mf===carLoopClose", order_id2+"===" +order_id+"===" + isAgain+"===" + codenum);
 //
 //        HttpHelper.get(context, Urls.order_detail+order_id2, new TextHttpResponseHandler() {
 //            @Override
@@ -4441,7 +4613,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            }
 //            @Override
 //            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                Log.e("mf===carLoopClose_fail", responseString + "===" + throwable.toString());
+//                LogUtil.e("mf===carLoopClose_fail", responseString + "===" + throwable.toString());
 //                onFailureCommon(throwable.toString());
 //            }
 //
@@ -4453,7 +4625,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        try {
 //                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 //
-//                            Log.e("mf===carLoopClose1", responseString + "===" + result.data);
+//                            LogUtil.e("mf===carLoopClose1", responseString + "===" + result.data);
 //
 //                            OrderBean bean = JSON.parseObject(result.getData(), OrderBean.class);
 //
@@ -4493,7 +4665,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            m_myHandler.postDelayed(new Runnable() {
 //                @Override
 //                public void run() {
-//                    Log.e("mf=queryCarStatusClose", "===");
+//                    LogUtil.e("mf=queryCarStatusClose", "===");
 //
 //                    carLoopClose();
 //
@@ -4514,14 +4686,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         if (apiClient != null) {
             apiClient.connectToIMEI(imei);
 
-            Log.e("connectDevice===", "==="+imei);
+            LogUtil.e("connectDevice===", "==="+imei);
         }
     }
 
     //小安
     @Override
     public void onConnect(BluetoothDevice bluetoothDevice) {
-        Log.e("mf===Xiaoan", "Connect==="+isConnect);
+        LogUtil.e("mf===Xiaoan", "Connect==="+isConnect);
 
         isConnect = true;
         m_myHandler.removeCallbacksAndMessages(null);
@@ -4532,7 +4704,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                String tvAgain = tv_againBtn.getText().toString().trim();
 
-                Log.e("mf===Xiaoan1", isAgain+"==="+isEndBtn+"==="+isOpenLock);
+                LogUtil.e("mf===Xiaoan1", isAgain+"==="+isEndBtn+"==="+isOpenLock);
 
                 xiaoanOpen_blue();
 
@@ -4546,13 +4718,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     //小安
     @Override
     public void onDisConnect(BluetoothDevice bluetoothDevice) {
-        Log.e("mf===Xiaoan", "DisConnect==="+isConnect);
+        LogUtil.e("mf===Xiaoan", "DisConnect==="+isConnect);
 
 
         if(isConnect){
             isConnect = false;
 
-            Log.e("mf===Xiaoan2", "DisConnect==="+isConnect);
+            LogUtil.e("mf===Xiaoan2", "DisConnect==="+isConnect);
             return;
         }
 
@@ -4572,11 +4744,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("xiaoanOpen===", response.toString());
+                        LogUtil.e("xiaoanOpen===", response.toString());
 
                         if(response.code==0){
                             isFinish = true;
 
+                            closeLoadingDialog();
                             ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
 
 //                            car_notification(1, 1, 0);    //TODO
@@ -4599,10 +4772,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("xiaoanClose===", type+"==="+deviceuuid+"==="+response.toString());
+                        LogUtil.e("xiaoanClose===", type+"==="+deviceuuid+"==="+response.toString());
 
                         if(response.code==0){
                             ToastUtil.showMessageApp(context,"恭喜您,关锁成功!");
+                            closeLoadingDialog();
 
 //                            macList2 = new ArrayList<> (macList);
 //
@@ -4617,10 +4791,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             lock();
 
 //                            if("108".equals(info)){       //TODO  2
-//                                Log.e("biking_defend===1", "====");
+//                                LogUtil.e("biking_defend===1", "====");
 //
 //                            }else{
-//                                Log.e("biking_defend===2", "====");
+//                                LogUtil.e("biking_defend===2", "====");
 //
 //                                ToastUtil.showMessageApp(context,"关锁失败，请重试");
 //                            }
@@ -4702,11 +4876,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
 
-//        Log.e("onLocationChanged=0", mListener+"==="+amapLocation);
+//        LogUtil.e("onLocationChanged=0", mListener+"==="+amapLocation);
 
         if (mListener != null && amapLocation != null) {
 
-//            Log.e("onLocationChanged=1", latitude +"==="+amapLocation.getLatitude() +">>>"+longitude+"==="+amapLocation.getLongitude());
+//            LogUtil.e("onLocationChanged=1", latitude +"==="+amapLocation.getLatitude() +">>>"+longitude+"==="+amapLocation.getLongitude());
 
             if ((latitude == amapLocation.getLatitude()) && (longitude == amapLocation.getLongitude())) return;
 
@@ -4723,7 +4897,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     SharedPreferencesUrls.getInstance().putString("latitude",""+latitude);
                     SharedPreferencesUrls.getInstance().putString("longitude",""+longitude);
 
-//                    Log.e("onLocationChanged=", mFirstFix+"==="+myLocation);
+//                    LogUtil.e("onLocationChanged=", mFirstFix+"==="+myLocation);
 
 //                    Toast.makeText(context,"==="+myLocation, Toast.LENGTH_SHORT).show();
 
@@ -4880,7 +5054,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         m_myHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.e("sf===requestCode", requestCode+"==="+resultCode+"==="+data);
+                LogUtil.e("sf===requestCode", requestCode+"==="+resultCode+"==="+data);
 
                 switch (requestCode) {
 
@@ -4916,7 +5090,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             isMac = data.getBooleanExtra("isMac", false);
                             isSearch = data.getBooleanExtra("isSearch", false);
 
-                            Log.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order+"==="+status+"==="+bad_reason);
+                            LogUtil.e("sf===requestCode1", isMac+"==="+codenum+"==="+carmodel_id+"==="+type+"==="+m_nowMac+"==="+lock_name+"==="+lock_title+"==="+lock_no+"==="+bleid +"==="+deviceuuid+"==="+electricity+"==="+carmodel_name+"==="+lock_status+"==="+can_finish_order+"==="+status+"==="+bad_reason);
 
                             initParams();
 
@@ -4942,7 +5116,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
 //                        }
 //
-//                        Log.e("requestCode===1", "==="+resultCode);
+//                        LogUtil.e("requestCode===1", "==="+resultCode);
 //                        break;
 //
 //                    case 2:
@@ -4950,19 +5124,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                            String result = data.getStringExtra("QR_CODE");
 //                            switch (isLock){
 //                                case 1:
-//                                    Log.e("requestCode===2_1", "==="+resultCode);
+//                                    LogUtil.e("requestCode===2_1", "==="+resultCode);
 //                                    lock(result);
 //                                    break;
 //                                case 2:
-//                                    Log.e("requestCode===2_2", "==="+resultCode);
+//                                    LogUtil.e("requestCode===2_2", "==="+resultCode);
 //                                    unLock(result);
 //                                    break;
 //                                case 3:
-//                                    Log.e("requestCode===2_3", "==="+resultCode);
+//                                    LogUtil.e("requestCode===2_3", "==="+resultCode);
 //                                    endCar(result);
 //                                    break;
 //                                case 4:
-//                                    Log.e("requestCode===2_4", "==="+resultCode);
+//                                    LogUtil.e("requestCode===2_4", "==="+resultCode);
 //                                    recycle(result);
 //                                    break;
 //                                default:
@@ -4972,7 +5146,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                            Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
 //                        }
 //
-//                        Log.e("requestCode===2", "==="+resultCode);
+//                        LogUtil.e("requestCode===2", "==="+resultCode);
 //                        break;
 
                     case PRIVATE_CODE:
@@ -4991,13 +5165,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 loadingDialog.show();
                             }
 
-                            Log.e("188===", isAgain+"==="+isConnect+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
+                            LogUtil.e("188===", isAgain+"==="+isConnect+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
 
                             initParams();
 
 //                            if ("2".equals(type) || "3".equals(type)){
 //
-//                                Log.e("mf===requestCode2", codenum+"==="+type);
+//                                LogUtil.e("mf===requestCode2", codenum+"==="+type);
 //
 ////                                      closeBroadcast();     //TODO    3
 ////                                      activity.registerReceiver(broadcastReceiver, Config.initFilter());
@@ -5016,7 +5190,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 ////                                      bleService.view = context;
 ////                                      bleService.showValue = true;
 //                            }else if ("5".equals(type)  || "6".equals(type)) {
-//                                Log.e("initView===5", "==="+isLookPsdBtn);
+//                                LogUtil.e("initView===5", "==="+isLookPsdBtn);
 //
 ////                                      ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
 ////                                      ClientManager.getClient().notifyClose(m_nowMac, mCloseListener);
@@ -5033,7 +5207,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //
 //                                    refreshLayout.setVisibility(View.VISIBLE);
 
-                            Log.e("188===order", isAgain+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
+                            LogUtil.e("188===order", isAgain+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
 
 
                             open_lock();
@@ -5041,7 +5215,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         }else{
                             ToastUtil.showMessageApp(context, "需要打开蓝牙");
 
-                            Log.e("188===fail", oid+"===");
+                            LogUtil.e("188===fail", oid+"===");
 
                             if(popupwindow!=null){
                                 popupwindow.dismiss();
@@ -5053,7 +5227,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         break;
 
                     case 189:
-                        Log.e("189===", oid+"===");
+                        LogUtil.e("189===", oid+"===");
 
                         BleManager.getInstance().init(activity.getApplication());
                         BleManager.getInstance()

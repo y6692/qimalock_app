@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.utils.LogUtil;
 
 import pl.droidsonroids.gif.GifDrawable;
 
@@ -45,7 +46,7 @@ public class LoadingDialog extends Dialog {
 					builder.append(SUFFIX);
 				}
 
-				Log.e("LoadingDialog===handler", n+"==="+detail_tv.getText()+"==="+builder.toString());
+				LogUtil.e("LoadingDialog===handler", n+"==="+detail_tv.getText()+"==="+builder.toString());
 
 				n++;
 

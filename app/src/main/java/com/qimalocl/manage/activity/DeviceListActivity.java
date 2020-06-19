@@ -38,6 +38,7 @@ import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ParseLeAdvData;
 import com.qimalocl.manage.utils.SortComparator;
 import com.qimalocl.manage.utils.ToastUtil;
@@ -132,7 +133,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                     }
 
                     if(isFresh){
-//                      Log.e("dla===thread", isFresh + "===");
+//                      LogUtil.e("dla===thread", isFresh + "===");
 
                         degree = (degree+30)%360;
                         m_myHandler.sendEmptyMessage(1);
@@ -147,7 +148,7 @@ public class DeviceListActivity extends MPermissionsActivity{
     protected void onResume() {
         super.onResume();
 
-        Log.e("dla===onResume", "==="+macList.size());
+        LogUtil.e("dla===onResume", "==="+macList.size());
 
         if(macList.size()>0){
             macList.clear();
@@ -219,7 +220,7 @@ public class DeviceListActivity extends MPermissionsActivity{
             @Override
             public void onResult(int resultCode) {
                 // 连接回应
-                Log.e("connect===onResult", resultCode+"===");
+                LogUtil.e("connect===onResult", resultCode+"===");
 
 
                 m_myHandler.post(new Runnable() {
@@ -231,7 +232,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                             public void onResult(int resultCode) {
                                 // 解锁回应
 
-                                Log.e("unlock===onResult", resultCode+"===");
+                                LogUtil.e("unlock===onResult", resultCode+"===");
                             }
                         });
                     }
@@ -251,7 +252,7 @@ public class DeviceListActivity extends MPermissionsActivity{
         }, new StateCallback() {
             @Override
             public void onStateUpdated(BikeState bikeState) {
-                Log.e("connect=onStateUpdated", bikeState+"===");
+                LogUtil.e("connect=onStateUpdated", bikeState+"===");
 
 
                 // 连接成功状态更新
@@ -264,23 +265,23 @@ public class DeviceListActivity extends MPermissionsActivity{
     ScannerCallback scannerCallback = new ScannerCallback() {
         @Override
         public void onScanStart() {
-            Log.e("ma===", "onScanStart: ");
+            LogUtil.e("ma===", "onScanStart: ");
         }
 
         @Override
         public void onScanStop() {
-            Log.e("ma===", "onScanStop: ");
+            LogUtil.e("ma===", "onScanStop: ");
         }
 
         @Override
         public void onScanCanceled() {
-            Log.e("ma===", "onScanCanceled: ");
+            LogUtil.e("ma===", "onScanCanceled: ");
         }
 
         @Override
         public void onDeviceFounded(BluetoothDevice bluetoothDevice, int i, byte[] bytes) {
 
-            Log.e("ma===onDeviceFounded", bluetoothDevice+"==="+bytes+"==="+TbitBle.getBleConnectionState());
+            LogUtil.e("ma===onDeviceFounded", bluetoothDevice+"==="+bytes+"==="+TbitBle.getBleConnectionState());
 
             String machineId = BikeUtil.resolveMachineIdByAdData(bytes);
 
@@ -288,20 +289,20 @@ public class DeviceListActivity extends MPermissionsActivity{
 
             if (!TextUtils.isEmpty(machineId)) {
 //                        showLog("扫描到设备: " + bluetoothDevice.getAddress()+ " | " + machineId);
-                Log.e("ma===onDeviceFounded1", machineId+"==="+bluetoothDevice.getName()+"==="+bluetoothDevice.getAddress()+"==="+bluetoothDevice.getUuids());
+                LogUtil.e("ma===onDeviceFounded1", machineId+"==="+bluetoothDevice.getName()+"==="+bluetoothDevice.getAddress()+"==="+bluetoothDevice.getUuids());
 
 
 //                TbitBle.commonCommand((byte)0x03, (byte)0x02, new Byte[]{0x01}, new ResultCallback() {
 //                    @Override
 //                    public void onResult(int resultCode) {
 //                        // 发送状态回复
-//                        Log.e("connect===onResult", resultCode+"===");
+//                        LogUtil.e("connect===onResult", resultCode+"===");
 //                    }
 //                }, new PacketCallback() {
 //                    @Override
 //                    public void onPacketReceived(Packet packet) {
 //                        // 收到packet回复
-//                        Log.e("connect=onPacketRec", packet+"===");
+//                        LogUtil.e("connect=onPacketRec", packet+"===");
 //                    }
 //                });
 
@@ -312,12 +313,12 @@ public class DeviceListActivity extends MPermissionsActivity{
                     @Override
                     public void onResult(int resultCode) {
                         // 连接回应
-                        Log.e("connect===onResult", resultCode+"===");
+                        LogUtil.e("connect===onResult", resultCode+"===");
                     }
                 }, new StateCallback() {
                     @Override
                     public void onStateUpdated(BikeState bikeState) {
-                        Log.e("connect=onStateUpdated", bikeState+"===");
+                        LogUtil.e("connect=onStateUpdated", bikeState+"===");
 
 
                         // 连接成功状态更新
@@ -358,7 +359,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                 bundle.putString("mac", address);
 //                bundle.putString("type", "2");
 
-                Log.e("dla===", "==="+isChange);
+                LogUtil.e("dla===", "==="+isChange);
 
                 if("t".equals(BaseApplication.mode)){
                     IntentUtils.startActivity(DeviceListActivity.this, LockStorageTestActivity.class, bundle);
@@ -410,7 +411,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                img_loading.startAnimation(operatingAnim);
 //                img_loading.setVisibility(View.VISIBLE);
 //                btn_scan.setText(getString(R.string.stop_scan));
-                Log.e("dla===onScanStarted", macList.size()+"==="+adapterList.size()+"==="+success);
+                LogUtil.e("dla===onScanStarted", macList.size()+"==="+adapterList.size()+"==="+success);
 
                 if(macList.size()>0){
                     macList.clear();
@@ -422,7 +423,7 @@ public class DeviceListActivity extends MPermissionsActivity{
             public void onLeScan(BleDevice device) {
                 super.onLeScan(device);
 
-                Log.e("dla===onLeScan", type+"==="+device.getName()+"==="+device.getMac()+"==="+device.getDevice()+"==="+macList.contains(device.getMac())+"==="+macList.contains("03:92:63:60:9B:3C"));
+                LogUtil.e("dla===onLeScan", type+"==="+device.getName()+"==="+device.getMac()+"==="+device.getDevice()+"==="+macList.contains(device.getMac())+"==="+macList.contains("03:92:63:60:9B:3C"));
 
 //                if (!bluetoothDeviceList.contains(device)){
 //                    bluetoothDeviceList.add(device);
@@ -433,7 +434,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 
                 if (device.getName()!=null && !macList.contains(device.getMac()) && ( ("2".equals(type) && device.getName().startsWith("NokeLock")) || ("9".equals(type) && device.getName().startsWith("SNLock-")) || (("5".equals(type) || "6".equals(type)) && device.getName().startsWith("bike:")) ) ) {
 
-                    Log.e("dla===onLeScan2", device+"==="+device.getMac()+"==="+adapterList.contains(device));
+                    LogUtil.e("dla===onLeScan2", device+"==="+device.getMac()+"==="+adapterList.contains(device));
 
                     macList.add(device.getMac());
 
@@ -457,7 +458,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                mDeviceAdapter.addDevice(bleDevice);
 //                mDeviceAdapter.notifyDataSetChanged();
 
-                Log.e("dla===onScanning", bleDevice+"==="+bleDevice.getMac());
+                LogUtil.e("dla===onScanning", bleDevice+"==="+bleDevice.getMac());
 
 
             }
@@ -470,7 +471,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 
                 isFresh = false;
 
-                Log.e("dla===onScanFinished", scanResultList+"==="+scanResultList.size());
+                LogUtil.e("dla===onScanFinished", scanResultList+"==="+scanResultList.size());
             }
         });
     }
@@ -482,7 +483,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 
 //        TbitBle.destroy();
 
-        Log.e("dla===onDestroy", "===");
+        LogUtil.e("dla===onDestroy", "===");
 
         if(macList.size()>0){
             macList.clear();
@@ -510,7 +511,7 @@ public class DeviceListActivity extends MPermissionsActivity{
         m_myHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.e("dla===requestCode", requestCode+"==="+resultCode+"==="+data);
+                LogUtil.e("dla===requestCode", requestCode+"==="+resultCode+"==="+data);
 
                 switch (requestCode) {
 
@@ -520,7 +521,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                         if (resultCode == RESULT_OK) {
 //                            closeLoadingDialog();
 
-                            Log.e("dla===188", requestCode+"==="+resultCode+"==="+data);
+                            LogUtil.e("dla===188", requestCode+"==="+resultCode+"==="+data);
 
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -536,12 +537,12 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                                loadingDialog.show();
 //                            }
 //
-//                            Log.e("188===", isAgain+"==="+isConnect+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
+//                            LogUtil.e("188===", isAgain+"==="+isConnect+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
 //
 //                            initParams();
 //
 //
-//                            Log.e("188===order", isAgain+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
+//                            LogUtil.e("188===order", isAgain+"==="+isLookPsdBtn+"==="+oid+"==="+m_nowMac+"==="+type+">>>"+isOpenLock+"==="+isEndBtn);
 //
 //
 //                            open_lock();
@@ -549,7 +550,7 @@ public class DeviceListActivity extends MPermissionsActivity{
                         }else{
                             ToastUtil.showMessageApp(context, "需要打开蓝牙");
 
-//                            Log.e("188===fail", oid+"===");
+//                            LogUtil.e("188===fail", oid+"===");
 
 //                            if(popupwindow!=null){
 //                                popupwindow.dismiss();
@@ -622,7 +623,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 //
 //
 //                if(isFresh){
-////                    Log.e("dla===thread", isFresh + "===");
+////                    LogUtil.e("dla===thread", isFresh + "===");
 //
 //                    degree = (degree+30)%360;
 //                    m_myHandler.sendEmptyMessage(1);
@@ -782,7 +783,7 @@ public class DeviceListActivity extends MPermissionsActivity{
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        Log.e("onKeyDown===", "==="+keyCode);
+        LogUtil.e("onKeyDown===", "==="+keyCode);
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
 

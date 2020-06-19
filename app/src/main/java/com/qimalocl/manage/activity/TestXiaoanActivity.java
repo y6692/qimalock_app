@@ -19,6 +19,7 @@ import com.qimalocl.manage.R;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.xiaoantech.sdk.XiaoanBleApiClient;
 import com.xiaoantech.sdk.ble.model.Response;
 import com.xiaoantech.sdk.ble.scanner.ScanResult;
@@ -131,7 +132,7 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
             @Override
             public void run() {
 
-                Log.e("DDA===onActivityResult",data+"==="+requestCode);
+                LogUtil.e("DDA===onActivityResult",data+"==="+requestCode);
 
                 switch (requestCode) {
                     case 1:
@@ -256,7 +257,7 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
 //        TextView imeiTxt = findViewById(R.id.imeiTxt);
         String imei = imeiTxt.getText().toString();
 
-        Log.e("connectClick===", "==="+imei);
+        LogUtil.e("connectClick===", "==="+imei);
 
         if (TextUtils.isEmpty(imei) || imei.trim().length() != 15) {
             Toast.makeText(this, "imei号错误", Toast.LENGTH_SHORT).show();
@@ -272,7 +273,7 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
     @Override
     public void onConnect(BluetoothDevice device) {
 
-        Log.e("onConnect===", isConnect+"==="+device);
+        LogUtil.e("onConnect===", isConnect+"==="+device);
 
         isConnect = true;
         runOnUiThread(new Runnable() {
@@ -287,7 +288,7 @@ public class TestXiaoanActivity extends SwipeBackActivity implements BleStateCha
 
     @Override
     public void onDisConnect(BluetoothDevice device) {
-        Log.e("onDisConnect===", isConnect+"==="+device);
+        LogUtil.e("onDisConnect===", isConnect+"==="+device);
 
         isConnect = false;
         runOnUiThread(new Runnable() {

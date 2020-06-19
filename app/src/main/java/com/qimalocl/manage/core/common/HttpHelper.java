@@ -16,6 +16,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.SystemUtil;
 
 /**
@@ -109,7 +110,7 @@ public class HttpHelper {
 
 		addHeader(context);
 
-		Log.e("params===get", url+"?"+params);
+		LogUtil.e("params===get", url+"?"+params);
 
 		client.get(context, url, params, responseHandler);
 	}
@@ -125,7 +126,7 @@ public class HttpHelper {
 
 		addHeader2(context);
 
-		Log.e("params===get", url+"?"+params);
+		LogUtil.e("params===get", url+"?"+params);
 
 		client.get(context, url, params, responseHandler);
 	}
@@ -169,23 +170,23 @@ public class HttpHelper {
 //		}
 
 //
-		Log.e("post===0", SharedPreferencesUrls.getInstance().getString("access_token","")+"===");
+		LogUtil.e("post===0", SharedPreferencesUrls.getInstance().getString("access_token","")+"===");
 
 
 		addHeader(context);
 
-		Log.e("params===post", url+"?"+params);
+		LogUtil.e("params===post", url+"?"+params);
 
 		client.post(context, url, params, responseHandler);
 	}
 
 	public static void post2(Context context, String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-		Log.e("post===0", SharedPreferencesUrls.getInstance().getString("access_token","")+"===");
+		LogUtil.e("post===0", SharedPreferencesUrls.getInstance().getString("access_token","")+"===");
 
 
 		addHeader2(context);
 
-		Log.e("params===post", url+"?"+params);
+		LogUtil.e("params===post", url+"?"+params);
 
 		client.post(context, url, params, responseHandler);
 	}
@@ -233,7 +234,7 @@ public class HttpHelper {
 				return;
 			}
 
-			Log.e("header===0", "===" + SharedPreferencesUrls.getInstance().getString("access_token",""));
+			LogUtil.e("header===0", "===" + SharedPreferencesUrls.getInstance().getString("access_token",""));
 
 			client.addHeader("Authorization", SharedPreferencesUrls.getInstance().getString("access_token",""));
 			client.addHeader("Accept", "application/vnd.ws.manage+json");
@@ -245,7 +246,7 @@ public class HttpHelper {
 //			client.addHeader("Device_UUID", "" + tm.getDeviceId());
 //			client.addHeader("Client", "Android_APP");
 
-			Log.e("post===", "===");
+			LogUtil.e("post===", "===");
 
 
 		} catch (Exception e) {
@@ -262,7 +263,7 @@ public class HttpHelper {
 				return;
 			}
 
-			Log.e("header===0", "===" + SharedPreferencesUrls.getInstance().getString("access_token",""));
+			LogUtil.e("header===0", "===" + SharedPreferencesUrls.getInstance().getString("access_token",""));
 
 			client.addHeader("Accept", "application/vnd.ws.manage+json");
 //			client.addHeader("Phone-Brand", new Build().MANUFACTURER.toUpperCase());
@@ -273,7 +274,7 @@ public class HttpHelper {
 //			client.addHeader("Device_UUID", "" + tm.getDeviceId());
 //			client.addHeader("Client", "Android_APP");
 
-			Log.e("post===", new Build().MANUFACTURER.toUpperCase()+"==="+new Build().MODEL+"==="+SystemUtil.getSystemVersion()+"==="+context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName+"==="+tm.getDeviceId());
+			LogUtil.e("post===", new Build().MANUFACTURER.toUpperCase()+"==="+new Build().MODEL+"==="+SystemUtil.getSystemVersion()+"==="+context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName+"==="+tm.getDeviceId());
 
 
 		} catch (Exception e) {
@@ -297,7 +298,7 @@ public class HttpHelper {
 			PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
 			int version = info.versionCode;
 
-			Log.e("getVersion===", "==="+version);
+			LogUtil.e("getVersion===", "==="+version);
 
 			return version;
 		} catch (Exception e) {

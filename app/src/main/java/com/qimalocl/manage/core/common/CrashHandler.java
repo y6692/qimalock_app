@@ -25,6 +25,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 /**
  * <h3>全局捕获异常</h3>
  * <br>
@@ -224,7 +226,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     
     /**
      * 文件删除
-     * @param day 文件保存天数
+     * @param autoClearDay 文件保存天数
      */
     public void autoClear(final int autoClearDay) {
     	FileUtil1.delete(getGlobalpath(), new FilenameFilter() {

@@ -30,6 +30,7 @@ import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.MaintenanceBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -181,7 +182,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
     }
     private void initHttp(){
 
-        Log.e("mra===initHttp", "==="+showPage);
+        LogUtil.e("mra===initHttp", "==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -213,7 +214,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("mra===initHttp1", "==="+responseString);
+                    LogUtil.e("mra===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {

@@ -40,6 +40,7 @@ import com.qimalocl.manage.model.HistorysRecordBean;
 import com.qimalocl.manage.model.PowerExchangeBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -263,7 +264,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
     }
     private void initHttp(String codenum){
 
-        Log.e("hra===initHttp", codenum+"==="+showPage);
+        LogUtil.e("hra===initHttp", codenum+"==="+showPage);
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
@@ -294,7 +295,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("hra===initHttp1", "==="+responseString);
+                    LogUtil.e("hra===initHttp1", "==="+responseString);
 
 
 
@@ -470,7 +471,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
             }else{
                 created_at.setText("借车:"+ bean.getCreated_at());
 
-                Log.e("getView===", date+"==="+bean.getCreated_at().split(" ")[0]+"==="+bean.getCreated_at());
+                LogUtil.e("getView===", date+"==="+bean.getCreated_at().split(" ")[0]+"==="+bean.getCreated_at());
 
                 if(bean.isLoad()){
                     if(bean.isShowDate()){
@@ -513,7 +514,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
             user_phone.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("Test","111111111");
+                    LogUtil.e("Test","111111111");
 //                    linkTel = bean.getTelphone();
                     if (Build.VERSION.SDK_INT >= 23) {
                         int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);

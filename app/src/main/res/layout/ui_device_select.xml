@@ -30,24 +30,12 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/bt0"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_button"
-            android:gravity="center"
-            android:text="物联锁"
-            android:textColor="#FD545B"
-            android:textSize="@dimen/sp18" />
-
-        <Button
             android:id="@+id/bt1"
             android:layout_width="match_parent"
             android:layout_height="42dp"
-            android:layout_marginTop="8dp"
             android:background="@drawable/bg_button"
             android:gravity="center"
-            android:text="SK_lock"
+            android:text="斯科蓝牙"
             android:textColor="#FD545B"
             android:textSize="@dimen/sp18"/>
 
@@ -56,33 +44,44 @@
         <Button
             android:id="@+id/bt2"
             android:layout_width="match_parent"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_height="42dp"
             android:background="@drawable/bg_button"
             android:gravity="center"
-            android:text="LPNEW_lock"
+            android:text=" 罗平新锁"
             android:textColor="#FD545B"
             android:textSize="@dimen/sp18" />
 
         <Button
             android:id="@+id/bt3"
             android:layout_width="match_parent"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_height="42dp"
             android:background="@drawable/bg_button"
             android:gravity="center"
-            android:text="LPOLD_lock"
+            android:text="罗平老锁"
             android:textColor="#FD545B"
             android:textSize="@dimen/sp18" />
 
         <Button
             android:id="@+id/bt4"
             android:layout_width="match_parent"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_height="42dp"
             android:background="@drawable/bg_button"
             android:gravity="center"
-            android:text="XA_lock"
+            android:text="小案中控"
+            android:textColor="#FD545B"
+            android:textSize="@dimen/sp18" />
+
+        <Button
+            android:id="@+id/bt0"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_button"
+            android:gravity="center"
+            android:text="无联锁蓝牙"
             android:textColor="#FD545B"
             android:textSize="@dimen/sp18" />
 

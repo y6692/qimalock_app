@@ -89,6 +89,8 @@ import android.content.Context;
 import android.os.Looper;
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 
 /**
  * The AsyncHttpClient can be used to make asynchronous GET, POST, PUT and DELETE HTTP requests in
@@ -657,7 +659,7 @@ public class AsyncHttpClient {
      */
     public void cancelRequests(final Context context, final boolean mayInterruptIfRunning) {
         if (context == null) {
-            Log.e(LOG_TAG, "Passed null Context to cancelRequests");
+            LogUtil.e(LOG_TAG, "Passed null Context to cancelRequests");
             return;
         }
         Runnable r = new Runnable() {

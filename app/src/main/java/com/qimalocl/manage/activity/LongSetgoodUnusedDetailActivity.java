@@ -30,6 +30,7 @@ import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -185,7 +186,7 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
         }
     }
     private void initHttp(){
-        Log.e("sguda===initHttp", date+"==="+type+"==="+showPage);
+        LogUtil.e("sguda===initHttp", date+"==="+type+"==="+showPage);
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
@@ -198,7 +199,7 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        Log.e("sguda===0", "===");
+        LogUtil.e("sguda===0", "===");
 
         HttpHelper.get(context, Urls.long_setgood_unused, params, new TextHttpResponseHandler() {
             @Override
@@ -242,12 +243,12 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("sguda===1", "==="+responseString);
+                            LogUtil.e("sguda===1", "==="+responseString);
 
 
                             JSONArray array = new JSONArray(result.getData());
 
-                            Log.e("sguda===2", "==="+array);
+                            LogUtil.e("sguda===2", "==="+array);
 
                             if (array.length() == 0 && showPage == 1) {
 
@@ -270,7 +271,7 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
                                 data.add(bean);
                             }
 
-                            Log.e("sguda===3", "===");
+                            LogUtil.e("sguda===3", "===");
 
 
                         } catch (Exception e) {
@@ -491,7 +492,7 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
 //            }else{
 //                created_at.setText("借车:"+ bean.getCreated_at());
 //
-//                Log.e("getView===", date+"==="+bean.getCreated_at().split(" ")[0]+"==="+bean.getCreated_at());
+//                LogUtil.e("getView===", date+"==="+bean.getCreated_at().split(" ")[0]+"==="+bean.getCreated_at());
 //
 
 //            }

@@ -298,7 +298,7 @@ public class CircleMenuLayout extends ViewGroup
 		float x = event.getX();
 		float y = event.getY();
 
-		// Log.e("TAG", "x = " + x + " , y = " + y);
+		// LogUtil.e("TAG", "x = " + x + " , y = " + y);
 
 		switch (event.getAction())
 		{
@@ -330,7 +330,7 @@ public class CircleMenuLayout extends ViewGroup
 			 */
 			float end = getAngle(x, y);
 
-			// Log.e("TAG", "start = " + start + " , end =" + end);
+			// LogUtil.e("TAG", "start = " + start + " , end =" + end);
 			// 如果是一、四象限，则直接end-start，角度值都是正值
 			if (getQuadrant(x, y) == 1 || getQuadrant(x, y) == 4)
 			{
@@ -355,7 +355,7 @@ public class CircleMenuLayout extends ViewGroup
 			float anglePerSecond = mTmpAngle * 1000
 					/ (System.currentTimeMillis() - mDownTime);
 
-			// Log.e("TAG", anglePrMillionSecond + " , mTmpAngel = " +
+			// LogUtil.e("TAG", anglePrMillionSecond + " , mTmpAngel = " +
 			// mTmpAngle);
 
 			// 如果达到该值认为是快速移动

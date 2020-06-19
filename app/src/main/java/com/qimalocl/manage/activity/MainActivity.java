@@ -71,6 +71,7 @@ import com.http.rdata.RUserLogin;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.base.AppStatusManager;
 import com.qimalocl.manage.base.BaseActivity;
 import com.qimalocl.manage.core.common.AppManager;
 import com.qimalocl.manage.core.common.HttpHelper;
@@ -85,10 +86,12 @@ import com.qimalocl.manage.fragment.MineFragment;
 import com.qimalocl.manage.fragment.MissionFragment;
 import com.qimalocl.manage.fragment.QueryFragment;
 import com.qimalocl.manage.fragment.ScanFragment;
+import com.qimalocl.manage.fragment.ToolFragment;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TabEntity;
 import com.qimalocl.manage.utils.Globals;
+import com.qimalocl.manage.utils.LogUtil;
 import com.zxing.lib.scaner.CaptureActivityHandler2;
 
 import org.apache.http.Header;
@@ -129,17 +132,18 @@ public class MainActivity extends BaseActivity{
 //    private int[] mIconSelectIds = {
 //            R.mipmap.scan2, R.mipmap.mission2, R.mipmap.alarm2, R.mipmap.query2,R.mipmap.maintenance2
 //    };
-    private String[] mTitles = { "首页", "任务", "查询", "我的" };
+    private String[] mTitles = { "首页", "任务", "工具", "我的" };
     private int[] mIconUnselectIds = {
-            R.mipmap.home, R.mipmap.mission, R.mipmap.query, R.mipmap.mine
+            R.mipmap.home, R.mipmap.mission, R.mipmap.tool, R.mipmap.mine
     };
     private int[] mIconSelectIds = {
-            R.mipmap.home2, R.mipmap.mission2, R.mipmap.query2, R.mipmap.mine2
+            R.mipmap.home2, R.mipmap.mission2, R.mipmap.tool2, R.mipmap.mine2
     };
 
     private ScanFragment scanFragment;
     private MissionFragment missionFragment;
     private QueryFragment queryFragment;
+    private ToolFragment toolFragment;
     private MineFragment mineFragment;
 
     private AlarmFragment alarmFragment;
@@ -158,7 +162,10 @@ public class MainActivity extends BaseActivity{
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.ui_main);
+//        setContentLayout(R.layout.ui_main);
         ButterKnife.bind(this);
+
+        LogUtil.e("ma===onCreate", "==="+ AppStatusManager.getInstance().getAppStatus());
 
         activity = this;
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -175,7 +182,7 @@ public class MainActivity extends BaseActivity{
 //        OkHttpClientManager.getInstance().UserLogin("99920170623", "123456", new ResultCallback<RUserLogin>() {
 //            @Override
 //            public void onError(Request request, Exception e) {
-//                Log.e("UserLogin===", "====Error");
+//                LogUtil.e("UserLogin===", "====Error");
 ////                UIHelper.showToast(this, e.getMessage());
 ////                failLogin();
 //            }
@@ -184,13 +191,13 @@ public class MainActivity extends BaseActivity{
 //            public void onResponse(RUserLogin rUserLogin) {
 //                if (rUserLogin.getResult() < 0) {
 ////                    failLogin();
-//                    Log.e("UserLogin===", "====fail");
+//                    LogUtil.e("UserLogin===", "====fail");
 //                }
 //                else {
 //                    Globals.USERNAME = "99920170623";
 ////                    Globals.BLE_NAME = "GpDTxe7<a";
 ////                    successLogin();
-//                    Log.e("UserLogin===", "====success");
+//                    LogUtil.e("UserLogin===", "====success");
 //                }
 //            }
 //        });
@@ -202,7 +209,7 @@ public class MainActivity extends BaseActivity{
 //      must store the new intent unless getIntent() will return the old one
         setIntent(intent);
 
-        Log.e("ma===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
+        LogUtil.e("ma===onNewIntent", SharedPreferencesUrls.getInstance().getString("access_token", "") + "===");
 
     }
 
@@ -214,7 +221,7 @@ public class MainActivity extends BaseActivity{
 
         boolean flag = getIntent().getBooleanExtra("flag", false);
 
-        Log.e("ma===onResume",  loadingDialog+ "===" + flag + "===" + access_token);
+        LogUtil.e("ma===onResume",  loadingDialog+ "===" + flag + "===" + access_token);
 
 //        if (loadingDialog != null && !loadingDialog.isShowing()) {
 //            loadingDialog.setTitle("请稍等");
@@ -252,7 +259,7 @@ public class MainActivity extends BaseActivity{
             if ("data.broadcast.action".equals(action)) {
                 int count = intent.getIntExtra("count", 0);
 
-                Log.e("main===mReceiver", "==="+count);
+                LogUtil.e("main===mReceiver", "==="+count);
 
                 if (count > 0) {
                     tab.showMsg(1, count);
@@ -268,7 +275,8 @@ public class MainActivity extends BaseActivity{
         mContext = this;
         scanFragment = new ScanFragment();
         missionFragment = new MissionFragment();
-        queryFragment = new QueryFragment();
+//        queryFragment = new QueryFragment();
+        toolFragment = new ToolFragment();
         mineFragment = new MineFragment();
 
 //        alarmFragment = new AlarmFragment();
@@ -276,7 +284,7 @@ public class MainActivity extends BaseActivity{
 
         mFragments.add(scanFragment);
         mFragments.add(missionFragment);
-        mFragments.add(queryFragment);
+        mFragments.add(toolFragment);
         mFragments.add(mineFragment);
 
 //        mFragments.get(1).set
@@ -387,7 +395,7 @@ public class MainActivity extends BaseActivity{
 
         tab.setCurrentTab(0);
 
-        Log.e("ma===initView", tab.getChildAt(0)+"==="+tab.getChildAt(1));
+        LogUtil.e("ma===initView", tab.getChildAt(0)+"==="+tab.getChildAt(1));
 
 //        tab.getChildAt(0).setClickable(false);
 //        tab.onT
@@ -401,7 +409,7 @@ public class MainActivity extends BaseActivity{
 //    @Override
 //    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 //
-//        Log.e("main==result", requestCode+"==="+resultCode);
+//        LogUtil.e("main==result", requestCode+"==="+resultCode);
 //
 //        if (resultCode == RESULT_OK) {
 //
@@ -504,7 +512,7 @@ public class MainActivity extends BaseActivity{
     public void onDestroy() {
         super.onDestroy();
 
-        Log.e("main==onDestroy", "===");
+        LogUtil.e("main==onDestroy", "===");
 
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
@@ -514,7 +522,7 @@ public class MainActivity extends BaseActivity{
 
     @Override
     public void onBackPressed() {
-        Log.e("main==onBackPressed", "===");
+        LogUtil.e("main==onBackPressed", "===");
         super.onBackPressed();
         //Toast.makeText(FDQControlAct.this, "onBackPessed", Toast.LENGTH_SHORT).show();
     }

@@ -3,6 +3,8 @@ package com.clj.fastble.utils;
 
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 public final class BleLog {
 
     public static boolean isPrint = true;

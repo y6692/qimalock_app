@@ -68,11 +68,11 @@ public class DeviceSelectActivity extends Activity {
 
         titleText.setText("入库");
 
-        if("t".equals(BaseApplication.mode)){
-            bt0.setVisibility(View.VISIBLE);
-        }else{
-            bt0.setVisibility(View.GONE);
-        }
+//        if("t".equals(BaseApplication.mode)){
+//            bt0.setVisibility(View.VISIBLE);
+//        }else{
+//            bt0.setVisibility(View.GONE);
+//        }
     }
 
     @OnClick(R.id.mainUI_title_backBtn)

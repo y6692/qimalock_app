@@ -39,6 +39,7 @@ import android.widget.TextView;
 import com.google.zxing.Result;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.vondear.rxtools.RxAnimationTool;
 import com.vondear.rxtools.RxBeepTool;
 import com.vondear.rxtools.interfaces.OnRxScanerListener;
@@ -190,7 +191,7 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.e("surface===0", "==="+hasSurface);
+		LogUtil.e("surface===0", "==="+hasSurface);
 
 		if (!hasSurface) {
 			//Camera初始化
@@ -208,7 +209,7 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 
 					@Override
 					public void surfaceCreated(SurfaceHolder holder) {
-						Log.e("surface===1", "==="+hasSurface);
+						LogUtil.e("surface===1", "==="+hasSurface);
 
 						if (!hasSurface) {
 							hasSurface = true;
@@ -219,7 +220,7 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 
 					@Override
 					public void surfaceDestroyed(SurfaceHolder holder) {
-						Log.e("surface===2", "==="+hasSurface);
+						LogUtil.e("surface===2", "==="+hasSurface);
 
 						hasSurface = false;
 
@@ -267,7 +268,7 @@ public class AddCarCaptureAct extends SwipeBackActivity{
 //
 //        releaseCamera();
 
-		Log.e("===", "====");
+		LogUtil.e("===", "====");
 
 		String result1 = result.getText();
 		if (mScanerListener == null) {

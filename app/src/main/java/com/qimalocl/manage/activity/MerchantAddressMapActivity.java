@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.GPSTrackBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 
 import org.apache.http.Header;
@@ -75,6 +77,8 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
     TextView searchBtn;
     @BindView(R.id.tv_day)
     TextView tv_day;
+    @BindView(R.id.ll_car_search)
+    LinearLayout ll_car_search;
 
     private Context context;
 //    private LoadingDialog loadingDialog;
@@ -104,6 +108,9 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
     DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+    private int carmodel_id;
+    private String codenum;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +120,13 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         context = this;
 //        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
 //        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+
+        carmodel_id = getIntent().getIntExtra("carmodel_id", 0);
+        codenum = getIntent().getStringExtra("codenum");
+
+        codenum = codenum==null?"":codenum;
+
+
         init();
     }
 
@@ -147,19 +161,27 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         terminusDescripter = BitmapDescriptorFactory.fromResource(R.drawable.terminus_icon);
         aMap.moveCamera(cameraUpdate);
 
+        codeNumEdit.setText(codenum);
+
+        if(carmodel_id==2){
+            ll_car_search.setVisibility(View.VISIBLE);
+        }else{
+            ll_car_search.setVisibility(View.GONE);
+        }
 
         backBtn.setOnClickListener(this);
 //        rightBtn.setOnClickListener(this);
         searchBtn.setOnClickListener(this);
+        ll_car_search.setOnClickListener(this);
+
 
 //        myLocation = new LatLng(latitude,longitude);
 //        addChooseMarker();
 //        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
 
-
     }
 
-    private void initHttp(final String codenum) {
+    private void initHttp() {
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
@@ -184,7 +206,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("mama===car","==="+responseString);
+                        LogUtil.e("mama===car","==="+responseString);
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -198,6 +220,15 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                                 }
                                 addChooseMarker();
                                 aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+
+//                                codenum = jsonObject.getString("number");
+                                carmodel_id = jsonObject.getInt("carmodel_id");
+
+                                if(carmodel_id==2){
+                                    ll_car_search.setVisibility(View.VISIBLE);
+                                }else{
+                                    ll_car_search.setVisibility(View.GONE);
+                                }
 
                             }else{
 
@@ -231,7 +262,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 //                                Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
 //                            }
                         } catch (Exception e) {
-                            Log.e("Test","异常:"+e);
+                            LogUtil.e("Test","异常:"+e);
                         }
                         if (loadingDialog != null && loadingDialog.isShowing()){
                             loadingDialog.dismiss();
@@ -307,7 +338,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                                 if (result.getFlag().equals("Success")) {
                                     JSONArray array = new JSONArray(result.getData());
 
-                                    Log.e("gpstrack===","==="+responseString);
+                                    LogUtil.e("gpstrack===","==="+responseString);
 
 //                            for (Marker marker : bikeMarkerList){
 //                                if (marker != null){
@@ -342,7 +373,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
                                             mPolyoptions.add(latLng);
 
-                                            Log.e("gpstrack===",polyline+"==="+mPolyoptions.getPoints().size());
+                                            LogUtil.e("gpstrack===",polyline+"==="+mPolyoptions.getPoints().size());
 
                                             if (mPolyoptions.getPoints().size() > 1) {
                                                 if (polyline != null) {
@@ -399,16 +430,76 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                 startActivityForResult(intent,0);
                 break;
             case R.id.searchBtn:
-                String codenum = codeNumEdit.getText().toString().trim();
+                codenum = codeNumEdit.getText().toString().trim();
                 if (codenum == null || "".equals(codenum)){
                     Toast.makeText(context,"请输入车辆编号",Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                initHttp(codenum);
+                initHttp();
                 break;
+
+            case R.id.ll_car_search:
+                ddSearch();
+                break;
+
             default:
                 break;
+        }
+    }
+
+    private void ddSearch(){
+        LogUtil.e("ddSearch===", "==="+codenum);
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+//            RequestParams params = new RequestParams();
+//            params.put("tokencode",codenum);
+            HttpHelper.post(context, Urls.search+codenum, null, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        LogUtil.e("ddSearch===1", "==="+responseString);
+
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+//                        if(result.getStatus_code()==200){
+//                            curMarker.setIcon(bikeDescripter_blue);
+//                        }else{
+//
+//                        }
+
+                        Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
+
+//                        if (result.getFlag().equals("Success")) {
+//                            Toast.makeText(context,"发送寻车指令成功",Toast.LENGTH_SHORT).show();
+//                        }else {
+//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                        }
+                    } catch (Exception e) {
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
         }
     }
 
@@ -422,15 +513,15 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
                     tv_day.setText("日期范围："+begintime+" 到 "+endtime);
 
-                    Log.e("onActivityResult===",begintime+"==="+endtime);
+                    LogUtil.e("onActivityResult===",begintime+"==="+endtime);
 
-                    String codenum = codeNumEdit.getText().toString().trim();
+                    codenum = codeNumEdit.getText().toString().trim();
                     if (codenum == null || "".equals(codenum)){
                         Toast.makeText(context,"请输入车辆编号",Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    initHttp(codenum);
+                    initHttp();
                 }
                 break;
 

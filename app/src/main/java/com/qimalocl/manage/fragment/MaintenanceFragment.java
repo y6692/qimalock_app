@@ -74,6 +74,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TagBean;
 import com.qimalocl.manage.utils.ByteUtil;
 import com.qimalocl.manage.utils.IoBuffer;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.SharePreUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.vondear.rxtools.RxAnimationTool;
@@ -507,7 +508,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     dialog.cancel();
         //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
 
-                                    Log.e("Maintenance===onC", bikeNum+"==="+type);
+                                    LogUtil.e("Maintenance===onC", bikeNum+"==="+type);
 
                                     tagFlowLayout.setAdapter(tagAdapter);
                                     tagFlowLayout2.setAdapter(tagAdapter2);
@@ -515,27 +516,27 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                     switch (type){
                                         case 1:
-                                            Log.e("requestCode===2_1", "==="+bikeNum);
+                                            LogUtil.e("requestCode===2_1", "==="+bikeNum);
                                             recycle(bikeNum);
                                             break;
 
                                         case 2:
-                                            Log.e("requestCode===2_2", "==="+bikeNum);
+                                            LogUtil.e("requestCode===2_2", "==="+bikeNum);
                                             unLock(bikeNum);
                                             break;
 
                                         case 3:
-                                            Log.e("requestCode===2_3", "==="+bikeNum);
+                                            LogUtil.e("requestCode===2_3", "==="+bikeNum);
                                             endCar(bikeNum);
                                             break;
 
                                         case 4:
-                                            Log.e("requestCode===2_4", "==="+bikeNum);
+                                            LogUtil.e("requestCode===2_4", "==="+bikeNum);
                                             hasRepaired(bikeNum);
                                             break;
 
                                         case 5:
-                                            Log.e("requestCode===2_5", "==="+bikeNum);
+                                            LogUtil.e("requestCode===2_5", "==="+bikeNum);
                                             setCarScrapped(bikeNum);
                                             break;
 
@@ -637,7 +638,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //
 //                        if(size == null) return;
 //
-////                        Log.e("0===preview", "===");
+////                        LogUtil.e("0===preview", "===");
 //
 //                        // 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
 //                        byte[] rotatedData = new byte[data.length];
@@ -653,7 +654,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //
 //                        initCrop();
 //
-////                        Log.e("1===preview", "===");
+////                        LogUtil.e("1===preview", "===");
 //
 //                        Image barcode = new Image(size.width, size.height, "Y800");
 //                        barcode.setData(rotatedData);
@@ -686,7 +687,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 ////                          activity.setResult(RESULT_OK, rIntent);
 ////                          activity.scrollToFinishActivity();
 //
-//                            Log.e("Maint===preview", "===");
+//                            LogUtil.e("Maint===preview", "===");
 //
 //                            isHand = false;
 //                            lockInfo(resultStr);
@@ -738,9 +739,9 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                 if (result.getFlag().equals("Success")) {
                                     JSONObject jsonObject = new JSONObject(result.getData());
 
-                                    Log.e("lockInfo===", "==="+responseString);
+                                    LogUtil.e("lockInfo===", "==="+responseString);
 
-//                                    Log.e("lockInfo===", jsonObject.getString("lock_no")+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+//                                    LogUtil.e("lockInfo===", jsonObject.getString("lock_no")+"==="+jsonObject.getString("bleid")+"==="+responseString+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
                                     carType = jsonObject.getString("type");
 
                                     if ("1".equals(carType)){      //机械锁
@@ -749,11 +750,11 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                         mac = jsonObject.getString("macinfo");
 
                                         if ("2".equals(carType)){          //蓝牙锁
-                                            Log.e("lockInfo===2", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                            LogUtil.e("lockInfo===2", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
                                         }else if ("3".equals(carType)){    //3合1锁
-                                            Log.e("lockInfo===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                            LogUtil.e("lockInfo===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
                                         }else if ("4".equals(carType)){    //电单车
-                                            Log.e("lockInfo===4", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+                                            LogUtil.e("lockInfo===4", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
                                             bleid = jsonObject.getString("bleid");
                                         }
                                     }
@@ -775,7 +776,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                                     }
                                 }
                             } catch (Exception e) {
-                                Log.e("Test","异常"+e);
+                                LogUtil.e("Test","异常"+e);
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
@@ -797,7 +798,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         bikeNumEdit.setText("");
         remarkEdit.setText("");
 
-        Log.e("onResume===Maintenance", isHidden+"==="+first);
+        LogUtil.e("onResume===Maintenance", isHidden+"==="+first);
 
 //        if(!first){
 //            initCamera(surfaceHolder);
@@ -806,7 +807,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public void onPause() {
-        Log.e("onPause===Maintenance", isHidden+"==="+first);
+        LogUtil.e("onPause===Maintenance", isHidden+"==="+first);
 
 //        if(!first && !isHidden){
 //            releaseCamera();
@@ -834,7 +835,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         }
         super.onDestroy();
 
-        Log.e("mainten===onDestroy", "===");
+        LogUtil.e("mainten===onDestroy", "===");
 
 
         if(dialog != null){
@@ -859,7 +860,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
         isHidden = hidden;
 
-        Log.e("onHiddenChanged===MF", first+"==="+isHidden);
+        LogUtil.e("onHiddenChanged===MF", first+"==="+isHidden);
 
         if(hidden){
             previewing = false;
@@ -876,14 +877,14 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //                    mCameraManager.closeDriver();
 //                }
 
-//                Log.e("onHiddenChanged===MF1", mCameraManager+"==="+handler);
+//                LogUtil.e("onHiddenChanged===MF1", mCameraManager+"==="+handler);
 //
 //                if (handler != null) {
 //                    handler.quitSynchronously();
 //                    handler = null;
 //                }
 //
-//                Log.e("onHiddenChanged===MF2", mCameraManager+"==="+handler);
+//                LogUtil.e("onHiddenChanged===MF2", mCameraManager+"==="+handler);
 //
 ////               releaseCamera();
 //                mCameraManager.closeDriver();
@@ -906,7 +907,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
             }
 
 
-            Log.e("surface===MF0", first+"==="+surfaceHolder+"==="+hasSurface);
+            LogUtil.e("surface===MF0", first+"==="+surfaceHolder+"==="+hasSurface);
 
             if(surfaceHolder!=null){
                 surfaceHolder.addCallback(sf);
@@ -920,7 +921,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     //Camera初始化
 
                     if(surfaceHolder==null){
-                        Log.e("surface===MF&", first+"==="+surfaceHolder+"==="+hasSurface);
+                        LogUtil.e("surface===MF&", first+"==="+surfaceHolder+"==="+hasSurface);
 
                         surfaceHolder = scanPreview.getHolder();
 
@@ -932,7 +933,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                             @Override
                             public void surfaceCreated(SurfaceHolder holder) {
-                                Log.e("surface===MF1", "==="+hasSurface);
+                                LogUtil.e("surface===MF1", "==="+hasSurface);
 
                                 if (!hasSurface) {
                                     hasSurface = true;
@@ -943,7 +944,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                             @Override
                             public void surfaceDestroyed(SurfaceHolder holder) {
-                                Log.e("surface===MF2", "==="+hasSurface);
+                                LogUtil.e("surface===MF2", "==="+hasSurface);
 
                                 hasSurface = false;
 
@@ -981,7 +982,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
 
     private void initCamera(SurfaceHolder surfaceHolder) {
-        Log.e("initCamera===", "====");
+        LogUtil.e("initCamera===", "====");
 
 //        releaseCamera();
 //        mCameraManager.closeDriver();
@@ -1015,7 +1016,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
             handler = new CaptureActivityHandler2(this);
         } catch (Exception ioe) {
-            Log.e("initCamera===MF_e", "===="+ioe);
+            LogUtil.e("initCamera===MF_e", "===="+ioe);
 //            return;
         }
 
@@ -1024,19 +1025,19 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private void releaseCamera() {
         if (mCamera != null) {
             mCamera.stopPreview();
-            Log.e("0===releaseCamera", "==="+mCamera);
+            LogUtil.e("0===releaseCamera", "==="+mCamera);
 
             previewing = false;
             mCamera.setPreviewCallback(null);
-            Log.e("1===releaseCamera", "==="+mCamera);
+            LogUtil.e("1===releaseCamera", "==="+mCamera);
             mCamera.release();
-            Log.e("2===releaseCamera", "==="+mCamera);
+            LogUtil.e("2===releaseCamera", "==="+mCamera);
             mCamera = null;
         }
     }
 
     private void resetCamera(){
-//        Log.e("===resetCamera", "==="+mCamera);
+//        LogUtil.e("===resetCamera", "==="+mCamera);
 //
 //        previewing = true;
 //
@@ -1050,7 +1051,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //        mCamera = mCameraManager.getCamera();
 //
 //
-//        Log.e("111====resetCamera", mCamera+"==="+previewCb+"==="+autoFocusCB);
+//        LogUtil.e("111====resetCamera", mCamera+"==="+previewCb+"==="+autoFocusCB);
 //
 //        scanPreview.removeAllViews();
 //        mPreview = new CameraPreview(context, mCamera, previewCb, autoFocusCB);
@@ -1069,7 +1070,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //
 //        releaseCamera();
 
-        Log.e("===", "====");
+        LogUtil.e("===", "====");
 
         String result1 = result.getText();
         if (mScanerListener == null) {
@@ -1142,7 +1143,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     type = tagDatas.get(posotion).getType();
                 }
 
-                Log.e("affirmLayout===", "==="+type);
+                LogUtil.e("affirmLayout===", "==="+type);
 
                 if(type==1 || type==4 || type==5){
 //                    releaseCamera();
@@ -1177,29 +1178,29 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                             dialog.cancel();
 //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
 
-                            Log.e("Maintenance===onC2", bikeNum+"==="+type);
+                            LogUtil.e("Maintenance===onC2", bikeNum+"==="+type);
 
                             tagFlowLayout.setAdapter(tagAdapter);
 //                            tagAdapter.unSelected(0, tagFlowLayout);
 
                             switch (type){
 //                                case 1:
-//                                    Log.e("requestCode===2_1", "==="+bikeNum);
+//                                    LogUtil.e("requestCode===2_1", "==="+bikeNum);
 //                                    recycle(bikeNum);
 //                                    break;
 
                                 case 2:
-                                    Log.e("requestCode===2_2", "==="+bikeNum);
+                                    LogUtil.e("requestCode===2_2", "==="+bikeNum);
                                     unLock(bikeNum);
                                     break;
 
                                 case 3:
-                                    Log.e("requestCode===2_3", "==="+bikeNum);
+                                    LogUtil.e("requestCode===2_3", "==="+bikeNum);
                                     endCar(bikeNum);
                                     break;
 
 //                                case 4:
-//                                    Log.e("requestCode===2_4", "==="+bikeNum);
+//                                    LogUtil.e("requestCode===2_4", "==="+bikeNum);
 //                                    hasRepaired(bikeNum);
 //                                    break;
 
@@ -1274,21 +1275,21 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                             dialog.cancel();
 //                          delpoints(myAdapter.getDatas().get(curPosition).getUid(),type);
 
-                            Log.e("MaintenanceHand===onC", "==="+type);
+                            LogUtil.e("MaintenanceHand===onC", "==="+type);
 
                             tagFlowLayout2.setAdapter(tagAdapter2);
 
                             switch (type){
                                 case 2:
-                                    Log.e("requestCode_hand===2_2", "==="+bikeNum);
+                                    LogUtil.e("requestCode_hand===2_2", "==="+bikeNum);
                                     unLock(bikeNum);
                                     break;
                                 case 3:
-                                    Log.e("requestCode_hand===2_3", "==="+bikeNum);
+                                    LogUtil.e("requestCode_hand===2_3", "==="+bikeNum);
                                     endCar(bikeNum);
                                     break;
 //                                case 5:
-//                                    Log.e("requestCode_hand===2_4", "==="+bikeNum);
+//                                    LogUtil.e("requestCode_hand===2_4", "==="+bikeNum);
 //                                    setCarScrapped(bikeNum);
 //                                    break;
                                 default:
@@ -1461,7 +1462,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 
                                     Toast.makeText(context,"恭喜您，结束用车成功",Toast.LENGTH_SHORT).show();
 
-                                    Log.e("biking===000", "endCar===="+carType+"==="+responseString);
+                                    LogUtil.e("biking===000", "endCar===="+carType+"==="+responseString);
 
                                     if("4".equals(carType) || "7".equals(carType)){
                                         closeEbikeTemp();
@@ -1603,7 +1604,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        Log.e("badcarList===0", totalnum+"==="+bikeNum);
+        LogUtil.e("badcarList===0", totalnum+"==="+bikeNum);
 
         HttpHelper.get(context, Urls.badcarList, params, new TextHttpResponseHandler() {
             @Override
@@ -1629,13 +1630,13 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("badcarList===1", "==="+responseString);
+                    LogUtil.e("badcarList===1", "==="+responseString);
 
                     if (result.getFlag().equals("Success")) {
 
                         JSONArray array = new JSONArray(result.getData());
 
-                        Log.e("badcarList===2", "==="+array);
+                        LogUtil.e("badcarList===2", "==="+array);
 
                         if (array.length() == 0 && showPage == 1) {
                             totalnum = "0";
@@ -1654,7 +1655,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //                            datas.add(bean);
                         }
 
-                        Log.e("badcarList===3", totalnum+"==="+codenum);
+                        LogUtil.e("badcarList===3", totalnum+"==="+codenum);
 
                         if(!"".equals(totalnum)){
                             Intent intent = new Intent("data.broadcast.action");
@@ -1709,12 +1710,12 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("biking===000", "closeEbike===="+bikeNum+"==="+responseString);
+                            LogUtil.e("biking===000", "closeEbike===="+bikeNum+"==="+responseString);
 
                             if (result.getFlag().equals("Success")) {
 //                              ToastUtil.showMessage(context,"数据更新成功");
 
-                                Log.e("biking===", "closeEbike===="+result.getData());
+                                LogUtil.e("biking===", "closeEbike===="+result.getData());
 
                                 if ("0".equals(result.getData())){
                                     ToastUtil.showMessageApp(context,"关锁成功");
@@ -1763,7 +1764,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         m_myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e("temporaryLock===", "===");
+                LogUtil.e("temporaryLock===", "===");
 
                 if(!bleService.connect){
                     cn++;
@@ -1784,7 +1785,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                     m_myHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e("temporaryLock===4_3", "==="+mac);
+                            LogUtil.e("temporaryLock===4_3", "==="+mac);
 
                             button8();
                             button9();
@@ -1804,10 +1805,10 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
         m_myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e("temporaryLock===4_4", bleService.cc+"==="+"B1 2A 80 00 00 5B ".equals(bleService.cc));
+                LogUtil.e("temporaryLock===4_4", bleService.cc+"==="+"B1 2A 80 00 00 5B ".equals(bleService.cc));
 
                 if("B1 2A 80 00 00 5B ".equals(bleService.cc)){
-                    Log.e("temporaryLock===4_5", "==="+bleService.cc);
+                    LogUtil.e("temporaryLock===4_5", "==="+bleService.cc);
 
                     ToastUtil.showMessageApp(context,"关锁成功");
 
@@ -1823,7 +1824,7 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
                 }
 
                 initCamera(surfaceHolder);
-                Log.e("temporaryLock===4_6", "==="+bleService.cc);
+                LogUtil.e("temporaryLock===4_6", "==="+bleService.cc);
 
             }
         }, 500);
@@ -1920,12 +1921,12 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
 //        if (isVisibleToUser) {
 //            //相当于Fragment的onResume
 //
-//            Log.e("onPause===Maintenance1", "===");
+//            LogUtil.e("onPause===Maintenance1", "===");
 //
 //        } else {
 //            //相当于Fragment的onPause
 //
-//            Log.e("onPause===Maintenance2", "===");
+//            LogUtil.e("onPause===Maintenance2", "===");
 //        }
 //    }
 
@@ -1939,15 +1940,15 @@ public class MaintenanceFragment extends BaseFragment implements View.OnClickLis
     private Runnable doAutoFocus = new Runnable() {
         public void run() {
 
-//            Log.e("0===doAutoFocus", "==="+previewing);
+//            LogUtil.e("0===doAutoFocus", "==="+previewing);
 
             if (previewing){
 
-                Log.e("1===doAutoFocus", "==="+previewing);
+                LogUtil.e("1===doAutoFocus", "==="+previewing);
 
                 mCamera.autoFocus(autoFocusCB);
 
-//                Log.e("2===doAutoFocus", "==="+previewing);
+//                LogUtil.e("2===doAutoFocus", "==="+previewing);
             }
 
         }

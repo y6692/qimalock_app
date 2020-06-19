@@ -57,6 +57,7 @@ import com.qimalocl.manage.model.HistorysRecordBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TagBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
@@ -203,7 +204,7 @@ public class BikeLocationActivity extends SwipeBackActivity implements View.OnCl
                         if (result.getFlag().equals("Success")) {
                             JSONArray array = new JSONArray(result.getData());
 
-                            Log.e("gpstrack===","==="+responseString);
+                            LogUtil.e("gpstrack===","==="+responseString);
 
 //                            for (Marker marker : bikeMarkerList){
 //                                if (marker != null){
@@ -238,7 +239,7 @@ public class BikeLocationActivity extends SwipeBackActivity implements View.OnCl
 
                                     mPolyoptions.add(latLng);
 
-                                    Log.e("gpstrack===",polyline+"==="+mPolyoptions.getPoints().size());
+                                    LogUtil.e("gpstrack===",polyline+"==="+mPolyoptions.getPoints().size());
 
                                     if (mPolyoptions.getPoints().size() > 1) {
                                         if (polyline != null) {
@@ -326,7 +327,7 @@ public class BikeLocationActivity extends SwipeBackActivity implements View.OnCl
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.e("Test","RRRR:"+responseString);
+                LogUtil.e("Test","RRRR:"+responseString);
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
                     if (result.getFlag().equals("Success")){
@@ -349,7 +350,7 @@ public class BikeLocationActivity extends SwipeBackActivity implements View.OnCl
                         Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
-                    Log.e("Test","异常:"+e);
+                    LogUtil.e("Test","异常:"+e);
                 }
                 if (loadingDialog != null && loadingDialog.isShowing()){
                     loadingDialog.dismiss();
@@ -368,7 +369,7 @@ public class BikeLocationActivity extends SwipeBackActivity implements View.OnCl
 //
 //                    tv_day.setText("日期范围："+begintime+" 到 "+endtime);
 //
-//                    Log.e("onActivityResult===",begintime+"==="+endtime);
+//                    LogUtil.e("onActivityResult===",begintime+"==="+endtime);
 //
 //                    String codenum = codeNumEdit.getText().toString().trim();
 //                    if (codenum == null || "".equals(codenum)){

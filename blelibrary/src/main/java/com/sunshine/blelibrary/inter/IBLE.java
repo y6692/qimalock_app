@@ -54,6 +54,8 @@ public interface IBLE {
 
     boolean getBattery();
 
+    boolean getBattery2();
+
     /**
      * 开锁
      * @return

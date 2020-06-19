@@ -45,6 +45,7 @@ import com.qimalocl.manage.core.widget.ClearEditText;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.model.BleDevice;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.LogUtil;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
@@ -141,7 +142,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             bytes[i] = (byte) Integer.parseInt(subStr, 16);
         }
 
-        Log.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[5]);
+        LogUtil.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[5]);
 
         Config.key = bytes;
 
@@ -201,7 +202,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
 
 //        BaseApplication.getInstance().getIBLE().setChangKey(false);
 
-        Log.e("LockStorage2Activity===", name+"==="+address+"==="+codenum);
+        LogUtil.e("LockStorage2Activity===", name+"==="+address+"==="+codenum);
 
         if (!TextUtils.isEmpty(address)) {
             BaseApplication.getInstance().getIBLE().connect(address, this);
@@ -217,7 +218,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                 //修改密码
 //                if ("1".equals(pwd)) {
 
-                Log.e("ls2a===changeKeyBtn", "===");
+                LogUtil.e("ls2a===changeKeyBtn", "===");
 
                 //修改密钥
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
@@ -274,7 +275,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                 //修改密码
 //                if ("1".equals(pwd)) {
 
-                Log.e("ls2a===changePsdBtn", "===");
+                LogUtil.e("ls2a===changePsdBtn", "===");
 
 //                isChangePsd = true;
 
@@ -484,7 +485,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                     break;
                 case Config.KEY_ACTION:
 
-                    Log.e("KEY_ACTION===", "===");
+                    LogUtil.e("KEY_ACTION===", "===");
 
                     if (TextUtils.isEmpty(data)) {
                         Toast.makeText(context, "密钥修改失败", Toast.LENGTH_LONG).show();
@@ -540,7 +541,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
 
         RequestParams params = new RequestParams();
 
-        Log.e("changKey===", uid+"==="+access_token+"==="+codenum);
+        LogUtil.e("changKey===", uid+"==="+access_token+"==="+codenum);
 
         params.put("uid", uid);
         params.put("access_token", access_token);
@@ -634,7 +635,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             return;
         }
 
-        Log.e("changPsd===", uid+"==="+access_token+"==="+codenum);
+        LogUtil.e("changPsd===", uid+"==="+access_token+"==="+codenum);
 
         RequestParams params = new RequestParams();
         params.put("uid", uid);
@@ -819,7 +820,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
             params.put("codenum",codenum);     //车辆编号
             params.put("macinfo",address);    //mac地址
 
-            Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+codenum+"==="+address);
+            LogUtil.e("addCar===", uid+"==="+access_token+"==="+result+"==="+codenum+"==="+address);
 
             HttpHelper.post(context, Urls.addCar, params, new TextHttpResponseHandler() {
                 @Override
@@ -891,7 +892,7 @@ public class LockStorage2Activity extends MPermissionsActivity implements OnConn
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e("addCar===eee", "==="+e);
+                        LogUtil.e("addCar===eee", "==="+e);
 
                         if (loadingDialog != null && loadingDialog.isShowing()){
                             loadingDialog.dismiss();

@@ -40,6 +40,8 @@ import org.apache.http.protocol.HTTP;
 
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 /**
  * A collection of string request parameters or files to send along with requests made from an
  * {@link AsyncHttpClient} instance. <p>&nbsp;</p> For example: <p>&nbsp;</p>

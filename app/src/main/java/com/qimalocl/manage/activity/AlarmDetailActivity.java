@@ -40,6 +40,7 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
@@ -112,7 +113,7 @@ public class AlarmDetailActivity extends SwipeBackActivity implements View.OnCli
         tvTel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Test","111111111");
+                LogUtil.e("Test","111111111");
 //                                linkTel = bean.getTelphone();
                 if (Build.VERSION.SDK_INT >= 23) {
                     int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);
@@ -227,7 +228,7 @@ public class AlarmDetailActivity extends SwipeBackActivity implements View.OnCli
 
 //                        {"data":{"longitude":"117.147399","latitude":"34.218477","codenum":"50007307","telphone":"15105203536","lastusetime":"2018-12-26 07:59:22"}}
 
-                        Log.e("initHttp===", "==="+obj.getString("longitude"));
+                        LogUtil.e("initHttp===", "==="+obj.getString("longitude"));
 
                         longitude = Double.parseDouble(obj.getString("longitude"));
                         latitude = Double.parseDouble(obj.getString("latitude"));
@@ -245,7 +246,7 @@ public class AlarmDetailActivity extends SwipeBackActivity implements View.OnCli
                         tvTel.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Log.e("Test","111111111");
+                                LogUtil.e("Test","111111111");
 //                                linkTel = bean.getTelphone();
                                 if (Build.VERSION.SDK_INT >= 23) {
                                     int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);

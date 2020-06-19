@@ -79,6 +79,8 @@ import com.qimalocl.manage.fragment.MaintenanceFragment;
 import com.qimalocl.manage.model.CarBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
+import com.qimalocl.manage.utils.AesTool;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.sunshine.blelibrary.config.Config;
 import com.vondear.rxtools.RxAnimationTool;
@@ -169,6 +171,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private LinearLayout lightBtn;
 	private int Tag = 0;
 	private boolean isBindSchool = false;
+	private boolean isAddDispatch = false;
 	private boolean isChangeKey = false;
 	private boolean isAdd = false;
 	private int n = 0;
@@ -219,6 +222,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
 		isBindSchool = getIntent().getExtras().getBoolean("isBindSchool", false);
+		isAddDispatch = getIntent().getExtras().getBoolean("isAddDispatch", false);
 		school_id = getIntent().getExtras().getInt("school_id");
 		school_name = getIntent().getExtras().getString("school_name");
 		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey", false);
@@ -246,7 +250,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		mCameraManager = CameraManager.get();
 
-		Log.e("ActivityScanerCode===", "===");
+		LogUtil.e("ActivityScanerCode===", "===");
 
 //		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
 //			Toast.makeText(ActivityScanerCode.this, "您的设备不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
@@ -290,7 +294,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	protected void onResume() {
 		super.onResume();
 
-		Log.e("surface===0", isPermission+"==="+surfaceHolder+"==="+hasSurface);
+		LogUtil.e("surface===0", isPermission+"==="+surfaceHolder+"==="+hasSurface);
 
 		if(!isPermission){
 			if (!hasSurface) {
@@ -298,7 +302,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				if(surfaceHolder==null){
 					surfaceHolder = scanPreview.getHolder();
 
-					Log.e("surface===0_1", isPermission+"==="+hasSurface+"==="+surfaceHolder);
+					LogUtil.e("surface===0_1", isPermission+"==="+hasSurface+"==="+surfaceHolder);
 
 					surfaceHolder.addCallback(new SurfaceHolder.Callback() {
 						@Override
@@ -308,7 +312,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 						@Override
 						public void surfaceCreated(SurfaceHolder holder) {
-							Log.e("surface===1", "==="+hasSurface);
+							LogUtil.e("surface===1", "==="+hasSurface);
 
 							if (!hasSurface) {
 								hasSurface = true;
@@ -348,7 +352,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									setScanRule();
 									scan();
 
-									Log.e("asc===onCreate", "==="+mCamera);
+									LogUtil.e("asc===onCreate", "==="+mCamera);
 
 									if (mCamera!=null){
 
@@ -363,7 +367,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 						@Override
 						public void surfaceDestroyed(SurfaceHolder holder) {
-							Log.e("surface===2", "==="+hasSurface);
+							LogUtil.e("surface===2", "==="+hasSurface);
 
 							hasSurface = false;
 
@@ -376,7 +380,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				}
 
 			} else {
-				Log.e("surface===3", "==="+hasSurface);
+				LogUtil.e("surface===3", "==="+hasSurface);
 
 				initCamera(surfaceHolder);
 			}
@@ -398,7 +402,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //
 //					@Override
 //					public void surfaceCreated(SurfaceHolder holder) {
-//						Log.e("surface===1", "==="+hasSurface);
+//						LogUtil.e("surface===1", "==="+hasSurface);
 //
 //						if (!hasSurface) {
 //							hasSurface = true;
@@ -408,7 +412,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //
 //					@Override
 //					public void surfaceDestroyed(SurfaceHolder holder) {
-//						Log.e("surface===2", "==="+hasSurface);
+//						LogUtil.e("surface===2", "==="+hasSurface);
 //
 //						hasSurface = false;
 //					}
@@ -519,7 +523,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			case R.id.left_mask:
 			case R.id.right_mask:
 			case R.id.bottom_mask:
-				Log.e("onClick===1", "===");
+				LogUtil.e("onClick===1", "===");
 				isHand = false;
 				ivHand.setImageResource(R.drawable.top_hand);
 //				btnBikeNum.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.top_hand), null, null);
@@ -542,7 +546,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //					releaseCamera();
 //					mCameraManager.closeDriver();
 
-					Log.e("asc===btnBikeNum", isHand+"==="+mCamera);
+					LogUtil.e("asc===btnBikeNum", isHand+"==="+mCamera);
 
 					if(isHand){
 						isHand = false;
@@ -651,7 +655,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 				String bikeNum = bikeNumEdit.getText().toString().trim();
 
-				Log.e("ll_confirm===", "==="+bikeNum);
+				LogUtil.e("ll_confirm===", "==="+bikeNum);
 
 
 
@@ -673,14 +677,11 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				Tag = 1;
 
 				if(isBindSchool){
-					Log.e("BindSchool===2", "==="+bikeNum);
+					LogUtil.e("BindSchool===2", "==="+bikeNum);
 
 					lockInfo(bikeNum);
-				}else if(isAdd){
-					Intent rIntent = new Intent();
-					rIntent.putExtra("QR_CODE", bikeNum);
-					setResult(RESULT_OK, rIntent);
-					scrollToFinishActivity();
+				}else if(isAddDispatch){
+					lockInfo2(bikeNum);
 				}else{
 					isSearch = true;
 					lockInfo(bikeNum);
@@ -751,7 +752,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //                img_loading.startAnimation(operatingAnim);
 //                img_loading.setVisibility(View.VISIBLE);
 //                btn_scan.setText(getString(R.string.stop_scan));
-				Log.e("asc===onScanStarted", "==="+success);
+				LogUtil.e("asc===onScanStarted", "==="+success);
 
 			}
 
@@ -759,7 +760,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			public void onLeScan(BleDevice bleDevice) {
 				super.onLeScan(bleDevice);
 
-				Log.e("asc===onLeScan", bleDevice+"==="+bleDevice.getMac());
+				LogUtil.e("asc===onLeScan", bleDevice+"==="+bleDevice.getMac());
 			}
 
 			@Override
@@ -767,7 +768,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //                mDeviceAdapter.addDevice(bleDevice);
 //                mDeviceAdapter.notifyDataSetChanged();
 
-				Log.e("asc===onScanning", bleDevice+"==="+bleDevice.getMac());
+				LogUtil.e("asc===onScanning", bleDevice+"==="+bleDevice.getMac());
 
 				macList.add(bleDevice.getMac());
 
@@ -781,7 +782,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //
 //							BleManager.getInstance().cancelScan();
 //
-//							Log.e("onScanning===2", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
+//							LogUtil.e("onScanning===2", isConnect+"==="+bleDevice+"==="+bleDevice.getMac());
 //
 //							Toast.makeText(context, "搜索成功", Toast.LENGTH_LONG).show();
 //
@@ -806,7 +807,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //                img_loading.setVisibility(View.INVISIBLE);
 //                btn_scan.setText(getString(R.string.start_scan));
 
-				Log.e("asc===onScanFinished", scanResultList+"==="+scanResultList.size());
+				LogUtil.e("asc===onScanFinished", scanResultList+"==="+scanResultList.size());
 			}
 		});
 	}
@@ -825,7 +826,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	}
 
 	private void initCamera(SurfaceHolder surfaceHolder) {
-		Log.e("initCamera===", "===="+handler);
+		LogUtil.e("initCamera===", "===="+handler);
 
 //		previewing = true;
 
@@ -859,7 +860,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 			handler = new CaptureActivityHandler(this);
 		} catch (Exception ioe) {
-			Log.e("initCamera===e", "===="+ioe);
+			LogUtil.e("initCamera===e", "===="+ioe);
 //			return;
 		}
 
@@ -886,7 +887,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 //        hasSurface = false;
 
-		Log.e("ASC===onPause", surfaceHolder+"==="+hasSurface+"==="+handler);
+		LogUtil.e("ASC===onPause", surfaceHolder+"==="+hasSurface+"==="+handler);
 
 
 //		surfaceHolder.removeCallback(sf);
@@ -907,14 +908,14 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 //		surfaceHolder.removeCallback(sf);
 
-		Log.e("ASC===onPause2", "==="+hasSurface);
+		LogUtil.e("ASC===onPause2", "==="+hasSurface);
 
 		super.onPause();
 	}
 
 //	@Override
 //	protected void onDestroy() {
-//		Log.e("onDestroy===ASC1", "===="+inactivityTimer);
+//		LogUtil.e("onDestroy===ASC1", "===="+inactivityTimer);
 //
 //		inactivityTimer.shutdown();
 ////		mScanerListener = null;
@@ -922,7 +923,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //
 //        BleManager.getInstance().cancelScan();
 //
-//		Log.e("onDestroy===ASC2", "===="+inactivityTimer);
+//		LogUtil.e("onDestroy===ASC2", "===="+inactivityTimer);
 //
 ////		previewing = false;
 ////
@@ -931,7 +932,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 ////			handler = null;
 ////		}
 ////
-////		Log.e("onDestroy===ASC2", "===="+mCameraManager);
+////		LogUtil.e("onDestroy===ASC2", "===="+mCameraManager);
 ////
 ////		releaseCamera();
 ////		mCameraManager.closeDriver();
@@ -954,7 +955,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					loadingDialog.dismiss();
 				}
 
-				Log.e("scan===onDestroy", "===");
+				LogUtil.e("scan===onDestroy", "===");
 
 				inputMethodManager.hideSoftInputFromWindow(bikeNumEdit.getWindowToken(), 0);
 
@@ -975,7 +976,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			@Override
 			public void run() {
 				try{
-					Log.e("handleDecode===", "==="+previewing);
+					LogUtil.e("handleDecode===", "==="+previewing);
 
 					if(!previewing) return;
 
@@ -986,7 +987,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					if(previewing)
 						RxBeepTool.playBeep(mActivity, vibrate);
 
-					Log.e("===", "====");
+					LogUtil.e("===", "====");
 
 					String result1 = result.getText();
 					if (mScanerListener == null) {
@@ -1009,7 +1010,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private void initDialogResult(final Result result) {
 //		useBike(result.toString());
 
-		Log.e("add_xiaoan_car===", SharedPreferencesUrls.getInstance().getString("type", "")+"==="+result+"==="+result.toString().contains("IMEI:"));
+		LogUtil.e("add_xiaoan_car===", SharedPreferencesUrls.getInstance().getString("type", "")+"==="+result+"==="+result.toString().contains("IMEI:"));
 
 		if("7".equals(SharedPreferencesUrls.getInstance().getString("type", ""))){
 
@@ -1078,7 +1079,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                     }else{
                         deviceuuid = result.toString().split(" ")[0].split(":")[1];
 
-                        Log.e("initDialogResult===", "==="+deviceuuid);
+                        LogUtil.e("initDialogResult===", "==="+deviceuuid);
 
                         CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
                         customBuilder.setTitle("温馨提示").setMessage("imei:"+deviceuuid+"\n是否继续?")
@@ -1124,7 +1125,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                 }else{
                     deviceuuid = result.toString().split(" ")[0].split(":")[1];
 
-                    Log.e("initDialogResult===2", "==="+deviceuuid);
+                    LogUtil.e("initDialogResult===2", "==="+deviceuuid);
 
                     Intent rIntent = new Intent();
                     rIntent.putExtra("QR_CODE", deviceuuid);
@@ -1157,10 +1158,12 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		}else{
 			if(isBindSchool){
-				Log.e("BindSchool===", "==="+result.toString());
+				LogUtil.e("BindSchool===", "==="+result.toString());
 
 //				carschoolaction(result.toString());
 				lockInfo(result.toString());
+			}else if(isAddDispatch){
+				lockInfo2(result.toString());
 			}else if(isAdd){
 				Intent rIntent = new Intent();
 				rIntent.putExtra("QR_CODE", result.toString());
@@ -1201,7 +1204,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				try {
 					ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-					Log.e("carschoolaction===", responseString+"===");
+					LogUtil.e("carschoolaction===", responseString+"===");
 
 					if(result.getStatus_code()==200){
 
@@ -1219,7 +1222,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //						JSONObject jsonObject = new JSONObject(result.getData());
 //
 //
-////						Log.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+////						LogUtil.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 //
 //
 //					} else {
@@ -1230,7 +1233,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //						scrollToFinishActivity();
 //					}
 				} catch (Exception e) {
-					Log.e("Test","异常"+e);
+					LogUtil.e("Test","异常"+e);
 				}
 				if (loadingDialog != null && loadingDialog.isShowing()){
 					loadingDialog.dismiss();
@@ -1249,7 +1252,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				scrollToFinishActivity();
 			}else if ("4".equals(jsonObject.getString("type"))){    //行运兔
 
-				Log.e("Scan===4", jsonObject.getString("macinfo")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+				LogUtil.e("Scan===4", jsonObject.getString("macinfo")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 				Intent intent = new Intent(ActivityScanerCode.this, Main2Activity.class);
 				intent.putExtra("bleid", jsonObject.getString("bleid"));
@@ -1269,7 +1272,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				scrollToFinishActivity();
 			}else if ("5".equals(jsonObject.getString("type")) || "6".equals(jsonObject.getString("type"))){    //3合1锁
 
-				Log.e("Scan===5", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
+				LogUtil.e("Scan===5", "==="+jsonObject.getString("lock_no")+"==="+jsonObject.getString("type"));
 
 				if("5".equals(jsonObject.getString("type"))){
 					SharedPreferencesUrls.getInstance().putString("type", "5");
@@ -1287,7 +1290,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				startActivity(intent);
 			}else if ("7".equals(jsonObject.getString("type"))){    //3合1锁
 
-				Log.e("Scan===7", jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("type"));
+				LogUtil.e("Scan===7", jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("type"));
 
 
 				Intent intent = new Intent(ActivityScanerCode.this, MainXiaoanActivity.class);
@@ -1344,14 +1347,14 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					}else{
 						if (!isChangeKey){
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
-								Log.e("Scan===2_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								LogUtil.e("Scan===2_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								n=0;
 								macLoop();
 
 
 							}else {
-								Log.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								LogUtil.e("Scan===2_2", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pwd")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								n=0;
 								macLoop();
@@ -1366,7 +1369,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //								scrollToFinishActivity();
 							}
 						}else {
-							Log.e("Scan===2_3", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+							LogUtil.e("Scan===2_3", jsonObject.getString("bleid")+"==="+isChangeKey+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 							Intent intent = new Intent(ActivityScanerCode.this, ChangeKeyLockManageActivity.class);
 							intent.putExtra("name", "NokeLock");
@@ -1379,7 +1382,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					}
 				}else if ("3".equals(jsonObject.getString("type"))){    //3合1锁
 
-					Log.e("Scan===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+					LogUtil.e("Scan===3", "==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 //					Intent intent = new Intent(ActivityScanerCode.this, Main3Activity.class);
 //					intent.putExtra("codenum", jsonObject.getString("codenum"));
@@ -1406,7 +1409,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 						if (!isChangeKey){
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
 
-								Log.e("Scan===3_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+								LogUtil.e("Scan===3_1", macList.contains(jsonObject.getString("macinfo"))+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 								Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
 								intent.putExtra("name", "NokeLock");
@@ -1438,13 +1441,13 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				}
 			}
 		} catch (Exception e) {
-			Log.e("Test","异常"+e);
+			LogUtil.e("Test","异常"+e);
 		}
 	}
 
 	private void lockInfo(String result){
 
-		Log.e("Scan===lockInfo", "==="+result);
+		LogUtil.e("Scan===lockInfo", "==="+result);
 
 		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
 		if (access_token == null || "".equals(access_token)){
@@ -1475,7 +1478,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					try {
 						ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-						Log.e("Scan===00", "==="+responseString);
+						LogUtil.e("Scan===00", "==="+responseString);
 
 						if(result.getStatus_code()==0){
                             CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
@@ -1507,7 +1510,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								Config.passwordnew = Config.passwordnew2;
 							}
 
-                            Log.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason+"==="+Config.newKey[0]+"==="+Config.passwordnew[0]);
+                            LogUtil.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason+"==="+Config.newKey[0]+"==="+Config.passwordnew[0]);
 
                             if(isBindSchool){
 
@@ -1565,6 +1568,9 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                                     intent.putExtra("isMac",false);
                                     intent.putExtra("isSearch",isSearch);
 
+                                    LogUtil.e("lockinfo===", "==="+AesTool.Genkey("CGFDV0ETMGTWGHUB", deviceuuid).replace(" ", "").toLowerCase());
+
+
                                     if (loadingDialog != null && loadingDialog.isShowing()){
                                         loadingDialog.dismiss();
                                     }
@@ -1576,7 +1582,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                                 }
                             }
                         }else {
-							Log.e("lockinfo===error","==="+result.getMessage());
+							LogUtil.e("lockinfo===error","==="+result.getMessage());
 
 							Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
 							if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1629,7 +1635,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //
 //
 //						} else {
-//							Log.e("lockinfo===error","==="+result.getInfo());
+//							LogUtil.e("lockinfo===error","==="+result.getInfo());
 //
 //							Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
 //							if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1643,7 +1649,117 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 						if (loadingDialog != null && loadingDialog.isShowing()){
 							loadingDialog.dismiss();
 						}
-						Log.e("Test","异常"+e);
+						LogUtil.e("Test","异常"+e);
+
+						closeBtnBikeNum();
+//						initCamera(surfaceHolder);
+					}
+
+				}
+			});
+		}
+	}
+
+	private void lockInfo2(String result){
+
+		LogUtil.e("Scan===lockInfo2", "==="+result);
+
+		String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+		if (access_token == null || "".equals(access_token)){
+			Toast.makeText(ActivityScanerCode.this,"请先登录账号",Toast.LENGTH_SHORT).show();
+			UIHelper.goToAct(ActivityScanerCode.this, LoginActivity.class);
+		}else {
+//			RequestParams params = new RequestParams();
+//			params.put("tokencode",result);
+			HttpHelper.get(ActivityScanerCode.this, Urls.car+ URLEncoder.encode(result), new TextHttpResponseHandler() {
+				@Override
+				public void onStart() {
+					if (loadingDialog != null && !loadingDialog.isShowing()) {
+						loadingDialog.setTitle("正在提交");
+						loadingDialog.show();
+					}
+				}
+				@Override
+				public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+					if (loadingDialog != null && loadingDialog.isShowing()){
+						loadingDialog.dismiss();
+					}
+					UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
+
+					closeBtnBikeNum();
+				}
+				@Override
+				public void onSuccess(int statusCode, Header[] headers, String responseString) {
+					try {
+						ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+						LogUtil.e("lockInfo2===00", "==="+responseString);
+
+						if(result.getStatus_code()==0){
+							CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
+
+							codenum = bean.getNumber();
+							type = ""+bean.getLock_id();
+							lock_name = bean.getLock_name();	//车锁名称(英文)
+							lock_title = bean.getLock_title();	//车锁名称(中文)
+							deviceuuid = bean.getVendor_lock_id();
+							lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常 1已上锁 2已开锁
+							lock_no = bean.getLock_no();
+							m_nowMac = bean.getLock_mac();
+							bleid = bean.getLock_secretkey();
+							electricity = bean.getElectricity();
+							carmodel_id = bean.getCarmodel_id();
+							carmodel_name = bean.getCarmodel_name();
+							status = bean.getStatus();	//	车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
+							can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
+							bad_reason = bean.getBad_reason();
+
+							Intent intent = new Intent();
+							intent.putExtra("codenum", codenum);
+							intent.putExtra("lock_name", lock_name);
+							intent.putExtra("lock_title", lock_title);
+							intent.putExtra("m_nowMac", m_nowMac);
+							intent.putExtra("carmodel_id", carmodel_id);
+							intent.putExtra("type", type);
+							intent.putExtra("lock_no", lock_no);
+							intent.putExtra("bleid", bleid);
+							intent.putExtra("deviceuuid", deviceuuid);
+							intent.putExtra("electricity", electricity);
+							intent.putExtra("carmodel_name", carmodel_name);
+							intent.putExtra("lock_status", lock_status);
+							intent.putExtra("status", status);
+							intent.putExtra("can_finish_order", can_finish_order);
+							intent.putExtra("bad_reason", bad_reason);
+
+							LogUtil.e("lockinfo===", "==="+AesTool.Genkey("CGFDV0ETMGTWGHUB", deviceuuid).replace(" ", "").toLowerCase());
+
+
+							if (loadingDialog != null && loadingDialog.isShowing()){
+								loadingDialog.dismiss();
+							}
+
+							BleManager.getInstance().cancelScan();
+
+							setResult(RESULT_OK, intent);
+							scrollToFinishActivity();
+
+						}else {
+							LogUtil.e("lockinfo===error","==="+result.getMessage());
+
+							Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+							if (loadingDialog != null && loadingDialog.isShowing()){
+								loadingDialog.dismiss();
+							}
+
+							closeBtnBikeNum();
+						}
+
+					} catch (Exception e) {
+
+						if (loadingDialog != null && loadingDialog.isShowing()){
+							loadingDialog.dismiss();
+						}
+						LogUtil.e("Test","异常"+e);
 
 						closeBtnBikeNum();
 //						initCamera(surfaceHolder);
@@ -1695,8 +1811,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 						JSONObject jsonObject = new JSONObject(result.getData());
 
-						Log.e("add_xiaoan_car===", responseString+"===");
-//						Log.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
+						LogUtil.e("add_xiaoan_car===", responseString+"===");
+//						LogUtil.e("Scan===", responseString+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("deviceuuid")+"==="+jsonObject.getString("pdk")+"==="+jsonObject.getString("type"));
 
 
 					} else {
@@ -1707,7 +1823,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 						scrollToFinishActivity();
 					}
 				} catch (Exception e) {
-					Log.e("Test","异常"+e);
+					LogUtil.e("Test","异常"+e);
 				}
 				if (loadingDialog != null && loadingDialog.isShowing()){
 					loadingDialog.dismiss();
@@ -1725,7 +1841,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //				public void run() {
 //					Size size = camera.getParameters().getPreviewSize();
 //
-//					Log.e("previewCb===", "==="+data.length);
+//					LogUtil.e("previewCb===", "==="+data.length);
 //
 //					// 这里需要将获取的data翻转一下，因为相机默认拿的的横屏的数据
 //					byte[] rotatedData = new byte[data.length];
@@ -1889,7 +2005,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			if(n<5){
 				n++;
 
-				Log.e("macLoop===", is+"==="+n);
+				LogUtil.e("macLoop===", is+"==="+n);
 
 				if(is){
 					BleManager.getInstance().cancelScan();
@@ -1928,7 +2044,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					m_myHandler.postDelayed(new Runnable() {
 						@Override
 						public void run() {
-							Log.e("macLoop===1", "==="+n);
+							LogUtil.e("macLoop===1", "==="+n);
 
 							macLoop();
 
@@ -1937,7 +2053,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				}
 
 			}else{
-				Log.e("macLoop===finish", "===");
+				LogUtil.e("macLoop===finish", "===");
 				BleManager.getInstance().cancelScan();
 
 //				Intent intent = new Intent(ActivityScanerCode.this, LockManageAlterActivity.class);
@@ -2074,7 +2190,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		Log.e("188===", isPermission+"==="+requestCode+"==="+resultCode);
+		LogUtil.e("188===", isPermission+"==="+requestCode+"==="+resultCode);
 
 		if(resultCode == RESULT_OK)
 		{
@@ -2089,7 +2205,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 					isPermission = true;
 
-					Log.e("188===1", deviceuuid+"==="+hasSurface+"==="+surfaceHolder);
+					LogUtil.e("188===1", deviceuuid+"==="+hasSurface+"==="+surfaceHolder);
 
 					previewing = true;
 					initCamera(surfaceHolder);
@@ -2132,7 +2248,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-		Log.e("onKeyDown===", "==="+keyCode);
+		LogUtil.e("onKeyDown===", "==="+keyCode);
 
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 

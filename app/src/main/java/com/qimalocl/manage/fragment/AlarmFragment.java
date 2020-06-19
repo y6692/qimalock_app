@@ -45,6 +45,7 @@ import com.qimalocl.manage.model.AlarmBean;
 import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -188,7 +189,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
 
-        Log.e("AF===", "==="+hidden);
+        LogUtil.e("AF===", "==="+hidden);
 
         if(hidden){
             //pause
@@ -334,7 +335,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-        Log.e("badcarList===0", totalnum+"==="+codenum);
+        LogUtil.e("badcarList===0", totalnum+"==="+codenum);
 
         HttpHelper.get(context, Urls.alarm_lists, params, new TextHttpResponseHandler() {
             @Override
@@ -364,7 +365,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    Log.e("alarm_lists===1", "==="+responseString);
+                    LogUtil.e("alarm_lists===1", "==="+responseString);
 
                     if (result.getFlag().equals("Success")) {
 //                        JSONArray array = new JSONArray(result.getData());
@@ -388,7 +389,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
 
                         JSONArray array = new JSONArray(result.getData());
 
-                        Log.e("alarm_lists===2", "==="+array);
+                        LogUtil.e("alarm_lists===2", "==="+array);
 
                         if (array.length() == 0 && showPage == 1) {
                             totalnum = "0";
@@ -411,7 +412,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
                             AlarmBean bean = JSON.parseObject(array.getJSONObject(i).toString(), AlarmBean.class);
 
 
-                            Log.e("alarm_lists===3", array.length()+"==="+bean.getId()+"==="+bean.getIs_handle()+"==="+bean.getCodenum()+"==="+bean.getAlarm_type_desc()+"==="+bean.getAdd_time());
+                            LogUtil.e("alarm_lists===3", array.length()+"==="+bean.getId()+"==="+bean.getIs_handle()+"==="+bean.getCodenum()+"==="+bean.getAlarm_type_desc()+"==="+bean.getAdd_time());
 
 //                            if(i==0 && bean.getBadtime().compareTo(badtime)<0){
 //                                badtime = bean.get();
@@ -426,7 +427,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
 
                         }
 
-                        Log.e("alarm_lists===4", totalnum+"==="+codenum);
+                        LogUtil.e("alarm_lists===4", totalnum+"==="+codenum);
 
 //                        if(!"".equals(totalnum)){
 //                            Intent intent = new Intent("data.broadcast.action");
@@ -581,7 +582,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("requestCode===", "==="+requestCode);
+        LogUtil.e("requestCode===", "==="+requestCode);
 
         switch (requestCode) {
 
@@ -592,7 +593,7 @@ public class AlarmFragment extends BaseFragment implements View.OnClickListener,
 					Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                 }
 
-                Log.e("requestCode===1", "==="+resultCode);
+                LogUtil.e("requestCode===1", "==="+resultCode);
                 break;
 
             default:

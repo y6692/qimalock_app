@@ -80,7 +80,7 @@ public class JsonUtil
 			}
 			catch (JSONException e)
 			{
-				Log.e("json", "jso");
+				LogUtil.e("json", "jso");
 				e.printStackTrace();
 			}
 		}
@@ -120,7 +120,7 @@ public class JsonUtil
 		}
 		catch (JSONException e)
 		{
-			Log.e("json", "json");
+			LogUtil.e("json", "json");
 			e.printStackTrace();
 		}
 		return map;
@@ -146,7 +146,7 @@ public class JsonUtil
 		}
 		catch (JSONException e)
 		{
-			Log.e("json", "json");
+			LogUtil.e("json", "json");
 			e.printStackTrace();
 		}
 	}

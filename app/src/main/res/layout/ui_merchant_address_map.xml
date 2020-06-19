@@ -108,6 +108,37 @@
             android:layout_marginTop="@dimen/dp10"
             />
 
+        <LinearLayout
+            android:id="@+id/ll_car_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp30"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:onClick="btn"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/car_search_icon"
+                android:gravity="center"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:text="寻车"
+                android:textSize="14sp"
+                android:textColor="@color/tx_black"
+                />
+
+        </LinearLayout>
+
     </RelativeLayout>
 
     <!--<LinearLayout-->

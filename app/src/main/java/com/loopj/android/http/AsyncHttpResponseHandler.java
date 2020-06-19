@@ -23,6 +23,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -276,7 +278,7 @@ public abstract class AsyncHttpResponseHandler implements ResponseHandlerInterfa
                 if (response != null && response.length >= 3) {
                     onSuccess((Integer) response[0], (Header[]) response[1], (byte[]) response[2]);
                 } else {
-                    Log.e(LOG_TAG, "SUCCESS_MESSAGE didn't got enough params");
+                    LogUtil.e(LOG_TAG, "SUCCESS_MESSAGE didn't got enough params");
                 }
                 break;
             case FAILURE_MESSAGE:
@@ -284,7 +286,7 @@ public abstract class AsyncHttpResponseHandler implements ResponseHandlerInterfa
                 if (response != null && response.length >= 4) {
                     onFailure((Integer) response[0], (Header[]) response[1], (byte[]) response[2], (Throwable) response[3]);
                 } else {
-                    Log.e(LOG_TAG, "FAILURE_MESSAGE didn't got enough params");
+                    LogUtil.e(LOG_TAG, "FAILURE_MESSAGE didn't got enough params");
                 }
                 break;
             case START_MESSAGE:

@@ -53,6 +53,7 @@ import com.qimalocl.manage.core.widget.MyListView;
 import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.utils.LogUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -347,7 +348,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
-//        Log.e("recycletask===0", totalnum+"==="+codenum);
+//        LogUtil.e("recycletask===0", totalnum+"==="+codenum);
 
         HttpHelper.get(context, Urls.recycletask, params, new TextHttpResponseHandler() {
             @Override
@@ -391,7 +392,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         try {
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            Log.e("recycletask===1", result.getMeta()+"==="+responseString);
+                            LogUtil.e("recycletask===1", result.getMeta()+"==="+responseString);
 
                             JSONArray array = new JSONArray(result.getData());
 
@@ -402,7 +403,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 //                            JSONArray array = new JSONArray(result.getMeta());
 
                             totalnum = json.getInt("count");
-//                            Log.e("recycletask===2", totalnum+"==="+array);
+//                            LogUtil.e("recycletask===2", totalnum+"==="+array);
 
                             if (array.length() == 0 && showPage == 1) {
                                 totalnum = 0;
@@ -433,7 +434,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                                 datas.add(bean);
                             }
 
-//                            Log.e("recycletask===3", datas.size()+"==="+totalnum+"==="+codenum);
+//                            LogUtil.e("recycletask===3", datas.size()+"==="+totalnum+"==="+codenum);
 
 //                            if(!"".equals(totalnum)){
 //                                Intent intent = new Intent("data.broadcast.action");
@@ -483,7 +484,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         } catch (Exception e) {
                             e.printStackTrace();
 
-                            Log.e("recycletask===e", e+"===");
+                            LogUtil.e("recycletask===e", e+"===");
                         } finally {
                             swipeRefreshLayout.setRefreshing(false);
                             isRefresh = false;
@@ -616,7 +617,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("requestCode===", "==="+requestCode);
+        LogUtil.e("requestCode===", "==="+requestCode);
 
         switch (requestCode) {
 
@@ -627,7 +628,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 					Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                 }
 
-                Log.e("requestCode===1", "==="+resultCode);
+                LogUtil.e("requestCode===1", "==="+resultCode);
                 break;
 
             default:

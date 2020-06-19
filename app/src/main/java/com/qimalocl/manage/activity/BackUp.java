@@ -31,7 +31,7 @@ public class BackUp {
 //        params.put("latitude",latitude);
 //        params.put("longitude",longitude);
 //
-//        Log.e("initNearby===", latitude+"==="+carmodel_id);
+//        LogUtil.e("initNearby===", latitude+"==="+carmodel_id);
 //
 //        if(carmodel_id==1){
 //            params.put("type", 1);
@@ -58,7 +58,7 @@ public class BackUp {
 //                        if (result.getFlag().equals("Success")) {
 //                            JSONArray array = new JSONArray(result.getData());
 //
-//                            Log.e("initNearby===Bike", "==="+array.length());
+//                            LogUtil.e("initNearby===Bike", "==="+array.length());
 //
 //                            for (Marker marker : bikeMarkerList){
 //                                if (marker != null){
@@ -135,7 +135,7 @@ public class BackUp {
 //                                try {
 //                                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 //
-//                                    Log.e("nearbyEbikeScool===", "==="+responseString);
+//                                    LogUtil.e("nearbyEbikeScool===", "==="+responseString);
 //
 //                                    if (result.getFlag().equals("Success")) {
 //                                        JSONArray array = new JSONArray(result.getData());
@@ -205,10 +205,10 @@ public class BackUp {
 //                                                    tvRed_xa.setText("红色："+bean.getQuantity_level_3_count_xa());
 //                                                }
 //
-////                                                Log.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
+////                                                LogUtil.e("nearbyEbike===", bean.getCodenum()+"==="+bean.getType()+"==="+bean.getQuantity()+"==="+bean.getQuantity_level());
 //
 ////                                    if("80001651".equals(bean.getCodenum())){
-////                                        Log.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
+////                                        LogUtil.e("initNearby===", bean.getQuantity()+"==="+bean.getQuantity_level());
 ////                                    }
 //
 //                                            }
@@ -250,7 +250,7 @@ public class BackUp {
 //
 //        params.put("type", type);  //0全部 1只看坏车 2只看低电
 //
-//        Log.e("carsLoop===", type+"==="+carmodel_id);
+//        LogUtil.e("carsLoop===", type+"==="+carmodel_id);
 //
 //        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
 //            @Override
@@ -268,7 +268,7 @@ public class BackUp {
 //                }
 //                UIHelper.ToastError(context, throwable.toString());
 //
-//                Log.e("carsLoop===fail", "==="+throwable.toString());
+//                LogUtil.e("carsLoop===fail", "==="+throwable.toString());
 //            }
 //
 //            @Override
@@ -276,11 +276,11 @@ public class BackUp {
 //                try {
 //                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 //
-//                    Log.e("carsLoop===0", "==="+responseString);
+//                    LogUtil.e("carsLoop===0", "==="+responseString);
 //
 //                    JSONArray array = new JSONArray(result.getData());
 //
-//                    Log.e("carsLoop===1", "==="+array.length());
+//                    LogUtil.e("carsLoop===1", "==="+array.length());
 //
 //                    for (Marker marker : bikeMarkerList){
 //                        if (marker != null){
@@ -299,7 +299,7 @@ public class BackUp {
 //
 //                            CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
 //
-//                            Log.e("carsLoop===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
+//                            LogUtil.e("carsLoop===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
 //
 //                            // 加入自定义标签
 //                            MarkerOptions bikeMarkerOption = null;
@@ -330,15 +330,15 @@ public class BackUp {
 //                            }
 //
 ////                            if("40004690".equals(bean.getNumber())){
-////                                Log.e("cars===3", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+////                                LogUtil.e("cars===3", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
 ////                            }
 ////
 ////                            if("30005053".equals(bean.getNumber())){
-////                                Log.e("cars===4", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+////                                LogUtil.e("cars===4", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
 ////                            }
 ////
 ////                            if("40001".equals(bean.getNumber())){
-////                                Log.e("cars===5", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
+////                                LogUtil.e("cars===5", lock_id+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());
 ////                            }
 //                        }
 //                    }
@@ -509,7 +509,7 @@ public class BackUp {
 //        }
 //        RequestParams params = new RequestParams();
 //
-//        Log.e("changKey===", uid+"==="+access_token+"==="+codenum);
+//        LogUtil.e("changKey===", uid+"==="+access_token+"==="+codenum);
 //
 //        params.put("uid", uid);
 //        params.put("access_token", access_token);
@@ -656,7 +656,7 @@ public class BackUp {
 //            params.put("codenum",codenum);     //车辆编号
 //            params.put("macinfo",mac);    //mac地址
 //
-//            Log.e("addCar===", uid+"==="+access_token+"==="+result+"==="+codenum+"==="+mac);
+//            LogUtil.e("addCar===", uid+"==="+access_token+"==="+result+"==="+codenum+"==="+mac);
 //
 //            HttpHelper.post(context, Urls.addCar, params, new TextHttpResponseHandler() {
 //                @Override
@@ -718,7 +718,7 @@ public class BackUp {
 //                        }
 //                    } catch (Exception e) {
 //                        e.printStackTrace();
-//                        Log.e("addCar===eee", "==="+e);
+//                        LogUtil.e("addCar===eee", "==="+e);
 //
 //                    }
 //

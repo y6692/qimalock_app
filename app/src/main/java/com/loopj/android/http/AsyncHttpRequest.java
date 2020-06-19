@@ -20,6 +20,8 @@ package com.loopj.android.http;
 
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpUriRequest;

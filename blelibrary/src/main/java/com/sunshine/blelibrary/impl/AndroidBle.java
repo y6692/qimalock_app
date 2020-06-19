@@ -34,6 +34,7 @@ import com.sunshine.blelibrary.dispose.impl.Xinbiao;
 import com.sunshine.blelibrary.inter.IBLE;
 import com.sunshine.blelibrary.inter.OnConnectionListener;
 import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
+import com.sunshine.blelibrary.mode.Battery2TxOrder;
 import com.sunshine.blelibrary.mode.BatteryTxOrder;
 import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
 import com.sunshine.blelibrary.mode.GetTokenTxOrder;
@@ -205,6 +206,11 @@ public class AndroidBle implements IBLE {
     @Override
     public boolean getBattery() {
         return writeObject(new BatteryTxOrder());
+    }
+
+    @Override
+    public boolean getBattery2() {
+        return writeObject(new Battery2TxOrder());
     }
 
     @Override

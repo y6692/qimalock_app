@@ -93,7 +93,7 @@ public class MonthDateView extends View {
 			// weekRow = row + 1;
 			// }
 
-			// Log.e("Date", yearmonthday+"");
+			// LogUtil.e("Date", yearmonthday+"");
 			// 绘制事务圆形标志
 			drawCircle(row, column, yearmonthday, canvas);
 			// if (dayString.equals(mSelDay + "")) {

@@ -67,6 +67,7 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
 import com.qimalocl.manage.model.ScrappedBean;
 import com.qimalocl.manage.model.UserBean;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.qimalocl.manage.utils.UtilAnim;
 import com.qimalocl.manage.utils.UtilBitmap;
@@ -209,7 +210,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //            @Override
 //            public boolean onKey(View v, int keyCode, KeyEvent event) {
 //                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-//                    Log.e("minef===Created", "===");
+//                    LogUtil.e("minef===Created", "===");
 //                    return true;
 //                }
 //                return false;
@@ -221,7 +222,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
 
-        Log.e("minef===onHiddenChanged", "==="+hidden);
+        LogUtil.e("minef===onHiddenChanged", "==="+hidden);
 
         if(hidden){
             //pause
@@ -356,7 +357,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
             boolean flag = activity.getIntent().getBooleanExtra("flag", false);
 
-            Log.e("minef===onResume", flag+"==="+SharedPreferencesUrls.getInstance().getString("access_token", ""));
+            LogUtil.e("minef===onResume", flag+"==="+SharedPreferencesUrls.getInstance().getString("access_token", ""));
 
             if(flag){
 
@@ -380,7 +381,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("minef=onActivityResult", requestCode+"==="+resultCode);
+        LogUtil.e("minef=onActivityResult", requestCode+"==="+resultCode);
 
         switch (requestCode) {
             case 10:
@@ -405,16 +406,16 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                         try {
                             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
-                                Log.e("minef=REQUESTCODE_PICK", Build.VERSION.SDK_INT+"==="+data.getData());
+                                LogUtil.e("minef=REQUESTCODE_PICK", Build.VERSION.SDK_INT+"==="+data.getData());
 
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     File imgUri = new File(GetImagePath.getPath(context, data.getData()));
 
-                                    Log.e("minef=REQUESTCODE_PICK2", imgUri+"==="+ BuildConfig.APPLICATION_ID);
+                                    LogUtil.e("minef=REQUESTCODE_PICK2", imgUri+"==="+ BuildConfig.APPLICATION_ID);
 
                                     Uri dataUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", imgUri);
 
-                                    Log.e("minef=REQUESTCODE_PICK3", imgUri+"==="+dataUri);
+                                    LogUtil.e("minef=REQUESTCODE_PICK3", imgUri+"==="+dataUri);
 
                                     startPhotoZoom(dataUri);
                                 } else {
@@ -448,7 +449,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //////                                      urlpath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
 ////                                        urlpath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
 ////
-////                                        Log.e("minef=REQUESTCODE_PICK0", cursor+"==="+urlpath);
+////                                        LogUtil.e("minef=REQUESTCODE_PICK0", cursor+"==="+urlpath);
 ////
 ////                                        //api>=19时，photo_path的值为null，此时再做处理
 ////                                        if(urlpath == null) {
@@ -472,13 +473,13 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                    //                                Bitmap bitmap = BitmapFactory.decodeFile(filepath.getPath());
 //                                    //                                upBitmap = BitmapFactory.decodeFile(urlpath);
 //
-//                                    Log.e("minef=REQUESTCODE_PICK", urlpath+"==="+imageUri+"==="+upBitmap);
+//                                    LogUtil.e("minef=REQUESTCODE_PICK", urlpath+"==="+imageUri+"==="+upBitmap);
 //
 //                                    //                                upBitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uriImageview));
 //
 //                                    headerImageView.setImageBitmap(upBitmap);
 //
-//                                    Log.e("minef=REQUESTCODE_PICK3", "===");
+//                                    LogUtil.e("minef=REQUESTCODE_PICK3", "===");
 //
 //
 ////                                uploadImage();
@@ -519,7 +520,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                     File temp = new File(Environment.getExternalStorageDirectory() + "/images/" + IMAGE_FILE_NAME);
                     if (Uri.fromFile(temp) != null) {
                         urlpath = getRealFilePath(Uri.fromFile(temp));
-                        Log.e("REQUESTCODE_TAKE===", temp+"==="+urlpath);
+                        LogUtil.e("REQUESTCODE_TAKE===", temp+"==="+urlpath);
 
 //                        Uri filepath = Uri.fromFile(temp);
 
@@ -527,7 +528,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                         headerImageView.setImageBitmap(upBitmap);
 
-                        Log.e("REQUESTCODE_TAKE===3", upBitmap+"===");
+                        LogUtil.e("REQUESTCODE_TAKE===3", upBitmap+"===");
 
 //                        uploadImage();
                     }
@@ -536,7 +537,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                            if (Uri.fromFile(temp) != null) {
 //                                urlpath = getRealFilePath(context, Uri.fromFile(temp));
 //
-//                                Log.e("REQUESTCODE_TAKE===", temp+"==="+urlpath);
+//                                LogUtil.e("REQUESTCODE_TAKE===", temp+"==="+urlpath);
 //
 //                                if (loadingDialog != null && !loadingDialog.isShowing()) {
 //                                    loadingDialog.setTitle("请稍等");
@@ -576,7 +577,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         }
 
-        Log.e("minef=startPhotoZoom", imageUri+"==="+uri);
+        LogUtil.e("minef=startPhotoZoom", imageUri+"==="+uri);
 
         intent.setDataAndType(uri, "image/*");
         // crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
@@ -613,7 +614,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                     if (index > -1) {
                         data = cursor.getString(index);
 
-                        Log.e("getRealFilePath===", cursor+"==="+data);
+                        LogUtil.e("getRealFilePath===", cursor+"==="+data);
                     }
                 }
                 cursor.close();
@@ -643,7 +644,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //            urlpath  = FileUtil.getFilePathByUri(context, data.getData());
 //            urlpath  = FileUtil.getFilePathByUri(context, extras);
 
-            Log.e("minef===setPicToView", data.getData()+"==="+urlpath);
+            LogUtil.e("minef===setPicToView", data.getData()+"==="+urlpath);
 
 //            compress(); //压缩图片
 //            headerImageView.setImageBitmap(upBitmap);
@@ -709,13 +710,13 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                    //                                Bitmap bitmap = BitmapFactory.decodeFile(filepath.getPath());
 //                    //                                upBitmap = BitmapFactory.decodeFile(urlpath);
 //
-//                    Log.e("minef=REQUESTCODE_PICK", urlpath+"==="+imageUri+"==="+upBitmap);
+//                    LogUtil.e("minef=REQUESTCODE_PICK", urlpath+"==="+imageUri+"==="+upBitmap);
 //
 //                    //                                upBitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(uriImageview));
 //
 //                    headerImageView.setImageBitmap(upBitmap);
 //
-//                    Log.e("minef=REQUESTCODE_PICK3", "===");
+//                    LogUtil.e("minef=REQUESTCODE_PICK3", "===");
 
                     break;
 
@@ -925,7 +926,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
 //                onStartCommon("正在加载");
 
-                Log.e("_lowPowerLayout===", isLowPowerLayout+"==="+popupwindow);
+                LogUtil.e("_lowPowerLayout===", isLowPowerLayout+"==="+popupwindow);
 
 //                if (loadingDialog != null && !loadingDialog.isShowing()) {
 //                    loadingDialog.setTitle("正在加载");
@@ -967,7 +968,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
     private void carbatteryaction_lowpower(){
 
-        Log.e("lowpower===", "===");
+        LogUtil.e("lowpower===", "===");
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -993,11 +994,11 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                                Log.e("lowpower===1", tv_low_power_count+"==="+responseString);
+                                LogUtil.e("lowpower===1", tv_low_power_count+"==="+responseString);
 
                                 LowPowerBean bean = JSON.parseObject(result.getData(), LowPowerBean.class);
 
-                                Log.e("lowpower===2", "==="+bean.getCount());
+                                LogUtil.e("lowpower===2", "==="+bean.getCount());
 
                                 tv_low_power_count.setText(""+bean.getCount());
 
@@ -1012,7 +1013,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 ultra_low_count_tbt = bean_tbt.getUltra_low_count();
                                 low_count_tbt = bean_tbt.getLow_count();
 
-                                Log.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count()+"==="+bean_tbt.getUltra_low_count()+"==="+bean_tbt.getLow_count());
+                                LogUtil.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count()+"==="+bean_tbt.getUltra_low_count()+"==="+bean_tbt.getLow_count());
 
 //                                initmPopupWindowView();
 
@@ -1024,7 +1025,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                             } catch (Exception e) {
                                 e.printStackTrace();
 
-                                Log.e("lowpower===e", "==="+e);
+                                LogUtil.e("lowpower===e", "==="+e);
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
@@ -1041,7 +1042,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
     private void carbadaction_scrapped(){
-        Log.e("scrapped===", "===");
+        LogUtil.e("scrapped===", "===");
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -1057,7 +1058,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     onFailureCommon(throwable.toString());
-                    Log.e("scrapped===fail", "==="+throwable.toString());
+                    LogUtil.e("scrapped===fail", "==="+throwable.toString());
                 }
 
                 @Override
@@ -1068,11 +1069,11 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                                Log.e("scrapped===1", tv_scrapped_count+"==="+responseString);
+                                LogUtil.e("scrapped===1", tv_scrapped_count+"==="+responseString);
 
                                 ScrappedBean bean = JSON.parseObject(result.getData(), ScrappedBean.class);
 
-                                Log.e("scrapped===2", "==="+bean.getCount());
+                                LogUtil.e("scrapped===2", "==="+bean.getCount());
 
                                 tv_scrapped_count.setText(""+bean.getCount());
 
@@ -1084,7 +1085,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                ultra_low_count_xyt = bean_xyt.getUltra_low_count();
 //                                low_count_xyt = bean_xyt.getLow_count();
 //
-//                                Log.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count());
+//                                LogUtil.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count());
 
 //                                initmPopupWindowView();
 
@@ -1096,7 +1097,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                             } catch (Exception e) {
                                 e.printStackTrace();
 
-                                Log.e("lowpower===e", "==="+e);
+                                LogUtil.e("lowpower===e", "==="+e);
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
@@ -1181,7 +1182,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        customView.setOnKeyListener(new View.OnKeyListener() {
 //            @Override
 //            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//                Log.e("popup===onKey", "==="+keyCode);
+//                LogUtil.e("popup===onKey", "==="+keyCode);
 //
 //                if (keyCode == KeyEvent.KEYCODE_BACK) {
 //                    return true;
@@ -1197,7 +1198,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         customView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.e("popup===onKey", "==="+keyCode);
+                LogUtil.e("popup===onKey", "==="+keyCode);
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
 //                    dismissPopupWindow();
                     return true;
@@ -1206,7 +1207,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             }
         });
 
-        Log.e("initmPopup===", "===");
+        LogUtil.e("initmPopup===", "===");
 
 //        if (loadingDialog != null && loadingDialog.isShowing()) {
 //            loadingDialog.dismiss();
@@ -1316,7 +1317,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                        pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
 //                        startActivityForResult(pickIntent, REQUESTCODE_PICK);
 //
-//                        Log.e("minef===pickPhotoBtn", "==="+Intent.ACTION_PICK);
+//                        LogUtil.e("minef===pickPhotoBtn", "==="+Intent.ACTION_PICK);
 
                         Intent intent;
                         if (Build.VERSION.SDK_INT < 19) {
@@ -1338,7 +1339,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     };
 
     public void initHttp() {
-        Log.e("minef===initHttp", "==="+isHidden());
+        LogUtil.e("minef===initHttp", "==="+isHidden());
 
         if(isHidden()) return;
 
@@ -1367,7 +1368,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                         @Override
                         public void run() {
                             try {
-                                Log.e("minef===initHttp1", "==="+responseString);
+                                LogUtil.e("minef===initHttp1", "==="+responseString);
 
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -1378,11 +1379,11 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                                 String[] schools = bean.getSchools();
 
-                                Log.e("minef===initHttp2", schools+"===");
+                                LogUtil.e("minef===initHttp2", schools+"===");
 
                                 if(schools!=null && schools.length>0){
 
-                                    Log.e("minef===initHttp3", schools[0]+"===");
+                                    LogUtil.e("minef===initHttp3", schools[0]+"===");
 
                                     SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
 
@@ -1392,7 +1393,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 String[] roles = bean.getRoles();
                                 if(roles!=null && roles.length>0){
 
-                                    Log.e("minef===initHttp4", "===");
+                                    LogUtil.e("minef===initHttp4", "===");
 
                                     role = roles[0];
                                     roleName.setText(roles[0]);
@@ -1442,7 +1443,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
 
     public void datas() {
-        Log.e("minef===datas", "==="+isHidden());
+        LogUtil.e("minef===datas", "==="+isHidden());
 
         if(isHidden()) return;
 
@@ -1468,7 +1469,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
-                        Log.e("minef===datas1", "==="+responseString);
+                        LogUtil.e("minef===datas1", "==="+responseString);
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 

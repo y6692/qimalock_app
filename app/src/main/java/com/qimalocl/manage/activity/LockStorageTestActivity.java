@@ -54,6 +54,7 @@ import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.Globals;
+import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 import com.sofi.blelocker.library.Code;
 import com.sofi.blelocker.library.connect.listener.BleConnectStatusListener;
@@ -67,6 +68,7 @@ import com.sofi.blelocker.library.protocol.IGetStatusResponse;
 import com.sofi.blelocker.library.utils.StringUtils;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
+import com.sunshine.blelibrary.mode.Battery2TxOrder;
 import com.sunshine.blelibrary.mode.BatteryTxOrder;
 import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
 import com.sunshine.blelibrary.mode.GetTokenTxOrder;
@@ -191,7 +193,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
             bytes[i] = (byte) Integer.parseInt(subStr, 16);
         }
 
-        Log.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[1]+"==="+bytes[5]);
+        LogUtil.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[1]+"==="+bytes[5]);
 
         Config.newKey = bytes;
 
@@ -209,7 +211,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
             bytes[i] = (byte) Integer.parseInt(subStr, 16);
         }
 
-        Log.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[1]+"==="+bytes[5]);
+        LogUtil.e("StringToByte===1", bytes+"==="+bytes[0]+"==="+bytes[1]+"==="+bytes[5]);
 
         Config.key = bytes;
 
@@ -221,7 +223,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock_storage_test);
 
-        Log.e("onCreate===", "===");
+        LogUtil.e("onCreate===", "===");
 
         BleManager.getInstance().init(getApplication());
         BleManager.getInstance()
@@ -299,18 +301,18 @@ public class LockStorageTestActivity extends MPermissionsActivity {
         tvName.setText("锁名：" + name);
         tvAddress.setText("MAC地址：" + mac);
 
-        Log.e("LockStorageActivity===", name+"==="+mac+"==="+codenum);
+        LogUtil.e("LockStorageActivity===", name+"==="+mac+"==="+codenum);
 
 
         changeKeyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //修改密码
-                Log.e("lsta===changeKeyBtn", "===");
+                LogUtil.e("lsta===changeKeyBtn", "===");
 
                 hexStringToByteArray2(Config.keyMap.get(mac.replaceAll(":", "")));
 
-                Log.e("lsta===changeKeyBtn_1", "==="+Config.newKey);
+                LogUtil.e("lsta===changeKeyBtn_1", "==="+Config.newKey);
 
                 //修改密钥
                 loadingDialog = DialogUtils.getLoadingDialog(context, "正在修改密钥");
@@ -373,7 +375,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 //修改密码
 //                if ("1".equals(pwd)) {
 
-                Log.e("ls2a===changePsdBtn", "===");
+                LogUtil.e("ls2a===changePsdBtn", "===");
 
 
 
@@ -437,7 +439,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
     }
 
     protected void lock_info(){
-        Log.e("lock_info===",mac+"===");
+        LogUtil.e("lock_info===",mac+"===");
 
 //        RequestParams params = new RequestParams();
 //        params.put("lock_mac", mac);
@@ -460,7 +462,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                     @Override
                     public void run() {
                         try {
-                            Log.e("lock_info===","==="+responseString);
+                            LogUtil.e("lock_info===","==="+responseString);
 
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -556,12 +558,12 @@ public class LockStorageTestActivity extends MPermissionsActivity {
         BleManager.getInstance().connect(mac, new BleGattCallback() {
             @Override
             public void onStartConnect() {
-                Log.e("onStartConnect===", "===");
+                LogUtil.e("onStartConnect===", "===");
             }
 
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
-                Log.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
+                LogUtil.e("onConnectFail===", bleDevice.getMac()+"==="+exception);
 
 //                Toast.makeText(context, "连接失败", Toast.LENGTH_LONG).show();
                 tvStatus.setText(getText(R.string.connect_status) + "连接失败");
@@ -582,7 +584,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
 //                BleManager.getInstance().cancelScan();
 
-                Log.e("onConnectSuccess===", bleDevice.getMac()+"===");
+                LogUtil.e("onConnectSuccess===", bleDevice.getMac()+"===");
 //                Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
 
                 tvStatus.setText(getText(R.string.connect_status) + "连接成功");
@@ -599,19 +601,19 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 BleManager.getInstance().notify(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f6-0000-1000-8000-00805f9b34fb", new BleNotifyCallback() {
                     @Override
                     public void onNotifySuccess() {
-                        Log.e("onNotifySuccess===", "===");
+                        LogUtil.e("onNotifySuccess===", "===");
                     }
 
                     @Override
                     public void onNotifyFailure(BleException exception) {
-                        Log.e("onNotifyFailure===", "===");
+                        LogUtil.e("onNotifyFailure===", "===");
                     }
 
                     @Override
                     public void onCharacteristicChanged(byte[] data) {
 //                            byte[] values = characteristic.getValue();
 
-                        Log.e("onCharacteristicChanged", "===0");
+                        LogUtil.e("onCharacteristicChanged", "===0");
 
 
                         byte[] x = new byte[16];
@@ -622,7 +624,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
                         String s1 = ConvertUtils.bytes2HexString(mingwen);
 
-                        Log.e("onCharacteristicChanged", s1+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
+                        LogUtil.e("onCharacteristicChanged", s1+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
 
 
                         if(s1.startsWith("0602")){      //获取token
@@ -630,12 +632,16 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                             token = s1.substring(6, 14);    //0602070C0580E001010406C8D6DC1949
                             GlobalParameterUtils.getInstance().setToken(ConvertUtils.hexString2Bytes(token));
 
-                            Log.e("token===", isOpen+"==="+token+"==="+s1);
+                            LogUtil.e("token===", isOpen+"==="+token+"==="+s1);
 
                             m_myHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getBattery();
+                                    if("2".equals(type) || "3".equals(type)){
+                                        getBattery();
+                                    }else if("9".equals(type) || "10".equals(type)){
+                                        getBattery2();
+                                    }
                                 }
                             }, 1000);
 
@@ -647,7 +653,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
 //                            Toast.makeText(context, "token获取成功", Toast.LENGTH_LONG).show();
                         }else if(s1.startsWith("0502")){
-                            Log.e("openLock===", "==="+s1);
+                            LogUtil.e("openLock===", "==="+s1);
 
 //                            getLockStatus();
                             closeLoadingDialog();
@@ -657,7 +663,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                             showDialog();
 
                         }else if(s1.startsWith("0508")){
-                            Log.e("closeLock===1", "==="+s1);
+                            LogUtil.e("closeLock===1", "==="+s1);
 
 //                            if("00".equals(s1.substring(6, 8))){
 //                                Toast.makeText(context, "关闭成功", Toast.LENGTH_LONG).show();
@@ -666,14 +672,20 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 //                            }
 
 //                            getLockStatus();
-                        }else if(s1.startsWith("0202")){    //电量
+                        }else if(s1.startsWith("020201")){    //电量
 
-                            Log.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
+                            LogUtil.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
 
                             tvBattery.setText("电池电量："+Integer.parseInt(s1.substring(6, 8), 16)+"%");
 
+                        }else if(s1.startsWith("020202")){    //电量2
+
+                            LogUtil.e("battery2===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
+
+                            tvBattery.setText("电池电量："+Integer.parseInt(s1.substring(10, 14), 16)/1000f+"V");
+
                         }else if(s1.startsWith("050F")){
-                            Log.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
+                            LogUtil.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
 
                             closeLoadingDialog();
 
@@ -684,7 +696,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                             }
                         }else if(s1.startsWith("058502")){
 
-                            Log.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
+                            LogUtil.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
 
 //                            if("000000000000".equals(s1.substring(2*4, 2*10))){
 //                                major = 0;
@@ -704,7 +716,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
             public void onDisConnected(boolean isActiveDisConnected, BleDevice bleDevice, BluetoothGatt gatt, int status) {
 
                 isConnect = false;
-                Log.e("connect=onDisConnected", "==="+isActiveDisConnected);
+                LogUtil.e("connect=onDisConnected", "==="+isActiveDisConnected);
 
 //                    if (isActiveDisConnected) {
 //                        Toast.makeText(MainActivity.this, getString(R.string.active_disconnected), Toast.LENGTH_LONG).show();
@@ -720,19 +732,19 @@ public class LockStorageTestActivity extends MPermissionsActivity {
     void getBleToken(){
         String s = new GetTokenTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getBleToken===1", "==="+s);  //1648395B
+        LogUtil.e("getBleToken===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getBleToken==onWriteSuc", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getBleToken==onWriteSuc", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getBleToken=onWriteFail", "==="+exception);
+                LogUtil.e("getBleToken=onWriteFail", "==="+exception);
             }
         });
     }
@@ -740,19 +752,41 @@ public class LockStorageTestActivity extends MPermissionsActivity {
     private void getBattery(){
         String s = new BatteryTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getBattery===1", "==="+s);  //1648395B
+        LogUtil.e("getBattery===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getBattery=onWriteFa", "==="+exception);
+                LogUtil.e("getBattery=onWriteFa", "==="+exception);
+            }
+        });
+    }
+
+    private void getBattery2(){
+        LogUtil.e("getBattery2===", "==="+new Battery2TxOrder());  //1648395B
+
+        String s = new Battery2TxOrder().generateString();  //06010101490E602E46311640422E5238
+
+        LogUtil.e("getBattery2===1", "==="+s);  //1648395B
+
+        byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.newKey);
+
+        BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
+            @Override
+            public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                LogUtil.e("getBattery==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+            }
+
+            @Override
+            public void onWriteFailure(BleException exception) {
+                LogUtil.e("getBattery=onWriteFa", "==="+exception);
             }
         });
     }
@@ -760,43 +794,43 @@ public class LockStorageTestActivity extends MPermissionsActivity {
     void getLockStatus(){
         String s = new GetLockStatusTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getLockStatus===1", "==="+s);  //1648395B
+        LogUtil.e("getLockStatus===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getLockStatus==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getLockStatus==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getLockStatus=onWriteFa", "==="+exception);
+                LogUtil.e("getLockStatus=onWriteFa", "==="+exception);
             }
         });
     }
 
     void setKey(Order.TYPE type, byte[] bytes){
-        Log.e("setKey===", type+"==="+isConnect+"==="+mac+"==="+token);
+        LogUtil.e("setKey===", type+"==="+isConnect+"==="+mac+"==="+token);
 
 //        BaseApplication.getInstance().getIBLE().setKey(Order.TYPE.RESET_KEY, bytes2);
         String s = new KeyTxOrder(type, bytes).generateString();  //06010101490E602E46311640422E5238
 
 //        CD33DEC4CCE7CCA4 D3CAAADE4D774FAB
-        Log.e("setKey===1", "==="+s);  //070108 CD33DEC4CCE7CCA4 E193CEE2 41
+        LogUtil.e("setKey===1", "==="+s);  //070108 CD33DEC4CCE7CCA4 E193CEE2 41
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("setKey==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("setKey==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("setKey=onWriteFa", "==="+exception);
+                LogUtil.e("setKey=onWriteFa", "==="+exception);
             }
         });
     }
@@ -805,19 +839,19 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 //        BaseApplication.getInstance().getIBLE().setPassword(Order.TYPE.RESET_PASSWORD, bytes);
         String s = new PasswordTxOrder(type, bytes).generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("setPsd===1", "==="+s);  //1648395B
+        LogUtil.e("setPsd===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("setPsd==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("setPsd==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("setPsd=onWriteFa", "==="+exception);
+                LogUtil.e("setPsd=onWriteFa", "==="+exception);
             }
         });
     }
@@ -825,44 +859,44 @@ public class LockStorageTestActivity extends MPermissionsActivity {
     void getXinbiao(){
         String s = new XinbiaoTxOrder().generateString();  //06010101490E602E46311640422E5238
 
-        Log.e("getXinbiao===1", "==="+s);  //1648395B
+        LogUtil.e("getXinbiao===1", "==="+s);  //1648395B
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("getXinbiao==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
+                LogUtil.e("getXinbiao==onWriteS", current+"==="+total+"==="+ConvertUtils.bytes2HexString(justWrite));
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("getXinbiao=onWriteFa", "==="+exception);
+                LogUtil.e("getXinbiao=onWriteFa", "==="+exception);
             }
         });
     }
 
     void openLock() {
-        Log.e("openLock===", type+"==="+isConnect+"==="+mac);
+        LogUtil.e("openLock===", type+"==="+isConnect+"==="+mac);
 
 
         String s = new OpenLockTxOrder(false).generateString();
 
 //        s= s.substring(0, 18) + token + s.substring(26, 32);
 
-        Log.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
+        LogUtil.e("onWriteSuccess===1", token+"==="+s);     //989C064A===050106323031373135989C064A750217
 
         byte[] bb = Encrypt(ConvertUtils.hexString2Bytes(s), Config.key);
 
         BleManager.getInstance().write(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f5-0000-1000-8000-00805f9b34fb", bb, true, new BleWriteCallback() {
             @Override
             public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                Log.e("onWriteSuccess===a", current+"==="+total+"==="+justWrite);
+                LogUtil.e("onWriteSuccess===a", current+"==="+total+"==="+justWrite);
             }
 
             @Override
             public void onWriteFailure(BleException exception) {
-                Log.e("onWriteFailure===a", "==="+exception);
+                LogUtil.e("onWriteFailure===a", "==="+exception);
             }
         });
 
@@ -895,7 +929,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("connect===fail", Code.toString(code));
+                        LogUtil.e("connect===fail", Code.toString(code));
 //                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
 //                        ToastUtil.showMessageApp(context, Code.toString(code));
 
@@ -915,7 +949,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
 //                com.qimalocl.manage.utils.UIHelper.dismiss();
 
-                Log.e("connect===Success", "===");
+                LogUtil.e("connect===Success", "===");
 
                 m_myHandler.post(new Runnable() {
                     @Override
@@ -957,7 +991,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===suc", "");
+                        LogUtil.e("getBleRecord===suc", "");
 
 //                        com.qimalocl.manage.utils.UIHelper.dismiss();
                         deleteBleRecord(bikeTradeNo);
@@ -972,7 +1006,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===Empty", "");
+                        LogUtil.e("getBleRecord===Empty", "");
 //                        com.qimalocl.manage.utils.UIHelper.dismiss();
 //                        com.qimalocl.manage.utils.UIHelper.showToast(context, "record empty");
 
@@ -987,7 +1021,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("getBleRecord===", Code.toString(code));
+                        LogUtil.e("getBleRecord===", Code.toString(code));
 //                        com.qimalocl.manage.utils.UIHelper.dismiss();
 //                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
 
@@ -1015,7 +1049,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("deleteBleRecord===suc", "");
+                        LogUtil.e("deleteBleRecord===suc", "");
 
 //                        com.qimalocl.manage.utils.UIHelper.dismiss();
 //                        uploadRecordServer(phone, bikeTradeNo, timestamp, transType, mackey, index, cap, vol);
@@ -1030,7 +1064,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("deleteBleRecord===Empty", "");
+                        LogUtil.e("deleteBleRecord===Empty", "");
 
 //                        com.qimalocl.manage.utils.UIHelper.dismiss();
 
@@ -1055,7 +1089,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("deleteBleRecord===f", Code.toString(code));
+                        LogUtil.e("deleteBleRecord===f", Code.toString(code));
 //                        com.qimalocl.manage.utils.UIHelper.dismiss();
 //                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
 
@@ -1070,7 +1104,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
     }
 
     protected void rent(){
-        Log.e("rent===000",mac+"==="+name+"==="+keySource);
+        LogUtil.e("rent===000",mac+"==="+name+"==="+keySource);
 
         RequestParams params = new RequestParams();
         params.put("lock_no", name);
@@ -1093,7 +1127,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                     @Override
                     public void run() {
                         try {
-                            Log.e("rent===","==="+responseString);
+                            LogUtil.e("rent===","==="+responseString);
 
                             ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
@@ -1107,7 +1141,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                             keys = bean.getKeys();
                             serverTime = bean.getServerTime();
 
-                            Log.e("rent===", mac+"==="+encryptionKey+"==="+keys);
+                            LogUtil.e("rent===", mac+"==="+encryptionKey+"==="+keys);
 
 //                                getBleRecord();
 
@@ -1140,7 +1174,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
 //        ClientManager.getClient().openLock(mac, "18112348925", resultBean.getServerTime(),
 
-        Log.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
+        LogUtil.e("scan===openBleLock", serverTime+"==="+keys+"==="+encryptionKey);
 
         ClientManager.getClient().openLock(mac,"000000000000", (int) serverTime, keys, encryptionKey, new IEmptyResponse(){
             //        ClientManager.getClient().openLock(mac,"000000000000", resultBean.getServerTime(), resultBean.getKeys(), resultBean.getEncryptionKey(), new IEmptyResponse(){
@@ -1149,7 +1183,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("scan===openBleLock1", code+"==="+Code.toString(code));
+                        LogUtil.e("scan===openBleLock1", code+"==="+Code.toString(code));
 //                        com.qimalocl.manage.utils.UIHelper.dismiss();
 //                        com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
 
@@ -1164,7 +1198,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
             @Override
             public void onResponseSuccess() {
-                Log.e("scan===openBleLock2", "===");
+                LogUtil.e("scan===openBleLock2", "===");
                 m_myHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -1196,7 +1230,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
 
-                    Log.e("sf===onC", "==="+type);
+                    LogUtil.e("sf===onC", "==="+type);
 
                     Intent intent = new Intent();
 
@@ -1223,7 +1257,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
             m_myHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("onNotifyClose===", "====");
+                    LogUtil.e("onNotifyClose===", "====");
 
 //                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onNotifyClose"));
 //                    tvOpen.setText("开锁");
@@ -1246,7 +1280,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                 public void run() {
 //                    BluetoothLog.v(String.format(Locale.getDefault(), "DeviceDetailActivity onConnectStatusChanged %d in %s", status, Thread.currentThread().getName()));
 
-                    Log.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
+                    LogUtil.e("ConnectStatus===", "===="+(status == STATUS_CONNECTED));
 
                     if(status == STATUS_CONNECTED){
 //                        refreshData(true);
@@ -1336,7 +1370,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
 
 
-        Log.e("onDestroy===", "===");
+        LogUtil.e("onDestroy===", "===");
 
     }
 
@@ -1346,7 +1380,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 //        BaseApplication.getInstance().getIBLE().close();
 //        isStop = true;
 
-        Log.e("onBackPressed===", "===");
+        LogUtil.e("onBackPressed===", "===");
 
         scrollToFinishActivity();
     }
@@ -1493,7 +1527,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
 
 //        BaseApplication.getInstance().getIBLE().openLock();
 
-        Log.e("open===", type+"==="+isConnect+"==="+mac+"==="+token);
+        LogUtil.e("open===", type+"==="+isConnect+"==="+mac+"==="+token);
 
         if (loadingDialog != null && !loadingDialog.isShowing()) {
             loadingDialog.setTitle("正在唤醒车锁");
@@ -1538,7 +1572,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                         m_myHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("getStatus===f", Code.toString(code));
+                                LogUtil.e("getStatus===f", Code.toString(code));
 //                                com.qimalocl.manage.utils.UIHelper.dismiss();
 //                                com.qimalocl.manage.utils.UIHelper.showToast(context, Code.toString(code));
 
@@ -1565,7 +1599,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
     void status() {
 //        BaseApplication.getInstance().getIBLE().getLockStatus();
 
-        Log.e("status===", "==="+isConnect);
+        LogUtil.e("status===", "==="+isConnect);
 
 
         if(isConnect){
@@ -1654,7 +1688,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
             params.put("lock_no", name);     //车辆编号
             params.put("lock_mac", mac);    //mac地址
 
-            Log.e("addCar===", result+"==="+result+"==="+name+"==="+mac);
+            LogUtil.e("addCar===", result+"==="+result+"==="+name+"==="+mac);
 
             HttpHelper.post(context, Urls.lock_in, params, new TextHttpResponseHandler() {
                 @Override
@@ -1676,7 +1710,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                     try {
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        Log.e("addCar===", responseString+"===");
+                        LogUtil.e("addCar===", responseString+"===");
 
 //                        if (result.getFlag().equals("Success")) {
 //                            Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
@@ -1689,7 +1723,7 @@ public class LockStorageTestActivity extends MPermissionsActivity {
                         finish();
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e("addCar===eee", "==="+e);
+                        LogUtil.e("addCar===eee", "==="+e);
                     }
 
                     if (loadingDialog != null && loadingDialog.isShowing()){

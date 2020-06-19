@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.utils.LogUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,10 +49,10 @@ public class DBManager {
 			SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbfile, null);
 			return db;
 		} catch (FileNotFoundException e) {
-			Log.e("Database", "File not found");
+			LogUtil.e("Database", "File not found");
 			e.printStackTrace();
 		} catch (IOException e) {
-			Log.e("Database", "IO exception");
+			LogUtil.e("Database", "IO exception");
 			e.printStackTrace();
 		}
 		return null;

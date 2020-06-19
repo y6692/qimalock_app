@@ -4,6 +4,8 @@ package com.http.config;
 
 import android.util.Log;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -29,7 +31,7 @@ public class RetryInterceptor implements Interceptor {
                 response = chain.proceed(request);
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e("intercept", "Request is not successful - " + tryCount);
+                LogUtil.e("intercept", "Request is not successful - " + tryCount);
             }
             tryCount++;
         }while ((response == null || !response.isSuccessful()) && tryCount < RETRY);

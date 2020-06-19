@@ -428,6 +428,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/mainUI_bindSchoolLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -453,6 +454,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/mainUI_cameraLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -478,6 +480,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/mainUI_inStorageLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -503,6 +506,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/mainUI_getDotLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
