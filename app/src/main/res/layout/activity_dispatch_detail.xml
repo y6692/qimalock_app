@@ -17,27 +17,18 @@
         android:layout_height="wrap_content"
         android:paddingTop="22dp"
         android:layout_marginLeft="@dimen/dp30"
-        android:layout_marginRight="@dimen/dp30"
+
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-
-
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginRight="@dimen/dp30"
             android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/item_sn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/sp18"
-                android:textColor="@color/tx_black"
-                android:text=""/>
-
-            <TextView
-                android:id="@+id/item_status"
+                android:id="@+id/dispatch_drtail_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -47,8 +38,23 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/dispatch_drtail_sn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp18"
+                android:textColor="@color/tx_black"
+                android:text=""/>
+
+        </RelativeLayout>
+
         <TextView
-            android:id="@+id/item_created_at"
+            android:id="@+id/dispatch_drtail_created_at"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -57,7 +63,7 @@
             android:text=""/>
 
         <TextView
-            android:id="@+id/item_end_at"
+            android:id="@+id/dispatch_drtail_end_at"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"

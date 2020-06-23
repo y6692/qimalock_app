@@ -310,7 +310,6 @@ public class DeviceDetailActivity extends Activity implements View.OnClickListen
                     }
                 });
 
-
             }
             @Override
             public void onSuccess(int statusCode, Header[] headers, final String responseString) {

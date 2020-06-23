@@ -642,9 +642,11 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                         byte[] mingwen = EncryptUtils.Decrypt(x, Config.key);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
 
-                        LogUtil.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
 
                         String s1 = ConvertUtils.bytes2HexString(mingwen);
+
+                        LogUtil.e("onCharacteristicChanged", s1+"==="+ x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
+
 
                         if(s1.startsWith("0602")){      //获取token
 

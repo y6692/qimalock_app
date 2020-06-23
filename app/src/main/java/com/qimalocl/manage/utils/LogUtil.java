@@ -17,7 +17,7 @@ public class LogUtil {
             public void run() {
 
 
-                LogUtil.e(s1, s2);
+                Log.e(s1, s2);
 
                 if(BaseActivity.testLog.length()>60000){
                     BaseActivity.testLog = "";

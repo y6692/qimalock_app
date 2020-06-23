@@ -179,6 +179,8 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 //        addChooseMarker();
 //        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
 
+        initHttp();
+
     }
 
     private void initHttp() {

@@ -506,6 +506,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 mapView.setVisibility(View.GONE);
             }
 
+            end2();
 
 //            mapView.onPause();
 //            deactivate();
@@ -1323,7 +1324,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
-        tv_lock_status.setText(lock_status==0?"未知":lock_status==1?"已上锁":lock_status==2?"已开锁":lock_status==3?"离线":"正常");
+        if(!"7".equals(type)){
+            tv_lock_status.setText(lock_status==0?"未知":lock_status==1?"已上锁":lock_status==2?"已开锁":lock_status==3?"离线":"正常");
+        }
+
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
         tv_bad_reason.setText("损坏部位："+bad_reason);
@@ -1595,7 +1599,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
-        tv_lock_status.setText(lock_status==0?"未知":lock_status==1?"已上锁":lock_status==2?"已开锁":lock_status==3?"离线":"正常");
+        if(!"7".equals(type)){
+            tv_lock_status.setText(lock_status==0?"未知":lock_status==1?"已上锁":lock_status==2?"已开锁":lock_status==3?"离线":"正常");
+        }
+
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
         tv_bad_reason.setText("损坏部位："+bad_reason);
@@ -2299,81 +2306,90 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                        try {
-                            final JSONArray array = new JSONArray(result.getData());
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    final JSONArray array = new JSONArray(result.getData());
 
-                            LogUtil.e("cars===1", array.length()+"==="+bikeMarkerList+"==="+responseString);
+                                    LogUtil.e("cars===1", array.length()+"==="+bikeMarkerList+"==="+responseString);
 
-                            for (Marker marker : bikeMarkerList){
-                                if (marker != null){
-                                    marker.remove();
-                                }
-                            }
+                                    for (Marker marker : bikeMarkerList){
+                                        if (marker != null){
+                                            marker.remove();
+                                        }
+                                    }
 
-                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
-                                bikeMarkerList.clear();
-                            }
+                                    if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                                        bikeMarkerList.clear();
+                                    }
 
-                            if (0 == array.length()){
-                                if(switchType==0){
-                                    ToastUtils.showMessage("附近没有车辆");
-                                }else if(switchType==1){
-                                    ToastUtils.showMessage("附近没有损坏车辆");
-                                }else if(switchType==2){
-                                    ToastUtils.showMessage("附近没有低电车辆");
-                                }else if(switchType==3){
-                                    ToastUtils.showMessage("附近没有低电和损坏车辆");
-                                }
+                                    if (0 == array.length()){
+                                        if(switchType==0){
+                                            ToastUtils.showMessage("附近没有车辆");
+                                        }else if(switchType==1){
+                                            ToastUtils.showMessage("附近没有损坏车辆");
+                                        }else if(switchType==2){
+                                            ToastUtils.showMessage("附近没有低电车辆");
+                                        }else if(switchType==3){
+                                            ToastUtils.showMessage("附近没有低电和损坏车辆");
+                                        }
 
-                            } else {
-                                for (int i = 0; i < array.length(); i++){
+                                    } else {
+                                        for (int i = 0; i < array.length(); i++){
 
-                                    CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
+                                            CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
 
 //                                          LogUtil.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
 
-                                    // 加入自定义标签
-                                    MarkerOptions bikeMarkerOption = null;
+                                            // 加入自定义标签
+                                            MarkerOptions bikeMarkerOption = null;
 
-                                    int lock_id = bean.getLock_id();
+                                            int lock_id = bean.getLock_id();
 
-                                    if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
-                                        if(lock_id==4){
+                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
 
-                                            bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
-                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                    .icon(bean.getLevel()==1?bikeDescripter_green:bean.getLevel()==2?bikeDescripter_yellow:bean.getLevel()==3?bikeDescripter_red:bean.getLevel()==4?bikeDescripter_blue:bikeDescripter_brown);
+                                            if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
+                                                if(lock_id==4){
 
-                                        }else if(lock_id==7){
-                                            bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
-                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                    .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
+                                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                            .icon(bean.getLevel()==1?bikeDescripter_green:bean.getLevel()==2?bikeDescripter_yellow:bean.getLevel()==3?bikeDescripter_red:bean.getLevel()==4?bikeDescripter_blue:bikeDescripter_brown);
 
-                                        }else if(lock_id==8 || lock_id==11){
-                                            bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
-                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                    .icon(bean.getLevel()==1?bikeDescripter_tbt_green:bean.getLevel()==2?bikeDescripter_tbt_yellow:bean.getLevel()==3?bikeDescripter_tbt_red:bean.getLevel()==4?bikeDescripter_tbt_blue:bikeDescripter_tbt_brown);
+                                                }else if(lock_id==7){
+                                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                            .icon(bean.getLevel()==1?bikeDescripter_xa_green:bean.getLevel()==2?bikeDescripter_xa_yellow:bean.getLevel()==3?bikeDescripter_xa_red:bean.getLevel()==4?bikeDescripter_xa_blue:bikeDescripter_xa_brown);
 
-                                        }else{
-                                            bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
-                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
-                                                    .icon(bean.getLevel()==0?bikeDescripter:bikeDescripter_bad);
+                                                }else if(lock_id==8 || lock_id==11){
+                                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                            .icon(bean.getLevel()==1?bikeDescripter_tbt_green:bean.getLevel()==2?bikeDescripter_tbt_yellow:bean.getLevel()==3?bikeDescripter_tbt_red:bean.getLevel()==4?bikeDescripter_tbt_blue:bikeDescripter_tbt_brown);
+
+                                                }else{
+                                                    bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                                            Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                            .icon(bean.getLevel()==0?bikeDescripter:bikeDescripter_bad);
+
+                                                }
+
+                                                Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                                bikeMarkerList.add(bikeMarker);
+                                            }
 
                                         }
-
-                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
-                                        bikeMarkerList.add(bikeMarker);
                                     }
+                                } catch (Exception e) {
+                                    LogUtil.e("cars===e", "==="+e);
+                                }
 
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
                                 }
                             }
-                        } catch (Exception e) {
+                        }).start();
 
-                        }
 
-                        if (loadingDialog != null && loadingDialog.isShowing()){
-                            loadingDialog.dismiss();
-                        }
 
                     }
                 });
@@ -2711,12 +2727,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         intent.putExtra("isChangeKey",false);
                         startActivityForResult(intent, 101);
                     } catch (Exception e) {
+                        LogUtil.e("scanCode_lock===e", "==="+e);
                         UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
                     }
                 }
                 break;
 
             case R.id.ll_open_lock:
+                isOpenLock = true;
+
                 if(carmodel_id==1){
                     open_lock();
                 }else{
@@ -2751,26 +2770,39 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 loadingDialog.show();
                             }
 
-                            XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(context);
-                            builder.setBleStateChangeListener(ScanFragment.this);
-                            builder.setScanResultCallback(ScanFragment.this);
-                            apiClient = builder.build();
+                            if( apiClient==null){
+                                XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(context);
+                                builder.setBleStateChangeListener(ScanFragment.this);
+                                builder.setScanResultCallback(ScanFragment.this);
+                                apiClient = builder.build();
+                            }
 
-                            ScanFragmentPermissionsDispatcher.connectDeviceWithPermissionCheck(ScanFragment.this, deviceuuid);
+                            if(!isConnect){
+                                ScanFragmentPermissionsDispatcher.connectDeviceWithPermissionCheck(ScanFragment.this, deviceuuid);
 
-                            isConnect = false;
-                            m_myHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!isConnect){
-                                        closeLoadingDialog();
+                                isConnect = false;
+                                m_myHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (!isConnect){
+//                                        closeLoadingDialog();
 
-                                        LogUtil.e("mf===7==timeout", isConnect + "==="+activity.isFinishing());
+                                            LogUtil.e("mf===7==timeout", isConnect + "==="+activity.isFinishing());
 
-                                        unlock();
+                                            if (apiClient != null) {
+                                                apiClient.disConnect();
+                                                apiClient.onDestroy();
+                                                apiClient=null;
+                                            }
+
+                                            unlock();
+                                        }
                                     }
-                                }
-                            }, timeout);
+                                }, timeout);
+                            }else{
+                                xiaoanOpen_blue();
+                            }
+
                         }
                     }else{
                         unlock();
@@ -2782,6 +2814,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.ll_close_lock:
+                isOpenLock = false;
+
                 if("7".equals(type)){
 
                     if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -2829,11 +2863,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                         LogUtil.e("close===7==timeout", "上锁==="+isConnect + "==="+activity.isFinishing());
 
-//                                        if (apiClient != null) {
-//                                            apiClient.disConnect();
-//                                            apiClient.onDestroy();
-//                                            apiClient=null;
-//                                        }
+                                        if (apiClient != null) {
+                                            apiClient.disConnect();
+                                            apiClient.onDestroy();
+                                            apiClient=null;
+                                        }
 
                                         lock();
                                     }
@@ -2994,7 +3028,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }else if("4".equals(type) || "8".equals(type)){
         }else if("7".equals(type)){
             if (apiClient != null) {
+                apiClient.disConnect();
                 apiClient.onDestroy();
+                apiClient = null;
             }
         }else if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)){
             BleManager.getInstance().disconnectAllDevice();
@@ -3187,10 +3223,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         startActivityForResult(enableBtIntent, 188);
                     } else {
-                        XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(context);
-                        builder.setBleStateChangeListener(ScanFragment.this);
-                        builder.setScanResultCallback(ScanFragment.this);
-                        apiClient = builder.build();
+                        if( apiClient==null){
+                            XiaoanBleApiClient.Builder builder = new XiaoanBleApiClient.Builder(context);
+                            builder.setBleStateChangeListener(ScanFragment.this);
+                            builder.setScanResultCallback(ScanFragment.this);
+                            apiClient = builder.build();
+                        }
+
 
                         ScanFragmentPermissionsDispatcher.connectDeviceWithPermissionCheck(ScanFragment.this, deviceuuid);
 
@@ -3199,7 +3238,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             @Override
                             public void run() {
                                 if (!isConnect){
-                                    closeLoadingDialog();
+//                                    closeLoadingDialog();
+
+                                    if (apiClient != null) {
+                                        apiClient.disConnect();
+                                        apiClient.onDestroy();
+                                        apiClient=null;
+                                    }
 
                                     LogUtil.e("mf===7==timeout", isConnect + "==="+activity.isFinishing());
 
@@ -3562,7 +3607,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                                 LogUtil.e("closeLock===1", "锁已关闭==="+first3);
 
-                                                tv_lock_status.setText("已关锁");
+                                                tv_lock_status.setText("已上锁");
                                             } else {
                                                 //锁已开启
 //                                                ToastUtil.showMessageApp(context,"锁已打开");
@@ -4444,9 +4489,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             LogUtil.e("mf===lock_1", carmodel_id + "===" + responseString + "===" + result.data);
 
-                            ToastUtil.showMessageApp(context,"恭喜您,关锁成功!");
 
-                            tv_lock_status.setText("已关锁");
+                            if(result.getStatus_code()==200){
+                                ToastUtil.showMessageApp(context,"恭喜您,关锁成功!");
+                                if(!"7".equals(type)){
+                                    tv_lock_status.setText("已关锁");
+                                }
+
+                            }else{
+                                ToastUtil.showMessageApp(context,result.getMessage());
+                            }
+
+
 
 //                            n=0;
 //                            carLoopClose();
@@ -4497,7 +4551,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             if(result.getStatus_code()==200){
                                 ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
-                                tv_lock_status.setText("已开锁");
+                                if(!"7".equals(type)){
+                                    tv_lock_status.setText("已开锁");
+                                }
+
                             }else{
                                 ToastUtil.showMessageApp(context,result.getMessage());
                             }
@@ -4507,8 +4564,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                            n=0;
 //                            carLoopOpen();
-
-
 
                         } catch (Exception e) {
 
@@ -4706,7 +4761,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 LogUtil.e("mf===Xiaoan1", isAgain+"==="+isEndBtn+"==="+isOpenLock);
 
-                xiaoanOpen_blue();
+                if(isOpenLock){
+                    xiaoanOpen_blue();
+                }else{
+                    xiaoanClose_blue();
+                }
+
 
             }
         }, 2 * 1000);
@@ -4728,9 +4788,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             return;
         }
 
-        if (apiClient != null) {
-            apiClient.onDestroy();
-        }
+//        if (apiClient != null) {
+//            apiClient.onDestroy();
+//        }
 
         isConnect = false;
 
@@ -4751,6 +4811,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             closeLoadingDialog();
                             ToastUtil.showMessageApp(context,"恭喜您,开锁成功!");
+                            if(!"7".equals(type)){
+                                tv_lock_status.setText("已开锁");
+                            }
+
 
 //                            car_notification(1, 1, 0);    //TODO
 
@@ -4777,6 +4841,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         if(response.code==0){
                             ToastUtil.showMessageApp(context,"恭喜您,关锁成功!");
                             closeLoadingDialog();
+                            if(!"7".equals(type)){
+                                tv_lock_status.setText("已上锁");
+                            }
+
 
 //                            macList2 = new ArrayList<> (macList);
 //

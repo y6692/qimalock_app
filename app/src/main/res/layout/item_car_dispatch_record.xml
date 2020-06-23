@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/dp30"
-    android:paddingRight="@dimen/dp30"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -15,20 +14,11 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-
-
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginRight="30dp"
             android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/item_sn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/sp18"
-                android:textColor="@color/tx_black"
-                android:text=""/>
 
             <TextView
                 android:id="@+id/item_status"
@@ -37,6 +27,22 @@
                 android:layout_alignParentRight="true"
                 android:textSize="@dimen/sp16"
                 android:textColor="#666666"
+                android:text=""/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/item_sn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp18"
+                android:textColor="@color/tx_black"
                 android:text=""/>
 
         </RelativeLayout>
@@ -59,21 +65,37 @@
             android:textColor="@color/tx_black"
             android:text=""/>
 
-        <TextView
-            android:id="@+id/item_car_numbers"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textSize="@dimen/sp14"
-            android:textColor="#666666"
-            android:ellipsize="end"
-            android:lines="2"
-            android:text=""/>
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp14"
+                android:textColor="@color/tx_black"
+                android:text="车辆编号："/>
+
+            <TextView
+                android:id="@+id/item_car_numbers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp14"
+                android:textColor="#666666"
+                android:ellipsize="end"
+                android:lines="3"
+                android:text=""/>
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginRight="30dp"
             android:gravity="right"
             android:orientation="horizontal">
 

@@ -97,12 +97,10 @@ public class DispatchDetailActivity extends SwipeBackActivity implements View.On
     ll_back.setOnClickListener(this);
 //    rightBtn.setOnClickListener(this);
 
-
-
-    TextView tv_sn = (TextView)findViewById(R.id.item_sn);
-    TextView tv_status = (TextView)findViewById(R.id.item_status);
-    TextView tv_created_at = (TextView)findViewById(R.id.item_created_at);
-    TextView tv_end_at = (TextView)findViewById(R.id.item_end_at);
+    TextView tv_sn = (TextView)findViewById(R.id.dispatch_drtail_sn);
+    TextView tv_status = (TextView)findViewById(R.id.dispatch_drtail_status);
+    TextView tv_created_at = (TextView)findViewById(R.id.dispatch_drtail_created_at);
+    TextView tv_end_at = (TextView)findViewById(R.id.dispatch_drtail_end_at);
 //    TextView tv_car_numbers = (TextView)findViewById(R.id.item_car_numbers);
 //    Button btn_dispatch_detail = BaseViewHolder.get(convertView,R.id.btn_dispatch_detail);
 //    Button btn_confirm_finish = BaseViewHolder.get(convertView,R.id.btn_confirm_finish);

@@ -18,9 +18,11 @@ import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.Circle;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
+import com.clj.fastble.BleManager;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.BindSchoolActivity;
 import com.qimalocl.manage.activity.CarDispatchActivity;
+import com.qimalocl.manage.activity.ClientManager;
 import com.qimalocl.manage.activity.DeviceSelectActivity;
 import com.qimalocl.manage.activity.GetDotActivity;
 import com.qimalocl.manage.activity.HistorysRecordActivity;
@@ -116,8 +118,40 @@ public class ToolFragment extends BaseFragment implements View.OnClickListener{
             //pause
         }else{
             //resume
+
+//            end2();
         }
     }
+
+//    private void end2() {
+//
+//        LogUtil.e("mf==end2", type+"==="+m_nowMac);
+//
+//        if("5".equals(type)  || "6".equals(type)){
+//            ClientManager.getClient().stopSearch();
+//
+//            ClientManager.getClient().disconnect(m_nowMac);
+//            ClientManager.getClient().disconnect(m_nowMac);
+//            ClientManager.getClient().disconnect(m_nowMac);
+//            ClientManager.getClient().disconnect(m_nowMac);
+//            ClientManager.getClient().disconnect(m_nowMac);
+//            ClientManager.getClient().disconnect(m_nowMac);
+//
+//
+////            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
+////            ClientManager.getClient().unnotifyClose(m_nowMac, mCloseListener);
+////            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener2);
+//
+//        }else if("4".equals(type) || "8".equals(type)){
+//        }else if("7".equals(type)){
+//            if (apiClient != null) {
+//                apiClient.onDestroy();
+//            }
+//        }else if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)){
+//            BleManager.getInstance().disconnectAllDevice();
+//            BleManager.getInstance().destroy();
+//        }
+//    }
 
     @Override
     public void onResume() {

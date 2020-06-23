@@ -363,9 +363,6 @@ public class CarDispatchActivity extends SwipeBackActivity implements View.OnCli
                 convertView = inflater.inflate(R.layout.item_car_dispatch_record, null);
             }
 
-//            JSONArray jsonArray2 = new JSONArray(jsonArray.getJSONObject(i).getString("ranges"));;
-//            JSONObject jsonObject = new JSONObject(jsonArray.getJSONObject(i).getString("parking"));
-
             TextView tv_sn = BaseViewHolder.get(convertView,R.id.item_sn);
             TextView tv_status = BaseViewHolder.get(convertView,R.id.item_status);
             TextView tv_created_at = BaseViewHolder.get(convertView,R.id.item_created_at);

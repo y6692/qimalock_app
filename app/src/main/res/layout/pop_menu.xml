@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
 
@@ -95,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
             <LinearLayout
@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp14"
                     android:textColor="#666666"
-                    android:text="123456"/>
+                    android:text=""/>
             </LinearLayout>
 
             <LinearLayout
@@ -293,7 +293,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:text="损坏部位：abc123qweqweqweqwe"
+                    android:text="损坏部位："
                     android:textColor="@color/tx_black"
                     android:textSize="14sp"
                     android:gravity="center_vertical"

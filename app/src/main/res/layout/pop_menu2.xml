@@ -82,7 +82,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp14"
                         android:textColor="#666666"
-                        android:text="123456"/>
+                        android:text=""/>
                 </LinearLayout>
 
 
@@ -103,7 +103,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp14"
                         android:textColor="#666666"
-                        android:text="123456"/>
+                        android:text=""/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -123,7 +123,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp14"
                         android:textColor="#666666"
-                        android:text="123456"/>
+                        android:text=""/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -143,7 +143,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp14"
                         android:textColor="#666666"
-                        android:text="123456"/>
+                        android:text=""/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -163,7 +163,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp14"
                         android:textColor="#666666"
-                        android:text="123456"/>
+                        android:text=""/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -183,7 +183,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp14"
                         android:textColor="#666666"
-                        android:text="123456"/>
+                        android:text=""/>
                 </LinearLayout>
 
 
@@ -195,23 +195,24 @@
                 android:id="@+id/ll_location"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginRight="10dp"
                 android:orientation="vertical"
-                android:gravity="bottom"
+                android:gravity="center"
                 android:onClick="btn">
 
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/open_lock_icon"
+                    android:src="@drawable/location2_icon"
                     android:gravity="center"
                     />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:gravity="center"
-                    android:text="位置"
+                    android:text="车辆位置"
                     android:textSize="14sp"
                     android:textColor="@color/tx_black"
                     />
@@ -466,7 +467,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:text="损坏部位：abc1234324sadasdasdasdasasda21321321321312321312312312321312312312312"
+                    android:text="损坏部位："
                     android:textColor="@color/tx_black"
                     android:textSize="14sp"
                     android:gravity="center_vertical"
