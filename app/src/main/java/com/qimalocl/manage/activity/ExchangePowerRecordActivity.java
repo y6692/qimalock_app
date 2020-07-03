@@ -191,7 +191,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
             return;
         }
         RequestParams params = new RequestParams();
-        params.put("page",showPage);
+        params.put("page", showPage);
 //        params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
         HttpHelper.get(context, Urls.carbatteryaction_count, params, new TextHttpResponseHandler() {
@@ -216,21 +216,46 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
 
                     LogUtil.e("epra===initHttp1", "==="+responseString);
 
+//                    footerViewType01 = footerView.findViewById(R.id.footer_Layout_type01);// 点击加载更多
+//                    footerViewType02 = footerView.findViewById(R.id.footer_Layout_type02);// 正在加载，请您稍等
+//                    footerViewType03 = footerView.findViewById(R.id.footer_Layout_type03);// 已无更多
+//                    footerViewType04 = footerView.findViewById(R.id.footer_Layout_type04);// 刷新失败，请重试
+//                    footerViewType05 = footerView.findViewById(R.id.footer_Layout_type05);// 暂无数据
+
                     JSONArray array = new JSONArray(result.getData());
-                    if (array.length() == 0 && showPage == 1) {
+//                    if (array.length() == 0 && showPage == 1) {// 暂无数据
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(4);
+//                        return;
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+//                        footerLayout.setVisibility(View.GONE);
+//                        setFooterType(5);
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {// 已无更多
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(2);
+//                    } else if (array.length() >= 10) {// 点击加载更多
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(0);
+//                    }
+
+                    if (array.length() == 0 && showPage == 1) {// 暂无数据
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(4);
                         return;
                     } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
                         footerLayout.setVisibility(View.GONE);
                         setFooterType(5);
-                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {// 已无更多
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(2);
-                    } else if (array.length() >= 10) {
+                    } else if (array.length() >= 10) {// 点击加载更多
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(0);
                     }
+//                    setFooterType(0);
+
+                    LogUtil.e("epra===initHttp2", "==="+array.length());
+
                     for (int i = 0; i < array.length(); i++) {
                         PowerExchangeBean bean = JSON.parseObject(array.getJSONObject(i).toString(), PowerExchangeBean.class);
                         data.add(bean);
@@ -289,23 +314,25 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
 
     private void setFooterType(int type) {
         switch (type) {
-            case 0:
+            case 0: // 点击加载更多
                 isLast = false;
+                showPage += 1;
                 footerViewType01.setVisibility(View.VISIBLE);
                 footerViewType02.setVisibility(View.GONE);
                 footerViewType03.setVisibility(View.GONE);
                 footerViewType04.setVisibility(View.GONE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 1:
+            case 1: // 正在加载，请您稍等
                 isLast = false;
+//                showPage += 1;
                 footerViewType01.setVisibility(View.GONE);
                 footerViewType02.setVisibility(View.VISIBLE);
                 footerViewType03.setVisibility(View.GONE);
                 footerViewType04.setVisibility(View.GONE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 2:
+            case 2: // 已无更多
                 isLast = true;
                 footerViewType01.setVisibility(View.GONE);
                 footerViewType02.setVisibility(View.GONE);
@@ -313,7 +340,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 footerViewType04.setVisibility(View.GONE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 3:
+            case 3: // 刷新失败，请重试
                 isLast = false;
                 // showPage -= 1;
                 footerViewType01.setVisibility(View.GONE);
@@ -322,8 +349,9 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 footerViewType04.setVisibility(View.VISIBLE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 4:
+            case 4:// 暂无数据
                 isLast = true;
+//                showPage += 1;
                 footerViewType01.setVisibility(View.GONE);
                 footerViewType02.setVisibility(View.GONE);
                 footerViewType03.setVisibility(View.GONE);

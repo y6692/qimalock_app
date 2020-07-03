@@ -179,7 +179,11 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 //        addChooseMarker();
 //        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
 
-        initHttp();
+        codenum = codeNumEdit.getText().toString().trim();
+        if (codenum != null && !"".equals(codenum)){
+            initHttp();
+        }
+
 
     }
 

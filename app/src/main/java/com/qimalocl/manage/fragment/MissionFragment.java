@@ -126,6 +126,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     String codenum="";
     int totalnum;
 
+    public static boolean isMissionThread = true;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mission, null);
@@ -156,7 +157,13 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                         e.printStackTrace();
                     }
 
-                    m_myHandler.sendEmptyMessage(1);
+                    LogUtil.e("missionf===", "==="+isMissionThread);
+
+                    if(isMissionThread){
+                        LogUtil.e("missionf===1", "===");
+                        m_myHandler.sendEmptyMessage(1);
+                    }
+
                 }
             }
         }).start();
@@ -200,8 +207,10 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         super.onHiddenChanged(hidden);
         if(hidden){
             //pause
+//            isMissionThread = false;
         }else{
             //resume
+//            isMissionThread = true;
             resetList();
         }
     }

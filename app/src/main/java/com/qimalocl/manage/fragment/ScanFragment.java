@@ -368,8 +368,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //        registerReceiver(new String[] { LibraryConstants.BROADCAST_UPDATE_USER_INFO });
 
-
-
 //        filter = new IntentFilter("data.broadcast.action");
 //        activity.registerReceiver(broadcastReceiver, filter);
 
@@ -412,7 +410,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //            }
 //        }).start();
     }
-
 
 
     @Override
@@ -2230,15 +2227,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     public void cars(final boolean isFresh){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-
-
-            }
-        }).start();
-
         RequestParams params = new RequestParams();
 
         int carType = 3;
@@ -2347,7 +2335,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                             int lock_id = bean.getLock_id();
 
-                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
+//                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
 
                                             if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
                                                 if(lock_id==4){

@@ -221,7 +221,7 @@ public class MainActivity extends BaseActivity{
 
         boolean flag = getIntent().getBooleanExtra("flag", false);
 
-        LogUtil.e("ma===onResume",  loadingDialog+ "===" + flag + "===" + access_token);
+        LogUtil.e("ma===onResume",  "===" + MissionFragment.isMissionThread);
 
 //        if (loadingDialog != null && !loadingDialog.isShowing()) {
 //            loadingDialog.setTitle("请稍等");
@@ -243,10 +243,19 @@ public class MainActivity extends BaseActivity{
             mineFragment.initHttp();
         }
 
-
+        MissionFragment.isMissionThread = true;
 
 //        mainFragment.show
 //        tab.setCurrentTab(0);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        LogUtil.e("ma===onPause",  "===" + MissionFragment.isMissionThread);
+
+        MissionFragment.isMissionThread = false;
     }
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {

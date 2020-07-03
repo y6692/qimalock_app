@@ -250,6 +250,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 		mCameraManager = CameraManager.get();
 
+
 		LogUtil.e("ActivityScanerCode===", "===");
 
 //		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -316,7 +317,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 
 							if (!hasSurface) {
 								hasSurface = true;
-								initCamera(holder);
+
 
 								if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
 									ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
@@ -335,12 +336,13 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								if (!mBluetoothAdapter.isEnabled()) {
 									isPermission = true;
 
-									previewing = false;
-									mCropLayout2.setVisibility(View.GONE);
+//									previewing = false;
+//									mCropLayout2.setVisibility(View.GONE);	//TODO
 
 									Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 									startActivityForResult(enableBtIntent, 188);
 								} else {
+									initCamera(holder);
 
 									BleManager.getInstance().init(getApplication());
 									BleManager.getInstance()
