@@ -151,6 +151,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private int low_count_xyt;
     private int ultra_low_count_tbt;
     private int low_count_tbt;
+    private int ultra_low_count_tbt092d;
+    private int low_count_tbt092d;
 
     String role = "";
 
@@ -1005,6 +1007,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 LowPowerDetailBean  bean_xa= JSON.parseObject(bean.getXiaoan(), LowPowerDetailBean.class);
                                 LowPowerDetailBean  bean_xyt= JSON.parseObject(bean.getXyt(), LowPowerDetailBean.class);
                                 LowPowerDetailBean  bean_tbt= JSON.parseObject(bean.getTbt(), LowPowerDetailBean.class);
+                                LowPowerDetailBean  bean_tbt092d= JSON.parseObject(bean.getTbt092d(), LowPowerDetailBean.class);
 
                                 ultra_low_count_xa = bean_xa.getUltra_low_count();
                                 low_count_xa = bean_xa.getLow_count();
@@ -1012,6 +1015,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 low_count_xyt = bean_xyt.getLow_count();
                                 ultra_low_count_tbt = bean_tbt.getUltra_low_count();
                                 low_count_tbt = bean_tbt.getLow_count();
+                                ultra_low_count_tbt092d = bean_tbt092d.getUltra_low_count();
+                                low_count_tbt092d = bean_tbt092d.getLow_count();
 
                                 LogUtil.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count()+"==="+bean_tbt.getUltra_low_count()+"==="+bean_tbt.getLow_count());
 
@@ -1144,6 +1149,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         TextView tv_ultra_low_count_xyt = customView.findViewById(R.id.tv_ultra_low_count_xyt);
         TextView tv_low_count_tbt = customView.findViewById(R.id.tv_low_count_tbt);
         TextView tv_ultra_low_count_tbt = customView.findViewById(R.id.tv_ultra_low_count_tbt);
+        TextView tv_low_count_tbt092d = customView.findViewById(R.id.tv_low_count_tbt092d);
+        TextView tv_ultra_low_count_tbt092d = customView.findViewById(R.id.tv_ultra_low_count_tbt092d);
 
         tv_low_count_xa.setText("低电："+low_count_xa);
         tv_ultra_low_count_xa.setText("超低电："+ultra_low_count_xa);
@@ -1151,6 +1158,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         tv_ultra_low_count_xyt.setText("超低电："+ultra_low_count_xyt);
         tv_low_count_tbt.setText("低电："+low_count_tbt);
         tv_ultra_low_count_tbt.setText("超低电："+ultra_low_count_tbt);
+        tv_low_count_tbt092d.setText("低电："+low_count_tbt092d);
+        tv_ultra_low_count_tbt092d.setText("超低电："+ultra_low_count_tbt092d);
 
         iv_popup_window_back.setOnClickListener(this);
 

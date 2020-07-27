@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/RxTools-library/RxTools-library.iml" filepath="$PROJECT_DIR$/RxTools-library/RxTools-library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/blelibrary/blelibrary.iml" filepath="$PROJECT_DIR$/blelibrary/blelibrary.iml" />
-      <module fileurl="file://$PROJECT_DIR$/flowlayout-lib/flowlayout-lib.iml" filepath="$PROJECT_DIR$/flowlayout-lib/flowlayout-lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/qimalock_app.iml" filepath="$PROJECT_DIR$/.idea/qimalock_app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sunshinelibrary/sunshinelibrary.iml" filepath="$PROJECT_DIR$/sunshinelibrary/sunshinelibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RxTools-library/RxTools-library.iml" filepath="$PROJECT_DIR$/RxTools-library/RxTools-library.iml" group="qimalock_app/RxTools-library" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="qimalock_app/app" />
+      <module fileurl="file://$PROJECT_DIR$/blelibrary/blelibrary.iml" filepath="$PROJECT_DIR$/blelibrary/blelibrary.iml" group="qimalock_app/blelibrary" />
+      <module fileurl="file://$PROJECT_DIR$/flowlayout-lib/flowlayout-lib.iml" filepath="$PROJECT_DIR$/flowlayout-lib/flowlayout-lib.iml" group="qimalock_app/flowlayout-lib" />
+      <module fileurl="file://$PROJECT_DIR$/qimalock_app.iml" filepath="$PROJECT_DIR$/qimalock_app.iml" group="qimalock_app" />
+      <module fileurl="file://$PROJECT_DIR$/sunshinelibrary/sunshinelibrary.iml" filepath="$PROJECT_DIR$/sunshinelibrary/sunshinelibrary.iml" group="qimalock_app/sunshinelibrary" />
     </modules>
   </component>
 </project>

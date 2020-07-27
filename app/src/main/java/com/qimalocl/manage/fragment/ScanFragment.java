@@ -776,19 +776,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     };
 
     private void initView(){
-        openGPSSettings();
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            int checkPermission = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-            if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
-                } else {
-                    requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION },101);
-                }
-                return;
-            }
-        }
+//        openGPSSettings();
+//
+//        if (Build.VERSION.SDK_INT >= 23) {
+//            int checkPermission = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+//            if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+//                requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, 101);
+//                return;
+//            }
+//        }
 
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
@@ -2335,7 +2331,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                             int lock_id = bean.getLock_id();
 
-//                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
+                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
 
                                             if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
                                                 if(lock_id==4){
@@ -3009,7 +3005,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ClientManager.getClient().disconnect(m_nowMac);
 
 
-//            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
+            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener);
 //            ClientManager.getClient().unnotifyClose(m_nowMac, mCloseListener);
 //            ClientManager.getClient().unregisterConnectStatusListener(m_nowMac, mConnectStatusListener2);
 
@@ -3081,6 +3077,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         isOpenLock = true;
 
+
+
                         if("10".equals(type)){
                             initBle();
 
@@ -3088,18 +3086,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         }else{
                             if(!isLookPsdBtn){   //没连上
 
-                                initBle();
+//                            if(isMac){
+//                                initBle();
+//                                connect();
+//                            }else{
+//                                setScanRule();
+//                                scan2();
+//                            }
 
-//                    if(isMac){
-//                        connect();
-//                    }else{
-//                        setScanRule();
-//                        scan2();
-//                    }
+                                setScanRule();
+                                scan2();
 
-                                connect();
+//                                initBle();
+//                                connect();
                             }else{
-//                    BaseApplication.getInstance().getIBLE().openLock();
+//                              BaseApplication.getInstance().getIBLE().openLock();
 
                                 if(token==null || "".equals(token)){
                                     getBleToken();
@@ -3253,7 +3254,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         BleManager.getInstance()
                 .enableLog(true)
                 .setReConnectCount(4, 2000)
-//              .setOperateTimeout(10000)
+//                .setOperateTimeout(10000)
                 .setConnectOverTime(timeout);
     }
 
@@ -4435,10 +4436,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             }
 
             @Override
-            public void onResponseFail(int code) {
-                LogUtil.e("scan===deleteBleRecord", Code.toString(code));
-//                ToastUtil.showMessageApp(context, Code.toString(code));
-                popupwindow.dismiss();
+            public void onResponseFail(final int code) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        LogUtil.e("scan===deleteBleRecord", Code.toString(code));
+//                      ToastUtil.showMessageApp(context, Code.toString(code));
+                        if(popupwindow!=null){
+                            popupwindow.dismiss();
+                        }
+                    }
+                });
+
+
             }
         });
     }
