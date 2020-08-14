@@ -6,49 +6,23 @@ package com.qimalocl.manage.model;
 
 public class LowPowerBean {
 
-    private int count;  //低电和超低电总数量
-    private String xiaoan;  //小安数据
-    private String xyt;  //行运兔数据
-    private String tbt;  //泰比特数据
-    private String tbt092d;  //泰比特092d数据
+    private int low_power_total;    //低电和超低电总数量
 
-    public int getCount() {
-        return count;
+    private String low_power_data;  //数据
+
+    public int getLow_power_total() {
+        return low_power_total;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setLow_power_total(int low_power_total) {
+        this.low_power_total = low_power_total;
     }
 
-    public String getXiaoan() {
-        return xiaoan;
+    public String getLow_power_data() {
+        return low_power_data;
     }
 
-    public void setXiaoan(String xiaoan) {
-        this.xiaoan = xiaoan;
-    }
-
-    public String getXyt() {
-        return xyt;
-    }
-
-    public void setXyt(String xyt) {
-        this.xyt = xyt;
-    }
-
-    public String getTbt() {
-        return tbt;
-    }
-
-    public void setTbt(String tbt) {
-        this.tbt = tbt;
-    }
-
-    public String getTbt092d() {
-        return tbt092d;
-    }
-
-    public void setTbt092d(String tbt092d) {
-        this.tbt092d = tbt092d;
+    public void setLow_power_data(String low_power_data) {
+        this.low_power_data = low_power_data;
     }
 }

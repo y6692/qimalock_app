@@ -51,21 +51,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
-            android:layout_marginBottom="23dp"
-            android:layout_marginLeft="44dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+
             android:gravity="center_vertical"
             android:orientation="vertical"
             >
 
             <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_xa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="42dp"
+                android:paddingRight="30dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="68dp"
+                    android:layout_width="70dp"
                     android:layout_height="50dp"
                     android:src="@drawable/ebike_xa_icon"
                     android:gravity="center"
@@ -74,23 +77,31 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="21dp"
                     android:orientation="vertical">
 
 
                     <TextView
+                        android:id="@+id/tv_lock_title_xa"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp16"
                         android:textColor="#333333"
-                        android:text="XA电单车"/>
+                        android:text=""/>
+
+                    <TextView
+                        android:id="@+id/tv_remark_xa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="6sp"
+                        android:textColor="#333333"
+                        android:text=""/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="3dp"
                         android:orientation="horizontal">
-
 
                         <TextView
                             android:id="@+id/tv_low_count_xa"
@@ -127,13 +138,17 @@
 
 
             <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_xyt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="42dp"
+                android:paddingRight="30dp"
                 android:layout_marginTop="13dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="68dp"
+                    android:layout_width="70dp"
                     android:layout_height="50dp"
                     android:src="@drawable/ebike_xyt_icon"
                     android:gravity="center"
@@ -142,21 +157,30 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="21dp"
                     android:orientation="vertical">
 
 
                     <TextView
+                        android:id="@+id/tv_lock_title_xyt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp16"
                         android:textColor="#333333"
-                        android:text="XYT电单车"/>
+                        android:text=""/>
+
+                    <TextView
+                        android:id="@+id/tv_remark_xyt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="6sp"
+                        android:textColor="#333333"
+                        android:text=""/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="3dp"
                         android:orientation="horizontal">
 
 
@@ -196,13 +220,17 @@
 
 
             <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_tbt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="42dp"
+                android:paddingRight="30dp"
                 android:layout_marginTop="13dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="68dp"
+                    android:layout_width="70dp"
                     android:layout_height="50dp"
                     android:src="@drawable/ebike_xyt_icon"
                     android:gravity="center"
@@ -211,21 +239,30 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="21dp"
                     android:orientation="vertical">
 
 
                     <TextView
+                        android:id="@+id/tv_lock_title_tbt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp16"
                         android:textColor="#333333"
-                        android:text="TBT电单车"/>
+                        android:text=""/>
+
+                    <TextView
+                        android:id="@+id/tv_remark_tbt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="6sp"
+                        android:textColor="#333333"
+                        android:text=""/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="3dp"
                         android:orientation="horizontal">
 
 
@@ -264,41 +301,54 @@
 
 
             <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_tbt209d"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="42dp"
+                android:paddingRight="30dp"
                 android:layout_marginTop="13dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="68dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ebike_xyt_icon"
+                    android:layout_width="77dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/ebike_tbt_icon"
                     android:gravity="center"
                     />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="14dp"
                     android:orientation="vertical">
 
 
                     <TextView
+                        android:id="@+id/tv_lock_title_tbt209d"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/sp16"
                         android:textColor="#333333"
-                        android:text="TBT092d电单车"/>
+                        android:text=""/>
+
+                    <TextView
+                        android:id="@+id/tv_remark_tbt209d"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="6sp"
+                        android:textColor="#333333"
+                        android:text=""/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="3dp"
                         android:orientation="horizontal">
 
 
                         <TextView
-                            android:id="@+id/tv_low_count_tbt092d"
+                            android:id="@+id/tv_low_count_tbt209d"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -308,7 +358,7 @@
 
 
                         <TextView
-                            android:id="@+id/tv_ultra_low_count_tbt092d"
+                            android:id="@+id/tv_ultra_low_count_tbt209d"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"

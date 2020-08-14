@@ -64,6 +64,8 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
     private int isLock = 0;
     private View v;
 
+    private int carmodel_id;
+    private String codenum;
 
 //    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 //        v = inflater.inflate(R.layout.fragment_query, null);
@@ -87,6 +89,10 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
         context = this;
 //        latitude = Double.parseDouble(getIntent().getExtras().getString("latitude"));
 //        longitude = Double.parseDouble(getIntent().getExtras().getString("longitude"));
+
+        carmodel_id = getIntent().getIntExtra("carmodel_id", 0);
+        codenum = getIntent().getStringExtra("codenum");
+
         initView();
     }
 
@@ -112,11 +118,21 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
         switch (v.getId()){
 
             case R.id.ll_history:
-                UIHelper.goToAct(context, HistorysRecordActivity.class);
+//                UIHelper.goToAct(context, HistorysRecordActivity.class);
+
+                Intent intent = new Intent(context, HistorysRecordActivity.class);
+                intent.putExtra("carmodel_id", carmodel_id);
+                intent.putExtra("codenum", codenum);
+                startActivity(intent);
                 break;
 
             case R.id.ll_location:
-                UIHelper.goToAct(context, MerchantAddressMapActivity.class);
+//                UIHelper.goToAct(context, MerchantAddressMapActivity.class);
+
+                intent = new Intent(context, MerchantAddressMapActivity.class);
+                intent.putExtra("carmodel_id", carmodel_id);
+                intent.putExtra("codenum", codenum);
+                startActivity(intent);
                 break;
 
 

@@ -107,10 +107,36 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/sp16"
             android:textColor="#333333"
-            android:text="维修部位："/>
+            android:text="坏车原因："/>
 
         <TextView
             android:id="@+id/tv_bad_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:textSize="@dimen/sp16"
+            android:textColor="#666666"
+            android:text="123456"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/ll_setgood_reason"
+        android:layout_width="match_parent"
+        android:layout_height="22dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginTop="6dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sp16"
+            android:textColor="#333333"
+            android:text="维修内容："/>
+
+        <TextView
+            android:id="@+id/tv_setgood_reason"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"

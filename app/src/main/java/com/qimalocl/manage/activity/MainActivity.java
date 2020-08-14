@@ -175,7 +175,7 @@ public class MainActivity extends BaseActivity{
 
         initData();
         initView();
-        initListener();
+
 //        initLocation();
 //        AppApplication.getApp().scan();
 
@@ -245,8 +245,6 @@ public class MainActivity extends BaseActivity{
 
         MissionFragment.isMissionThread = true;
 
-//        mainFragment.show
-//        tab.setCurrentTab(0);
     }
 
     @Override
@@ -295,9 +293,6 @@ public class MainActivity extends BaseActivity{
         mFragments.add(missionFragment);
         mFragments.add(toolFragment);
         mFragments.add(mineFragment);
-
-//        mFragments.get(1).set
-
 
 //        mFragments.add(alarmFragment);
 //        mFragments.add(maintenanceFragment);
@@ -396,7 +391,7 @@ public class MainActivity extends BaseActivity{
 
         tab = findViewById(R.id.tab);
 
-        tab.setTabData(mTabEntities, MainActivity.this, R.id.fl_change, mFragments);
+        tab.setTabData(mTabEntities, this, R.id.fl_change, mFragments);
 
 
 //        TabLayout.Tab tab1 = tab.getChildAt(1);
@@ -516,8 +511,6 @@ public class MainActivity extends BaseActivity{
         tab.setCurrentTab(index);
     }
 
-    private void initListener() {
-    }
 
     @Override
     public void onDestroy() {

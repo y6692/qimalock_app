@@ -97,6 +97,9 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
 
     private InputMethodManager inputMethodManager;
 
+    private int carmodel_id;
+    private String codenum;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +107,11 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
         ButterKnife.bind(this);
 
         context = this;
+
+        carmodel_id = getIntent().getIntExtra("carmodel_id", 0);
+        codenum = getIntent().getStringExtra("codenum");
+
+        codenum = codenum==null?"":codenum;
 
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
@@ -149,6 +157,8 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
 //            initHttp();
 //        }
 
+        codeNumEdit.setText(codenum);
+
         myAdapter = new MyAdapter(context);
         myAdapter.setDatas(data);
         myList.setAdapter(myAdapter);
@@ -156,6 +166,11 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
         backBtn.setOnClickListener(this);
         searchBtn.setOnClickListener(this);
         footerLayout.setOnClickListener(this);
+
+        codenum = codeNumEdit.getText().toString().trim();
+        if (codenum != null && !"".equals(codenum)){
+            initHttp();
+        }
     }
 
     @Override
@@ -192,12 +207,12 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
             }
             isRefresh = true;
 
-            String codenum = codeNumEdit.getText().toString().trim();
+            codenum = codeNumEdit.getText().toString().trim();
             if (codenum == null || "".equals(codenum)){
                 Toast.makeText(context,"请输入车辆编号",Toast.LENGTH_SHORT).show();
                 return;
             }
-            initHttp(codenum);
+            initHttp();
         } else {
             swipeRefreshLayout.setRefreshing(false);
         }
@@ -214,7 +229,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                 startActivityForResult(intent,0);
                 break;
             case R.id.footer_Layout:
-                String codenum = codeNumEdit.getText().toString().trim();
+                codenum = codeNumEdit.getText().toString().trim();
                 if (access_token == null || "".equals(access_token)){
                     Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
                     UIHelper.goToAct(context,LoginActivity.class);
@@ -226,7 +241,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                 }
                 if (!isLast) {
                     showPage += 1;
-                    initHttp(codenum);
+                    initHttp();
                     myAdapter.notifyDataSetChanged();
                 }
                 break;
@@ -252,7 +267,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                 }
 
                 showPage = 1;
-                initHttp(codenum);
+                initHttp();
 
                 inputMethodManager.hideSoftInputFromWindow(codeNumEdit.getWindowToken(), 0);
 
@@ -262,7 +277,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                 break;
         }
     }
-    private void initHttp(String codenum){
+    private void initHttp(){
 
         LogUtil.e("hra===initHttp", codenum+"==="+showPage);
 

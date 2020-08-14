@@ -1,0 +1,182 @@
+    //						if (result.getInfo().equals("2")) {
+    //							CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+    //							customBuilder.setTitle("温馨提示").setMessage("该车被设为坏车，用户无法使用，请及时回收维修")
+    //									.setPositiveButton("去维护", new DialogInterface.OnClickListener() {
+    //										public void onClick(DialogInterface dialog, int which) {
+    //											dialog.cancel();
+    //
+    //											MaintenanceFragment.bikeNum=codenum;
+    //											MaintenanceFragment.ff=1;
+    //
+    //											Intent rIntent = new Intent();
+    //											rIntent.putExtra("tz", "1");
+    //											setResult(RESULT_OK, rIntent);
+    ////												setResult(RESULT_OK);
+    //
+    //											scrollToFinishActivity();
+    ////												MainActivity.changeTab(4);
+    //
+    //											if (loadingDialog != null && loadingDialog.isShowing()){
+    //												loadingDialog.dismiss();
+    //											}
+    //										}
+    //									})
+    //									.setNegativeButton("开锁", new DialogInterface.OnClickListener() {
+    //										public void onClick(DialogInterface dialog, int which) {
+    //											dialog.cancel();
+    //
+    //											info(jsonObject);
+    //
+    //										}
+    //									});
+    //							customBuilder.create().show();
+    //						}else{
+    //							info(jsonObject);
+    //						}
+
+    //						if (result.getFlag().equals("Success")) {
+    //
+    //
+    //						} else {
+    //							LogUtil.e("lockinfo===error","==="+result.getInfo());
+    //
+    //							Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+    //							if (loadingDialog != null && loadingDialog.isShowing()){
+    //								loadingDialog.dismiss();
+    //							}
+    //
+    //							initCamera(surfaceHolder);
+    //						}
+
+
+    private void upcarmap(String result){
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("tokencode",result);
+            params.put("latitude",latitude);
+            params.put("longitude",longitude);
+            HttpHelper.post(context, Urls.upcarmap, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            Toast.makeText(context,"恭喜您，提交成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+    private void recycle(String result){
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("codenum",result);
+            HttpHelper.post(context, Urls.recycle, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            Toast.makeText(context,"恭喜您，回收成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+
+    private void endCar(String result){
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("tokencode",result);
+            HttpHelper.post(context, Urls.endCar, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+                        loadingDialog.setTitle("正在提交");
+                        loadingDialog.show();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                    UIHelper.ToastError(context, throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    try {
+                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+                        if (result.getFlag().equals("Success")) {
+                            Toast.makeText(context,"恭喜您，结束用车成功",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                    }
+                    if (loadingDialog != null && loadingDialog.isShowing()){
+                        loadingDialog.dismiss();
+                    }
+                }
+            });
+        }
+    }

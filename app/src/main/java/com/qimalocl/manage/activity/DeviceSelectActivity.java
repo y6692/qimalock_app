@@ -41,6 +41,8 @@ public class DeviceSelectActivity extends Activity {
     Button bt3;
     @BindView(R.id.bt4)
     Button bt4;
+    @BindView(R.id.bt5)
+    Button bt5;
     @BindView(R.id.mainUI_title_backBtn)
     ImageView backBtn;
     @BindView(R.id.mainUI_title_titleText)
@@ -173,6 +175,17 @@ public class DeviceSelectActivity extends Activity {
 //                com.qimalocl.manage.core.common.UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
 //            }
 //        }
+    }
+
+    @OnClick(R.id.bt5)
+    void bt5() {
+        SharedPreferencesUrls.getInstance().putString("type", "11");
+//        UIHelper.goToAct(context, DeviceList3Activity.class);
+
+        Intent intent = new Intent();
+        intent.setClass(context, LockStorageTBTDActivity.class);
+        intent.putExtra("title", bt5.getText());
+        startActivity(intent);
     }
 
     @Override

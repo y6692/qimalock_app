@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true">
+    <include
+        layout="@layout/ui_main_title"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="37dp">
+        <com.qimalocl.manage.core.widget.ReboundScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp30"
+                android:layout_marginLeft="23dp">
+
+                <com.qimalocl.manage.core.widget.ClearEditText
+                    android:visibility="gone"
+                    android:id="@+id/edbikeNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp45"
+                    android:background="@drawable/shape_feedback"
+                    android:drawableRight="@drawable/delete_selector"
+                    android:hint="请输入车辆的编号"
+                    android:inputType="numberDecimal"
+                    android:paddingBottom="0dp"
+                    android:paddingLeft="@dimen/dp20"
+                    android:paddingRight="0dp"
+                    android:textColorHint="#989898"
+                    android:textSize="@dimen/sp14"
+                    android:layout_marginLeft="@dimen/dp15"
+                    android:layout_marginRight="@dimen/dp15"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="left|center_vertical"
+                        android:text="中控扫码"
+                        android:textColor="#333333"
+                        android:textSize="@dimen/sp16"/>
+
+                    <Button
+                        android:id="@+id/bt_scan_zk"
+                        android:layout_width="80dp"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_gravity="right"
+                        android:textAllCaps="false"
+                        android:background="@drawable/btn_bcg_normal"
+                        android:textColor="@color/white"
+                        android:text="扫描"
+                        android:textSize="@dimen/sp16"
+                        android:gravity="center"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="left|center_vertical"
+                        android:text="车辆扫码"
+                        android:textColor="#333333"
+                        android:textSize="@dimen/sp16"/>
+
+                    <Button
+                        android:id="@+id/bt_scan_car"
+                        android:layout_width="80dp"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_gravity="right"
+                        android:textAllCaps="false"
+                        android:background="@drawable/btn_bcg_normal"
+                        android:textColor="@color/white"
+                        android:text="扫描"
+                        android:textSize="@dimen/sp16"
+                        android:gravity="center"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_SN"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="left|center"
+                    android:text="S/N号："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16"/>
+
+                <TextView
+                    android:id="@+id/tv_SIM"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:gravity="left|center"
+                    android:text="SIM号："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16" />
+
+                <TextView
+                    android:id="@+id/tv_key"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:gravity="left|center"
+                    android:text="秘钥："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16"/>
+
+                <TextView
+                    android:id="@+id/tv_qrcode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:gravity="left|center"
+                    android:text="车辆二维码："
+                    android:textColor="#333333"
+                    android:textSize="@dimen/sp16"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="37dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/bt_lock_in"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginRight="48dp"
+                        android:layout_marginLeft="48dp"
+                        android:layout_weight="1"
+                        android:textAllCaps="false"
+                        android:background="@drawable/btn_bcg_normal"
+                        android:textColor="@color/white"
+                        android:text="入库"
+                        android:textSize="@dimen/sp16"
+                        android:gravity="center"/>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.qimalocl.manage.core.widget.ReboundScrollView>
+    </LinearLayout>
+</LinearLayout>

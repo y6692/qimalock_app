@@ -15,6 +15,7 @@ public class BadCarBean implements Serializable {
     private String latitude;  //纬度
     private String bad_time;  //坏车时间
     private String bad_reason;  //坏车原因
+    private String setgood_reason;  //维修内容
     private String recycle_time;  //回收时间
     private String setgood_time;  //修好时间
     private String last_user_name;  //最后使用人姓名
@@ -77,6 +78,14 @@ public class BadCarBean implements Serializable {
 
     public void setBad_reason(String bad_reason) {
         this.bad_reason = bad_reason;
+    }
+
+    public String getSetgood_reason() {
+        return setgood_reason;
+    }
+
+    public void setSetgood_reason(String setgood_reason) {
+        this.setgood_reason = setgood_reason;
     }
 
     public String getRecycle_time() {

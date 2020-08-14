@@ -192,7 +192,7 @@
 
 
             <LinearLayout
-                android:id="@+id/ll_location"
+                android:id="@+id/ll_query"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
@@ -203,7 +203,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/location2_icon"
+                    android:src="@drawable/query_icon"
                     android:gravity="center"
                     />
 
@@ -212,7 +212,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:gravity="center"
-                    android:text="车辆位置"
+                    android:text="查询"
                     android:textSize="14sp"
                     android:textColor="@color/tx_black"
                     />

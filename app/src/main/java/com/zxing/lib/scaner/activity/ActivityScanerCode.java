@@ -174,6 +174,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private boolean isAddDispatch = false;
 	private boolean isChangeKey = false;
 	private boolean isAdd = false;
+	private boolean isZk = false;
+	private boolean isCar = false;
 	private int n = 0;
 
 	private boolean hasSurface;
@@ -227,6 +229,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		school_name = getIntent().getExtras().getString("school_name");
 		isChangeKey = getIntent().getExtras().getBoolean("isChangeKey", false);
 		isAdd = getIntent().getExtras().getBoolean("isAdd", false);
+		isZk = getIntent().getExtras().getBoolean("isZk", false);
+		isCar = getIntent().getExtras().getBoolean("isCar", false);
 		findViewById();
 		//权限初始化
 		initPermission();
@@ -453,7 +457,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		lightBtn = (LinearLayout)findViewById(R.id.activity_qr_scan_lightBtn);
 		ll_hand = (LinearLayout)findViewById(R.id.ll_hand);
 
-		if(isAdd){
+		if(isAdd || isZk || isCar){
 			ll_hand.setVisibility(View.GONE);
 		}else{
 			ll_hand.setVisibility(View.VISIBLE);
@@ -684,10 +688,18 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					lockInfo(bikeNum);
 				}else if(isAddDispatch){
 					lockInfo2(bikeNum);
+				}else if(isCar || isZk){
+
+					Intent rIntent = new Intent();
+					rIntent.putExtra("QR_CODE", bikeNum);
+					setResult(RESULT_OK, rIntent);
+					scrollToFinishActivity();
 				}else{
 					isSearch = true;
 					lockInfo(bikeNum);
 				}
+
+
 //				order_authority(bikeNum);
 
 				break;
@@ -1166,7 +1178,8 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				lockInfo(result.toString());
 			}else if(isAddDispatch){
 				lockInfo2(result.toString());
-			}else if(isAdd){
+			}else if(isAdd || isCar || isZk){
+
 				Intent rIntent = new Intent();
 				rIntent.putExtra("QR_CODE", result.toString());
 				setResult(RESULT_OK, rIntent);
@@ -1461,201 +1474,159 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			HttpHelper.get(ActivityScanerCode.this, Urls.car+ URLEncoder.encode(result), new TextHttpResponseHandler() {
 				@Override
 				public void onStart() {
-					if (loadingDialog != null && !loadingDialog.isShowing()) {
-						loadingDialog.setTitle("正在提交");
-						loadingDialog.show();
-					}
+					onStartCommon("正在提交");
 				}
+
 				@Override
-				public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-					if (loadingDialog != null && loadingDialog.isShowing()){
-						loadingDialog.dismiss();
-					}
-					UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
-
-					closeBtnBikeNum();
-				}
-				@Override
-				public void onSuccess(int statusCode, Header[] headers, String responseString) {
-					try {
-						ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-						LogUtil.e("Scan===00", "==="+responseString);
-
-						if(result.getStatus_code()==0){
-                            CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
-
-                            codenum = bean.getNumber();
-                            type = ""+bean.getLock_id();
-                            lock_name = bean.getLock_name();	//车锁名称(英文)
-                            lock_title = bean.getLock_title();	//车锁名称(中文)
-                            deviceuuid = bean.getVendor_lock_id();
-                            lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常 1已上锁 2已开锁
-                            lock_no = bean.getLock_no();
-                            m_nowMac = bean.getLock_mac();
-                            bleid = bean.getLock_secretkey();
-                            electricity = bean.getElectricity();
-                            carmodel_id = bean.getCarmodel_id();
-                            carmodel_name = bean.getCarmodel_name();
-                            status = bean.getStatus();
-                            can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
-                            bad_reason = bean.getBad_reason();
-
-							String lock_secretkey = bean.getLock_secretkey();
-							String lock_password = bean.getLock_password();
-
-							if("9".equals(type) || "10".equals(type)){
-								Config.newKey = hexStringToByteArray(lock_secretkey);
-								Config.passwordnew = hexStringToByteArray(lock_password);
-							}else if("2".equals(type) || "3".equals(type)){
-								Config.newKey = Config.newKey2;
-								Config.passwordnew = Config.passwordnew2;
-							}
-
-                            LogUtil.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason+"==="+Config.newKey[0]+"==="+Config.passwordnew[0]);
-
-                            if(isBindSchool){
-
-                                customBuilder.setTitle("温馨提示").setMessage("是否绑定"+codenum+"到"+school_name+"？")
-                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                carschoolaction();
-
-                                                dialog.cancel();
-
-                                                previewing = true;
-                                                initCamera(surfaceHolder);
-                                                mCropLayout2.setVisibility(View.VISIBLE);
-
-
-                                            }
-                                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-
-                                        previewing = true;
-                                        initCamera(surfaceHolder);
-                                        mCropLayout2.setVisibility(View.VISIBLE);
-                                    }
-                                });
-
-//								customBuilder.setMessage("是否绑定"+codenum+"到"+school_name+"？");
-                                customDialog = customBuilder.create();
-                                customDialog.show();
-
-                                if (loadingDialog != null && loadingDialog.isShowing()){
-                                    loadingDialog.dismiss();
-                                }
-                            }else{
-                                if("2".equals(type) || "3".equals(type)){
-                                    n=0;
-                                    macLoop();
-                                }else{
-                                    Intent intent = new Intent();
-                                    intent.putExtra("codenum", codenum);
-                                    intent.putExtra("lock_name", lock_name);
-                                    intent.putExtra("lock_title", lock_title);
-                                    intent.putExtra("m_nowMac", m_nowMac);
-                                    intent.putExtra("carmodel_id", carmodel_id);
-                                    intent.putExtra("type", type);
-                                    intent.putExtra("lock_no", lock_no);
-                                    intent.putExtra("bleid", bleid);
-                                    intent.putExtra("deviceuuid", deviceuuid);
-                                    intent.putExtra("electricity", electricity);
-                                    intent.putExtra("carmodel_name", carmodel_name);
-                                    intent.putExtra("lock_status", lock_status);
-                                    intent.putExtra("status", status);
-                                    intent.putExtra("can_finish_order", can_finish_order);
-                                    intent.putExtra("bad_reason", bad_reason);
-                                    intent.putExtra("isMac",false);
-                                    intent.putExtra("isSearch",isSearch);
-
-                                    LogUtil.e("lockinfo===", "==="+AesTool.Genkey("CGFDV0ETMGTWGHUB", deviceuuid).replace(" ", "").toLowerCase());
-
-
-                                    if (loadingDialog != null && loadingDialog.isShowing()){
-                                        loadingDialog.dismiss();
-                                    }
-
-                                    BleManager.getInstance().cancelScan();
-
-                                    setResult(RESULT_OK, intent);
-                                    scrollToFinishActivity();
-                                }
-                            }
-                        }else {
-							LogUtil.e("lockinfo===error","==="+result.getMessage());
-
-							Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+				public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+					m_myHandler.post(new Runnable() {
+						@Override
+						public void run() {
 							if (loadingDialog != null && loadingDialog.isShowing()){
 								loadingDialog.dismiss();
 							}
+							UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
 
 							closeBtnBikeNum();
 						}
+					});
+				}
+				@Override
+				public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+					m_myHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+								LogUtil.e("Scan===00", "==="+responseString);
+
+								if(result.getStatus_code()==0){
+									CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
+
+									codenum = bean.getNumber();
+									type = ""+bean.getLock_id();
+									lock_name = bean.getLock_name();	//车锁名称(英文)
+									lock_title = bean.getLock_title();	//车锁名称(中文)
+									deviceuuid = bean.getVendor_lock_id();
+									lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常 1已上锁 2已开锁
+									lock_no = bean.getLock_no();
+									m_nowMac = bean.getLock_mac();
+									bleid = bean.getLock_secretkey();
+									electricity = bean.getElectricity();
+									carmodel_id = bean.getCarmodel_id();
+									carmodel_name = bean.getCarmodel_name();
+									status = bean.getStatus();
+									can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
+									bad_reason = bean.getBad_reason();
+
+									String lock_secretkey = bean.getLock_secretkey();
+									String lock_password = bean.getLock_password();
+
+									if("9".equals(type) || "10".equals(type)){
+										Config.newKey = hexStringToByteArray(lock_secretkey);
+										Config.passwordnew = hexStringToByteArray(lock_password);
+									}else if("2".equals(type) || "3".equals(type)){
+										Config.newKey = Config.newKey2;
+										Config.passwordnew = Config.passwordnew2;
+									}
+
+									LogUtil.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason+"==="+Config.newKey[0]+"==="+Config.passwordnew[0]);
+
+									if(isBindSchool){
+
+										customBuilder.setTitle("温馨提示").setMessage("是否绑定"+codenum+"到"+school_name+"？")
+												.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+													public void onClick(DialogInterface dialog, int which) {
+														carschoolaction();
+
+														dialog.cancel();
+
+														previewing = true;
+														initCamera(surfaceHolder);
+														mCropLayout2.setVisibility(View.VISIBLE);
 
 
+													}
+												}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog, int which) {
+												dialog.cancel();
+
+												previewing = true;
+												initCamera(surfaceHolder);
+												mCropLayout2.setVisibility(View.VISIBLE);
+											}
+										});
+
+//										customBuilder.setMessage("是否绑定"+codenum+"到"+school_name+"？");
+										customDialog = customBuilder.create();
+										customDialog.show();
+
+										if (loadingDialog != null && loadingDialog.isShowing()){
+											loadingDialog.dismiss();
+										}
+									}else{
+										if("2".equals(type) || "3".equals(type)){
+											n=0;
+											macLoop();
+										}else{
+											Intent intent = new Intent();
+											intent.putExtra("codenum", codenum);
+											intent.putExtra("lock_name", lock_name);
+											intent.putExtra("lock_title", lock_title);
+											intent.putExtra("m_nowMac", m_nowMac);
+											intent.putExtra("carmodel_id", carmodel_id);
+											intent.putExtra("type", type);
+											intent.putExtra("lock_no", lock_no);
+											intent.putExtra("bleid", bleid);
+											intent.putExtra("deviceuuid", deviceuuid);
+											intent.putExtra("electricity", electricity);
+											intent.putExtra("carmodel_name", carmodel_name);
+											intent.putExtra("lock_status", lock_status);
+											intent.putExtra("status", status);
+											intent.putExtra("can_finish_order", can_finish_order);
+											intent.putExtra("bad_reason", bad_reason);
+											intent.putExtra("isMac",false);
+											intent.putExtra("isSearch",isSearch);
+
+											LogUtil.e("lockinfo===", "==="+AesTool.Genkey("CGFDV0ETMGTWGHUB", deviceuuid).replace(" ", "").toLowerCase());
 
 
-//						if (result.getInfo().equals("2")) {
-//							CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
-//							customBuilder.setTitle("温馨提示").setMessage("该车被设为坏车，用户无法使用，请及时回收维修")
-//									.setPositiveButton("去维护", new DialogInterface.OnClickListener() {
-//										public void onClick(DialogInterface dialog, int which) {
-//											dialog.cancel();
-//
-//											MaintenanceFragment.bikeNum=codenum;
-//											MaintenanceFragment.ff=1;
-//
-//											Intent rIntent = new Intent();
-//											rIntent.putExtra("tz", "1");
-//											setResult(RESULT_OK, rIntent);
-////												setResult(RESULT_OK);
-//
-//											scrollToFinishActivity();
-////												MainActivity.changeTab(4);
-//
-//											if (loadingDialog != null && loadingDialog.isShowing()){
-//												loadingDialog.dismiss();
-//											}
-//										}
-//									})
-//									.setNegativeButton("开锁", new DialogInterface.OnClickListener() {
-//										public void onClick(DialogInterface dialog, int which) {
-//											dialog.cancel();
-//
-//											info(jsonObject);
-//
-//										}
-//									});
-//							customBuilder.create().show();
-//						}else{
-//							info(jsonObject);
-//						}
+											if (loadingDialog != null && loadingDialog.isShowing()){
+												loadingDialog.dismiss();
+											}
 
-//						if (result.getFlag().equals("Success")) {
-//
-//
-//						} else {
-//							LogUtil.e("lockinfo===error","==="+result.getInfo());
-//
-//							Toast.makeText(ActivityScanerCode.this,result.getMsg(),Toast.LENGTH_SHORT).show();
-//							if (loadingDialog != null && loadingDialog.isShowing()){
-//								loadingDialog.dismiss();
-//							}
-//
-//							initCamera(surfaceHolder);
-//						}
-					} catch (Exception e) {
+											BleManager.getInstance().cancelScan();
 
-						if (loadingDialog != null && loadingDialog.isShowing()){
-							loadingDialog.dismiss();
+											setResult(RESULT_OK, intent);
+											scrollToFinishActivity();
+										}
+									}
+								}else {
+									LogUtil.e("lockinfo===error","==="+result.getMessage());
+
+									Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+									if (loadingDialog != null && loadingDialog.isShowing()){
+										loadingDialog.dismiss();
+									}
+
+									closeBtnBikeNum();
+								}
+
+
+							} catch (Exception e) {
+
+								if (loadingDialog != null && loadingDialog.isShowing()){
+									loadingDialog.dismiss();
+								}
+								LogUtil.e("Test","异常"+e);
+
+								closeBtnBikeNum();
+//								initCamera(surfaceHolder);
+							}
 						}
-						LogUtil.e("Test","异常"+e);
+					});
 
-						closeBtnBikeNum();
-//						initCamera(surfaceHolder);
-					}
 
 				}
 			});
@@ -1674,98 +1645,109 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //			RequestParams params = new RequestParams();
 //			params.put("tokencode",result);
 			HttpHelper.get(ActivityScanerCode.this, Urls.car+ URLEncoder.encode(result), new TextHttpResponseHandler() {
+
 				@Override
 				public void onStart() {
-					if (loadingDialog != null && !loadingDialog.isShowing()) {
-						loadingDialog.setTitle("正在提交");
-						loadingDialog.show();
-					}
+					onStartCommon("正在提交");
 				}
+
 				@Override
-				public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-					if (loadingDialog != null && loadingDialog.isShowing()){
-						loadingDialog.dismiss();
-					}
-					UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
-
-					closeBtnBikeNum();
-				}
-				@Override
-				public void onSuccess(int statusCode, Header[] headers, String responseString) {
-					try {
-						ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-						LogUtil.e("lockInfo2===00", "==="+responseString);
-
-						if(result.getStatus_code()==0){
-							CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
-
-							codenum = bean.getNumber();
-							type = ""+bean.getLock_id();
-							lock_name = bean.getLock_name();	//车锁名称(英文)
-							lock_title = bean.getLock_title();	//车锁名称(中文)
-							deviceuuid = bean.getVendor_lock_id();
-							lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常 1已上锁 2已开锁
-							lock_no = bean.getLock_no();
-							m_nowMac = bean.getLock_mac();
-							bleid = bean.getLock_secretkey();
-							electricity = bean.getElectricity();
-							carmodel_id = bean.getCarmodel_id();
-							carmodel_name = bean.getCarmodel_name();
-							status = bean.getStatus();	//	车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
-							can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
-							bad_reason = bean.getBad_reason();
-
-							Intent intent = new Intent();
-							intent.putExtra("codenum", codenum);
-							intent.putExtra("lock_name", lock_name);
-							intent.putExtra("lock_title", lock_title);
-							intent.putExtra("m_nowMac", m_nowMac);
-							intent.putExtra("carmodel_id", carmodel_id);
-							intent.putExtra("type", type);
-							intent.putExtra("lock_no", lock_no);
-							intent.putExtra("bleid", bleid);
-							intent.putExtra("deviceuuid", deviceuuid);
-							intent.putExtra("electricity", electricity);
-							intent.putExtra("carmodel_name", carmodel_name);
-							intent.putExtra("lock_status", lock_status);
-							intent.putExtra("status", status);
-							intent.putExtra("can_finish_order", can_finish_order);
-							intent.putExtra("bad_reason", bad_reason);
-
-							LogUtil.e("lockinfo===", "==="+AesTool.Genkey("CGFDV0ETMGTWGHUB", deviceuuid).replace(" ", "").toLowerCase());
-
-
+				public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
+					m_myHandler.post(new Runnable() {
+						@Override
+						public void run() {
 							if (loadingDialog != null && loadingDialog.isShowing()){
 								loadingDialog.dismiss();
 							}
-
-							BleManager.getInstance().cancelScan();
-
-							setResult(RESULT_OK, intent);
-							scrollToFinishActivity();
-
-						}else {
-							LogUtil.e("lockinfo===error","==="+result.getMessage());
-
-							Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-							if (loadingDialog != null && loadingDialog.isShowing()){
-								loadingDialog.dismiss();
-							}
+							UIHelper.ToastError(ActivityScanerCode.this, throwable.toString());
 
 							closeBtnBikeNum();
 						}
+					});
+				}
 
-					} catch (Exception e) {
+				@Override
+				public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+					m_myHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-						if (loadingDialog != null && loadingDialog.isShowing()){
-							loadingDialog.dismiss();
+								LogUtil.e("lockInfo2===00", "==="+responseString);
+
+								if(result.getStatus_code()==0){
+									CarBean bean = JSON.parseObject(result.getData(), CarBean.class);
+
+									codenum = bean.getNumber();
+									type = ""+bean.getLock_id();
+									lock_name = bean.getLock_name();	//车锁名称(英文)
+									lock_title = bean.getLock_title();	//车锁名称(中文)
+									deviceuuid = bean.getVendor_lock_id();
+									lock_status = bean.getLock_status();	//0未知 3离线 非0非3 正常 1已上锁 2已开锁
+									lock_no = bean.getLock_no();
+									m_nowMac = bean.getLock_mac();
+									bleid = bean.getLock_secretkey();
+									electricity = bean.getElectricity();
+									carmodel_id = bean.getCarmodel_id();
+									carmodel_name = bean.getCarmodel_name();
+									status = bean.getStatus();	//	车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
+									can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
+									bad_reason = bean.getBad_reason();
+
+									Intent intent = new Intent();
+									intent.putExtra("codenum", codenum);
+									intent.putExtra("lock_name", lock_name);
+									intent.putExtra("lock_title", lock_title);
+									intent.putExtra("m_nowMac", m_nowMac);
+									intent.putExtra("carmodel_id", carmodel_id);
+									intent.putExtra("type", type);
+									intent.putExtra("lock_no", lock_no);
+									intent.putExtra("bleid", bleid);
+									intent.putExtra("deviceuuid", deviceuuid);
+									intent.putExtra("electricity", electricity);
+									intent.putExtra("carmodel_name", carmodel_name);
+									intent.putExtra("lock_status", lock_status);
+									intent.putExtra("status", status);
+									intent.putExtra("can_finish_order", can_finish_order);
+									intent.putExtra("bad_reason", bad_reason);
+
+									LogUtil.e("lockinfo===", "==="+AesTool.Genkey("CGFDV0ETMGTWGHUB", deviceuuid).replace(" ", "").toLowerCase());
+
+
+									if (loadingDialog != null && loadingDialog.isShowing()){
+										loadingDialog.dismiss();
+									}
+
+									BleManager.getInstance().cancelScan();
+
+									setResult(RESULT_OK, intent);
+									scrollToFinishActivity();
+
+								}else {
+									LogUtil.e("lockinfo===error","==="+result.getMessage());
+
+									Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+									if (loadingDialog != null && loadingDialog.isShowing()){
+										loadingDialog.dismiss();
+									}
+
+									closeBtnBikeNum();
+								}
+
+							} catch (Exception e) {
+
+								if (loadingDialog != null && loadingDialog.isShowing()){
+									loadingDialog.dismiss();
+								}
+								LogUtil.e("Test","异常"+e);
+
+								closeBtnBikeNum();
+//								initCamera(surfaceHolder);
+							}
 						}
-						LogUtil.e("Test","异常"+e);
+					});
 
-						closeBtnBikeNum();
-//						initCamera(surfaceHolder);
-					}
 
 				}
 			});

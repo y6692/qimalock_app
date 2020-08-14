@@ -460,9 +460,12 @@ public class LockStorageActivity extends MPermissionsActivity {
     protected void lock_info(){
         LogUtil.e("lock_info===",mac+"==="+carType+"==="+type);
 
+
+
         RequestParams params = new RequestParams();
+        params.put("lock_mac", mac);
         params.put("type", "3".equals(carType)?2:1);
-        HttpHelper.get(context, Urls.lock_info+mac, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
 //        HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -1602,6 +1605,9 @@ public class LockStorageActivity extends MPermissionsActivity {
         switch (requestCode) {
             case 1:
                 if (resultCode == RESULT_OK) {
+
+                    if(data==null) return;
+
                     String result = data.getStringExtra("QR_CODE");
                     codenum = edbikeNum.getText().toString().trim();
 
@@ -1612,6 +1618,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                     Toast.makeText(context, "扫描取消啦!", Toast.LENGTH_SHORT).show();
                 }
                 break;
+
 
             default:
                 break;
@@ -1666,6 +1673,7 @@ public class LockStorageActivity extends MPermissionsActivity {
             params.put("qrcode", result);    //二维码链接地址
             params.put("lock_no", name);     //车辆编号
             params.put("lock_mac", mac);    //mac地址
+//            params.put("vendor_lock_id", vendor_lock_id);    //mac地址
 
             LogUtil.e("addCar===", result+"==="+result+"==="+name+"==="+mac);
 

@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,9 +24,10 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
-import com.qimalocl.manage.model.BadCarBean;
 import com.qimalocl.manage.model.GlobalConfig;
+import com.qimalocl.manage.model.LowPowerDetailBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.ScrappedDetailBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.LogUtil;
 
@@ -43,7 +42,7 @@ import java.util.List;
  * Created by Administrator1 on 2017/2/13.
  */
 
-public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+public class LowPowerDetailActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener {
 
     private Context context;
@@ -64,23 +63,27 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
     private View footerLayout;
 
     private MyAdapter myAdapter;
-    private List<BadCarBean> data;
+    private List<LowPowerDetailBean> data;
     private boolean isRefresh = true;// 是否刷新中
     private boolean isLast = false;
     private int showPage = 1;
 
-    private String date = "";
+    private String date;
     private int type;
+
+    private int lock_id;
+    private String lock_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_long_setgood_unused_detail);
+        setContentView(R.layout.activity_low_power_detail);
         context = this;
         data = new ArrayList<>();
 
-//        date = getIntent().getStringExtra("date");
-        type = getIntent().getIntExtra("type", 1);
+        lock_id = getIntent().getIntExtra("lock_id", 0);
+        lock_title = getIntent().getStringExtra("lock_title");
+//        type = getIntent().getIntExtra("type", 1);
 
         initView();
     }
@@ -89,7 +92,7 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText(type==1?"长期未使用":"修好未使用");
+        title.setText(""+lock_title);
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
@@ -186,107 +189,74 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
         }
     }
     private void initHttp(){
-        LogUtil.e("sguda===initHttp", date+"==="+type+"==="+showPage);
+        LogUtil.e("lpda===initHttp", "==="+lock_id);
 
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
-            Toast.makeText(context,"请先登录您的账号",Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
             return;
         }
         RequestParams params = new RequestParams();
-        params.put("type", type);
-        params.put("page", showPage);
-        params.put("pagesize", GlobalConfig.PAGE_SIZE);
+//        params.put("date", date);
+//        params.put("page",showPage);
+//        params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        LogUtil.e("sguda===0", "===");
+        HttpHelper.get(context, Urls.carbatteryaction_low_power_detail+lock_id, params, new TextHttpResponseHandler() {
 
-        HttpHelper.get(context, Urls.long_setgood_unused, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-//                if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                    loadingDialog.setTitle("正在加载");
-//                    loadingDialog.show();
-//                }
-
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setFooterType(1);
-                    }
-                });
+                setFooterType(1);
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                UIHelper.ToastError(context, throwable.toString());
+                swipeRefreshLayout.setRefreshing(false);
+                isRefresh = false;
+                setFooterType(3);
+                setFooterVisibility();
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, final Throwable throwable) {
-//                if (loadingDialog != null && loadingDialog.isShowing()){
-//                    loadingDialog.dismiss();
-//                }
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        UIHelper.ToastError(context, throwable.toString());
-                        swipeRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                        setFooterType(3);
-                        setFooterVisibility();
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                    LogUtil.e("lpda===initHttp1", "==="+responseString);
+
+                    JSONArray array = new JSONArray(result.getData());
+                    if (array.length() == 0 && showPage == 1) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(4);
+                        return;
+                    }else{
+                        footerLayout.setVisibility(View.GONE);
                     }
-                });
+//                    else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+//                        footerLayout.setVisibility(View.GONE);
+//                        setFooterType(5);
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(2);
+//                    } else if (array.length() >= 10) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(0);
+//                    }
 
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
-                m_myHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
-
-                            LogUtil.e("sguda===1", "==="+responseString);
-
-
-                            JSONArray array = new JSONArray(result.getData());
-
-                            LogUtil.e("sguda===2", "==="+array);
-
-                            if (array.length() == 0 && showPage == 1) {
-
-                                footerLayout.setVisibility(View.VISIBLE);
-                                setFooterType(4);
-                            } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
-                                footerLayout.setVisibility(View.GONE);
-                                setFooterType(5);
-                            } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-                                footerLayout.setVisibility(View.VISIBLE);
-                                setFooterType(2);
-                            } else if (array.length() >= 10) {
-                                footerLayout.setVisibility(View.VISIBLE);
-                                setFooterType(0);
-                            }
-
-                            for (int i = 0; i < array.length();i++){
-                                BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
-
-                                data.add(bean);
-                            }
-
-                            LogUtil.e("sguda===3", "===");
-
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        } finally {
-                            swipeRefreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                            setFooterVisibility();
-                        }
+                    for (int i = 0; i < array.length(); i++) {
+                        LowPowerDetailBean bean = JSON.parseObject(array.getJSONObject(i).toString(), LowPowerDetailBean.class);
+                        data.add(bean);
                     }
-                });
 
-//                if (loadingDialog != null && loadingDialog.isShowing()){
-//                    loadingDialog.dismiss();
-//                }
+                    myAdapter.notifyDataSetChanged();
+
+                } catch (Exception e) {
+
+                } finally {
+                    swipeRefreshLayout.setRefreshing(false);
+                    isRefresh = false;
+//                    setFooterVisibility();
+                }
             }
         });
     }
@@ -376,7 +346,7 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
         }
     }
 
-    private class MyAdapter extends BaseViewAdapter<BadCarBean> {
+    private class MyAdapter extends BaseViewAdapter<LowPowerDetailBean> {
 
         private LayoutInflater inflater;
 
@@ -388,119 +358,37 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (null == convertView) {
-                convertView = inflater.inflate(R.layout.item_long_setgood_unused_detail, null);
+                convertView = inflater.inflate(R.layout.item_low_power_detail, null);
             }
 
-            TextView tv_date = BaseViewHolder.get(convertView,R.id.item_date);
-            TextView number = BaseViewHolder.get(convertView,R.id.tv_number);
-            TextView last_user_phone = BaseViewHolder.get(convertView,R.id.tv_last_user_phone);
-            TextView last_user_time = BaseViewHolder.get(convertView,R.id.tv_last_user_time);
-            TextView bad_reason = BaseViewHolder.get(convertView,R.id.tv_bad_reason);
-            TextView setgood_reason = BaseViewHolder.get(convertView,R.id.tv_setgood_reason);
-            TextView bad_time = BaseViewHolder.get(convertView,R.id.tv_bad_time);
-            TextView recycle_time = BaseViewHolder.get(convertView,R.id.tv_recycle_time);
-            TextView setgood_time = BaseViewHolder.get(convertView,R.id.tv_setgood_time);
-            LinearLayout ll_last_user_phone = BaseViewHolder.get(convertView,R.id.ll_last_user_phone);
-            LinearLayout ll_last_user_time = BaseViewHolder.get(convertView,R.id.ll_last_user_time);
-            LinearLayout ll_bad_reason = BaseViewHolder.get(convertView,R.id.ll_bad_reason);
-            LinearLayout ll_setgood_reason = BaseViewHolder.get(convertView,R.id.ll_setgood_reason);
-            LinearLayout ll_bad_time = BaseViewHolder.get(convertView,R.id.ll_bad_time);
-            LinearLayout ll_recycle_time = BaseViewHolder.get(convertView,R.id.ll_recycle_time);
-            LinearLayout ll_setgood_time = BaseViewHolder.get(convertView,R.id.ll_setgood_time);
+            TextView tv_number = BaseViewHolder.get(convertView,R.id.tv_number);
+            TextView tv_electricity = BaseViewHolder.get(convertView,R.id.tv_electricity);
+            TextView tv_total_time = BaseViewHolder.get(convertView,R.id.tv_total_time);
+            TextView tv_low_start_time = BaseViewHolder.get(convertView,R.id.tv_low_start_time);
 
-            BadCarBean bean = getDatas().get(position);
-            number.setText(bean.getNumber());
-            last_user_phone.setText(bean.getLast_user_phone());
-            last_user_time.setText(bean.getLast_user_time());
-            bad_reason.setText(bean.getBad_reason());
-            setgood_reason.setText(bean.getSetgood_reason());
-            bad_time.setText(bean.getBad_time());
-            recycle_time.setText(bean.getRecycle_time());
-            setgood_time.setText(bean.getSetgood_time());
+            LowPowerDetailBean bean = getDatas().get(position);
+            tv_number.setText(bean.getNumber());
+            tv_electricity.setText(bean.getElectricity());
+            tv_total_time.setText(bean.getTotal_time());
+            tv_low_start_time.setText(bean.getLow_start_time());
 
-
-            if(type==2){
-                ll_last_user_phone.setVisibility(View.GONE);
-                ll_last_user_time.setVisibility(View.GONE);
-                ll_bad_reason.setVisibility(View.VISIBLE);
-                ll_setgood_reason.setVisibility(View.VISIBLE);
-                ll_bad_time.setVisibility(View.VISIBLE);
-                ll_recycle_time.setVisibility(View.VISIBLE);
-                ll_setgood_time.setVisibility(View.VISIBLE);
-
-                if(bean.isLoad()){
-                    if(bean.isShowDate()){
-                        tv_date.setVisibility(View.VISIBLE);
-                        tv_date.setText(bean.getSetgood_time().split(" ")[0]);
-                    }else{
-                        tv_date.setVisibility(View.GONE);
-                        tv_date.setText("");
-                    }
-
-                }else{
-                    if(!date.equals(bean.getSetgood_time().split(" ")[0])){
-                        date = bean.getSetgood_time().split(" ")[0];
-                        bean.setShowDate(true);
-
-                        tv_date.setVisibility(View.VISIBLE);
-                        tv_date.setText(bean.getSetgood_time().split(" ")[0]);
-                    }else{
-                        bean.setShowDate(false);
-                        tv_date.setVisibility(View.GONE);
-                        tv_date.setText("");
-                    }
-
-                    bean.setLoad(true);
-                }
-            }else{
-                ll_last_user_phone.setVisibility(View.VISIBLE);
-                ll_last_user_time.setVisibility(View.VISIBLE);
-                ll_bad_reason.setVisibility(View.GONE);
-                ll_setgood_reason.setVisibility(View.GONE);
-                ll_bad_time.setVisibility(View.GONE);
-                ll_recycle_time.setVisibility(View.GONE);
-                ll_setgood_time.setVisibility(View.GONE);
-
-                if(bean.isLoad()){
-                    if(bean.isShowDate()){
-                        tv_date.setVisibility(View.VISIBLE);
-                        tv_date.setText(bean.getLast_user_time().split(" ")[0]);
-                    }else{
-                        tv_date.setVisibility(View.GONE);
-                        tv_date.setText("");
-                    }
-
-                }else{
-                    if(!date.equals(bean.getLast_user_time().split(" ")[0])){
-                        date = bean.getLast_user_time().split(" ")[0];
-                        bean.setShowDate(true);
-
-                        tv_date.setVisibility(View.VISIBLE);
-                        tv_date.setText(bean.getLast_user_time().split(" ")[0]);
-                    }else{
-                        bean.setShowDate(false);
-                        tv_date.setVisibility(View.GONE);
-                        tv_date.setText("");
-                    }
-
-                    bean.setLoad(true);
-                }
-
-            }
-
-
-
-//
-//
-//            if(bean.getCreated_at()==null){
-//                created_at.setText("");
+//            if(status==0){
+//                text_aft_electricity.setText("当前电量：");
 //            }else{
-//                created_at.setText("借车:"+ bean.getCreated_at());
-//
-//                LogUtil.e("getView===", date+"==="+bean.getCreated_at().split(" ")[0]+"==="+bean.getCreated_at());
-//
-
+//                text_aft_electricity.setText("更换后电量：");
 //            }
+
+//            ll_valid_power_exchange.setOnClickListener(new View.OnClickListener(){
+//
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(context, SettlementPlatformActivity.class);
+////                    intent.putExtra("order_type", 1);
+////                    intent.putExtra("order_id", order_id);
+//                    context.startActivity(intent);
+//                }
+//
+//            });
 
             return convertView;
         }

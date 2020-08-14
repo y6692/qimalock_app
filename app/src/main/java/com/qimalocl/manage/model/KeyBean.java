@@ -18,6 +18,9 @@ public class KeyBean {
     private String lock_password;
     private String lock_secretkey;
 
+    private String vendor_lock_id;  //厂商车锁设备号(type为3时返还)
+    private String sim;     //sim卡号(type为3时返还)
+
     public int getEncryptionKey() {
         return encryptionKey;
     }
@@ -72,5 +75,21 @@ public class KeyBean {
 
     public void setLock_secretkey(String lock_secretkey) {
         this.lock_secretkey = lock_secretkey;
+    }
+
+    public String getVendor_lock_id() {
+        return vendor_lock_id;
+    }
+
+    public void setVendor_lock_id(String vendor_lock_id) {
+        this.vendor_lock_id = vendor_lock_id;
+    }
+
+    public String getSim() {
+        return sim;
+    }
+
+    public void setSim(String sim) {
+        this.sim = sim;
     }
 }

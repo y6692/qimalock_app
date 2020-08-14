@@ -38,11 +38,11 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.qimalocl.manage.BuildConfig;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.ExchangePowerRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.LongSetgoodUnusedDetailActivity;
+import com.qimalocl.manage.activity.LowPowerDetailActivity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.MaintenanceRecordActivity;
 import com.qimalocl.manage.activity.ScrappedDetailActivity;
@@ -61,11 +61,14 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.core.widget.MarqueTextView;
 import com.qimalocl.manage.model.DatasBean;
+import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.LowPowerBean;
+import com.qimalocl.manage.model.LowPowerDataBean;
 import com.qimalocl.manage.model.LowPowerDetailBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
 import com.qimalocl.manage.model.ScrappedBean;
+import com.qimalocl.manage.model.ScrappedDetailBean;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
@@ -74,6 +77,7 @@ import com.qimalocl.manage.utils.UtilBitmap;
 import com.qimalocl.manage.utils.UtilScreenCapture;
 
 import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -87,6 +91,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import butterknife.BuildConfig;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -151,8 +156,45 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private int low_count_xyt;
     private int ultra_low_count_tbt;
     private int low_count_tbt;
-    private int ultra_low_count_tbt092d;
-    private int low_count_tbt092d;
+    private int ultra_low_count_tbt209d;
+    private int low_count_tbt209d;
+
+    View customView;
+    LinearLayout ll_xa;
+    LinearLayout ll_xyt;
+    LinearLayout ll_tbt;
+    LinearLayout ll_tbt209d;
+
+
+    TextView tv_lock_title_xa;
+    TextView tv_remark_xa;
+    TextView tv_low_count_xa;
+    TextView tv_ultra_low_count_xa;
+
+    TextView tv_lock_title_xyt;
+    TextView tv_remark_xyt;
+    TextView tv_low_count_xyt;
+    TextView tv_ultra_low_count_xyt;
+
+    TextView tv_lock_title_tbt;
+    TextView tv_remark_tbt;
+    TextView tv_low_count_tbt;
+    TextView tv_ultra_low_count_tbt;
+
+    TextView tv_lock_title_tbt209d;
+    TextView tv_remark_tbt209d;
+    TextView tv_low_count_tbt209d;
+    TextView tv_ultra_low_count_tbt209d;
+
+    private int lock_id_xa;
+    private int lock_id_xyt;
+    private int lock_id_tbt;
+    private int lock_id_tbt209d;
+
+    private String lock_title_xa;
+    private String lock_title_xyt;
+    private String lock_title_tbt;
+    private String lock_title_tbt209d;
 
     String role = "";
 
@@ -248,10 +290,87 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
 
+    RelativeLayout pop_win_bg;
+    ImageView iv_popup_window_back_low_power;
     private void initView(){
         loadingDialog = new LoadingDialog(context);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
+
+
+        // 获取自定义布局文件的视图
+        customView = getLayoutInflater().inflate(R.layout.pop_low_power_bike, null, false);
+        // 创建PopupWindow宽度和高度
+        pop_win_bg = customView.findViewById(R.id.pop_low_power_bg);
+        iv_popup_window_back_low_power = customView.findViewById(R.id.popupWindow_back);
+
+        ll_xa = customView.findViewById(R.id.ll_xa);
+        ll_xyt = customView.findViewById(R.id.ll_xyt);
+        ll_tbt = customView.findViewById(R.id.ll_tbt);
+        ll_tbt209d = customView.findViewById(R.id.ll_tbt209d);
+
+        tv_lock_title_xa = customView.findViewById(R.id.tv_lock_title_xa);
+        tv_remark_xa = customView.findViewById(R.id.tv_remark_xa);
+        tv_low_count_xa = customView.findViewById(R.id.tv_low_count_xa);
+        tv_ultra_low_count_xa = customView.findViewById(R.id.tv_ultra_low_count_xa);
+
+        tv_lock_title_xyt = customView.findViewById(R.id.tv_lock_title_xyt);
+        tv_remark_xyt = customView.findViewById(R.id.tv_remark_xyt);
+        tv_low_count_xyt = customView.findViewById(R.id.tv_low_count_xyt);
+        tv_ultra_low_count_xyt = customView.findViewById(R.id.tv_ultra_low_count_xyt);
+
+        tv_lock_title_tbt = customView.findViewById(R.id.tv_lock_title_tbt);
+        tv_remark_tbt = customView.findViewById(R.id.tv_remark_tbt);
+        tv_low_count_tbt = customView.findViewById(R.id.tv_low_count_tbt);
+        tv_ultra_low_count_tbt = customView.findViewById(R.id.tv_ultra_low_count_tbt);
+
+        tv_lock_title_tbt209d = customView.findViewById(R.id.tv_lock_title_tbt209d);
+        tv_remark_tbt209d = customView.findViewById(R.id.tv_remark_tbt209d);
+        tv_low_count_tbt209d = customView.findViewById(R.id.tv_low_count_tbt209d);
+        tv_ultra_low_count_tbt209d = customView.findViewById(R.id.tv_ultra_low_count_tbt209d);
+
+
+
+        iv_popup_window_back_low_power.setOnClickListener(this);
+        ll_xa.setOnClickListener(this);
+        ll_xyt.setOnClickListener(this);
+        ll_tbt.setOnClickListener(this);
+        ll_tbt209d.setOnClickListener(this);
+
+        // 获取截图的Bitmap
+        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+        if (bitmap != null) {
+            // 将截屏Bitma放入ImageView
+            iv_popup_window_back_low_power.setImageBitmap(bitmap);
+            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+            UtilBitmap.blurImageView(context, iv_popup_window_back_low_power, 10,0xAA000000);
+        } else {
+            // 获取的Bitmap为null时，用半透明代替
+            iv_popup_window_back_low_power.setBackgroundColor(0x77000000);
+        }
+//        // 打开弹窗
+//        UtilAnim.showToUp(pop_win_bg, iv_popup_window_back_low_power);
+        // 创建PopupWindow宽度和高度
+        popupwindow = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
+        //设置动画效果 ,从上到下加载方式等，不设置自动的下拉，最好 [动画效果不好，不加实现下拉效果，不错]
+        popupwindow.setAnimationStyle(R.style.PopupAnimation);
+        popupwindow.setOutsideTouchable(false);
+
+//        customView.setFocusable(true);
+//        customView.setFocusableInTouchMode(true);
+        customView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                LogUtil.e("popup===onKey", "==="+keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                    dismissPopupWindow();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
 
         imageUri = Uri.parse("file:///sdcard/temp.jpg");
         iv_popup_window_back = getActivity().findViewById(R.id.popupWindow_back);
@@ -413,9 +532,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     File imgUri = new File(GetImagePath.getPath(context, data.getData()));
 
-                                    LogUtil.e("minef=REQUESTCODE_PICK2", imgUri+"==="+ BuildConfig.APPLICATION_ID);
+                                    LogUtil.e("minef=REQUESTCODE_PICK2", imgUri+"==="+ context.getPackageName());
 
-                                    Uri dataUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", imgUri);
+                                    Uri dataUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", imgUri);
 
                                     LogUtil.e("minef=REQUESTCODE_PICK3", imgUri+"==="+dataUri);
 
@@ -506,7 +625,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //                        //通过FileProvider创建一个content类型的Uri
 //                        Uri inputUri = FileProvider.getUriForFile(context,
-//                                BuildConfig.APPLICATION_ID + ".provider",
+//                                context.getPackageName() + ".provider",
 //                                new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME));
 //                        startPhotoZoom(inputUri);//设置输入类型
 //                    } else {
@@ -811,7 +930,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                             Intent takeIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                 takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context,
-                                        BuildConfig.APPLICATION_ID + ".fileprovider",
+                                        context.getPackageName() + ".fileprovider",
                                         new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME)));
                                 takeIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                 takeIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -948,6 +1067,58 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                 break;
 
+            case R.id.ll_xa:
+                LogUtil.e("ll_xa===", isLowPowerLayout+"==="+popupwindow);
+
+//                UIHelper.goToAct(context, LowPowerDetailActivity.class);    //TODO
+
+                intent = new Intent();
+                intent.setClass(context, LowPowerDetailActivity.class);
+                intent.putExtra("lock_id", lock_id_xa);
+                intent.putExtra("lock_title", lock_title_xa);
+                startActivity(intent);
+
+                break;
+
+            case R.id.ll_xyt:
+                LogUtil.e("ll_xyt===", isLowPowerLayout+"==="+popupwindow);
+
+//                UIHelper.goToAct(context, LowPowerDetailActivity.class);    //TODO
+
+                intent = new Intent();
+                intent.setClass(context, LowPowerDetailActivity.class);
+                intent.putExtra("lock_id", lock_id_xyt);
+                intent.putExtra("lock_title", lock_title_xyt);
+                startActivity(intent);
+
+                break;
+
+            case R.id.ll_tbt:
+                LogUtil.e("ll_tbt===", isLowPowerLayout+"==="+popupwindow);
+
+//                UIHelper.goToAct(context, LowPowerDetailActivity.class);    //TODO
+
+                intent = new Intent();
+                intent.setClass(context, LowPowerDetailActivity.class);
+                intent.putExtra("lock_id", lock_id_tbt);
+                intent.putExtra("lock_title", lock_title_tbt);
+                startActivity(intent);
+
+                break;
+
+            case R.id.ll_tbt209d:
+                LogUtil.e("ll_tbt209d===", isLowPowerLayout+"==="+popupwindow);
+
+//                UIHelper.goToAct(context, LowPowerDetailActivity.class);    //TODO
+
+                intent = new Intent();
+                intent.setClass(context, LowPowerDetailActivity.class);
+                intent.putExtra("lock_id", lock_id_tbt209d);
+                intent.putExtra("lock_title", lock_title_tbt209d);
+                startActivity(intent);
+
+                break;
+
             case R.id.personUI_scrappedLayout:
                 UIHelper.goToAct(context, ScrappedDetailActivity.class);
                 break;
@@ -996,29 +1167,116 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                                LogUtil.e("lowpower===1", tv_low_power_count+"==="+responseString);
+                                LogUtil.e("lowpower===1", "==="+responseString);
 
-                                LowPowerBean bean = JSON.parseObject(result.getData(), LowPowerBean.class);
+                                LowPowerBean lowPowerBean = JSON.parseObject(result.getData(), LowPowerBean.class);
 
-                                LogUtil.e("lowpower===2", "==="+bean.getCount());
+                                LogUtil.e("lowpower===2", "==="+lowPowerBean.getLow_power_total());
 
-                                tv_low_power_count.setText(""+bean.getCount());
+                                tv_low_power_count.setText(""+lowPowerBean.getLow_power_total());
 
-                                LowPowerDetailBean  bean_xa= JSON.parseObject(bean.getXiaoan(), LowPowerDetailBean.class);
-                                LowPowerDetailBean  bean_xyt= JSON.parseObject(bean.getXyt(), LowPowerDetailBean.class);
-                                LowPowerDetailBean  bean_tbt= JSON.parseObject(bean.getTbt(), LowPowerDetailBean.class);
-                                LowPowerDetailBean  bean_tbt092d= JSON.parseObject(bean.getTbt092d(), LowPowerDetailBean.class);
+                                JSONArray array = new JSONArray(lowPowerBean.getLow_power_data());
+//                                if (array.length() == 0 && showPage == 1) {
+//                                    footerLayout.setVisibility(View.VISIBLE);
+//                                    setFooterType(4);
+//                                    return;
+//                                } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+//                                    footerLayout.setVisibility(View.GONE);
+//                                    setFooterType(5);
+//                                } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+//                                    footerLayout.setVisibility(View.VISIBLE);
+//                                    setFooterType(2);
+//                                } else if (array.length() >= 10) {
+//                                    footerLayout.setVisibility(View.VISIBLE);
+//                                    setFooterType(0);
+//                                }
+                                for (int i = 0; i < array.length(); i++) {
+                                    LowPowerDataBean bean = JSON.parseObject(array.getJSONObject(i).toString(), LowPowerDataBean.class);
 
-                                ultra_low_count_xa = bean_xa.getUltra_low_count();
-                                low_count_xa = bean_xa.getLow_count();
-                                ultra_low_count_xyt = bean_xyt.getUltra_low_count();
-                                low_count_xyt = bean_xyt.getLow_count();
-                                ultra_low_count_tbt = bean_tbt.getUltra_low_count();
-                                low_count_tbt = bean_tbt.getLow_count();
-                                ultra_low_count_tbt092d = bean_tbt092d.getUltra_low_count();
-                                low_count_tbt092d = bean_tbt092d.getLow_count();
+                                    String lock_name = bean.getLock_name();
 
-                                LogUtil.e("lowpower===3", bean_xa.getUltra_low_count()+"==="+bean_xa.getLow_count()+"==="+bean_xyt.getUltra_low_count()+"==="+bean_xyt.getLow_count()+"==="+bean_tbt.getUltra_low_count()+"==="+bean_tbt.getLow_count());
+                                    LogUtil.e("lowpower===3", lock_name+"==="+bean.getLock_title()+"==="+bean.getRemark()+"==="+bean.getUltra_low_count()+"==="+bean.getLow_count());
+
+//                                    tv_low_count_xa.setText("低电："+low_count_xa);
+//                                    tv_ultra_low_count_xa.setText("超低电："+ultra_low_count_xa);
+//                                    tv_low_count_xyt.setText("低电："+low_count_xyt);
+//                                    tv_ultra_low_count_xyt.setText("超低电："+ultra_low_count_xyt);
+//                                    tv_low_count_tbt.setText("低电："+low_count_tbt);
+//                                    tv_ultra_low_count_tbt.setText("超低电："+ultra_low_count_tbt);
+//                                    tv_low_count_tbt209d.setText("低电："+low_count_tbt209d);
+//                                    tv_ultra_low_count_tbt209d.setText("超低电："+ultra_low_count_tbt209d);
+
+
+                                    if("ebike_xa".equals(lock_name)){
+                                        ll_xa.setVisibility(View.VISIBLE);
+
+                                        lock_id_xa = bean.getLock_id();
+//                                        lock_title_xa = bean.getLock_title();
+                                        lock_title_xa = "XA电单车";
+                                        tv_lock_title_xa.setText(lock_title_xa);
+                                        tv_remark_xa.setText(bean.getRemark());
+                                        tv_low_count_xa.setText("低电："+bean.getLow_count());
+                                        tv_ultra_low_count_xa.setText("超低电："+bean.getUltra_low_count());
+
+//                                        ultra_low_count_xa = bean.getUltra_low_count();
+//                                        low_count_xa = bean.getLow_count();
+                                    }else if("ebike_xyt".equals(lock_name)){
+                                        ll_xyt.setVisibility(View.VISIBLE);
+
+                                        lock_id_xyt = bean.getLock_id();
+//                                        lock_title_xyt = bean.getLock_title();
+                                        lock_title_xyt = "XYT电单车";
+                                        tv_lock_title_xyt.setText(lock_title_xyt);
+                                        tv_remark_xyt.setText(bean.getRemark());
+                                        tv_low_count_xyt.setText("低电："+bean.getLow_count());
+                                        tv_ultra_low_count_xyt.setText("超低电："+bean.getUltra_low_count());
+
+//                                        ultra_low_count_xyt = bean.getUltra_low_count();
+//                                        low_count_xyt = bean.getLow_count();
+                                    }else if("ebike_tbit".equals(lock_name)){
+                                        ll_tbt.setVisibility(View.VISIBLE);
+
+                                        lock_id_tbt = bean.getLock_id();
+//                                        lock_title_tbt = bean.getLock_title();
+                                        lock_title_tbt = "TBTD电单车";
+                                        tv_lock_title_tbt.setText(lock_title_tbt);
+                                        tv_remark_tbt.setText(bean.getRemark());
+                                        tv_low_count_tbt.setText("低电："+bean.getLow_count());
+                                        tv_ultra_low_count_tbt.setText("超低电："+bean.getUltra_low_count());
+
+//                                        ultra_low_count_tbt = bean.getUltra_low_count();
+//                                        low_count_tbt = bean.getLow_count();
+                                    }else if("ebike_tbit209d".equals(lock_name)){
+                                        ll_tbt209d.setVisibility(View.VISIBLE);
+
+                                        lock_id_tbt209d = bean.getLock_id();
+//                                        lock_title_tbt209d = bean.getLock_title();
+                                        lock_title_tbt209d = "TBTF电单车";
+                                        tv_lock_title_tbt209d.setText(lock_title_tbt209d );
+                                        tv_remark_tbt209d.setText(bean.getRemark());
+                                        tv_low_count_tbt209d.setText("低电："+bean.getLow_count());
+                                        tv_ultra_low_count_tbt209d.setText("超低电："+bean.getUltra_low_count());
+
+//                                        ultra_low_count_tbt209d = bean.getUltra_low_count();
+//                                        low_count_tbt209d = bean.getLow_count();
+                                    }
+
+//                                    data.add(bean);
+                                }
+
+//                                LowPowerDetailBean  bean_xa= JSON.parseObject(bean.getXiaoan(), LowPowerDetailBean.class);
+//                                LowPowerDetailBean  bean_xyt= JSON.parseObject(bean.getXyt(), LowPowerDetailBean.class);
+//                                LowPowerDetailBean  bean_tbt= JSON.parseObject(bean.getTbt(), LowPowerDetailBean.class);
+//                                LowPowerDetailBean  bean_tbt092d= JSON.parseObject(bean.getTbt092d(), LowPowerDetailBean.class);
+//
+//
+//                                ultra_low_count_xyt = bean_xyt.getUltra_low_count();
+//                                low_count_xyt = bean_xyt.getLow_count();
+//                                ultra_low_count_tbt = bean_tbt.getUltra_low_count();
+//                                low_count_tbt = bean_tbt.getLow_count();
+//                                ultra_low_count_tbt092d = bean_tbt092d.getUltra_low_count();
+//                                low_count_tbt092d = bean_tbt092d.getLow_count();
+
 
 //                                initmPopupWindowView();
 
@@ -1137,54 +1395,11 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
     public void initmPopupWindowView(){
 
-        // 获取自定义布局文件的视图
-        View customView = getLayoutInflater().inflate(R.layout.pop_low_power_bike, null, false);
-        // 创建PopupWindow宽度和高度
-        RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_low_power_bg);
-        ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
-
-        TextView tv_low_count_xa = customView.findViewById(R.id.tv_low_count_xa);
-        TextView tv_ultra_low_count_xa = customView.findViewById(R.id.tv_ultra_low_count_xa);
-        TextView tv_low_count_xyt = customView.findViewById(R.id.tv_low_count_xyt);
-        TextView tv_ultra_low_count_xyt = customView.findViewById(R.id.tv_ultra_low_count_xyt);
-        TextView tv_low_count_tbt = customView.findViewById(R.id.tv_low_count_tbt);
-        TextView tv_ultra_low_count_tbt = customView.findViewById(R.id.tv_ultra_low_count_tbt);
-        TextView tv_low_count_tbt092d = customView.findViewById(R.id.tv_low_count_tbt092d);
-        TextView tv_ultra_low_count_tbt092d = customView.findViewById(R.id.tv_ultra_low_count_tbt092d);
-
-        tv_low_count_xa.setText("低电："+low_count_xa);
-        tv_ultra_low_count_xa.setText("超低电："+ultra_low_count_xa);
-        tv_low_count_xyt.setText("低电："+low_count_xyt);
-        tv_ultra_low_count_xyt.setText("超低电："+ultra_low_count_xyt);
-        tv_low_count_tbt.setText("低电："+low_count_tbt);
-        tv_ultra_low_count_tbt.setText("超低电："+ultra_low_count_tbt);
-        tv_low_count_tbt092d.setText("低电："+low_count_tbt092d);
-        tv_ultra_low_count_tbt092d.setText("超低电："+ultra_low_count_tbt092d);
-
-        iv_popup_window_back.setOnClickListener(this);
-
-
-
-        // 获取截图的Bitmap
-        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
-        if (bitmap != null) {
-            // 将截屏Bitma放入ImageView
-            iv_popup_window_back.setImageBitmap(bitmap);
-            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
-            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
-        } else {
-            // 获取的Bitmap为null时，用半透明代替
-            iv_popup_window_back.setBackgroundColor(0x77000000);
-        }
         // 打开弹窗
-        UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
-        // 创建PopupWindow宽度和高度
-        popupwindow = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
-        //设置动画效果 ,从上到下加载方式等，不设置自动的下拉，最好 [动画效果不好，不加实现下拉效果，不错]
-        popupwindow.setAnimationStyle(R.style.PopupAnimation);
-        popupwindow.setOutsideTouchable(false);
+        UtilAnim.showToUp(pop_win_bg, iv_popup_window_back_low_power);
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        isLowPowerLayout = false;
 
 //        popupwindow.setFocusable(false);// 这个很重要
 //        popupwindow.setOutsideTouchable(false);
@@ -1200,21 +1415,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //            }
 //        });
 
-        isLowPowerLayout = false;
 
-        customView.setFocusable(true);
-        customView.setFocusableInTouchMode(true);
-        customView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                LogUtil.e("popup===onKey", "==="+keyCode);
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-//                    dismissPopupWindow();
-                    return true;
-                }
-                return false;
-            }
-        });
+
+
 
         LogUtil.e("initmPopup===", "===");
 
@@ -1291,7 +1494,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                         }
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", file));
+                            takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file));
 
                         }else {
                             takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
@@ -1311,7 +1514,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                     if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 //                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //                            pickIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(PersonAlterActivity.this,
-//                                    BuildConfig.APPLICATION_ID + ".provider",
+//                                    context.getPackageName() + ".provider",
 //                                    new File(Environment.getExternalStorageDirectory(), IMAGE_FILE_NAME)));
 //                            pickIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 //                            pickIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

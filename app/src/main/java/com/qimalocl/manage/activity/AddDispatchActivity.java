@@ -32,7 +32,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.qimalocl.manage.BuildConfig;
+//import com.qimalocl.manage.BuildConfig;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.base.BaseViewAdapter;
 import com.qimalocl.manage.base.BaseViewHolder;
@@ -569,7 +569,7 @@ public class AddDispatchActivity extends SwipeBackActivity implements View.OnCli
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", file));
+                takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, context.getPackageName() + ".fileprovider", file));
 
             }else {
                 takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
