@@ -12,7 +12,7 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-//  	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+//  public static String host2 = HTTPS + "newmapi.7mate.cn/api";
     public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
 //	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
 
@@ -26,6 +26,8 @@ public class Urls {
 	public static String edit_parking = host2 + "/parking/";
 	//	获取电子围栏接口	get\新建电子围栏接口	post
 	public static String parking = host2 + "/parking";
+	//	获取运营区域接口
+	public static String operationarea = host2 + "/school/operationarea";
 
 	//	车辆调运相关
 	//	车辆调运记录列表
@@ -48,6 +50,8 @@ public class Urls {
 	public static String change_phone = host2 + "/user/change_phone";
 	//数据模块接口
 	public static String datas = host2 + "/user/datas";
+	//订单数据接口
+	public static String orders = host2 + "/user/orders";
 	//用户信息接口
 	public static String user = host2 + "/user";
 	//学校列表接口
@@ -99,6 +103,8 @@ public class Urls {
 	//报废列表接口
 	public static String carbadaction_scrappedlist = host2 + "/carbadaction/scrappedlist";
 
+	//超区车辆列表接口
+	public static String over_area_cars = host2 + "/cars/over_area_cars";
 
 	//车辆相关 - 获取思科秘钥接口
 	public static String lock_info = host2 + "/car/lock/info";

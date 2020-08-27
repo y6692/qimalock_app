@@ -221,7 +221,7 @@ public class MainActivity extends BaseActivity{
 
         boolean flag = getIntent().getBooleanExtra("flag", false);
 
-        LogUtil.e("ma===onResume",  "===" + MissionFragment.isMissionThread);
+        LogUtil.e("ma===onResume",  flag + "===" + MissionFragment.isMissionThread + "===" + MineFragment.isMineThread);
 
 //        if (loadingDialog != null && !loadingDialog.isShowing()) {
 //            loadingDialog.setTitle("请稍等");
@@ -238,22 +238,24 @@ public class MainActivity extends BaseActivity{
 
         if(flag){
 //            purseFragment.user();
+
             scanFragment.cars(true);
             missionFragment.initHttp();
             mineFragment.initHttp();
         }
 
         MissionFragment.isMissionThread = true;
-
+        MineFragment.isMineThread = true;
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        LogUtil.e("ma===onPause",  "===" + MissionFragment.isMissionThread);
+        LogUtil.e("ma===onPause",  MissionFragment.isMissionThread + "===" + MineFragment.isMineThread);
 
         MissionFragment.isMissionThread = false;
+        MineFragment.isMineThread = false;
     }
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {

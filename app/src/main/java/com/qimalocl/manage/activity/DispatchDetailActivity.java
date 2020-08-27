@@ -166,6 +166,7 @@ public class DispatchDetailActivity extends SwipeBackActivity implements View.On
     public CharSequence getPageTitle(int position) {
 
       return titles[position];
+//      return "";
     }
   }
 

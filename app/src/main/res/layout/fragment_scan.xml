@@ -217,64 +217,103 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/mainUI_bikeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="287dp"
-            android:layout_marginLeft="@dimen/dp30"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <Switch
-                android:id="@+id/switcher_bike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textOn="是"
-                android:textOff="否"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/sp12"
-                android:textColor="@color/tx_black"
-                android:text="查看单车"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/mainUI_ebikeLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="227dp"
+            android:layout_marginBottom="107dp"
             android:layout_marginLeft="24dp"
             android:orientation="vertical"
-            android:gravity="center">
+            >
 
-            <Switch
-                android:id="@+id/switcher_ebike"
+            <LinearLayout
+                android:id="@+id/mainUI_overAreaLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textOn="是"
-                android:textOff="否"
-                />
+                android:layout_marginLeft="6dp"
+                android:orientation="vertical"
+                android:gravity="center">
 
-            <TextView
+                <Switch
+                    android:id="@+id/switcher_over_area"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textOn="是"
+                    android:textOff="否"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp12"
+                    android:textColor="@color/tx_black"
+                    android:text="只看超区"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mainUI_bikeLayout"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/sp12"
-                android:textColor="@color/tx_black"
-                android:text="查看电单车"/>
+                android:layout_marginLeft="6dp"
+                android:layout_marginTop="19dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <Switch
+                    android:id="@+id/switcher_bike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textOn="是"
+                    android:textOff="否"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp12"
+                    android:textColor="@color/tx_black"
+                    android:text="查看单车"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mainUI_ebikeLayout"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="19dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <Switch
+                    android:id="@+id/switcher_ebike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textOn="是"
+                    android:textOff="否"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp12"
+                    android:textColor="@color/tx_black"
+                    android:text="查看电单车"/>
+            </LinearLayout>
+
+
         </LinearLayout>
+
+
 
         <LinearLayout
             android:id="@+id/mainUI_showBadBikeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
             android:layout_marginBottom="168dp"
-            android:layout_marginLeft="@dimen/dp30"
+            android:layout_marginRight="@dimen/dp30"
             android:orientation="vertical"
             android:gravity="center">
 
@@ -300,7 +339,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="107dp"
-            android:layout_marginLeft="@dimen/dp30"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dp30"
             android:orientation="vertical"
             android:gravity="center">
 

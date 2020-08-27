@@ -19,8 +19,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,6 +44,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.DispatchDetailActivity;
 import com.qimalocl.manage.activity.ExchangePowerRecordActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.LongSetgoodUnusedDetailActivity;
@@ -48,6 +54,7 @@ import com.qimalocl.manage.activity.MaintenanceRecordActivity;
 import com.qimalocl.manage.activity.ScrappedDetailActivity;
 import com.qimalocl.manage.activity.SetGoodUsedDetailActivity;
 import com.qimalocl.manage.activity.SettingActivity;
+import com.qimalocl.manage.activity.SuperzoneDetailActivity;
 import com.qimalocl.manage.activity.UnGoodUsedDetailActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
@@ -87,7 +94,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -115,15 +124,14 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ImageView settingImage;
     private ImageView headerImageView;
     private ImageView authState;
-    private TextView userName, roleName, tv_delivered_cars, tv_is_using_cars, tv_longtime_not_used_cars, tv_not_recycled_cars, tv_not_fixed_cars, tv_fixed_not_used_cars;
-
+    private TextView userName, roleName;
 
     private MarqueTextView schoolName;
 
-    private LinearLayout ll_1, ll_2, ll_3, ll_4, ll_5, ll_6, curRouteLayout, hisRouteLayout;
-    private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, changePhoneLayout, authLayout, inviteLayout;
+    private LinearLayout curRouteLayout, hisRouteLayout;
+    private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, superzoneLayout, changePhoneLayout, authLayout, inviteLayout;
 
-    private TextView tv_low_power_count, tv_scrapped_count;
+    private TextView tv_low_power_count, tv_scrapped_count, tv_superzone_count;
 
     private ImageView iv_popup_window_back;
     private RelativeLayout rl_popup_window;
@@ -200,7 +208,19 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
     private boolean isLowPowerLayout;
 
-    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    TabLayout tab;
+    ViewPager vp;
+    private MyPagerAdapter myPagerAdapter;
+
+    private int carmodel = 0;
+    public static boolean isMineThread = true;
+
+    MineDataFragment mineDataFragment;
+    MineDataBikeFragment mineDataBikeFragment;
+    MineDataEbikeFragment mineDataEbikeFragment;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mine, null);
         unbinder = ButterKnife.bind(this, v);
 
@@ -208,7 +228,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
 
-    @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = getActivity();
         activity = getActivity();
@@ -243,10 +264,28 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
         initView();
 
-        View view = getView();
-        if (view != null) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        }
+                while (true){
+
+                    try {
+                        Thread.sleep(60*1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    LogUtil.e("minef===", "==="+isMineThread);
+
+                    if(isMineThread){
+                        LogUtil.e("minef===1", "===");
+                        m_myHandler.sendEmptyMessage(1);
+                    }
+
+                }
+            }
+        }).start();
 
 //        view.setFocusableInTouchMode(true);
 //        view.requestFocus();
@@ -281,9 +320,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 startActivity(intent);
             }else{
                 initHttp();
-                datas();
+//                datas();
                 carbatteryaction_lowpower();
                 carbadaction_scrapped();
+                over_area_cars();
             }
 
         }
@@ -401,15 +441,11 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        settingLayout = getActivity().findViewById(R.id.personUI_bottom_settingLayout);
 //
 
-        ll_1 = getActivity().findViewById(R.id.ll_1);
-        ll_2 = getActivity().findViewById(R.id.ll_2);
-        ll_3 = getActivity().findViewById(R.id.ll_3);
-        ll_4 = getActivity().findViewById(R.id.ll_4);
-        ll_5 = getActivity().findViewById(R.id.ll_5);
-        ll_6 = getActivity().findViewById(R.id.ll_6);
+
 
         tv_low_power_count = getActivity().findViewById(R.id.tv_low_power_count);
         tv_scrapped_count = getActivity().findViewById(R.id.tv_scrapped_count);
+        tv_superzone_count = getActivity().findViewById(R.id.tv_superzone_count);
 
 //        delivered_cars	String
 //        投放车辆数量
@@ -429,17 +465,13 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        fixed_not_used_cars	String
 //        修好未使用车辆数量
 
-        tv_delivered_cars = getActivity().findViewById(R.id.tv_delivered_cars);
-        tv_is_using_cars = getActivity().findViewById(R.id.tv_is_using_cars);
-        tv_longtime_not_used_cars = getActivity().findViewById(R.id.tv_longtime_not_used_cars);
-        tv_not_recycled_cars = getActivity().findViewById(R.id.tv_not_recycled_cars);
-        tv_not_fixed_cars = getActivity().findViewById(R.id.tv_not_fixed_cars);
-        tv_fixed_not_used_cars = getActivity().findViewById(R.id.tv_fixed_not_used_cars);
+
 
         maintenanceRecordLayout = getActivity().findViewById(R.id.personUI_maintenanceRecordLayout);
         exchangePowerRecordLayout = getActivity().findViewById(R.id.personUI_exchangePowerRecordLayout);
         lowPowerLayout = getActivity().findViewById(R.id.personUI_lowPowerLayout);
         scrappedLayout = getActivity().findViewById(R.id.personUI_scrappedLayout);
+        superzoneLayout = getActivity().findViewById(R.id.personUI_superzoneLayout);
         changePhoneLayout = getActivity().findViewById(R.id.personUI_changePhoneLayout);
         authLayout = getActivity().findViewById(R.id.personUI_authLayout);
         inviteLayout = getActivity().findViewById(R.id.personUI_inviteLayout);
@@ -448,20 +480,22 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         rightBtn.setOnClickListener(this);
 //        headerImageView.setOnClickListener(this);
 
-//        ll_1.setOnClickListener(this);
-//        ll_2.setOnClickListener(this);
-        ll_3.setOnClickListener(this);
-        ll_4.setOnClickListener(this);
-        ll_5.setOnClickListener(this);
-        ll_6.setOnClickListener(this);
+
 
         maintenanceRecordLayout.setOnClickListener(this);
         exchangePowerRecordLayout.setOnClickListener(this);
         lowPowerLayout.setOnClickListener(this);
         scrappedLayout.setOnClickListener(this);
+        superzoneLayout.setOnClickListener(this);
         changePhoneLayout.setOnClickListener(this);
         authLayout.setOnClickListener(this);
         inviteLayout.setOnClickListener(this);
+
+
+        tab = getActivity().findViewById(R.id.tab);
+        vp = getActivity().findViewById(R.id.vp);
+
+
 
 
 //        billRule();
@@ -994,45 +1028,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 startActivityForResult(intent, 10);
                 break;
 
-            case R.id.ll_4:
-//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
-
-                intent = new Intent();
-                intent.setClass(context, UnGoodUsedDetailActivity.class);
-                intent.putExtra("type", 1);
-                startActivity(intent);
-
-                break;
-
-            case R.id.ll_5:
-//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
-
-                intent = new Intent();
-                intent.setClass(context, UnGoodUsedDetailActivity.class);
-                intent.putExtra("type", 2);
-                startActivity(intent);
-
-                break;
-
-            case R.id.ll_3:
-//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
-
-                intent = new Intent();
-                intent.setClass(context, LongSetgoodUnusedDetailActivity.class);
-                intent.putExtra("type", 1);
-                startActivity(intent);
-
-                break;
-
-            case R.id.ll_6:
-//                UIHelper.goToAct(context, UnGoodUsedDetailActivity.class);
-
-                intent = new Intent();
-                intent.setClass(context, LongSetgoodUnusedDetailActivity.class);
-                intent.putExtra("type", 2);
-                startActivity(intent);
-
-                break;
 
             case R.id.personUI_maintenanceRecordLayout:
                 UIHelper.goToAct(context, MaintenanceRecordActivity.class);
@@ -1123,6 +1118,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 UIHelper.goToAct(context, ScrappedDetailActivity.class);
                 break;
 
+            case R.id.personUI_superzoneLayout:
+                UIHelper.goToAct(context, SuperzoneDetailActivity.class);
+                break;
+
             case R.id.personUI_header:
                 clickPopupWindow();
 //                UIHelper.goToAct(context, PersonInfoActivity.class);
@@ -1152,7 +1151,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             HttpHelper.get(context, Urls.carbatteryaction_lowpower, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    onStartCommon("正在加载");
+//                    onStartCommon("正在加载");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -1316,7 +1315,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             HttpHelper.get(context, Urls.carbadaction_scrapped, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    onStartCommon("正在加载");
+//                    onStartCommon("正在加载");
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -1376,6 +1375,63 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         }
     }
 
+    private void over_area_cars(){
+        LogUtil.e("over_area_cars===", "===");
+
+//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token != null && !"".equals(access_token)){
+//            RequestParams params = new RequestParams();
+//            params.put("uid",uid);
+//            params.put("access_token",access_token);
+            HttpHelper.get(context, Urls.over_area_cars, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+//                    onStartCommon("正在加载");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                    LogUtil.e("over_area_cars===fail", "==="+throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                LogUtil.e("over_area_cars===1", tv_superzone_count+"==="+responseString);
+
+                                com.alibaba.fastjson.JSONObject object = JSON.parseObject(result.getData());
+
+//                                ScrappedBean bean = JSON.parseObject(result.getData(), ScrappedBean.class);
+//
+                                LogUtil.e("over_area_cars===2", "==="+object.getString("count"));
+
+                                tv_superzone_count.setText(""+object.getString("count"));
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+
+                                LogUtil.e("lowpower===e", "==="+e);
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }else {
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+        }
+    }
+
     protected Handler m_myHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message mes) {
@@ -1384,6 +1440,28 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                    roleName.setText(roles[0]);
                     roleName.setText(role);
                     roleName.setSelected(true);
+                    break;
+
+                case 1:
+                    initHttp();
+//                      datas();
+                    carbatteryaction_lowpower();
+                    carbadaction_scrapped();
+                    over_area_cars();
+
+                    if(mineDataFragment!=null){
+                        mineDataFragment.datas();
+                    }
+
+                    if(mineDataBikeFragment!=null){
+                        mineDataBikeFragment.orders();
+                    }
+
+                    if(mineDataEbikeFragment!=null){
+                        mineDataEbikeFragment.orders();
+                    }
+
+
                     break;
 
                 default:
@@ -1560,10 +1638,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在加载");
-                        loadingDialog.show();
-                    }
+//                    if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                        loadingDialog.setTitle("正在加载");
+//                        loadingDialog.show();
+//                    }
                 }
 
                 @Override
@@ -1614,6 +1692,49 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                    m_myHandler.sendEmptyMessage(0);
                                 }
 
+                                int[] carmodels = bean.getCarmodels();
+                                if(carmodels==null || carmodels.length==0){
+                                    carmodel = 0;
+                                }else if(carmodels!=null && carmodels.length>0){
+
+                                    LogUtil.e("minef===initHttp4", "===");
+
+                                    if(carmodels.length==1){
+                                        if(carmodels[0]==1){
+                                            carmodel = 1;
+                                        }else if(carmodels[0]==2){
+                                            carmodel = 2;
+                                        }
+                                    }else if(carmodels.length==2){
+                                        carmodel = 3;
+                                    }
+
+                                }
+
+                                if(myPagerAdapter==null){
+                                    myPagerAdapter = new MyPagerAdapter(getFragmentManager());
+                                    vp.setAdapter(myPagerAdapter);
+                                    tab.setupWithViewPager(vp);
+
+                                    vp.setCurrentItem(0);
+
+                                    vp.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                                        @Override
+                                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                                        }
+
+                                        @Override public void onPageSelected(int position) {
+                                            vp.setCurrentItem(position);
+                                        }
+
+                                        @Override public void onPageScrollStateChanged(int state) {
+                                        }
+                                    });
+
+                                    LogUtil.e("minef===initHttp5", carmodels.length+"==="+carmodels);
+                                }
+
+
 //                        if(bean.getUnread_count()==0){
 //                            iv_isRead.setVisibility(View.GONE);
 //                        }else{
@@ -1654,59 +1775,53 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
 
-    public void datas() {
-        LogUtil.e("minef===datas", "==="+isHidden());
 
-        if(isHidden()) return;
 
-        String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
-        if (access_token != null && !"".equals(access_token)) {
-            HttpHelper.get(context, Urls.datas, new TextHttpResponseHandler() {
-                @Override
-                public void onStart() {
-                    if (loadingDialog != null && !loadingDialog.isShowing()) {
-                        loadingDialog.setTitle("正在加载");
-                        loadingDialog.show();
-                    }
-                }
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if (loadingDialog != null && loadingDialog.isShowing()) {
-                        loadingDialog.dismiss();
-                    }
-                    UIHelper.ToastError(context, throwable.toString());
-                }
+    class MyPagerAdapter extends FragmentPagerAdapter {
+//        private String[] titles = new String[]{"车辆信息", "调运起始点", "照片"};
+        private List<Fragment> fragmentList;
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        LogUtil.e("minef===datas1", "==="+responseString);
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
 
-                        ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+            mineDataFragment = new MineDataFragment();
 
-                        DatasBean bean = JSON.parseObject(result.getData(), DatasBean.class);
 
-//                        tv_delivered_cars, tv_is_using_cars, tv_longtime_not_used_cars, tv_not_recycled_cars, tv_not_fixed_cars, tv_fixed_not_used_cars;
 
-                        tv_delivered_cars.setText(bean.getDelivered_cars());
-                        tv_is_using_cars.setText(bean.getIs_using_cars());
-                        tv_longtime_not_used_cars.setText(bean.getLongtime_not_used_cars());
-                        tv_not_recycled_cars.setText(bean.getNot_recycled_cars());
-                        tv_not_fixed_cars.setText(bean.getNot_fixed_cars());
-                        tv_fixed_not_used_cars.setText(bean.getFixed_not_used_cars());
+            fragmentList = new ArrayList<>();
+            fragmentList.add(mineDataFragment);
+            if(carmodel==1){
+                mineDataBikeFragment = new MineDataBikeFragment();
+                fragmentList.add(mineDataBikeFragment);
+            }else if(carmodel==2){
+                mineDataEbikeFragment = new MineDataEbikeFragment();
+                fragmentList.add(mineDataEbikeFragment);
+            }else if(carmodel==3){
+                mineDataBikeFragment = new MineDataBikeFragment();
+                mineDataEbikeFragment = new MineDataEbikeFragment();
+                fragmentList.add(mineDataBikeFragment);
+                fragmentList.add(mineDataEbikeFragment);
+            }
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (loadingDialog != null && loadingDialog.isShowing()) {
-                        loadingDialog.dismiss();
-                    }
-                }
-            });
-        } else {
-            Toast.makeText(context, "请先登录账号", Toast.LENGTH_SHORT).show();
-            UIHelper.goToAct(context, LoginActivity.class);
+
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragmentList.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+
+//            return titles[position];
+            return "";
         }
     }
 

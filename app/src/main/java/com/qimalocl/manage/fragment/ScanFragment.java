@@ -210,8 +210,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.mainUI_red_xa) TextView tvRed_xa;
     @BindView(R.id.switcher) Switch switcher;
     @BindView(R.id.switcher_bad) Switch switcher_bad;
+    @BindView(R.id.switcher_over_area) Switch switcher_over_area;
     @BindView(R.id.switcher_bike) Switch switcher_bike;
     @BindView(R.id.switcher_ebike) Switch switcher_ebike;
+    @BindView(R.id.mainUI_bikeLayout) LinearLayout bikeLayout;
+    @BindView(R.id.mainUI_ebikeLayout) LinearLayout ebikeLayout;
 
     @BindView(R.id.mainUI_refresh) ImageView iv_refresh;
 
@@ -356,18 +359,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public String reason;
 
     private int switchType;
+    private int is_area;
 
     List list2 = new ArrayList<Sentence>();
 
     private boolean isForeground = true;
 
-    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_scan, null);
         unbinder = ButterKnife.bind(this, v);
         return v;
     }
 
-    @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = getActivity();
         activity = getActivity();
@@ -383,7 +389,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         bikeMarkerList = new ArrayList<>();
         initView();
 
-        initHttp();
+        initHttp(false);
+        operationarea();
 
 //        BleManager.getInstance().init(activity.getApplication());
 //        BleManager.getInstance()
@@ -969,6 +976,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         refreshLayout.setOnClickListener(this);
         switcher.setOnClickListener(this);
         switcher_bad.setOnClickListener(this);
+        switcher_over_area.setOnClickListener(this);
         switcher_bike.setOnClickListener(this);
         switcher_ebike.setOnClickListener(this);
 
@@ -2184,14 +2192,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         });
     }
 
-    private void initHttp(){
+    private void initHttp(final boolean isFresh){
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
             HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
-                    onStartCommon("正在加载");
+                    if(isFresh){
+                        onStartCommon("正在加载");
+                    }
                 }
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -2223,9 +2233,51 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 ////                                    }
 //                                }
 
+                                int[] carmodels = bean.getCarmodels();
+                                if(carmodels==null || carmodels.length==0){
+                                    bikeLayout.setVisibility(View.GONE);
+                                    ebikeLayout.setVisibility(View.GONE);
+
+                                    switcher_bike.setChecked(false);
+                                    switcher_ebike.setChecked(false);
+                                }else if(carmodels!=null && carmodels.length>0){
+
+                                    LogUtil.e("minef===initHttp4", "===");
+
+
+                                    if(carmodels.length==1){
+                                        bikeLayout.setVisibility(View.GONE);
+                                        ebikeLayout.setVisibility(View.GONE);
+
+                                        if(carmodels[0]==1){
+                                            switcher_bike.setChecked(true);
+                                            switcher_ebike.setChecked(false);
+                                        }else if(carmodels[0]==2){
+                                            switcher_bike.setChecked(false);
+                                            switcher_ebike.setChecked(true);
+                                        }
+                                    }else if(carmodels.length==2){
+                                        bikeLayout.setVisibility(View.VISIBLE);
+                                        ebikeLayout.setVisibility(View.VISIBLE);
+
+                                        switcher_bike.setChecked(true);
+                                        switcher_ebike.setChecked(true);
+                                    }
+
+//                                    role = roles[0];
+//                                    roleName.setText(roles[0]);
+//                                    roleName.setSelected(true);
+
+//                                    m_myHandler.sendEmptyMessage(0);
+                                }
+
+
+
+                                LogUtil.e("initHttp===1", switcher_bike.isChecked()+"==="+switcher_ebike.isChecked()+"==="+carmodels);
+
 
 //                                initNearby(latitude, longitude);
-                                cars(false);
+                                cars(isFresh);
 
 
 //                                if (result.getFlag().equals("Success")) {
@@ -2353,6 +2405,107 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     });
 
+    private void operationarea(){
+        LogUtil.e("sf===operationarea0", isHidden()+"===");
+
+//        if(isHidden()) return;
+
+
+
+        RequestParams params = new RequestParams();
+
+        HttpHelper.get(context, Urls.operationarea, params, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+//                if(!isHidden()){
+//                    onStartCommon("正在加载");
+//                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon("sf===operationarea_f", throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+
+                LogUtil.e("sf===operationarea", "==="+responseString);
+
+                final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+
+                            if (1==1 || result.getFlag().equals("Success")) {
+                                JSONArray jsonArray = new JSONArray(result.getData());
+
+                                LogUtil.e("sf===operationarea1", isHidden()+"==="+jsonArray);
+
+                                if(isHidden()) return;
+
+//                                if (!isContainsList.isEmpty() || 0 != isContainsList.size()){
+//                                    isContainsList.clear();
+//                                }
+
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    List<LatLng> list = new ArrayList<>();
+                                    List<LatLng> list2 = new ArrayList<>();
+                                    int flag=0;
+
+                                    JSONArray jsonArray2 = new JSONArray(jsonArray.getJSONObject(i).getString("ranges"));
+
+                                    for (int j = 0; j < jsonArray2.length(); j ++){
+
+                                        JSONObject jsonObject = jsonArray2.getJSONObject(j);
+
+                                        LatLng latLng = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
+
+                                        LogUtil.e("sf===operationarea2", "==="+latLng);
+
+                                        flag=0;
+                                        list.add(latLng);
+
+                                    }
+
+                                    LogUtil.e("sf===operationarea3", "==="+list.size());
+
+                                    Polygon polygon = null;
+                                    PolygonOptions pOption = new PolygonOptions();
+
+                                    pOption.addAll(list);
+
+                                    if(isHidden()) return;
+                                    polygon = aMap.addPolygon(pOption.strokeWidth(3)
+//                                            .strokeDashStyle()
+                                            .strokeColor(Color.argb(255, 0, 135, 255))
+//                                            .fillColor(Color.argb(0, 0, 0, 0)));
+                                            .fillColor(Color.argb(76, 0, 173, 255)));
+
+                                    LogUtil.e("sf===operationarea4", "==="+polygon);
+
+
+//                                    getMaxPoint(list);
+
+
+                                }
+                            }else {
+                                ToastUtil.showMessageApp(context,result.getMsg());
+                            }
+                        }catch (Exception e){
+                        }
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
     public void cars(final boolean isFresh){
 
         RequestParams params = new RequestParams();
@@ -2384,10 +2537,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             }
         }
 
-        params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
-        params.put("car_type", switchType);  //0全部 1只看坏车 2只看低电
+        is_area = 0;
+        if(switcher_over_area.isChecked()){
+            is_area = 1;
+        }
 
-        LogUtil.e("cars===", carType+"==="+switchType+"==="+carmodel_id);
+        params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
+        params.put("car_type", switchType);  //0全部 1只看坏车 2只看低电 3只看坏车+只看低电
+        params.put("is_area", is_area);  //0默认 1查看超区
+
+        LogUtil.e("cars===", carType+"==="+switchType+"==="+is_area+"==="+carmodel_id);
 
 //        Looper.prepare();
         HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
@@ -2458,7 +2617,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                             int lock_id = bean.getLock_id();
 
-                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
+//                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
 
                                             if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
                                                 if(lock_id==4){
@@ -2735,6 +2894,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 break;
 
+            case R.id.switcher_over_area:
+//                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
+
+                if(switcher_over_area.isChecked()){
+                    LogUtil.e("biking===switcher_over_area1", "onClick==="+switcher_over_area.isChecked());
+                }else{
+                    LogUtil.e("biking===switcher_over_area2", "onClick==="+switcher_over_area.isChecked());
+                }
+
+//                initNearby(latitude, longitude);
+                cars(true);
+
+                break;
+
             case R.id.switcher_bike:
 //                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
 
@@ -2799,7 +2972,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.mainUI_refreshLayout:
-                cars(true);
+                initHttp(true);
+//                cars(true);
                 break;
 
             case R.id.mainUI_scanCode_lock:
@@ -2901,7 +3075,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     @Override
                                     public void run() {
                                         if (!isConnect){
-//                                        closeLoadingDialog();
+//                                          closeLoadingDialog();
 
                                             LogUtil.e("mf===7==timeout", isConnect + "==="+activity.isFinishing());
 
@@ -2918,7 +3092,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             }else{
                                 xiaoanOpen_blue();
                             }
-
                         }
                     }else{
                         unlock();

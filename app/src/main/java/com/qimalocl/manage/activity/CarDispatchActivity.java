@@ -177,6 +177,7 @@ public class CarDispatchActivity extends SwipeBackActivity implements View.OnCli
 
             case R.id.mainUI_title_rightBtn:
                 Intent intent = new Intent(context, AddDispatchActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent,0);
                 break;
 

@@ -33,7 +33,7 @@ public class UserBean {
     private String avatar;  //用户头像 没有显示默认头像
     private String[] roles;  //用户角色数组 取第一个角色显示
     private String[] schools;  //用户管辖学校数组 取第一个管辖学校显示 另：车绑学校选择列表也用该数据
-
+    private int[] carmodels;  //用户管辖车型ID数组 1、单车 2、助力车
 
 
     public void setId(int id) {
@@ -235,5 +235,13 @@ public class UserBean {
 
     public void setSchools(String[] schools) {
         this.schools = schools;
+    }
+
+    public int[] getCarmodels() {
+        return carmodels;
+    }
+
+    public void setCarmodels(int[] carmodels) {
+        this.carmodels = carmodels;
     }
 }

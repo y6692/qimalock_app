@@ -1,16 +1,21 @@
 package com.qimalocl.manage.activity;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +30,11 @@ import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
-import com.qimalocl.manage.model.CarSchoolBean;
+import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.model.GlobalConfig;
-import com.qimalocl.manage.model.HistorysRecordBean;
+import com.qimalocl.manage.model.OverAreaDetailBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.ScrappedDetailBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.LogUtil;
 
@@ -43,13 +49,13 @@ import java.util.List;
  * Created by Administrator1 on 2017/2/13.
  */
 
-public class BindSchoolActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+public class SuperzoneDetailActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener {
 
     private Context context;
     private ImageView backImg;
     private TextView title;
-    private ImageView rightBtn;
+    private TextView rightBtn;
     // List
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView myList;
@@ -64,19 +70,24 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
     private View footerLayout;
 
     private MyAdapter myAdapter;
-    private List<CarSchoolBean> data;
+    private List<OverAreaDetailBean> data;
     private boolean isRefresh = true;// 是否刷新中
     private boolean isLast = false;
     private int showPage = 1;
-    private String starttime = "";
-    private String endtime = "";
+
+    private String date;
+    private int type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bind_school);
+        setContentView(R.layout.activity_superzone_detail);
         context = this;
         data = new ArrayList<>();
+
+        date = getIntent().getStringExtra("date");
+//        type = getIntent().getIntExtra("type", 1);
+
         initView();
     }
 
@@ -84,8 +95,8 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText("车绑学校");
-        rightBtn = (ImageView)findViewById(R.id.mainUI_title_rightBtn);
+        title.setText("超区车辆");
+//        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
         // list投资列表
@@ -108,7 +119,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
 
         myList.setOnItemClickListener(this);
         if(data.isEmpty()){
-
+            initHttp();
         }
 
         myAdapter = new MyAdapter(context);
@@ -116,7 +127,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
         myList.setAdapter(myAdapter);
 
         backImg.setOnClickListener(this);
-        rightBtn.setOnClickListener(this);
+//        rightBtn.setOnClickListener(this);
         footerLayout.setOnClickListener(this);
     }
 
@@ -131,11 +142,9 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
     public void onResume() {
         super.onResume();
         isRefresh = true;
-//        if(data.size()!=0){
-//            myAdapter.notifyDataSetChanged();
-//        }
-
-        initHttp();
+        if(data.size()!=0){
+            myAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -167,13 +176,11 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
             case R.id.mainUI_title_backBtn:
                 scrollToFinishActivity();
                 break;
-
             case R.id.mainUI_title_rightBtn:
-                Intent intent = new Intent(context, SchoolSelectActivity.class);
+                Intent intent = new Intent(context,HistoryRoadFiltateActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent,0);
                 break;
-
             case R.id.footer_Layout:
                 if (!isLast) {
                     showPage += 1;
@@ -185,7 +192,67 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
                 break;
         }
     }
+
+
+//    private void over_area_cars(){
+//        LogUtil.e("over_area_cars===", "===");
+//
+////        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//        if (access_token != null && !"".equals(access_token)){
+////            RequestParams params = new RequestParams();
+////            params.put("uid",uid);
+////            params.put("access_token",access_token);
+//            HttpHelper.get(context, Urls.over_area_cars, new TextHttpResponseHandler() {
+//                @Override
+//                public void onStart() {
+//                    onStartCommon("正在加载");
+//                }
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                    onFailureCommon(throwable.toString());
+//                    LogUtil.e("over_area_cars===fail", "==="+throwable.toString());
+//                }
+//
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+//                    m_myHandler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+//
+//                                LogUtil.e("over_area_cars===1", tv_superzone_count+"==="+responseString);
+//
+//                                com.alibaba.fastjson.JSONObject object = JSON.parseObject(result.getData());
+//
+////                                ScrappedBean bean = JSON.parseObject(result.getData(), ScrappedBean.class);
+////
+//                                LogUtil.e("over_area_cars===2", "==="+object.getString("count"));
+//
+//                                tv_superzone_count.setText(""+object.getString("count"));
+//
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//
+//                                LogUtil.e("lowpower===e", "==="+e);
+//                            }
+//                            if (loadingDialog != null && loadingDialog.isShowing()){
+//                                loadingDialog.dismiss();
+//                            }
+//                        }
+//                    });
+//
+//                }
+//            });
+//        }else {
+//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//            UIHelper.goToAct(context,LoginActivity.class);
+//        }
+//    }
+
     private void initHttp(){
+        LogUtil.e("over_area_cars===initHttp", date+"==="+type+"==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -194,9 +261,11 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
             return;
         }
         RequestParams params = new RequestParams();
-        params.put("per_page", GlobalConfig.PAGE_SIZE);
+//        params.put("date", date);
+//        params.put("page",showPage);
+//        params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        HttpHelper.get(context, Urls.carschoolaction, params, new TextHttpResponseHandler() {
+        HttpHelper.get(context, Urls.over_area_cars, params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -216,32 +285,49 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    LogUtil.e("initHttp===", "==="+responseString);
+                    LogUtil.e("over_area_cars===initHttp1", "==="+responseString);
 
-                    JSONArray array = new JSONArray(result.getData());
+//
+
+
+                    com.alibaba.fastjson.JSONObject object = JSON.parseObject(result.getData());
+
+//                                ScrappedBean bean = JSON.parseObject(result.getData(), ScrappedBean.class);
+//
+                    LogUtil.e("over_area_cars===2", "==="+object.getString("data"));
+
+
+                    JSONArray array = new JSONArray(object.getString("data"));
+
                     if (array.length() == 0 && showPage == 1) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(4);
                         return;
-                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+                    }else{
                         footerLayout.setVisibility(View.GONE);
-                        setFooterType(5);
-                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-                        footerLayout.setVisibility(View.VISIBLE);
-                        setFooterType(2);
-                    } else if (array.length() >= 10) {
-                        footerLayout.setVisibility(View.VISIBLE);
-                        setFooterType(0);
                     }
 
-                    if(data!=null && data.size()>0){
-                        data.clear();
-                    }
-
+//                    if (array.length() == 0 && showPage == 1) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(4);
+//                        return;
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+//                        footerLayout.setVisibility(View.GONE);
+//                        setFooterType(5);
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(2);
+//                    } else if (array.length() >= 10) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(0);
+//                    }
                     for (int i = 0; i < array.length(); i++) {
-                        CarSchoolBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarSchoolBean.class);
+                        OverAreaDetailBean bean = JSON.parseObject(array.getJSONObject(i).toString(), OverAreaDetailBean.class);
                         data.add(bean);
                     }
+
+//                    RecycleDetailBean bean = new RecycleDetailBean();
+//                    data.add(bean);
 
                     myAdapter.notifyDataSetChanged();
 
@@ -260,7 +346,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                     isRefresh = false;
-                    setFooterVisibility();
+//                    setFooterVisibility();
                 }
             }
         });
@@ -271,8 +357,8 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
         switch (requestCode) {
             case 0:
                 if (data != null) {
-                    starttime = data.getExtras().getString("starttime");
-                    endtime = data.getExtras().getString("endtime");
+//                    starttime = data.getExtras().getString("starttime");
+//                    endtime = data.getExtras().getString("endtime");
                     onRefresh();
                 }
                 break;
@@ -351,7 +437,7 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
         }
     }
 
-    private class MyAdapter extends BaseViewAdapter<CarSchoolBean> {
+    private class MyAdapter extends BaseViewAdapter<OverAreaDetailBean> {
 
         private LayoutInflater inflater;
 
@@ -363,18 +449,76 @@ public class BindSchoolActivity extends SwipeBackActivity implements View.OnClic
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (null == convertView) {
-                convertView = inflater.inflate(R.layout.item_bind_school_record, null);
+                convertView = inflater.inflate(R.layout.item_superzone_detail, null);
             }
 
-            TextView created_at = BaseViewHolder.get(convertView,R.id.item_created_at);
-            TextView car_number = BaseViewHolder.get(convertView,R.id.item_car_number);
-            TextView school_name = BaseViewHolder.get(convertView,R.id.item_school_name);
+            TextView tv_number = BaseViewHolder.get(convertView,R.id.tv_number);
+            TextView tv_username = BaseViewHolder.get(convertView,R.id.tv_username);
+            TextView tv_telphone = BaseViewHolder.get(convertView,R.id.tv_telphone);
+            TextView tv_start_time = BaseViewHolder.get(convertView,R.id.tv_start_time);
+            TextView tv_end_time = BaseViewHolder.get(convertView,R.id.tv_end_time);
+            LinearLayout ll_telphone = BaseViewHolder.get(convertView,R.id.ll_telphone);
 
-            CarSchoolBean bean = getDatas().get(position);
+            OverAreaDetailBean bean = getDatas().get(position);
+            tv_number.setText(bean.getNumber());
+            tv_username.setText(bean.getUser_name());
+            final String phone = bean.getUser_phone();
+            tv_telphone.setText(bean.getUser_phone());
+            tv_start_time.setText(bean.getStart_time());
+            tv_end_time.setText(bean.getEnd_time());
 
-            created_at.setText(bean.getUpdated_at());
-            car_number.setText("车辆编号："+bean.getCar_number());
-            school_name.setText(bean.getSchool_name());
+//            if(status==0){
+//                text_aft_electricity.setText("当前电量：");
+//            }else{
+//                text_aft_electricity.setText("更换后电量：");
+//            }
+
+            ll_telphone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LogUtil.e("Test","111111111");
+//                    linkTel = bean.getTelphone();
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        int checkPermission = context.checkSelfPermission(Manifest.permission.CALL_PHONE);
+                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+                            if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
+                                requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
+                            } else {
+                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开拨打电话权限！")
+                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.cancel();
+                                            }
+                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                        requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 1);
+                                    }
+                                });
+                                customBuilder.create().show();
+                            }
+                            return;
+                        }
+                    }
+                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                    customBuilder.setTitle("温馨提示").setMessage("确认拨打" + phone + "吗?")
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent intent=new Intent();
+                            intent.setAction(Intent.ACTION_CALL);
+                            intent.setData(Uri.parse("tel:" + phone));
+                            startActivity(intent);
+                        }
+                    });
+                    customBuilder.create().show();
+                }
+            });
 
             return convertView;
         }

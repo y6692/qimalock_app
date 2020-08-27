@@ -19,8 +19,8 @@ android {
         applicationId "com.qimalocl.manage"
         minSdkVersion 18
         targetSdkVersion 28
-        versionCode 206
-        versionName "2.0.6"
+        versionCode 207
+        versionName "2.0.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
 

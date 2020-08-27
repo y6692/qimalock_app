@@ -37,8 +37,7 @@ public class IntentUtils {
             if (bundle != null) {
                 intent.putExtras(bundle);
             }
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             ((Activity) context).startActivityForResult(intent, 0);
             ((Activity) context).overridePendingTransition(R.anim.zoom_in, 0);
         } catch (Exception e) {

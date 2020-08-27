@@ -111,6 +111,8 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
     private int carmodel_id;
     private String codenum;
 
+    float leveltemp = 18f;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,7 +156,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         }
         aMap.getUiSettings().setZoomControlsEnabled(false);
         aMap.getUiSettings().setMyLocationButtonEnabled(false);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(16);// 设置缩放监听
+        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(leveltemp);// 设置缩放监听
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
         bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
         originDescripter = BitmapDescriptorFactory.fromResource(R.drawable.origin_icon);
@@ -225,7 +227,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                                     myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
                                 }
                                 addChooseMarker();
-                                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+                                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
 
 //                                codenum = jsonObject.getString("number");
                                 carmodel_id = jsonObject.getInt("carmodel_id");
@@ -433,6 +435,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                 break;
             case R.id.mainUI_title_rightBtn:
                 Intent intent = new Intent(context, HistoryRoadFiltateActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent,0);
                 break;
             case R.id.searchBtn:
@@ -608,7 +611,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    CameraUpdate update = CameraUpdateFactory.zoomTo(16);
+                    CameraUpdate update = CameraUpdateFactory.zoomTo(leveltemp);
                     aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                         @Override
                         public void onFinish() {

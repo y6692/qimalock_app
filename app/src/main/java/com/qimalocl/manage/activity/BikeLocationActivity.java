@@ -281,6 +281,7 @@ public class BikeLocationActivity extends SwipeBackActivity implements View.OnCl
                 break;
             case R.id.mainUI_title_rightBtn:
                 Intent intent = new Intent(context, HistoryRoadFiltateActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent,0);
                 break;
             case R.id.ui_bike_location_searchBtn:

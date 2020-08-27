@@ -575,7 +575,7 @@ public class AddDispatchActivity extends SwipeBackActivity implements View.OnCli
                 takeIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
             }
 
-
+            takeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivityForResult(takeIntent, REQUESTCODE_TAKE);
         }else {
             Toast.makeText(context,"未找到存储卡，无法存储照片！",Toast.LENGTH_SHORT).show();
