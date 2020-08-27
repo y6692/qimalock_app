@@ -16,7 +16,6 @@ public class Urls {
     public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
 //	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
 
-
 	//附近的车辆接口
 	public static String car_nearby = host2 + "/car/";
 	//电子围栏接口
