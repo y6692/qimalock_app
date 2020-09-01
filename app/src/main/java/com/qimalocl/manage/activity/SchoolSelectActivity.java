@@ -172,6 +172,7 @@ public class SchoolSelectActivity extends SwipeBackActivity implements View.OnCl
         et_school.setText(bean.getName());
         et_school.addTextChangedListener(tw);
 
+
 //        Intent rIntent = new Intent();
 //        rIntent.putExtra("school_id", bean.getId());
 //        rIntent.putExtra("school_name", bean.getName());

@@ -43,6 +43,8 @@ public class DeviceSelectActivity extends Activity {
     Button bt4;
     @BindView(R.id.bt5)
     Button bt5;
+    @BindView(R.id.bt6)
+    Button bt6;
     @BindView(R.id.mainUI_title_backBtn)
     ImageView backBtn;
     @BindView(R.id.mainUI_title_titleText)
@@ -183,8 +185,20 @@ public class DeviceSelectActivity extends Activity {
 //        UIHelper.goToAct(context, DeviceList3Activity.class);
 
         Intent intent = new Intent();
+//        intent.setClass(context, PowerSelectActivity.class);
         intent.setClass(context, LockStorageTBTDActivity.class);
         intent.putExtra("title", bt5.getText());
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.bt6)
+    void bt6() {
+        SharedPreferencesUrls.getInstance().putString("type", "12");
+//        UIHelper.goToAct(context, DeviceList3Activity.class);
+
+        Intent intent = new Intent();
+        intent.setClass(context, PowerSelectActivity.class);
+        intent.putExtra("title", bt6.getText());
         startActivity(intent);
     }
 

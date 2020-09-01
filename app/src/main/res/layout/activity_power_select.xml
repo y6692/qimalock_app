@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:staggered="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/ui_main_title"/>
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/divider_bcg" />
+
+        <!--plaColumnNumber：竖屏显示多少列-->
+        <!--plaLandscapeColumnNumber：横屏显示多少列-->
+        <com.huewu.pla.lib.MultiColumnListView
+            xmlns:pla="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rechargeUI_moneyList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="21dp"
+            android:layout_marginRight="21dp"
+            android:choiceMode="singleChoice"
+            pla:plaColumnNumber="1"
+            pla:plaLandscapeColumnNumber="3"
+            />
+
+
+<!--        <ListView-->
+<!--            android:id="@+id/classify_selected"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_weight="2"-->
+<!--            android:choiceMode="singleChoice"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:text="分类页面"/>-->
+
+<!--        <GridView-->
+<!--            android:id="@+id/gridview"-->
+<!--            android:layout_width="fill_parent"-->
+<!--            android:layout_height="fill_parent"-->
+<!--            android:columnWidth="90dp"-->
+<!--            android:numColumns="auto_fit"-->
+<!--            android:horizontalSpacing="10dp"-->
+<!--            android:verticalSpacing="10dp"-->
+<!--            android:stretchMode="columnWidth"-->
+<!--            android:gravity="center">-->
+<!--        </GridView>-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="43dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/rechargeUI_submitBtn"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="48dp"
+            android:layout_marginRight="48dp"
+            android:background="@drawable/btn_bcg"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sp18"
+                android:textColor="@color/white"
+                android:text="下一步"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

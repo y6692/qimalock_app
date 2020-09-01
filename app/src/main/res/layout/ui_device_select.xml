@@ -96,6 +96,18 @@
             android:textColor="#FD545B"
             android:textSize="@dimen/sp18" />
 
+        <Button
+            android:visibility="gone"
+            android:id="@+id/bt6"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_button"
+            android:gravity="center"
+            android:text="斯科网络"
+            android:textColor="#FD545B"
+            android:textSize="@dimen/sp18" />
+
     </LinearLayout>
 
 

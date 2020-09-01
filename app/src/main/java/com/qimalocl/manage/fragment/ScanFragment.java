@@ -100,6 +100,7 @@ import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.MainActivity;
 import com.qimalocl.manage.activity.MerchantAddressMapActivity;
 import com.qimalocl.manage.activity.QueryActivity;
+import com.qimalocl.manage.activity.SecretProtocolAdapter;
 import com.qimalocl.manage.activity.TestXiaoanActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.base.BaseFragment;
@@ -146,6 +147,11 @@ import com.sunshine.blelibrary.mode.GetTokenTxOrder;
 import com.sunshine.blelibrary.mode.OpenLockTxOrder;
 import com.sunshine.blelibrary.mode.XinbiaoTxOrder;
 import com.sunshine.blelibrary.utils.GlobalParameterUtils;
+import com.tbit.tbitblesdk.Bike.TbitBle;
+import com.tbit.tbitblesdk.Bike.model.BikeState;
+import com.tbit.tbitblesdk.Bike.services.command.callback.StateCallback;
+import com.tbit.tbitblesdk.protocol.callback.ResultCallback;
+import com.tbit.tbitblesdk.user.entity.W206State;
 import com.xiaoantech.sdk.XiaoanBleApiClient;
 import com.xiaoantech.sdk.ble.model.Response;
 import com.xiaoantech.sdk.ble.scanner.ScanResult;
@@ -1927,12 +1933,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             try {
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                                LogUtil.e("battery_unlock===1", "==="+responseString);
+                                LogUtil.e("battery_unlock===1", type+"==="+responseString);
 
                                 if(result.getStatus_code()==200){
-//                            m_myHandler.sendEmptyMessage(2);
+//                                  m_myHandler.sendEmptyMessage(2);
                                     if(curMarker!=null){
-                                        curMarker.setIcon(bikeDescripter_blue);
+                                        if("4".equals(type)){
+                                            curMarker.setIcon(bikeDescripter_blue);
+                                        }else if("7".equals(type)){
+                                            curMarker.setIcon(bikeDescripter_xa_blue);
+                                        }else if("8".equals(type)){
+                                            curMarker.setIcon(bikeDescripter_tbtd_blue);
+                                        }else if("11".equals(type)){
+                                            curMarker.setIcon(bikeDescripter_tbtf_blue);
+                                        }
                                     }
 
                                 }else{
@@ -2619,6 +2633,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                                            LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
 
+//                                            level：图标级别 3红色 2黄色 1绿色 4换电中 5维护中
                                             if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
                                                 if(lock_id==4){
 
@@ -3032,7 +3047,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                     if ("7".equals(type)) {
 
-
                         LogUtil.e("mf===7_1", deviceuuid + "==="+m_nowMac);
 
                         if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -3093,7 +3107,40 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 xiaoanOpen_blue();
                             }
                         }
-                    }else{
+                    }
+
+//                    else if ("11".equals(type)) { //TODO
+//                        LogUtil.e("mf===11_1", deviceuuid + "==="+ bleid + "==="+ m_nowMac);
+//
+//                        unlock();
+//
+//                        if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                            ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                            popupwindow.dismiss();
+//                        }
+//                        //蓝牙锁
+//                        BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//                        mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//                        if (mBluetoothAdapter == null) {
+//                            ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                            popupwindow.dismiss();
+//                            return;
+//                        }
+//                        if (!mBluetoothAdapter.isEnabled()) {
+//                            isPermission = false;
+//                            closeLoadingDialog2();
+//                            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                            startActivityForResult(enableBtIntent, 188);
+//                        } else {
+//                            TbitBle.initialize(context, new SecretProtocolAdapter());
+//                            tbtble_connect2();
+//
+//                        }
+//                    }
+
+                    else{
                         unlock();
                     }
 
@@ -3229,6 +3276,29 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             default:
                 break;
         }
+    }
+
+    //泰比特连接
+    private void tbtble_connect2() {
+        TbitBle.connect(deviceuuid, bleid, new ResultCallback() {
+            @Override
+            public void onResult(int resultCode) {
+                // 连接回应
+//                final String tvAgain = tv_againBtn.getText().toString().trim();
+                LogUtil.e("tbtble_connect2===", resultCode+"==="+isOpenLock+"==="+isEndBtn+"==="+isAgain);
+
+
+            }
+        }, new StateCallback() {
+            @Override
+            public void onStateUpdated(BikeState bikeState) {
+                LogUtil.e("tbtble_connect2=onStateU", bikeState+"===");
+
+                // 连接成功状态更新
+                // 通过车辆状态获取设备特定信息
+                W206State w206State = (W206State) TbitBle.getConfig().getResolver().resolveCustomState(bikeState);
+            }
+        });
     }
 
     private void get_state(){
@@ -3454,19 +3524,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 }else if ("5".equals(type) || "6".equals(type)) {      //泺平单车蓝牙锁
 
                     LogUtil.e("mf===5_1", deviceuuid + "==="+m_nowMac);
-
-//                    if(BaseApplication.getInstance().isTest()){
-//                        if("40001101".equals(codenum)){
-////                                                  m_nowMac = "3C:A3:08:AE:BE:24";
-//                            m_nowMac = "3C:A3:08:CD:9F:47";
-//                        }else if("50007528".equals(codenum)){
-//
-//                        }else{
-//                            type = "6";
-//                            m_nowMac = "A4:34:F1:7B:BF:9A";
-//                        }
-//                    }
-
 
                     if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                         ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");

@@ -1,3 +1,33 @@
+//                    if(BaseApplication.getInstance().isTest()){
+//                        if("40001101".equals(codenum)){
+////                                                  m_nowMac = "3C:A3:08:AE:BE:24";
+//                            m_nowMac = "3C:A3:08:CD:9F:47";
+//                        }else if("50007528".equals(codenum)){
+//
+//                        }else{
+//                            type = "6";
+//                            m_nowMac = "A4:34:F1:7B:BF:9A";
+//                        }
+//                    }
+
+//----ListView的自动循环滚动显示
+autoUpdate = new Timer();
+autoUpdate.schedule(new TimerTask(){
+    @Override
+    public void run(){
+        runOnUiThread(new Runnable(){
+           public void run(){
+             index +=1;
+             if(index >= list_review.getCount()) {
+                 index = 0;
+
+               }
+              list_review.smoothScrollToPosition(index);
+          }
+        });
+  }
+}, 0,3000);
+
     //						if (result.getInfo().equals("2")) {
     //							CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
     //							customBuilder.setTitle("温馨提示").setMessage("该车被设为坏车，用户无法使用，请及时回收维修")
