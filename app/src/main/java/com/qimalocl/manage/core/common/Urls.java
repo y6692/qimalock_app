@@ -69,6 +69,8 @@ public class Urls {
 	public static String battery_lock = host2 + "/car/battery_lock/";
 	//打开电池锁（换电）接口
 	public static String battery_unlock = host2 + "/car/battery_unlock/";
+	//打开电池锁换电上报接口
+	public static String battery_report = host2 + "/car/battery_report";
 	//寻车接口
 	public static String search = host2 + "/car/search/";
 	//设为回收 修好 报废接口
