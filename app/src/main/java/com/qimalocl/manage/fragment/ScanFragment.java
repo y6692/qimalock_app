@@ -2326,8 +2326,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         }
 
 
-                        //TODO
-
 //                        try{
 //
 //                            if(tvMsg.isRunning()){
