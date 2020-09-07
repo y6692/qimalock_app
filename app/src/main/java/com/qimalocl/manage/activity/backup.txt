@@ -1,3 +1,23 @@
+                                //给View传递数据
+//                tvMsg.setList(list2);
+
+//                List<String> textArray = ...;
+//                tvMsg.setDataSetAdapter(new DataSetAdapter<Sentence>(list2) {
+//                    @Override
+//                    protected Sentence text(Sentence s) {
+//                        LogUtil.e("scan===mReceiver3", s+"===");
+//                        return s;
+//                    }
+//                });
+
+//                tvMsg.setDataSetAdapter(new DataSetAdapter() {
+//                    @Override
+//                    protected String text(Object o) {
+//                        LogUtil.e("scan===mReceiver3", o+"===");
+//                        return null;
+//                    }
+//                });
+
 //                    if(BaseApplication.getInstance().isTest()){
 //                        if("40001101".equals(codenum)){
 ////                                                  m_nowMac = "3C:A3:08:AE:BE:24";

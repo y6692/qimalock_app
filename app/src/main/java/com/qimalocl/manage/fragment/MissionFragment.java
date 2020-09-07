@@ -443,7 +443,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                                 datas.add(bean);
                             }
 
-//                            LogUtil.e("recycletask===3", datas.size()+"==="+totalnum+"==="+codenum);
+                            LogUtil.e("recycletask===3", datas.size()+"==="+totalnum+"==="+codenum);
 
 //                            if(!"".equals(totalnum)){
 //                                Intent intent = new Intent("data.broadcast.action");

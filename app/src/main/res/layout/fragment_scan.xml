@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -88,6 +89,7 @@
             android:gravity="center_vertical"
             android:layout_alignParentTop="true"
             >
+
             <ImageView
                 android:id="@+id/ib2"
                 android:layout_width="20dp"
@@ -97,20 +99,53 @@
                 android:background="#00000000"
                 />
 
-
-            <!--<com.qimalocl.manage.core.widget.VerticalScrollTextView-->
-                <!--android:id="@+id/msg"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_marginLeft="12dp"-->
-                <!--android:layout_centerInParent="true"-->
-                <!--/>-->
-
-            <com.xiaosu.VerticalRollingTextView
-                android:id="@+id/msg"
+            <com.example.cangyigou.marqueeviewdemo.MarqueeView
+                android:id="@+id/marqueeView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="12dp"/>
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                app:mvAnimDuration="1000"
+                app:mvInterval="3000"
+                app:mvTextColor="@color/tx_black"
+                app:mvTextSize="@dimen/sp12"
+                app:mvSingleLine="true"/>
+
+
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginLeft="12dp"-->
+<!--                android:layout_marginRight="12dp"-->
+<!--                >-->
+
+<!--                <ListView-->
+<!--                    android:id="@+id/lv_msg"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+
+<!--                    android:divider="@null"-->
+<!--                    android:scrollbars="none"/>-->
+<!--            </LinearLayout>-->
+
+
+
+
+<!--            <com.xiaosu.VerticalRollingTextView-->
+<!--                android:id="@+id/msg"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginLeft="12dp"/>-->
+
+
+            <!--<com.qimalocl.manage.core.widget.VerticalScrollTextView-->
+            <!--android:id="@+id/msg"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_marginLeft="12dp"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--/>-->
 
 
             <!--<TextView-->
