@@ -185,8 +185,8 @@ public class DeviceSelectActivity extends Activity {
 //        UIHelper.goToAct(context, DeviceList3Activity.class);
 
         Intent intent = new Intent();
-//        intent.setClass(context, PowerSelectActivity.class);
-        intent.setClass(context, LockStorageTBTDActivity.class);
+        intent.setClass(context, PowerSelectActivity.class);
+//        intent.setClass(context, LockStorageTBTDActivity.class);
         intent.putExtra("title", bt5.getText());
         startActivity(intent);
     }

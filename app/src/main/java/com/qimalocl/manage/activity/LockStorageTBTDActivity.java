@@ -93,6 +93,8 @@ import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
 public class LockStorageTBTDActivity extends MPermissionsActivity {
     @BindView(R.id.mainUI_title_titleText)
     TextView titleText;
+    @BindView(R.id.tv_name)
+    TextView tv_name;
     @BindView(R.id.bt_scan_zk)
     Button bt_scan_zk;
     @BindView(R.id.bt_scan_car)
@@ -149,21 +151,27 @@ public class LockStorageTBTDActivity extends MPermissionsActivity {
 
     private String vendor_lock_id = "";
     private String qrcode = "";
+    String battery_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock_storage_tbtd);
 
-        LogUtil.e("onCreate===", "===");
+
 
         ButterKnife.bind(this);
+
+        battery_name = getIntent().getStringExtra("battery_name");
+
+        LogUtil.e("lsTBTDa===onCreate", battery_name+"===");
 
         loadingDialog = new LoadingDialog(this);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
         titleText.setText("入库");
+        tv_name.setText("电池型号：" + battery_name);
 
 //        lock_info();
     }
@@ -346,8 +354,9 @@ public class LockStorageTBTDActivity extends MPermissionsActivity {
 //            params.put("lock_no", name);     //车辆编号
 //            params.put("lock_mac", mac);    //mac地址
             params.put("vendor_lock_id", vendor_lock_id);
+            params.put("battery_name", battery_name);
 
-            LogUtil.e("addCar===", qrcode+"==="+vendor_lock_id);
+            LogUtil.e("addCar===", qrcode+"==="+vendor_lock_id+"==="+battery_name);
 
             HttpHelper.post(context, Urls.lock_in, params, new TextHttpResponseHandler() {
                 @Override
