@@ -12,10 +12,9 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-//  	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+  	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
 //    public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
-	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
-
+//	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
 
 	//附近的车辆接口
 	public static String car_nearby = host2 + "/car/";

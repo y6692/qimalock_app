@@ -4601,276 +4601,24 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         LogUtil.e("onConnectSuccess===", bleDevice.getMac()+"===");
 //                      Toast.makeText(context, "连接成功", Toast.LENGTH_LONG).show();
 
-
+                        bleNotify();
                         m_myHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
 
                                 getBleToken();
-
                             }
                         }, 500);
 
-                        BleManager.getInstance().notify(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f6-0000-1000-8000-00805f9b34fb", new BleNotifyCallback() {
-                            @Override
-                            public void onNotifySuccess() {
-                                LogUtil.e("onNotifySuccess===", "===");
-                            }
-
-                            @Override
-                            public void onNotifyFailure(BleException exception) {
-                                LogUtil.e("onNotifyFailure===", "===");
-                            }
-
-                            @Override
-                            public void onCharacteristicChanged(final byte[] data) {
-//                            byte[] values = characteristic.getValue();
-
-                                m_myHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        LogUtil.e("onCharacteristicChanged", "===0");
-
-                                        byte[] x = new byte[16];
-                                        System.arraycopy(data, 0, x, 0, 16);
-
-                                        byte[] mingwen = EncryptUtils.Decrypt(x, Config.newKey);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
-
-                                        LogUtil.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
-
-                                        String s1 = ConvertUtils.bytes2HexString(mingwen);
-
-                                        if(s1.startsWith("CB0501")){
-                                            LogUtil.e("CB0501===", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1);
-
-                                            if(isOpenLock){
-//                                                openLock();
-
-//                                                getLockStatus();
-
-                                                state = 0;
-                                                m_myHandlerState.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-
-                                                        if(state==0){
-                                                            getLockStatus();
-                                                        }else{
-                                                            closeLoadingDialog();
-                                                        }
-
-                                                    }
-                                                }, 3000);
-                                            }
-                                        }else if(s1.startsWith("0602")){      //获取token
-
-                                            token = s1.substring(6, 14);    //0602070C0580E001010406C8D6DC1949
-                                            GlobalParameterUtils.getInstance().setToken(ConvertUtils.hexString2Bytes(token));
-
-//                                          String tvAgain = tv_againBtn.getText().toString().trim();
-
-                                            LogUtil.e("token===", loadingDialog.isShowing()+"==="+type+"==="+isOpenLock+"==="+token+"==="+s1);
-
-                                            m_myHandler.postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    if("2".equals(type) || "3".equals(type)){
-                                                        getBattery();
-                                                    }else if("9".equals(type) || "10".equals(type)){
-                                                        getBattery2();
-                                                    }
-
-                                                }
-                                            }, 500);
-
-
-                                            if(isOpenLock){
-                                                openLock();
-                                            }else{
-                                                getLockStatus();
-                                            }
-
-                                        }else if(s1.startsWith("0502")){    //开锁
-                                            LogUtil.e("d_openLock===", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1);
-
-                                            state = 1;
-                                            m_myHandlerState.removeCallbacksAndMessages(null);
-                                            if("9".equals(type) || "10".equals(type)){
-
-//                                                if(isForeground){
-//                                                    Toast.makeText(context, "开锁成功", Toast.LENGTH_SHORT).show();
-//                                                }
-
-//                                                closeLoadingDialog();
-                                            }else{
-                                                getLockStatus();
-                                            }
-
-//                                          end2();
-
-//                                          m_myHandler.sendEmptyMessage(7);
-                                        }else if(s1.startsWith("0508")){   //关锁==050801RET：RET取值如下：0x00，锁关闭成功。0x01，锁关闭失败。0x02，锁关闭异常。
-                                            LogUtil.e("lockState===0508", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1+"==="+s1.substring(6, 8));   //
-
-                                            if ("00".equals(s1.substring(6, 8))) {
-//                                                ToastUtil.showMessageApp(context,"关锁成功");
-//                                                if(isForeground){
-//                                                    Toast.makeText(context, "关锁成功", Toast.LENGTH_SHORT).show();
-//                                                }
-
-                                                LogUtil.e("closeLock===suc", "===");
-
-                                            } else {
-//                                                ToastUtil.showMessageApp(context,"关锁失败");
-                                                if(isForeground){
-                                                    Toast.makeText(context, "关锁失败", Toast.LENGTH_SHORT).show();
-                                                }
-
-                                                LogUtil.e("closeLock===fail", "===");
-                                            }
-
-                                            getLockStatus();
-                                        }else if(s1.startsWith("050F")){   //锁状态
-                                            LogUtil.e("lockState===050F", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1+"==="+s1.substring(6, 8));   //
-
-
-                                            isStop = true;
-                                            isLookPsdBtn = true;
-
-//                                          查询锁开关状态==050F:0x00表示开启状态；0x01表示关闭状态。
-                                            if ("01".equals(s1.substring(6, 8))) {
-
-                                                if(isOpenLock){
-//                                                    openLock();
-//                                                    getBleToken();
-
-                                                    m_myHandler.postDelayed(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-
-//                                                            getBleToken();
-                                                            openLock();
-
-                                                        }
-                                                    }, 1000);
-                                                }else{
-                                                    if(isForeground){
-//                                                        Toast.makeText(context, "锁已关闭", Toast.LENGTH_SHORT).show();
-                                                        Toast.makeText(context, "关锁成功", Toast.LENGTH_SHORT).show();
-                                                    }
-
-                                                    LogUtil.e("closeLock===1", "锁已关闭==="+first3);
-
-                                                    tv_lock_status.setText("已上锁");
-
-                                                    closeLoadingDialog();
-                                                }
-
-                                            } else {
-
-
-                                                if(isOpenLock){
-                                                    isOpenLock = false;
-                                                }
-
-                                                //锁已开启
-//                                                ToastUtil.showMessageApp(context,"锁已打开");
-                                                if(isForeground){
-                                                    Toast.makeText(context, "开锁成功", Toast.LENGTH_SHORT).show();
-                                                }
-
-                                                tv_lock_status.setText("已开锁");
-
-//                                              car_notification(3, 5, 0);    //TODO
-
-                                                isEndBtn = false;
-
-                                                closeLoadingDialog();
-                                            }
-
-//                                          end2();
-                                        }else if(s1.startsWith("020201")){    //电量
-
-                                            LogUtil.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
-
-//                            if (TextUtils.isEmpty(data)) {
-//                                tvCz.setText(R.string.battery_fail);
-//                            } else {
-//                                tvCz.setText(R.string.battery_success);
-//                                tvBattery.setText(getText(R.string.battery) + String.valueOf(Integer.parseInt(data, 16)));
+//                        m_myHandler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//
+//
 //                            }
+//                        }, 2000);
 
-                                            tv_electricity.setText(Integer.parseInt(s1.substring(6, 8), 16)+"%");
-
-                                        }else if(s1.startsWith("020202")){    //电量2
-
-                                            LogUtil.e("battery2===", "==="+s1);  //020202 64 00 0E42 0000 E100E040270020
-
-//                            if (TextUtils.isEmpty(data)) {
-//                                tvCz.setText(R.string.battery_fail);
-//                            } else {
-//                                tvCz.setText(R.string.battery_success);
-//                                tvBattery.setText(getText(R.string.battery) + String.valueOf(Integer.parseInt(data, 16)));
-//                            }
-
-                                            tv_electricity.setText(Integer.parseInt(s1.substring(10, 14), 16)/1000f+"V");
-
-                                        }else if(s1.startsWith("058502")){
-
-                                            LogUtil.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
-
-                                            if("000000000000".equals(s1.substring(2*4, 2*10))){
-                                                major = 0;
-                                            }else{
-                                                major = 1;
-                                            }
-
-                                        }else {
-                                            LogUtil.e("s1===", loadingDialog.isShowing()+"==="+"==="+s1);  //CB05010100B2F70703C0906C2D5E3A51
-
-//                                            if(isOpenLock && s1.startsWith("CB0501")){
-//                                                openLock();
-//                                            }
-
-//                                            closeLoadingDialog();
-                                        }
-                                    }
-                                });
-
-
-
-
-//                        EventBus.getDefault().post(BleNotifyEvent(decode));
-
-//                        else if(s1.startsWith("050F")){
-//                            LogUtil.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
-//
-////                            if("01".equals(s1.substring(6, 8))){
-////                                Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
-////                            }else{
-////                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
-////                            }
-//
-//                            isStop = true;
-//                            isLookPsdBtn = true;
-//
-//                            closeLoadingDialog2();
-//
-//                            if ("01".equals(s1.substring(6, 8))) {
-//                                ToastUtil.showMessageApp(context,"锁已关闭");
-//                                LogUtil.e("biking===", "biking===锁已关闭==="+first3);
-//
-//                                if(!isEndBtn) return;
-//
-//                                m_myHandler.sendEmptyMessage(6);
-//                            } else {
-//                                //锁已开启
-//                                ToastUtil.showMessageApp(context,"车锁未关，请手动关锁");
-//                            }
-//                        }
-
-                            }
-                        });
 
                     }
                 });
@@ -4907,6 +4655,271 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             }
         });
     }
+
+    private void bleNotify(){
+        BleManager.getInstance().notify(bleDevice, "0000fee7-0000-1000-8000-00805f9b34fb", "000036f6-0000-1000-8000-00805f9b34fb", new BleNotifyCallback() {
+            @Override
+            public void onNotifySuccess() {
+                LogUtil.e("onNotifySuccess===", "===");
+            }
+
+            @Override
+            public void onNotifyFailure(BleException exception) {
+                LogUtil.e("onNotifyFailure===", "===");
+            }
+
+            @Override
+            public void onCharacteristicChanged(final byte[] data) {
+//                            byte[] values = characteristic.getValue();
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        LogUtil.e("onCharacteristicChanged", "===0");
+
+                        byte[] x = new byte[16];
+                        System.arraycopy(data, 0, x, 0, 16);
+
+                        byte[] mingwen = EncryptUtils.Decrypt(x, Config.newKey);    //060207FE02433001010606D41FC9553C  FE024330 01 01 06
+
+                        LogUtil.e("onCharacteristicChanged", x.length+"==="+ ConvertUtils.bytes2HexString(data)+"==="+ConvertUtils.bytes2HexString(mingwen));
+
+                        String s1 = ConvertUtils.bytes2HexString(mingwen);
+
+                        if(s1.startsWith("CB0501")){
+                            LogUtil.e("CB0501===", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1);
+
+                            if(isOpenLock){
+//                                                openLock();
+
+//                                                getLockStatus();
+
+                                state = 0;
+                                m_myHandlerState.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        if(state==0){
+                                            getLockStatus();
+                                        }else{
+                                            closeLoadingDialog();
+                                        }
+
+                                    }
+                                }, 3000);
+                            }
+                        }else if(s1.startsWith("0602")){      //获取token
+
+                            token = s1.substring(6, 14);    //0602070C0580E001010406C8D6DC1949
+                            GlobalParameterUtils.getInstance().setToken(ConvertUtils.hexString2Bytes(token));
+
+//                                          String tvAgain = tv_againBtn.getText().toString().trim();
+
+                            LogUtil.e("token===", loadingDialog.isShowing()+"==="+type+"==="+isOpenLock+"==="+token+"==="+s1);
+
+                            m_myHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if("2".equals(type) || "3".equals(type)){
+                                        getBattery();
+                                    }else if("9".equals(type) || "10".equals(type)){
+                                        getBattery2();
+                                    }
+
+                                }
+                            }, 500);
+
+
+                            if(isOpenLock){
+                                openLock();
+                            }else{
+                                getLockStatus();
+                            }
+
+                        }else if(s1.startsWith("0502")){    //开锁
+                            LogUtil.e("d_openLock===", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1);
+
+                            state = 1;
+                            m_myHandlerState.removeCallbacksAndMessages(null);
+                            if("9".equals(type) || "10".equals(type)){
+
+//                                                if(isForeground){
+//                                                    Toast.makeText(context, "开锁成功", Toast.LENGTH_SHORT).show();
+//                                                }
+
+//                                                closeLoadingDialog();
+                            }else{
+                                getLockStatus();
+                            }
+
+//                                          end2();
+
+//                                          m_myHandler.sendEmptyMessage(7);
+                        }else if(s1.startsWith("0508")){   //关锁==050801RET：RET取值如下：0x00，锁关闭成功。0x01，锁关闭失败。0x02，锁关闭异常。
+                            LogUtil.e("lockState===0508", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1+"==="+s1.substring(6, 8));   //
+
+                            if ("00".equals(s1.substring(6, 8))) {
+//                                                ToastUtil.showMessageApp(context,"关锁成功");
+//                                                if(isForeground){
+//                                                    Toast.makeText(context, "关锁成功", Toast.LENGTH_SHORT).show();
+//                                                }
+
+                                LogUtil.e("closeLock===suc", "===");
+
+                            } else {
+//                                                ToastUtil.showMessageApp(context,"关锁失败");
+                                if(isForeground){
+                                    Toast.makeText(context, "关锁失败", Toast.LENGTH_SHORT).show();
+                                }
+
+                                LogUtil.e("closeLock===fail", "===");
+                            }
+
+                            getLockStatus();
+                        }else if(s1.startsWith("050F")){   //锁状态
+                            LogUtil.e("lockState===050F", loadingDialog.isShowing()+"==="+isOpenLock+"==="+s1+"==="+s1.substring(6, 8));   //
+
+
+                            isStop = true;
+                            isLookPsdBtn = true;
+
+//                                          查询锁开关状态==050F:0x00表示开启状态；0x01表示关闭状态。
+                            if ("01".equals(s1.substring(6, 8))) {
+
+                                if(isOpenLock){
+//                                                    openLock();
+//                                                    getBleToken();
+
+                                    m_myHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+//                                                            getBleToken();
+                                            openLock();
+
+                                        }
+                                    }, 1000);
+                                }else{
+                                    if(isForeground){
+//                                                        Toast.makeText(context, "锁已关闭", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "关锁成功", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    LogUtil.e("closeLock===1", "锁已关闭==="+first3);
+
+                                    tv_lock_status.setText("已上锁");
+
+                                    closeLoadingDialog();
+                                }
+
+                            } else {
+
+
+                                if(isOpenLock){
+                                    isOpenLock = false;
+                                }
+
+                                //锁已开启
+//                                                ToastUtil.showMessageApp(context,"锁已打开");
+                                if(isForeground){
+                                    Toast.makeText(context, "开锁成功", Toast.LENGTH_SHORT).show();
+                                }
+
+                                tv_lock_status.setText("已开锁");
+
+//                                              car_notification(3, 5, 0);    //TODO
+
+                                isEndBtn = false;
+
+                                closeLoadingDialog();
+                            }
+
+//                                          end2();
+                        }else if(s1.startsWith("020201")){    //电量
+
+                            LogUtil.e("battery===", "==="+s1);  //0202016478A2FBC2537CA17B22DB9AE9
+
+//                            if (TextUtils.isEmpty(data)) {
+//                                tvCz.setText(R.string.battery_fail);
+//                            } else {
+//                                tvCz.setText(R.string.battery_success);
+//                                tvBattery.setText(getText(R.string.battery) + String.valueOf(Integer.parseInt(data, 16)));
+//                            }
+
+                            tv_electricity.setText(Integer.parseInt(s1.substring(6, 8), 16)+"%");
+
+                        }else if(s1.startsWith("020202")){    //电量2
+
+                            LogUtil.e("battery2===", "==="+s1);  //020202 64 00 0E42 0000 E100E040270020
+
+//                            if (TextUtils.isEmpty(data)) {
+//                                tvCz.setText(R.string.battery_fail);
+//                            } else {
+//                                tvCz.setText(R.string.battery_success);
+//                                tvBattery.setText(getText(R.string.battery) + String.valueOf(Integer.parseInt(data, 16)));
+//                            }
+
+                            tv_electricity.setText(Integer.parseInt(s1.substring(10, 14), 16)/1000f+"V");
+
+                        }else if(s1.startsWith("058502")){
+
+                            LogUtil.e("xinbiao===", "当前操作：搜索信标成功"+s1.substring(2*10, 2*10+2)+"==="+s1.substring(2*11, 2*11+2)+"==="+s1);
+
+                            if("000000000000".equals(s1.substring(2*4, 2*10))){
+                                major = 0;
+                            }else{
+                                major = 1;
+                            }
+
+                        }else {
+                            LogUtil.e("s1===", loadingDialog.isShowing()+"==="+"==="+s1);  //CB05010100B2F70703C0906C2D5E3A51
+
+//                                            if(isOpenLock && s1.startsWith("CB0501")){
+//                                                openLock();
+//                                            }
+
+//                                            closeLoadingDialog();
+                        }
+                    }
+                });
+
+
+
+
+//                        EventBus.getDefault().post(BleNotifyEvent(decode));
+
+//                        else if(s1.startsWith("050F")){
+//                            LogUtil.e("closeLock===2", "==="+s1);        //050F0101017A0020782400200F690300
+//
+////                            if("01".equals(s1.substring(6, 8))){
+////                                Toast.makeText(context, "锁已关闭", Toast.LENGTH_LONG).show();
+////                            }else{
+////                                Toast.makeText(context, "锁已打开", Toast.LENGTH_LONG).show();
+////                            }
+//
+//                            isStop = true;
+//                            isLookPsdBtn = true;
+//
+//                            closeLoadingDialog2();
+//
+//                            if ("01".equals(s1.substring(6, 8))) {
+//                                ToastUtil.showMessageApp(context,"锁已关闭");
+//                                LogUtil.e("biking===", "biking===锁已关闭==="+first3);
+//
+//                                if(!isEndBtn) return;
+//
+//                                m_myHandler.sendEmptyMessage(6);
+//                            } else {
+//                                //锁已开启
+//                                ToastUtil.showMessageApp(context,"车锁未关，请手动关锁");
+//                            }
+//                        }
+
+            }
+        });
+
+    }
+
 
     private void getBleToken(){
         String s = new GetTokenTxOrder().generateString();  //06010101490E602E46311640422E5238
