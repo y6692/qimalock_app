@@ -351,9 +351,6 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
         });
         customDialog = customBuilder.create();
 
-
-
-
     }
 
     private void initView() {

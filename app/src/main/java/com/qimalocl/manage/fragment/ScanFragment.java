@@ -553,6 +553,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             if(mapView!=null){
                 mapView.setVisibility(View.VISIBLE);
+
+//                if("".equals(jsonObject.getString("latitude"))){
+//                    myLocation = new LatLng(31.76446, 119.920594);
+//                }else{
+//                    myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
+//                }
+
+                //TODO
+                LatLng myLocation = new LatLng(32.76446, 119.920594);
+                addChooseMarker();
+                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
             }
 
 
@@ -602,14 +613,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         @Override
         public void onReceive(Context context, final Intent intent) {
 
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//
-//
-//
-//                }
-//            }).start();
 
             LogUtil.e("scan===mReceiver0", "==="+intent);
 
@@ -1059,38 +1062,28 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        myAdapter.setDatas(null);
 //        lv_msg.setAdapter(myAdapter);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                while (true){
+//                    LogUtil.e("sf===thread", "==="+isMsgThread);
+//
+//                    if(isMsgThread){
+//                        LogUtil.e("sf===1", "===");
+////                        m_myHandler.sendEmptyMessage(0);
+//                    }
+//
+//                    try {
+//                        Thread.sleep(2*1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//            }
+//        }).start();
 
-                while (true){
-                    LogUtil.e("sf===thread", "==="+isMsgThread);
-
-                    if(isMsgThread){
-                        LogUtil.e("sf===1", "===");
-//                        m_myHandler.sendEmptyMessage(0);
-                    }
-
-                    try {
-                        Thread.sleep(2*1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }).start();
-
-//        final List<String> info = new ArrayList<>();
-//        info.add("恭喜172*****824的代理6月13号成交6200元，已完成签收");
-//        info.add("恭喜130*****060的代理6月13号成交35000元，已完成签收");
-//        info.add("恭喜182*****244的代理6月13号成交19000元，已完成签收");
-//        info.add("恭喜152*****496的代理6月13号成交800元，已完成签收");
-//        info.add("恭喜180*****664的代理6月13号成交9900元，已完成签收");
-//        info.add("恭喜131*****527的代理6月13号成交7600元，已完成签收");
-//        marqueeView.startWithList(info);
-//        String notice = "心中有阳光，脚底有力量！心中有阳光，脚底有力量！心中有阳光，脚底有力量！";
-//        marqueeView.startWithText(notice);
         marqueeView.setOnItemClickListener(new MarqueeView.OnItemClickListener() {
             @Override
             public void onItemClick(int position, TextView textView) {
@@ -1140,9 +1133,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             if (null == convertView) {
                 convertView = inflater.inflate(R.layout.item_msg, null);
             }
-
-
-
 
             TextView tv_msg = BaseViewHolder.get(convertView, R.id.tv_msg);
 
