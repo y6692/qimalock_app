@@ -20,8 +20,8 @@ android {
         applicationId "com.qimalocl.manage"
         minSdkVersion 18
         targetSdkVersion 28
-        versionCode 2011
-        versionName "2.0.11"
+        versionCode 2012
+        versionName "2.0.12"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
 
