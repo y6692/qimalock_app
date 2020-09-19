@@ -103,7 +103,6 @@ import java.util.Set;
 import butterknife.BuildConfig;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import cn.jock.pickerview.view.view.OptionsPickerView;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -127,9 +126,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ImageView authState;
     private TextView userName, roleName;
 
-    private TextView schoolName;
+    private MarqueTextView schoolName;
 
-    private LinearLayout ll_schoolName;
+    private LinearLayout curRouteLayout, hisRouteLayout;
     private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, superzoneLayout, changePhoneLayout, authLayout, inviteLayout;
 
     private TextView tv_low_power_count, tv_scrapped_count, tv_superzone_count;
@@ -219,12 +218,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     MineDataFragment mineDataFragment;
     MineDataBikeFragment mineDataBikeFragment;
     MineDataEbikeFragment mineDataEbikeFragment;
-
-    private OptionsPickerView pvOptions;
-    private ArrayList<String> item = new ArrayList<>();
-    private ArrayList<SchoolListBean> datas = new ArrayList<>();
-
-    private int school_id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -473,7 +466,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        修好未使用车辆数量
 
 
-        ll_schoolName = getActivity().findViewById(R.id.ll_schoolName);
+
         maintenanceRecordLayout = getActivity().findViewById(R.id.personUI_maintenanceRecordLayout);
         exchangePowerRecordLayout = getActivity().findViewById(R.id.personUI_exchangePowerRecordLayout);
         lowPowerLayout = getActivity().findViewById(R.id.personUI_lowPowerLayout);
@@ -488,7 +481,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        headerImageView.setOnClickListener(this);
 
 
-        ll_schoolName.setOnClickListener(this);
+
         maintenanceRecordLayout.setOnClickListener(this);
         exchangePowerRecordLayout.setOnClickListener(this);
         lowPowerLayout.setOnClickListener(this);
@@ -503,26 +496,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         vp = getActivity().findViewById(R.id.vp);
 
 
-        pvOptions = new OptionsPickerView(context,false);
-        pvOptions.setTitle("选择学校");
 
-        pvOptions.setPicker(item);
-        pvOptions.setCyclic(false, false, false);
-        pvOptions.setSelectOptions(0, 0, 0);
-
-        pvOptions.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
-
-            @Override
-            public void onOptionsSelect(int options1, int option2, int options3) {
-
-                school_id = datas.get(options1).getId();
-
-//                order_type = options1;
-                schoolName.setText(datas.get(options1).getName());
-
-                LogUtil.e("minef===pvOptions", school_id+"==="+datas.get(options1).getName());
-            }
-        });
 
 //        billRule();
     }
@@ -1052,10 +1026,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 intent.setClass(context, SettingActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, 10);
-                break;
-
-            case R.id.ll_schoolName:
-                pvOptions.show();
                 break;
 
 
@@ -1693,46 +1663,22 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
                                 UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
-//                              myPurse.setText(bean.getMoney());
-//                              myIntegral.setText(bean.getPoints());
-                                userName.setText(bean.getPhone());
+//                            myPurse.setText(bean.getMoney());
+//                            myIntegral.setText(bean.getPoints());
+                                userName.setText(bean.getName());
 
                                 String[] schools = bean.getSchools();
 
                                 LogUtil.e("minef===initHttp2", schools+"===");
 
-//                                if(schools!=null && schools.length>0){
-//
-//                                    LogUtil.e("minef===initHttp3", schools[0]+"===");
-//
-//                                    SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
-//
-//                                    schoolName.setText(bean2.getName());
-//                                }
+                                if(schools!=null && schools.length>0){
 
-//                                if (schoolList.size() != 0 || !schoolList.isEmpty()){
-//                                    schoolList.clear();
-//                                }
-                                if (datas.size() != 0 || !datas.isEmpty()){
-                                    datas.clear();
+                                    LogUtil.e("minef===initHttp3", schools[0]+"===");
+
+                                    SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+
+                                    schoolName.setText(bean2.getName());
                                 }
-                                if (item.size() != 0 || !item.isEmpty()){
-                                    item.clear();
-                                }
-
-                                for (int i = 0; i < schools.length;i++){
-                                    SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
-//                                    schoolList.add(bean2);
-                                    datas.add(bean2);
-                                    item.add(bean2.getName());
-
-                                    if(i==0){
-                                        school_id = bean2.getId();
-                                        schoolName.setText(bean2.getName());
-                                    }
-                                }
-
-
 
                                 String[] roles = bean.getRoles();
                                 if(roles!=null && roles.length>0){

@@ -307,6 +307,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private String electricity = "";
     private String carmodel_name = "";
     private String bad_reason = "";
+    private String battery_name = "";
     private int lock_status;
     private int status;
     private int can_finish_order;
@@ -391,6 +392,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     MyAdapter myAdapter;
     int index;
     public static boolean isMsgThread = false;
+
+    private Handler m_myHandler2 = new Handler();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -561,9 +564,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                }
 
                 //TODO
-                LatLng myLocation = new LatLng(32.76446, 119.920594);
-                addChooseMarker();
-                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
+//                LatLng myLocation = new LatLng(32.76446, 119.920594);
+//                addChooseMarker();
+//                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
             }
 
 
@@ -631,6 +634,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                        myAdapter.setDatas(null);
 //                        myAdapter.notifyDataSetChanged();
+                        marqueeView.startWithList(null);
 
 //                        isMsgThread = false;
 
@@ -1205,6 +1209,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 status = bean.getStatus();
                                 can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
                                 bad_reason = bean.getBad_reason();
+                                battery_name = bean.getBattery_name();
 
                                 String lock_secretkey = bean.getLock_secretkey();
                                 String lock_password = bean.getLock_password();
@@ -1578,6 +1583,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_status = customView.findViewById(R.id.tv_lock_status);
         TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
         tv_electricity = customView.findViewById(R.id.tv_electricity);
+        TextView tv_battery_name = customView.findViewById(R.id.tv_battery_name);
 
 //        lock_switcher = customView.findViewById(R.id.lock_switcher);
         LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
@@ -1604,6 +1610,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
+        tv_battery_name.setText(battery_name);
         tv_bad_reason.setText("损坏部位："+bad_reason);
         tv_bad_reason2.setText("损坏部位："+bad_reason);
 
@@ -1858,6 +1865,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_status = customView.findViewById(R.id.tv_lock_status);
         TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
         TextView tv_electricity = customView.findViewById(R.id.tv_electricity);
+        TextView tv_battery_name = customView.findViewById(R.id.tv_battery_name);
 
 //        lock_switcher = customView.findViewById(R.id.lock_switcher);
         LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
@@ -1882,6 +1890,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
+        tv_battery_name.setText(battery_name);
         tv_bad_reason.setText("损坏部位："+bad_reason);
 
         if(can_finish_order==1){
@@ -3413,24 +3422,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 tbtble_connect();
 
                                 isConnect = false;
-                                m_myHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (!isConnect){
-//                                          closeLoadingDialog();
-
-                                            LogUtil.e("mf===11==timeout", isConnect + "==="+activity.isFinishing());
-
-//                                            if (apiClient != null) {
-//                                                apiClient.disConnect();
-//                                                apiClient.onDestroy();
-//                                                apiClient=null;
-//                                            }
-
-                                            unlock();
-                                        }
-                                    }
-                                }, timeout);
+//                                m_myHandler2.postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        if (!isConnect){
+////                                          closeLoadingDialog();
+//
+//                                            LogUtil.e("mf===11==timeout", isConnect + "==="+activity.isFinishing());
+//
+//                                            TbitBle.disConnect();
+//
+//                                            unlock();
+//                                        }
+//                                    }
+//                                }, timeout);
                             }else{
                                 tbtble_unlock();
                             }
@@ -3548,18 +3553,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             tbtble_connect();
 
                             isConnect = false;
-                            m_myHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!isConnect){
-//                                          closeLoadingDialog();
-
-                                        LogUtil.e("close===11==timeout", isConnect + "==="+activity.isFinishing());
-
-                                        lock();
-                                    }
-                                }
-                            }, timeout);
+//                            m_myHandler2.postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    if (!isConnect){
+////                                          closeLoadingDialog();
+//
+//                                        LogUtil.e("close===11==timeout", isConnect + "==="+activity.isFinishing());
+//
+//                                        TbitBle.disConnect();
+//
+//                                        lock();
+//                                    }
+//                                }
+//                            }, timeout);
                         }else{
                             tbtble_lock();
                         }
@@ -3658,6 +3665,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             // 连接回应
 //                            final String tvAgain = tv_againBtn.getText().toString().trim();
                             LogUtil.e("tbtble_connect===1", resultCode+"==="+isOpenLock+"==="+isEndBtn+"==="+isAgain);
+//                            m_myHandler2.removeCallbacksAndMessages(null);
 
                             if(resultCode==0){
 //                                if(isAgain){
@@ -6367,6 +6375,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             status = data.getIntExtra("status", 0);
                             can_finish_order = data.getIntExtra("can_finish_order", 0);
                             bad_reason = data.getStringExtra("bad_reason");
+                            battery_name = data.getStringExtra("battery_name");
                             isMac = data.getBooleanExtra("isMac", false);
                             isSearch = data.getBooleanExtra("isSearch", false);
 

@@ -364,12 +364,14 @@ public class LowPowerDetailActivity extends SwipeBackActivity implements View.On
 
             TextView tv_number = BaseViewHolder.get(convertView,R.id.tv_number);
             TextView tv_electricity = BaseViewHolder.get(convertView,R.id.tv_electricity);
+            TextView tv_battery_name = BaseViewHolder.get(convertView,R.id.tv_battery_name);
             TextView tv_total_time = BaseViewHolder.get(convertView,R.id.tv_total_time);
             TextView tv_low_start_time = BaseViewHolder.get(convertView,R.id.tv_low_start_time);
 
             LowPowerDetailBean bean = getDatas().get(position);
             tv_number.setText(bean.getNumber());
             tv_electricity.setText(bean.getElectricity());
+            tv_battery_name.setText(bean.getBattery_name());
             tv_total_time.setText(bean.getTotal_time());
             tv_low_start_time.setText(bean.getLow_start_time());
 

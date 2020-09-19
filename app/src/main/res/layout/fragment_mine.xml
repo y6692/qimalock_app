@@ -130,7 +130,6 @@
                         </RelativeLayout>
 
                         <LinearLayout
-                            android:id="@+id/ll_schoolName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="9dp"
@@ -138,7 +137,6 @@
                             android:gravity="center_vertical">
 
                             <TextView
-                                android:visibility="gone"
                                 android:id="@+id/personUI_roleName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="25dp"
@@ -146,34 +144,17 @@
                                 android:textColor="@color/white"
                                 android:text=""/>
 
-<!--                            <com.qimalocl.manage.core.widget.MarqueTextView-->
-
-<!--                                android:id="@+id/personUI_schoolName"-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="25dp"-->
-<!--                                android:textSize="@dimen/sp16"-->
-<!--                                android:textColor="@color/white"-->
-<!--                                android:singleLine="true"-->
-<!--                                android:ellipsize="marquee"-->
-<!--                                android:marqueeRepeatLimit="marquee_forever"-->
-<!--                                android:text="123"/>-->
-
-                            <TextView
-
+                            <com.qimalocl.manage.core.widget.MarqueTextView
+                                android:visibility="gone"
                                 android:id="@+id/personUI_schoolName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="25dp"
                                 android:textSize="@dimen/sp16"
                                 android:textColor="@color/white"
                                 android:singleLine="true"
+                                android:ellipsize="marquee"
+                                android:marqueeRepeatLimit="marquee_forever"
                                 android:text=""/>
-
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="8dp"
-                                android:layout_marginLeft="9dp"
-                                android:src="@drawable/s_down"
-                                />
 
                             <!--android:focusable="true"-->
                             <!--android:focusableInTouchMode="true"-->

@@ -160,6 +160,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
     private int status;
 	private int can_finish_order;
 	private String bad_reason = "";
+	private String battery_name = "";
 
 	private boolean isSearch = false;
 
@@ -1519,6 +1520,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									status = bean.getStatus();
 									can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
 									bad_reason = bean.getBad_reason();
+									battery_name = bean.getBattery_name();
 
 									String lock_secretkey = bean.getLock_secretkey();
 									String lock_password = bean.getLock_password();
@@ -1531,7 +1533,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 										Config.passwordnew = Config.passwordnew2;
 									}
 
-									LogUtil.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason+"==="+Config.newKey[0]+"==="+Config.passwordnew[0]);
+									LogUtil.e("Scan===", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+status+"==="+can_finish_order+"==="+bad_reason+"==="+battery_name+"==="+Config.newKey[0]+"==="+Config.passwordnew[0]);
 
 									if(isBindSchool){
 
@@ -1586,6 +1588,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 											intent.putExtra("status", status);
 											intent.putExtra("can_finish_order", can_finish_order);
 											intent.putExtra("bad_reason", bad_reason);
+											intent.putExtra("battery_name", battery_name);
 											intent.putExtra("isMac",false);
 											intent.putExtra("isSearch",isSearch);
 
@@ -1694,6 +1697,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									status = bean.getStatus();	//	车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
 									can_finish_order = bean.getCan_finish_order();	//可否结束订单（有无进行中行程）1有 0无
 									bad_reason = bean.getBad_reason();
+									battery_name = bean.getBattery_name();
 
 									Intent intent = new Intent();
 									intent.putExtra("codenum", codenum);
@@ -1711,6 +1715,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									intent.putExtra("status", status);
 									intent.putExtra("can_finish_order", can_finish_order);
 									intent.putExtra("bad_reason", bad_reason);
+									intent.putExtra("battery_name", battery_name);
 
 									LogUtil.e("lockinfo===", "==="+AesTool.Genkey("CGFDV0ETMGTWGHUB", deviceuuid).replace(" ", "").toLowerCase());
 
@@ -2011,6 +2016,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                     intent.putExtra("status", status);
 					intent.putExtra("can_finish_order", can_finish_order);
 					intent.putExtra("bad_reason", bad_reason);
+					intent.putExtra("battery_name", battery_name);
 					intent.putExtra("isMac",true);
 					intent.putExtra("isSearch",isSearch);
 //					intent.putExtra("pdk",jsonObject.getString("pdk"));		//TODO
@@ -2057,6 +2063,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
                 intent.putExtra("status", status);
 				intent.putExtra("can_finish_order", can_finish_order);
 				intent.putExtra("bad_reason", bad_reason);
+				intent.putExtra("battery_name", battery_name);
 				intent.putExtra("isMac",is);
 				intent.putExtra("isSearch",isSearch);
 //				intent.putExtra("pdk",jsonObject.getString("pdk"));
