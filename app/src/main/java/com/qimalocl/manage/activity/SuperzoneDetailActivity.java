@@ -44,6 +44,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+
 
 /**
  * Created by Administrator1 on 2017/2/13.
@@ -252,7 +254,7 @@ public class SuperzoneDetailActivity extends SwipeBackActivity implements View.O
 //    }
 
     private void initHttp(){
-        LogUtil.e("over_area_cars===initHttp", date+"==="+type+"==="+showPage);
+        LogUtil.e("over_area_cars===initHttp", school_id+"==="+date+"==="+type+"==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -261,9 +263,7 @@ public class SuperzoneDetailActivity extends SwipeBackActivity implements View.O
             return;
         }
         RequestParams params = new RequestParams();
-//        params.put("date", date);
-//        params.put("page",showPage);
-//        params.put("per_page", GlobalConfig.PAGE_SIZE);
+        params.put("school_id", school_id);
 
         HttpHelper.get(context, Urls.over_area_cars, params, new TextHttpResponseHandler() {
 

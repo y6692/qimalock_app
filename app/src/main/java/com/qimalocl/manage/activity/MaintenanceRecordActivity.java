@@ -38,6 +38,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+
 
 /**
  * Created by Administrator1 on 2017/2/13.
@@ -183,7 +185,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
     }
     private void initHttp(){
 
-        LogUtil.e("mra===initHttp", "==="+showPage);
+        LogUtil.e("mra===initHttp", school_id+"==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -192,6 +194,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
             return;
         }
         RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
         params.put("page",showPage);
 //        params.put("pagesize", GlobalConfig.PAGE_SIZE);
 

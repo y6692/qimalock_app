@@ -56,6 +56,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
+import static com.qimalocl.manage.base.BaseApplication.school_id;
 
 @SuppressLint("NewApi")
 public class MineDataEbikeFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
@@ -138,9 +139,8 @@ public class MineDataEbikeFragment extends BaseFragment implements View.OnClickL
         context = getActivity();
         activity = getActivity();
 
-        datas = new ArrayList<>();
-
-        cars = activity.getIntent().getStringExtra("cars");
+//        datas = new ArrayList<>();
+//        cars = activity.getIntent().getStringExtra("cars");
 
         initView();
 
@@ -245,13 +245,16 @@ public class MineDataEbikeFragment extends BaseFragment implements View.OnClickL
     }
 
     public void orders() {
-        LogUtil.e("mdef===orders", "==="+isHidden());
+        LogUtil.e("mdef===orders", school_id+"==="+isHidden());
 
         if(isHidden()) return;
 
+        RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
+
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
         if (access_token != null && !"".equals(access_token)) {
-            HttpHelper.get(context, Urls.orders, new TextHttpResponseHandler() {
+            HttpHelper.get(context, Urls.orders, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -291,6 +294,8 @@ public class MineDataEbikeFragment extends BaseFragment implements View.OnClickL
                                         tv_yesterday_order_count.setText(bean.getYesterday_order_count());
                                         tv_yesterday_daily_car_count.setText(bean.getYesterday_daily_car_count());
                                         tv_yesterday_daily_rate.setText(bean.getYesterday_daily_rate());
+
+                                        break;
                                     }
                                 }
 

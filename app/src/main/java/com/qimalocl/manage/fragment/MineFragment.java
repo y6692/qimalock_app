@@ -24,6 +24,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -42,6 +43,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.amap.api.maps.model.LatLng;
+import com.google.gson.Gson;
+import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.DispatchDetailActivity;
@@ -103,8 +107,16 @@ import java.util.Set;
 import butterknife.BuildConfig;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cn.jock.pickerview.view.view.OptionsPickerView;
 
 import static android.app.Activity.RESULT_OK;
+
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+import static com.qimalocl.manage.base.BaseApplication.school_name;
+import static com.qimalocl.manage.base.BaseApplication.school_longitude;
+import static com.qimalocl.manage.base.BaseApplication.school_latitude;
+import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
+
 
 @SuppressLint("NewApi")
 public class MineFragment extends BaseFragment implements View.OnClickListener{
@@ -126,9 +138,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ImageView authState;
     private TextView userName, roleName;
 
-    private MarqueTextView schoolName;
+    private TextView schoolName;
 
-    private LinearLayout curRouteLayout, hisRouteLayout;
+    private LinearLayout ll_schoolName;
     private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, superzoneLayout, changePhoneLayout, authLayout, inviteLayout;
 
     private TextView tv_low_power_count, tv_scrapped_count, tv_superzone_count;
@@ -219,6 +231,12 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     MineDataBikeFragment mineDataBikeFragment;
     MineDataEbikeFragment mineDataEbikeFragment;
 
+    private OptionsPickerView pvOptions;
+    private ArrayList<String> item = new ArrayList<>();
+    private ArrayList<SchoolListBean> datas = new ArrayList<>();
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mine, null);
@@ -280,7 +298,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                     if(isMineThread){
                         LogUtil.e("minef===1", "===");
-                        m_myHandler.sendEmptyMessage(1);
+//                        m_myHandler.sendEmptyMessage(1);
                     }
 
                 }
@@ -466,7 +484,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        修好未使用车辆数量
 
 
-
+        ll_schoolName = getActivity().findViewById(R.id.ll_schoolName);
         maintenanceRecordLayout = getActivity().findViewById(R.id.personUI_maintenanceRecordLayout);
         exchangePowerRecordLayout = getActivity().findViewById(R.id.personUI_exchangePowerRecordLayout);
         lowPowerLayout = getActivity().findViewById(R.id.personUI_lowPowerLayout);
@@ -481,7 +499,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //        headerImageView.setOnClickListener(this);
 
 
-
+        ll_schoolName.setOnClickListener(this);
         maintenanceRecordLayout.setOnClickListener(this);
         exchangePowerRecordLayout.setOnClickListener(this);
         lowPowerLayout.setOnClickListener(this);
@@ -496,7 +514,174 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         vp = getActivity().findViewById(R.id.vp);
 
 
+        pvOptions = new OptionsPickerView(context,false);
+        pvOptions.setTitle("选择学校");
 
+        pvOptions.setPicker(item);
+        pvOptions.setCyclic(false, false, false);
+        pvOptions.setSelectOptions(0, 0, 0);
+
+        pvOptions.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
+
+            @Override
+            public void onOptionsSelect(int options1, int option2, int options3) {
+
+                SchoolListBean bean = datas.get(options1);
+                school_id = bean.getId();
+                school_name = bean.getName();
+                school_latitude = bean.getLatitude();
+                school_longitude = bean.getLongitude();
+                school_carmodel_ids = bean.getCarmodel_ids();
+
+                Gson gson = new Gson();
+                SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
+                SharedPreferencesUrls.getInstance().putString("school_name", school_name);
+                SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
+                SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
+                SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
+
+//                order_type = options1;
+                schoolName.setText(school_name);
+
+                int[] carmodels = school_carmodel_ids;
+
+                LogUtil.e("minef===pvOptions", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
+
+                if(carmodels==null || carmodels.length==0){
+                    carmodel = 0;
+                }else if(carmodels!=null && carmodels.length>0){
+
+                    LogUtil.e("minef===pvOptions1", "===");
+
+                    if(carmodels.length==1){
+                        if(carmodels[0]==1){
+                            carmodel = 1;
+                        }else if(carmodels[0]==2){
+                            carmodel = 2;
+                        }
+                    }else if(carmodels.length==2){
+                        carmodel = 3;
+                    }
+
+                }
+
+                LogUtil.e("minef===pvOptions2", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+school_carmodel_ids.length+"==="+carmodel);
+
+
+                if(myPagerAdapter==null){
+
+                }
+
+
+                if(fragmentList.size()>0){
+                    fragmentList.clear();
+                }
+
+                LogUtil.e("MyPagerAdapter===", carmodel+"==="+fragmentList);
+
+                if(mineDataFragment==null){
+                    mineDataFragment = new MineDataFragment();
+                }else{
+                    mineDataFragment.onDestroy();
+                    mineDataFragment = new MineDataFragment();
+                }
+
+
+                fragmentList.add(mineDataFragment);
+                if(carmodel==1){
+                    if(mineDataBikeFragment==null){
+                        mineDataBikeFragment = new MineDataBikeFragment();
+                    }else{
+                        mineDataBikeFragment.onDestroy();
+                        mineDataBikeFragment = new MineDataBikeFragment();
+                    }
+
+                    fragmentList.add(mineDataBikeFragment);
+                }else if(carmodel==2){
+                    if(mineDataEbikeFragment==null){
+                        mineDataEbikeFragment = new MineDataEbikeFragment();
+                    }else{
+                        mineDataEbikeFragment.onDestroy();
+                        mineDataEbikeFragment = new MineDataEbikeFragment();
+                    }
+
+                    fragmentList.add(mineDataEbikeFragment);
+                }else if(carmodel==3){
+                    if(mineDataBikeFragment==null){
+                        mineDataBikeFragment = new MineDataBikeFragment();
+                    }else{
+                        mineDataBikeFragment.onDestroy();
+                        mineDataBikeFragment = new MineDataBikeFragment();
+                    }
+                    if(mineDataEbikeFragment==null){
+                        mineDataEbikeFragment = new MineDataEbikeFragment();
+                    }else{
+                        mineDataEbikeFragment.onDestroy();
+                        mineDataEbikeFragment = new MineDataEbikeFragment();
+                    }
+                    fragmentList.add(mineDataBikeFragment);
+                    fragmentList.add(mineDataEbikeFragment);
+                }
+
+
+//                myPagerAdapter.notifyDataSetChanged();
+
+                myPagerAdapter = new MyPagerAdapter(getFragmentManager());
+                vp.setAdapter(myPagerAdapter);
+                tab.setupWithViewPager(vp);
+
+                vp.setCurrentItem(0);
+
+                vp.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    }
+
+                    @Override public void onPageSelected(int position) {
+                        vp.setCurrentItem(position);
+                    }
+
+                    @Override public void onPageScrollStateChanged(int state) {
+                    }
+                });
+
+
+
+                carbatteryaction_lowpower();
+                carbadaction_scrapped();
+                over_area_cars();
+
+                if(mineDataFragment!=null){
+                    mineDataFragment.datas();
+                }
+
+                if(carmodel==1){
+                    if(mineDataBikeFragment!=null){
+                        mineDataBikeFragment.orders();
+                    }
+                }else if(carmodel==2){
+                    if(mineDataEbikeFragment!=null){
+                        mineDataEbikeFragment.orders();
+                    }
+                }else if(carmodel==3){
+                    if(mineDataBikeFragment!=null){
+                        mineDataBikeFragment.orders();
+                    }
+
+                    if(mineDataEbikeFragment!=null){
+                        mineDataEbikeFragment.orders();
+                    }
+                }
+
+
+
+
+
+
+
+                LogUtil.e("minef===pvOptions",  school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+school_carmodel_ids);
+            }
+        });
 
 //        billRule();
     }
@@ -1028,6 +1213,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 startActivityForResult(intent, 10);
                 break;
 
+            case R.id.ll_schoolName:
+                pvOptions.show();
+                break;
+
 
             case R.id.personUI_maintenanceRecordLayout:
                 UIHelper.goToAct(context, MaintenanceRecordActivity.class);
@@ -1140,15 +1329,17 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
     private void carbatteryaction_lowpower(){
 
-        LogUtil.e("lowpower===", "===");
+        LogUtil.e("lowpower===", school_id+"===");
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
+
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
 //            RequestParams params = new RequestParams();
 //            params.put("uid",uid);
 //            params.put("access_token",access_token);
-            HttpHelper.get(context, Urls.carbatteryaction_lowpower, new TextHttpResponseHandler() {
+            HttpHelper.get(context, Urls.carbatteryaction_lowpower, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    onStartCommon("正在加载");
@@ -1304,15 +1495,17 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
     private void carbadaction_scrapped(){
-        LogUtil.e("scrapped===", "===");
+        LogUtil.e("scrapped===", school_id+"===");
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
+
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
 //            RequestParams params = new RequestParams();
 //            params.put("uid",uid);
 //            params.put("access_token",access_token);
-            HttpHelper.get(context, Urls.carbadaction_scrapped, new TextHttpResponseHandler() {
+            HttpHelper.get(context, Urls.carbadaction_scrapped, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    onStartCommon("正在加载");
@@ -1376,15 +1569,17 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
     private void over_area_cars(){
-        LogUtil.e("over_area_cars===", "===");
+        LogUtil.e("over_area_cars===", school_id+"===");
 
-//        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
+        RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
+
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
 //            RequestParams params = new RequestParams();
 //            params.put("uid",uid);
 //            params.put("access_token",access_token);
-            HttpHelper.get(context, Urls.over_area_cars, new TextHttpResponseHandler() {
+            HttpHelper.get(context, Urls.over_area_cars, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    onStartCommon("正在加载");
@@ -1411,7 +1606,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //
                                 LogUtil.e("over_area_cars===2", "==="+object.getString("count"));
 
-                                tv_superzone_count.setText(""+object.getString("count"));
+                                String count = object.getString("count")==null?"0":object.getString("count");
+
+                                tv_superzone_count.setText(""+count);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -1445,21 +1642,22 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 case 1:
                     initHttp();
 //                      datas();
-                    carbatteryaction_lowpower();
-                    carbadaction_scrapped();
-                    over_area_cars();
 
-                    if(mineDataFragment!=null){
-                        mineDataFragment.datas();
-                    }
-
-                    if(mineDataBikeFragment!=null){
-                        mineDataBikeFragment.orders();
-                    }
-
-                    if(mineDataEbikeFragment!=null){
-                        mineDataEbikeFragment.orders();
-                    }
+//                    carbatteryaction_lowpower();
+//                    carbadaction_scrapped();
+//                    over_area_cars();
+//
+//                    if(mineDataFragment!=null){
+//                        mineDataFragment.datas();
+//                    }
+//
+//                    if(mineDataBikeFragment!=null){
+//                        mineDataBikeFragment.orders();
+//                    }
+//
+//                    if(mineDataEbikeFragment!=null){
+//                        mineDataEbikeFragment.orders();
+//                    }
 
 
                     break;
@@ -1663,22 +1861,79 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
                                 UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
-//                            myPurse.setText(bean.getMoney());
-//                            myIntegral.setText(bean.getPoints());
-                                userName.setText(bean.getName());
+//                              myPurse.setText(bean.getMoney());
+//                              myIntegral.setText(bean.getPoints());
+                                userName.setText(bean.getPhone());
 
                                 String[] schools = bean.getSchools();
 
                                 LogUtil.e("minef===initHttp2", schools+"===");
 
-                                if(schools!=null && schools.length>0){
+//                                if(schools!=null && schools.length>0){
+//
+//                                    LogUtil.e("minef===initHttp3", schools[0]+"===");
+//
+//                                    SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+//
+//                                    schoolName.setText(bean2.getName());
+//                                }
 
-                                    LogUtil.e("minef===initHttp3", schools[0]+"===");
-
-                                    SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
-
-                                    schoolName.setText(bean2.getName());
+//                                if (schoolList.size() != 0 || !schoolList.isEmpty()){
+//                                    schoolList.clear();
+//                                }
+                                if (datas.size() != 0 || !datas.isEmpty()){
+                                    datas.clear();
                                 }
+                                if (item.size() != 0 || !item.isEmpty()){
+                                    item.clear();
+                                }
+
+                                for (int i = 0; i < schools.length;i++){
+                                    SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
+                                    datas.add(bean2);
+                                    item.add(bean2.getName());
+
+                                    if(i==0){
+                                        school_id = bean2.getId();
+                                        school_name = bean2.getName();
+                                        school_latitude = bean2.getLatitude();
+                                        school_longitude = bean2.getLongitude();
+                                        school_carmodel_ids = bean2.getCarmodel_ids();
+
+                                        Gson gson = new Gson();
+                                        SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
+                                        SharedPreferencesUrls.getInstance().putString("school_name", school_name);
+                                        SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
+                                        SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
+                                        SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
+
+                                        schoolName.setText(school_name);
+
+                                        int[] carmodels = school_carmodel_ids;
+
+                                        LogUtil.e("minef===initHttp5", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
+
+                                        if(carmodels==null || carmodels.length==0){
+                                            carmodel = 0;
+                                        }else if(carmodels!=null && carmodels.length>0){
+
+                                            LogUtil.e("minef===initHttp4", "===");
+
+                                            if(carmodels.length==1){
+                                                if(carmodels[0]==1){
+                                                    carmodel = 1;
+                                                }else if(carmodels[0]==2){
+                                                    carmodel = 2;
+                                                }
+                                            }else if(carmodels.length==2){
+                                                carmodel = 3;
+                                            }
+
+                                        }
+                                    }
+                                }
+
+
 
                                 String[] roles = bean.getRoles();
                                 if(roles!=null && roles.length>0){
@@ -1692,24 +1947,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                    m_myHandler.sendEmptyMessage(0);
                                 }
 
-                                int[] carmodels = bean.getCarmodels();
-                                if(carmodels==null || carmodels.length==0){
-                                    carmodel = 0;
-                                }else if(carmodels!=null && carmodels.length>0){
 
-                                    LogUtil.e("minef===initHttp4", "===");
-
-                                    if(carmodels.length==1){
-                                        if(carmodels[0]==1){
-                                            carmodel = 1;
-                                        }else if(carmodels[0]==2){
-                                            carmodel = 2;
-                                        }
-                                    }else if(carmodels.length==2){
-                                        carmodel = 3;
-                                    }
-
-                                }
 
                                 if(myPagerAdapter==null){
                                     myPagerAdapter = new MyPagerAdapter(getFragmentManager());
@@ -1730,9 +1968,28 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                         @Override public void onPageScrollStateChanged(int state) {
                                         }
                                     });
-
-                                    LogUtil.e("minef===initHttp5", carmodels.length+"==="+carmodels);
                                 }
+
+
+                                LogUtil.e("minef===initHttp6", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+school_carmodel_ids.length);
+
+                                carbatteryaction_lowpower();
+                                carbadaction_scrapped();
+                                over_area_cars();
+
+                                if(mineDataFragment!=null){
+                                    mineDataFragment.datas();
+                                }
+
+                                if(mineDataBikeFragment!=null){
+                                    mineDataBikeFragment.orders();
+                                }
+
+                                if(mineDataEbikeFragment!=null){
+                                    mineDataEbikeFragment.orders();
+                                }
+
+
 
 
 //                        if(bean.getUnread_count()==0){
@@ -1777,29 +2034,62 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
 
 
-
-    class MyPagerAdapter extends FragmentPagerAdapter {
+    private List<Fragment> fragmentList = new ArrayList<>();
+    class MyPagerAdapter extends FragmentStatePagerAdapter {
 //        private String[] titles = new String[]{"车辆信息", "调运起始点", "照片"};
-        private List<Fragment> fragmentList;
+
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
 
-            mineDataFragment = new MineDataFragment();
 
 
+            if(fragmentList.size()>0){
+                fragmentList.clear();
+            }
 
-            fragmentList = new ArrayList<>();
+            LogUtil.e("MyPagerAdapter===", carmodel+"==="+fragmentList);
+
+            if(mineDataFragment==null){
+                mineDataFragment = new MineDataFragment();
+            }else{
+                mineDataFragment.onDestroy();
+                mineDataFragment = new MineDataFragment();
+            }
+
+
             fragmentList.add(mineDataFragment);
             if(carmodel==1){
-                mineDataBikeFragment = new MineDataBikeFragment();
+                if(mineDataBikeFragment==null){
+                    mineDataBikeFragment = new MineDataBikeFragment();
+                }else{
+                    mineDataBikeFragment.onDestroy();
+                    mineDataBikeFragment = new MineDataBikeFragment();
+                }
+
                 fragmentList.add(mineDataBikeFragment);
             }else if(carmodel==2){
-                mineDataEbikeFragment = new MineDataEbikeFragment();
+                if(mineDataEbikeFragment==null){
+                    mineDataEbikeFragment = new MineDataEbikeFragment();
+                }else{
+                    mineDataEbikeFragment.onDestroy();
+                    mineDataEbikeFragment = new MineDataEbikeFragment();
+                }
+
                 fragmentList.add(mineDataEbikeFragment);
             }else if(carmodel==3){
-                mineDataBikeFragment = new MineDataBikeFragment();
-                mineDataEbikeFragment = new MineDataEbikeFragment();
+                if(mineDataBikeFragment==null){
+                    mineDataBikeFragment = new MineDataBikeFragment();
+                }else{
+                    mineDataBikeFragment.onDestroy();
+                    mineDataBikeFragment = new MineDataBikeFragment();
+                }
+                if(mineDataEbikeFragment==null){
+                    mineDataEbikeFragment = new MineDataEbikeFragment();
+                }else{
+                    mineDataEbikeFragment.onDestroy();
+                    mineDataEbikeFragment = new MineDataEbikeFragment();
+                }
                 fragmentList.add(mineDataBikeFragment);
                 fragmentList.add(mineDataEbikeFragment);
             }

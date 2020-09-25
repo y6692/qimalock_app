@@ -222,7 +222,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
                                 JSONObject jsonObject = new JSONObject(result.getData());
 
                                 if("".equals(jsonObject.getString("latitude"))){
-                                    myLocation = new LatLng(31.76446, 119.920594);
+                                    myLocation = new LatLng(31.76446, 119.920594);  //latitude:31.76446,    longitude:119.920594
                                 }else{
                                     myLocation = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
                                 }

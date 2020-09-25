@@ -36,6 +36,7 @@ import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,6 +44,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -125,6 +127,7 @@ import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.PowerExchangeBean;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.SchoolListBean;
 import com.qimalocl.manage.model.Sentence;
 import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.model.UserIndexBean;
@@ -208,7 +211,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //    @BindView(R.id.lv_msg) ListView lv_msg;
     @BindView(R.id.mainUI_msg) LinearLayout llMsg;
     @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
-    @BindView(R.id.mainUI_scanCode_lock) LinearLayout scanCodeBtn;
+
     @BindView(R.id.mainUI_leftBtn) TextView leftBtn;
     @BindView(R.id.mainUI_scanCode_lookRecordBtn) Button lookBtn;
     @BindView(R.id.mainUI_lookLocationBtn) LinearLayout lookLocationBtn;
@@ -234,8 +237,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.switcher_ebike) Switch switcher_ebike;
     @BindView(R.id.mainUI_bikeLayout) LinearLayout bikeLayout;
     @BindView(R.id.mainUI_ebikeLayout) LinearLayout ebikeLayout;
+    @BindView(R.id.mainUI_conditionLayout) LinearLayout conditionLayout;
+//    @BindView(R.id.mainUI_scanCode_lock) LinearLayout scanCodeBtn;
 
     @BindView(R.id.mainUI_refresh) ImageView iv_refresh;
+
+    private LinearLayout scanCodeBtn;
 
     private TextView tv_electricity;
     private TextView tv_lock_status;
@@ -394,6 +401,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public static boolean isMsgThread = false;
 
     private Handler m_myHandler2 = new Handler();
+
+    private View customView;
+    private RelativeLayout pop_win_bg;
+    private ImageView iv_popup_window_cond_back;
+    private PopupWindow popupwindowCond;
+
+    private CheckBox cb_1;
+    private CheckBox cb_2;
+    private CheckBox cb_3;
+    private CheckBox cb_4;
+    private CheckBox cb_5;
+    private CheckBox cb_6;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -876,6 +895,62 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
+
+
+        customView = getLayoutInflater().inflate(R.layout.pop_main_condition, null, false);
+        // 创建PopupWindow宽度和高度
+        pop_win_bg = customView.findViewById(R.id.pop_low_power_bg);
+        iv_popup_window_cond_back = customView.findViewById(R.id.popupWindowCond_back);
+
+        cb_1 = customView.findViewById(R.id.cb_1);
+        cb_2 = customView.findViewById(R.id.cb_2);
+        cb_3 = customView.findViewById(R.id.cb_3);
+        cb_4 = customView.findViewById(R.id.cb_4);
+        cb_5 = customView.findViewById(R.id.cb_5);
+        cb_6 = customView.findViewById(R.id.cb_6);
+
+//        cb_2.setText("只看坏车");
+//        cb_3.setVisibility(View.GONE);
+//        LogUtil.e("cb_2====", "==="+cb_2.getText());
+
+        iv_popup_window_cond_back.setOnClickListener(this);
+
+        // 获取截图的Bitmap
+        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+        if (bitmap != null) {
+            // 将截屏Bitma放入ImageView
+            iv_popup_window_cond_back.setImageBitmap(bitmap);
+            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+            UtilBitmap.blurImageView(context, iv_popup_window_cond_back, 10,0xAA000000);
+        } else {
+            // 获取的Bitmap为null时，用半透明代替
+            iv_popup_window_cond_back.setBackgroundColor(0x77000000);
+        }
+//        // 打开弹窗
+//        UtilAnim.showToUp(pop_win_bg, iv_popup_window_back_low_power);
+        // 创建PopupWindow宽度和高度
+        popupwindowCond = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
+        //设置动画效果 ,从上到下加载方式等，不设置自动的下拉，最好 [动画效果不好，不加实现下拉效果，不错]
+        popupwindowCond .setAnimationStyle(R.style.PopupAnimation);
+        popupwindowCond .setOutsideTouchable(false);
+
+//        customView.setFocusable(true);
+//        customView.setFocusableInTouchMode(true);
+        customView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                LogUtil.e("popup===onKey", "==="+keyCode);
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+//                    dismissPopupWindow();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        iv_popup_window_cond_back.setOnClickListener(this);
+
+
 //        customBuilder = new CustomDialog.Builder(context);
 
         dialogReason = new Dialog(context, R.style.Theme_AppCompat_Dialog);
@@ -983,9 +1058,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         bikeDescripter_tbtf_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_brown_icon);
 
 
-
-
-
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -1029,12 +1101,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        //更新View
 //        tvMsg.updateUI();
 
+        scanCodeBtn = activity.findViewById(R.id.mainUI_scanCode_lock);
+
 
         llMsg.setOnClickListener(this);
         rightBtn.setOnClickListener(this);
         leftBtn.setOnClickListener(this);
         lookBtn.setOnClickListener(this);
-        scanCodeBtn.setOnClickListener(this);
+
         lookLocationBtn.setOnClickListener(this);
         changeKeyBtn.setOnClickListener(this);
         storeageLayout.setOnClickListener(this);
@@ -1052,9 +1126,19 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         switcher_over_area.setOnClickListener(this);
         switcher_bike.setOnClickListener(this);
         switcher_ebike.setOnClickListener(this);
+        cb_1.setOnClickListener(this);
+        cb_2.setOnClickListener(this);
+        cb_3.setOnClickListener(this);
+        cb_4.setOnClickListener(this);
+        cb_5.setOnClickListener(this);
+        cb_6.setOnClickListener(this);
+        conditionLayout.setOnClickListener(this);
+        scanCodeBtn.setOnClickListener(this);
 
         switcher_bike.setChecked(true);
         switcher_ebike.setChecked(true);
+        cb_2.setChecked(true);
+        cb_3.setChecked(true);
 
 //        lv_msg.setOnItemClickListener(this);
 
@@ -2432,62 +2516,129 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                 LogUtil.e("initHttp===0", "==="+responseString);
 
+                                cb_1.setVisibility(View.GONE);
+                                cb_2.setVisibility(View.GONE);
+                                cb_3.setVisibility(View.GONE);
+                                cb_4.setVisibility(View.GONE);
+                                cb_5.setVisibility(View.GONE);
+                                cb_6.setVisibility(View.GONE);
+                                cb_1.setChecked(false);
+                                cb_2.setChecked(false);
+                                cb_3.setChecked(false);
+                                cb_4.setChecked(false);
+                                cb_5.setChecked(false);
+                                cb_6.setChecked(false);
+                                cb_1.setText("");
+                                cb_2.setText("");
+                                cb_3.setText("");
+                                cb_4.setText("");
+                                cb_5.setText("");
+                                cb_6.setText("");
+
+
                                 UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
 
-//                                String[] schools = bean.getSchools();
-//                                if(schools!=null && schools.length>0){
-//                                    LogUtil.e("initHttp===", "==="+schools[0]);
-//
-////                                    if("江苏理工学院".equals(schools[0]) || "泰山医学院".equals(schools[0]) || "中国矿业大学（南湖校区）".equals(schools[0]) || "河南财经政法大学".equals(schools[0])){
-////                                        carmodel_id = 2;
-////                                        switcher_type.setChecked(true);
-////                                    }else{
-////                                        carmodel_id = 1;
-////                                        switcher_type.setChecked(false);
-////                                    }
-//                                }
+                                String[] schools = bean.getSchools();
+                                if(schools!=null && schools.length>0){
+                                    LogUtil.e("initHttp===", "==="+schools[0]);
 
-                                int[] carmodels = bean.getCarmodels();
-                                if(carmodels==null || carmodels.length==0){
-                                    bikeLayout.setVisibility(View.GONE);
-                                    ebikeLayout.setVisibility(View.GONE);
+                                    for (int i = 0; i < schools.length;i++){
+                                        SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
 
-                                    switcher_bike.setChecked(false);
-                                    switcher_ebike.setChecked(false);
-                                }else if(carmodels!=null && carmodels.length>0){
+                                        if(i==0){
+                                            int[] carmodels = bean2.getCarmodel_ids();
 
-                                    LogUtil.e("minef===initHttp4", "===");
+                                            LogUtil.e("initHttp===1", switcher_bike.isChecked()+"==="+switcher_ebike.isChecked()+"==="+carmodels);
 
+                                            if(carmodels==null || carmodels.length==0){
+                                                cb_1.setVisibility(View.VISIBLE);
+                                                cb_2.setVisibility(View.VISIBLE);
+                                                cb_1.setChecked(false);
+                                                cb_2.setChecked(false);
+                                                cb_1.setText("只看超区");
+                                                cb_2.setText("只看坏车");
+                                            }else if(carmodels!=null && carmodels.length>0){
 
-                                    if(carmodels.length==1){
-                                        bikeLayout.setVisibility(View.GONE);
-                                        ebikeLayout.setVisibility(View.GONE);
+                                                LogUtil.e("minef===initHttp4", "===");
 
-                                        if(carmodels[0]==1){
-                                            switcher_bike.setChecked(true);
-                                            switcher_ebike.setChecked(false);
-                                        }else if(carmodels[0]==2){
-                                            switcher_bike.setChecked(false);
-                                            switcher_ebike.setChecked(true);
+                                                if(carmodels.length==1){
+                                                    bikeLayout.setVisibility(View.GONE);
+                                                    ebikeLayout.setVisibility(View.GONE);
+
+                                                    if(carmodels[0]==1){
+                                                        switcher_bike.setChecked(true);
+                                                        switcher_ebike.setChecked(false);
+                                                    }else if(carmodels[0]==2){
+                                                        switcher_bike.setChecked(false);
+                                                        switcher_ebike.setChecked(true);
+                                                    }
+                                                }else if(carmodels.length==2){
+                                                    cb_1.setVisibility(View.VISIBLE);
+                                                    cb_2.setVisibility(View.VISIBLE);
+                                                    cb_3.setVisibility(View.VISIBLE);
+                                                    cb_4.setVisibility(View.VISIBLE);
+                                                    cb_5.setVisibility(View.VISIBLE);
+                                                    cb_6.setVisibility(View.VISIBLE);
+                                                    cb_1.setChecked(false);
+                                                    cb_2.setChecked(true);
+                                                    cb_3.setChecked(true);
+                                                    cb_4.setChecked(false);
+                                                    cb_5.setChecked(false);
+                                                    cb_6.setChecked(false);
+                                                    cb_1.setText("只看超区");
+                                                    cb_2.setText("只看单车");
+                                                    cb_3.setText("只看电单车");
+                                                    cb_4.setText("只看坏车");
+                                                    cb_5.setText("只看低电");
+                                                    cb_6.setText("只看超低电");
+
+                                                    is_bike = true;
+                                                    is_ebike = true;
+                                                }
+
+                                            }
                                         }
-                                    }else if(carmodels.length==2){
-                                        bikeLayout.setVisibility(View.VISIBLE);
-                                        ebikeLayout.setVisibility(View.VISIBLE);
-
-                                        switcher_bike.setChecked(true);
-                                        switcher_ebike.setChecked(true);
                                     }
 
-//                                    role = roles[0];
-//                                    roleName.setText(roles[0]);
-//                                    roleName.setSelected(true);
-
-//                                    m_myHandler.sendEmptyMessage(0);
                                 }
 
 
 
-                                LogUtil.e("initHttp===1", switcher_bike.isChecked()+"==="+switcher_ebike.isChecked()+"==="+carmodels);
+
+
+//                                if(carmodels==null || carmodels.length==0){
+//                                    bikeLayout.setVisibility(View.GONE);
+//                                    ebikeLayout.setVisibility(View.GONE);
+//
+//                                    switcher_bike.setChecked(false);
+//                                    switcher_ebike.setChecked(false);
+//                                }else if(carmodels!=null && carmodels.length>0){
+//
+//                                    LogUtil.e("minef===initHttp4", "===");
+//
+//                                    if(carmodels.length==1){
+//                                        bikeLayout.setVisibility(View.GONE);
+//                                        ebikeLayout.setVisibility(View.GONE);
+//
+//                                        if(carmodels[0]==1){
+//                                            switcher_bike.setChecked(true);
+//                                            switcher_ebike.setChecked(false);
+//                                        }else if(carmodels[0]==2){
+//                                            switcher_bike.setChecked(false);
+//                                            switcher_ebike.setChecked(true);
+//                                        }
+//                                    }else if(carmodels.length==2){
+//                                        bikeLayout.setVisibility(View.VISIBLE);
+//                                        ebikeLayout.setVisibility(View.VISIBLE);
+//
+//                                        switcher_bike.setChecked(true);
+//                                        switcher_ebike.setChecked(true);
+//                                    }
+//
+//                                }
+
+
+
 
 
 //                                initNearby(latitude, longitude);
@@ -2769,41 +2920,45 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         });
     }
 
+    int carType = 0;
     public void cars(final boolean isFresh){
+
+
+
 
         RequestParams params = new RequestParams();
 
-        int carType = 3;
-        if(switcher_bike.isChecked()){
-            carType = 1;
-        }
 
-        if(switcher_ebike.isChecked()){
-            if(switcher_bike.isChecked()){
-                carType = 0;
-            }else{
-                carType = 2;
-            }
-        }
-
-
-        switchType = 0;
-        if(switcher_bad.isChecked()){
-            switchType = 1;
-        }
-
-        if(switcher.isChecked()){
-            if(switcher_bad.isChecked()){
-                switchType = 3;
-            }else{
-                switchType = 2;
-            }
-        }
-
-        is_area = 0;
-        if(switcher_over_area.isChecked()){
-            is_area = 1;
-        }
+//        if(switcher_bike.isChecked()){
+//            carType = 1;
+//        }
+//
+//        if(switcher_ebike.isChecked()){
+//            if(switcher_bike.isChecked()){
+//                carType = 0;
+//            }else{
+//                carType = 2;
+//            }
+//        }
+//
+//
+//        switchType = 0;
+//        if(switcher_bad.isChecked()){
+//            switchType = 1;
+//        }
+//
+//        if(switcher.isChecked()){
+//            if(switcher_bad.isChecked()){
+//                switchType = 3;
+//            }else{
+//                switchType = 2;
+//            }
+//        }
+//
+//        is_area = 0;
+//        if(switcher_over_area.isChecked()){
+//            is_area = 1;
+//        }
 
         params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
         params.put("car_type", switchType);  //0全部 1只看坏车 2只看低电 3只看坏车+只看低电
@@ -3229,6 +3384,84 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 cars(true);
                 break;
 
+            case R.id.cb_1:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+                LogUtil.e("biking==cb_1", cb_1.getText()+"==="+cb_1.isChecked());
+
+                checkCondition(cb_1);
+
+                cars(true);
+                break;
+
+            case R.id.cb_2:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+                LogUtil.e("biking==cb_2", cb_2.getText()+"==="+cb_2.isChecked());
+
+                checkCondition(cb_2);
+
+                cars(true);
+                break;
+
+            case R.id.cb_3:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+                LogUtil.e("biking==cb_3", cb_3.getText()+"==="+cb_3.isChecked());
+
+                checkCondition(cb_3);
+
+                cars(true);
+                break;
+
+            case R.id.cb_4:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+                LogUtil.e("biking==cb_4", cb_4.getText()+"==="+cb_4.isChecked());
+
+                checkCondition(cb_4);
+
+                cars(true);
+                break;
+
+            case R.id.cb_5:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+                LogUtil.e("biking==cb_3", cb_5.getText()+"==="+cb_5.isChecked());
+
+                checkCondition(cb_5);
+
+                cars(true);
+                break;
+
+            case R.id.cb_6:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+                LogUtil.e("biking==cb_3", cb_6.getText()+"==="+cb_6.isChecked());
+
+                checkCondition(cb_6);
+
+                cars(true);
+                break;
+
             case R.id.mainUI_myLocationLayout:
                 if (myLocation != null) {
                     CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
@@ -3538,9 +3771,132 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 battery_unlock();
                 break;
 
+            case R.id.mainUI_conditionLayout:
+
+                LogUtil.e("_lowPowerLayout===", "==="+popupwindowCond);
+
+                if(popupwindowCond==null || !popupwindowCond.isShowing()){
+                    initmPopupWindowViewCond();
+                }
+
+                break;
+
+            case R.id.popupWindowCond_back:
+                popupwindowCond.dismiss();
+                break;
+
             default:
                 break;
         }
+    }
+
+    boolean is_bike;
+    boolean is_ebike;
+    void checkCondition(CheckBox cb){
+//        int carType = 3;
+//        if(switcher_bike.isChecked()){
+//            carType = 1;
+//        }
+//
+//        if(switcher_ebike.isChecked()){
+//            if(switcher_bike.isChecked()){
+//                carType = 0;
+//            }else{
+//                carType = 2;
+//            }
+//        }
+//
+//
+//        switchType = 0;
+//        if(switcher_bad.isChecked()){
+//            switchType = 1;
+//        }
+//
+//        if(switcher.isChecked()){
+//            if(switcher_bad.isChecked()){
+//                switchType = 3;
+//            }else{
+//                switchType = 2;
+//            }
+//        }
+//
+//        is_area = 0;
+//        if(switcher_over_area.isChecked()){
+//            is_area = 1;
+//        }
+//
+//        params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
+//        params.put("car_type", switchType);  //0全部 1只看坏车 2只看低电 3只看坏车+只看低电
+//        params.put("is_area", is_area);  //0默认 1查看超区
+
+        if("只看超区".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_area = 1;
+            }else{
+                is_area = 0;
+            }
+        }else if("只看坏车".equals(cb.getText())){
+
+
+
+        }else if("只看单车".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_bike = true;
+            }else{
+                is_bike = false;
+            }
+
+            carType = 3;
+            if(is_bike){
+                carType = 1;
+            }
+
+            if(is_ebike){
+                if(is_bike){
+                    carType = 0;
+                }else{
+                    carType = 2;
+                }
+            }
+
+        }else if("只看电单车".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_ebike = true;
+            }else{
+                is_ebike = false;
+            }
+
+            carType = 3;
+            if(is_bike){
+                carType = 1;
+            }
+
+            if(is_ebike){
+                if(is_bike){
+                    carType = 0;
+                }else{
+                    carType = 2;
+                }
+            }
+
+        }else if("只看低电".equals(cb.getText())){
+
+        }else if("只看超低电".equals(cb.getText())){
+
+        }
+    }
+
+    public void initmPopupWindowViewCond(){
+
+        // 打开弹窗
+        UtilAnim.showToUp(pop_win_bg, iv_popup_window_cond_back);
+
+        popupwindowCond.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+//        isLowPowerLayout = false;
+
+
+        LogUtil.e("initmPopup===", "===");
+
     }
 
     //泰比特连接

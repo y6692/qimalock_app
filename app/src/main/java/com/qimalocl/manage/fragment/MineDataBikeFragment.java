@@ -59,6 +59,12 @@ import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+import static com.qimalocl.manage.base.BaseApplication.school_name;
+import static com.qimalocl.manage.base.BaseApplication.school_longitude;
+import static com.qimalocl.manage.base.BaseApplication.school_latitude;
+import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
+
 @SuppressLint("NewApi")
 public class MineDataBikeFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener{
@@ -140,9 +146,8 @@ public class MineDataBikeFragment extends BaseFragment implements View.OnClickLi
         context = getActivity();
         activity = getActivity();
 
-        datas = new ArrayList<>();
-
-        cars = activity.getIntent().getStringExtra("cars");
+//        datas = new ArrayList<>();
+//        cars = activity.getIntent().getStringExtra("cars");
 
         initView();
 
@@ -247,13 +252,16 @@ public class MineDataBikeFragment extends BaseFragment implements View.OnClickLi
     }
 
     public void orders() {
-        LogUtil.e("mdbf===orders", "==="+isHidden());
+        LogUtil.e("mdbf===orders", school_id+"==="+isHidden());
 
         if(isHidden()) return;
 
+        RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
+
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
         if (access_token != null && !"".equals(access_token)) {
-            HttpHelper.get(context, Urls.orders, new TextHttpResponseHandler() {
+            HttpHelper.get(context, Urls.orders, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    if (loadingDialog != null && !loadingDialog.isShowing()) {
@@ -280,7 +288,6 @@ public class MineDataBikeFragment extends BaseFragment implements View.OnClickLi
                                 JSONArray jsonArray = new JSONArray(result.getData());
 
                                 for (int i = 0; i < jsonArray.length(); i++) {
-//                            JSONObject jsonObject = jsonArray2.getJSONObject(j);
 
                                     LogUtil.e("mdbf===orders2", "==="+jsonArray.getString(i));
 
@@ -293,6 +300,8 @@ public class MineDataBikeFragment extends BaseFragment implements View.OnClickLi
                                         tv_yesterday_order_count.setText(bean.getYesterday_order_count());
                                         tv_yesterday_daily_car_count.setText(bean.getYesterday_daily_car_count());
                                         tv_yesterday_daily_rate.setText(bean.getYesterday_daily_rate());
+
+                                        break;
                                     }
                                 }
 

@@ -31,9 +31,10 @@ public class UserBean {
     private int unread_count; //未读消息数 为0时不显示红点 否则显示红点
 
     private String avatar;  //用户头像 没有显示默认头像
+    private String role_level; //当前用户角色等级 0、默认 1、调度员 2、运维主管 3、投资人 (用于菜单显示判断)
     private String[] roles;  //用户角色数组 取第一个角色显示
     private String[] schools;  //用户管辖学校数组 取第一个管辖学校显示 另：车绑学校选择列表也用该数据
-    private int[] carmodels;  //用户管辖车型ID数组 1、单车 2、助力车
+//    private int[] carmodels;  //用户管辖车型ID数组 1、单车 2、助力车
 
 
     public void setId(int id) {
@@ -237,11 +238,11 @@ public class UserBean {
         this.schools = schools;
     }
 
-    public int[] getCarmodels() {
-        return carmodels;
-    }
-
-    public void setCarmodels(int[] carmodels) {
-        this.carmodels = carmodels;
-    }
+//    public int[] getCarmodels() {
+//        return carmodels;
+//    }
+//
+//    public void setCarmodels(int[] carmodels) {
+//        this.carmodels = carmodels;
+//    }
 }

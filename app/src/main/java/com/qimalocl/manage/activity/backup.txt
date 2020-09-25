@@ -1,3 +1,11 @@
+//                                    if("江苏理工学院".equals(schools[0]) || "泰山医学院".equals(schools[0]) || "中国矿业大学（南湖校区）".equals(schools[0]) || "河南财经政法大学".equals(schools[0])){
+//                                        carmodel_id = 2;
+//                                        switcher_type.setChecked(true);
+//                                    }else{
+//                                        carmodel_id = 1;
+//                                        switcher_type.setChecked(false);
+//                                    }
+
                                 //给View传递数据
 //                tvMsg.setList(list2);
 

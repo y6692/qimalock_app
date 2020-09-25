@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:fitsSystemWindows="true"
+    android:background="@color/transparent"
     android:clipToPadding="true"
     android:orientation="vertical">
 
@@ -12,15 +12,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/ui_backgroud"
+        android:background="@color/transparent"
         android:layout_below="@id/mainUI_titleLayout"
         android:layout_weight="1">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <FrameLayout
                 android:id="@+id/fl_change"
@@ -29,19 +27,32 @@
                 android:layout_weight="1">
             </FrameLayout>
 
-            <LinearLayout
+<!--            android:background="@color/ui_backgroud"-->
+<!--            android:background="@color/transparent"-->
+<!--            android:background="@color/white"-->
+<!--            android:background="#ffffff"-->
+<!--            android:background="#dcdcdc"-->
+<!--            android:background="#00000000"-->
+
+            <RelativeLayout
                 android:id="@+id/ll_tab"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+
                 android:orientation="vertical">
                 <View android:layout_width="match_parent"
                     android:layout_height="1px"
-                    android:background="#dcdcdc"></View>
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="60dp"
+                    android:background="#dcdcdc"
+                    ></View>
                 <com.flyco.tablayout.CommonTabLayout
                     android:id="@+id/tab"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:background="#ffffff"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/white"
                     app:tl_iconHeight="25dp"
                     app:tl_iconWidth="25dp"
                     app:tl_indicator_color="@color/theme_color"
@@ -51,8 +62,40 @@
                     app:tl_textsize="12sp"
                     app:tl_underline_color="#DDDDDD"
                     app:tl_underline_height="1dp"/>
-            </LinearLayout>
-        </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/mainUI_scanCode_lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    >
+                    <ImageView
+                        android:id="@+id/ib"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/scan3"
+                        android:background="#00000000"
+                        android:layout_centerInParent="true"
+                        />
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="1dp"-->
+<!--                        android:text="扫码"-->
+<!--                        android:textSize="@dimen/sp12"-->
+<!--                        android:textColor="@color/tx_black"-->
+<!--                        android:layout_centerInParent="true"-->
+<!--                        />-->
+                </LinearLayout>
+
+            </RelativeLayout>
+        </RelativeLayout>
 
 
         <include

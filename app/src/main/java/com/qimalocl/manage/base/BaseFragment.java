@@ -15,15 +15,34 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.utils.LogUtil;
 
+//import static com.qimalocl.manage.base.BaseApplication.school_id;
+//import static com.qimalocl.manage.base.BaseApplication.school_name;
+//import static com.qimalocl.manage.base.BaseApplication.school_longitude;
+//import static com.qimalocl.manage.base.BaseApplication.school_latitude;
+//import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
+
+
 public class BaseFragment extends Fragment {
 	protected LoadingDialog loadingDialog;
 	protected Context context;
 
 	private String STATE_SAVE_IS_HIDDEN = "dasdasdasd";
-	
+
+//	public static int school_id;
+//	public static String school_name;
+//	public static String school_longitude;
+//	public static String school_latitude;
+//	public static int[] school_carmodel_ids;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+//		school_id = BaseApplication.school_id;
+//		school_name = BaseApplication.school_name;
+//		school_longitude = BaseApplication.school_longitude;
+//		school_latitude = BaseApplication.school_latitude;
+//		school_carmodel_ids = BaseApplication.school_carmodel_ids;
 
 		LogUtil.e("bf===onC", savedInstanceState+"==="+isHidden());
 
@@ -66,7 +85,7 @@ public class BaseFragment extends Fragment {
 
 		outState.putBoolean(STATE_SAVE_IS_HIDDEN, isHidden());
 		super.onSaveInstanceState(outState);
-		;
+
 
 
 	}

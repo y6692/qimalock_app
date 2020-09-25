@@ -37,6 +37,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+
 
 /**
  * Created by Administrator1 on 2017/2/13.
@@ -196,6 +198,7 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
         }
         RequestParams params = new RequestParams();
         params.put("date", date);
+        params.put("school_id", school_id);
         params.put("status", status);
         params.put("page",showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);

@@ -10,6 +10,10 @@ public class SchoolListBean {
     private String name;
     private String cert_method;
 
+    private String longitude; //用户管辖学校经度
+    private String latitude; //用户管辖学校纬度
+    private int[] carmodel_ids; //用户管辖学校 对应车型ID数组 1、单车 2、助力车
+
     public int getId() {
         return id;
     }
@@ -32,5 +36,29 @@ public class SchoolListBean {
 
     public void setCert_method(String cert_method) {
         this.cert_method = cert_method;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public int[] getCarmodel_ids() {
+        return carmodel_ids;
+    }
+
+    public void setCarmodel_ids(int[] carmodel_ids) {
+        this.carmodel_ids = carmodel_ids;
     }
 }

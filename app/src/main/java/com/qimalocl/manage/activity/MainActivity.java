@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,12 +87,15 @@ import com.qimalocl.manage.fragment.MineFragment;
 import com.qimalocl.manage.fragment.MissionFragment;
 import com.qimalocl.manage.fragment.QueryFragment;
 import com.qimalocl.manage.fragment.ScanFragment;
+import com.qimalocl.manage.fragment.ScanFragmentPermissionsDispatcher;
 import com.qimalocl.manage.fragment.ToolFragment;
 import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.TabEntity;
 import com.qimalocl.manage.utils.Globals;
 import com.qimalocl.manage.utils.LogUtil;
+import com.qimalocl.manage.utils.ToastUtil;
+import com.xiaoantech.sdk.XiaoanBleApiClient;
 import com.zxing.lib.scaner.CaptureActivityHandler2;
 
 import org.apache.http.Header;
@@ -120,7 +124,9 @@ public class MainActivity extends BaseActivity{
 
     @BindView(R.id.fl_change) FrameLayout flChange;
     @BindView(R.id.tab) CommonTabLayout tab;
-    @BindView(R.id.ll_tab) LinearLayout llTab;
+    @BindView(R.id.ll_tab)
+    RelativeLayout llTab;
+
 
     private Context mContext;
     private ArrayList<Fragment> mFragments = new ArrayList<>();
@@ -132,12 +138,12 @@ public class MainActivity extends BaseActivity{
 //    private int[] mIconSelectIds = {
 //            R.mipmap.scan2, R.mipmap.mission2, R.mipmap.alarm2, R.mipmap.query2,R.mipmap.maintenance2
 //    };
-    private String[] mTitles = { "首页", "任务", "工具", "我的" };
+    private String[] mTitles = { "首页", "任务", "", "工具", "我的" };
     private int[] mIconUnselectIds = {
-            R.mipmap.home, R.mipmap.mission, R.mipmap.tool, R.mipmap.mine
+            R.mipmap.home, R.mipmap.mission, R.mipmap.dot, R.mipmap.tool, R.mipmap.mine
     };
     private int[] mIconSelectIds = {
-            R.mipmap.home2, R.mipmap.mission2, R.mipmap.tool2, R.mipmap.mine2
+            R.mipmap.home2, R.mipmap.mission2, R.mipmap.dot, R.mipmap.tool2, R.mipmap.mine2
     };
 
     private ScanFragment scanFragment;
@@ -293,6 +299,7 @@ public class MainActivity extends BaseActivity{
 
         mFragments.add(scanFragment);
         mFragments.add(missionFragment);
+        mFragments.add(new Fragment());
         mFragments.add(toolFragment);
         mFragments.add(mineFragment);
 
@@ -303,6 +310,8 @@ public class MainActivity extends BaseActivity{
             mTabEntities.add(new TabEntity(mTitles[i], mIconSelectIds[i], mIconUnselectIds[i]));
 
         }
+
+
     }
 
 
@@ -403,7 +412,24 @@ public class MainActivity extends BaseActivity{
 
         tab.setCurrentTab(0);
 
+
+//        for (int i = 0; i < 4; i++) {
+//            TabLayout.Tab tab = tab.getTabAt(i);//获得每一个tab
+//            tab.get
+//
+////            tab.setCustomView(R.layout.tab_item);//给每一个tab设置view
+////            if (i == 0) {
+////                // 设置第一个tab的TextView是被选择的样式
+////                tab.getCustomView().findViewById(R.id.tab_text).setSelected(true);//第一个tab被选中
+////            }
+////            TextView textView = (TextView) tab.getCustomView().findViewById(R.id.tab_text);
+////            textView.setText(titles[i]);//设置tab上的文字
+//        }
+
+
         LogUtil.e("ma===initView", tab.getChildAt(0)+"==="+tab.getChildAt(1));
+
+//        scanCodeBtn.setOnClickListener(this);
 
 //        tab.getChildAt(0).setClickable(false);
 //        tab.onT
@@ -412,6 +438,64 @@ public class MainActivity extends BaseActivity{
 //
 //        tabStrip.getChildAt(1).setClickable(false);
 //        tabStrip.getChildAt(2).setClickable(false);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        switch (v.getId()){
+
+
+//            case R.id.mainUI_scanCode_lock:
+//                if (access_token == null || "".equals(access_token)){
+//                    UIHelper.goToAct(context,LoginActivity.class);
+//                    Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//                }else {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        int checkPermission = context.checkSelfPermission(Manifest.permission.CAMERA);
+//                        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+//                            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+//                                requestPermissions(new String[] { Manifest.permission.CAMERA }, 100);
+//                            } else {
+//                                CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//                                customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开相机权限！")
+//                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                                dialog.cancel();
+//                                            }
+//                                        }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        dialog.cancel();
+//                                        ScanFragment.this.requestPermissions(
+//                                                new String[] { Manifest.permission.CAMERA },
+//                                                100);
+//                                    }
+//                                });
+//                                customBuilder.create().show();
+//                            }
+//                            return;
+//                        }
+//                    }
+//                    try {
+//                        SharedPreferencesUrls.getInstance().putString("type", "");
+//
+//                        end2();
+//
+//                        Intent intent = new Intent();
+//                        intent.setClass(context, ActivityScanerCode.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        intent.putExtra("isChangeKey",false);
+//                        startActivityForResult(intent, 101);
+//                    } catch (Exception e) {
+//                        LogUtil.e("scanCode_lock===e", "==="+e);
+//                        UIHelper.showToastMsg(context, "相机打开失败,请检查相机是否可正常使用", R.drawable.ic_error);
+//                    }
+//                }
+//                break;
+
+            default:
+                break;
+        }
     }
 
 //    @Override

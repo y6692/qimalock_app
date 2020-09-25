@@ -64,6 +64,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
+import static com.qimalocl.manage.base.BaseApplication.school_id;
 
 @SuppressLint("NewApi")
 public class MineDataFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
@@ -253,13 +254,16 @@ public class MineDataFragment extends BaseFragment implements View.OnClickListen
     }
 
     public void datas() {
-        LogUtil.e("minef===datas", "==="+isHidden());
+        LogUtil.e("mdf===datas", school_id+"==="+isHidden());
 
 //        if(isHidden()) return;
 
+        RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
+
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
         if (access_token != null && !"".equals(access_token)) {
-            HttpHelper.get(context, Urls.datas, new TextHttpResponseHandler() {
+            HttpHelper.get(context, Urls.datas, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
 //                    if (loadingDialog != null && !loadingDialog.isShowing()) {
