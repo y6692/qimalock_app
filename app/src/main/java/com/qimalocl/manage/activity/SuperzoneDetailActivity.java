@@ -287,21 +287,18 @@ public class SuperzoneDetailActivity extends SwipeBackActivity implements View.O
 
                     LogUtil.e("over_area_cars===initHttp1", "==="+responseString);
 
-//
-
-
                     com.alibaba.fastjson.JSONObject object = JSON.parseObject(result.getData());
 
-//                                ScrappedBean bean = JSON.parseObject(result.getData(), ScrappedBean.class);
-//
-                    LogUtil.e("over_area_cars===2", "==="+object.getString("data"));
-
+//                  ScrappedBean bean = JSON.parseObject(result.getData(), ScrappedBean.class);
 
                     JSONArray array = new JSONArray(object.getString("data"));
 
-                    if (array.length() == 0 && showPage == 1) {
+                    LogUtil.e("over_area_cars===2", array+"==="+showPage);
+
+                    if ((array==null || array.length() == 0) && showPage == 1) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(4);
+//                        footerLayout.setVisibility(View.GONE);
                         return;
                     }else{
                         footerLayout.setVisibility(View.GONE);

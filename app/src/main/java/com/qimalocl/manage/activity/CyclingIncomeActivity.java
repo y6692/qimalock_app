@@ -2,6 +2,7 @@ package com.qimalocl.manage.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -11,12 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Polygon;
+import com.amap.api.maps.model.PolygonOptions;
 import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -28,10 +32,13 @@ import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.model.GlobalConfig;
-import com.qimalocl.manage.model.PowerExchangeBean;
+import com.qimalocl.manage.model.HistorysRecordBean;
+import com.qimalocl.manage.model.KeyBean;
+import com.qimalocl.manage.model.LowPowerDetailBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.LogUtil;
+import com.qimalocl.manage.utils.ToastUtil;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -50,7 +57,7 @@ import static com.qimalocl.manage.base.BaseApplication.school_id;
  * Created by Administrator1 on 2017/2/13.
  */
 
-public class ExchangePowerRecordActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
+public class CyclingIncomeActivity extends SwipeBackActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
         AdapterView.OnItemClickListener {
 
     private Context context;
@@ -71,30 +78,32 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
     private View footerLayout;
 
     private MyAdapter myAdapter;
-    private List<PowerExchangeBean> data;
+    private List<HistorysRecordBean> data;
     private boolean isRefresh = true;// 是否刷新中
     private boolean isLast = false;
     private int showPage = 1;
 
-    private boolean isManager;
-    private int admin_id;
-    private String timeJson;
+    private String date;
+    private int type;
+
+    private int lock_id;
+    private String lock_title;
 
     private String begintime;
     private String endtime;
 
-    LinearLayout ll_day;
-    TextView tv_day;
+    TextView tv_day, tv_order_amount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exchange_power_record);
+        setContentView(R.layout.activity_cycling_income);
         context = this;
         data = new ArrayList<>();
 
-
-
+        lock_id = getIntent().getIntExtra("lock_id", 0);
+        lock_title = getIntent().getStringExtra("lock_title");
+//        type = getIntent().getIntExtra("type", 1);
 
         initView();
     }
@@ -103,58 +112,12 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText("换电记录");
+        title.setText("骑行收入");
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
-        ll_day = (LinearLayout) findViewById(R.id.ll_day);
         tv_day = (TextView) findViewById(R.id.tv_day);
-
-
-        isManager = getIntent().getBooleanExtra("isManager", false);
-
-        if(isManager){
-            ll_day.setVisibility(View.GONE);
-            timeJson = getIntent().getStringExtra("time");
-        }else{
-            ll_day.setVisibility(View.VISIBLE);
-
-            Date date = new Date();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTime(date);
-            String dateString="";
-            try {
-                calendar.add(calendar.DATE,1);//把日期往后增加一天.整数往后推,负数往前移动
-                date=calendar.getTime(); //这个时间就是日期往后推一天的结果
-                endtime = simpleDateFormat.format(date);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            Date datenow = new Date(System.currentTimeMillis());
-            begintime = simpleDateFormat.format(datenow);
-
-            Log.e("cia===onCreate", begintime+"==="+endtime);
-
-            tv_day.setText(begintime+" 到 "+endtime);
-
-
-            Gson gson = new Gson();
-            List<String> timeList = new ArrayList<>();
-            timeList.add(begintime);
-            timeList.add(endtime);
-
-            timeJson = gson.toJson(timeList);
-        }
-        admin_id = getIntent().getIntExtra("admin_id", 0);
-
-
-
-
-
+        tv_order_amount = (TextView) findViewById(R.id.tv_order_amount);
 
         // list投资列表
         footerView = LayoutInflater.from(context).inflate(R.layout.footer_item, null);
@@ -174,6 +137,28 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_green_dark), getResources().getColor(android.R.color.holo_green_light),
                 getResources().getColor(android.R.color.holo_orange_light), getResources().getColor(android.R.color.holo_red_light));
 
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        String dateString="";
+        try {
+            calendar.add(calendar.DATE,1);//把日期往后增加一天.整数往后推,负数往前移动
+            date=calendar.getTime(); //这个时间就是日期往后推一天的结果
+            endtime = simpleDateFormat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        Date datenow = new Date(System.currentTimeMillis());
+        begintime = simpleDateFormat.format(datenow);
+
+        Log.e("cia===onCreate", begintime+"==="+endtime);
+
+        tv_day.setText(begintime+" 到 "+endtime);
+
         myList.setOnItemClickListener(this);
         if(data.isEmpty()){
             initHttp();
@@ -185,6 +170,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
 
         backImg.setOnClickListener(this);
         tv_day.setOnClickListener(this);
+//        rightBtn.setOnClickListener(this);
         footerLayout.setOnClickListener(this);
     }
 
@@ -249,9 +235,9 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 break;
         }
     }
+
     private void initHttp(){
 
-        LogUtil.e("epra===initHttp", school_id+"==="+admin_id+"==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -259,13 +245,23 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
             return;
         }
-        RequestParams params = new RequestParams();
-//        params.put("page", showPage);
-        params.put("admin_id", admin_id);
-        params.put("school_id", school_id);
-        params.put("time", timeJson);
 
-        HttpHelper.get(context, Urls.carbatteryaction_count, params, new TextHttpResponseHandler() {
+        Gson gson = new Gson();
+        List<String> timeList = new ArrayList<>();
+        timeList.add(begintime);
+        timeList.add(endtime);
+
+        LogUtil.e("cia===initHttp", school_id+"==="+timeList);
+
+        RequestParams params = new RequestParams();
+//        params.put("car_number", codenum);
+        params.put("school_id", school_id);
+        params.put("time", gson.toJson(timeList));
+        params.put("page", showPage);
+        params.put("per_page", GlobalConfig.PAGE_SIZE);
+
+        tv_order_amount.setText("");
+        HttpHelper.get(context, Urls.cyclingorder, params, new TextHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -285,62 +281,36 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    LogUtil.e("epra===initHttp1", "==="+responseString);
-
-//                    footerViewType01 = footerView.findViewById(R.id.footer_Layout_type01);// 点击加载更多
-//                    footerViewType02 = footerView.findViewById(R.id.footer_Layout_type02);// 正在加载，请您稍等
-//                    footerViewType03 = footerView.findViewById(R.id.footer_Layout_type03);// 已无更多
-//                    footerViewType04 = footerView.findViewById(R.id.footer_Layout_type04);// 刷新失败，请重试
-//                    footerViewType05 = footerView.findViewById(R.id.footer_Layout_type05);// 暂无数据
+                    LogUtil.e("cia===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
-//                    if (array.length() == 0 && showPage == 1) {// 暂无数据
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(4);
-//                        return;
-//                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
-//                        footerLayout.setVisibility(View.GONE);
-//                        setFooterType(5);
-//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {// 已无更多
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(2);
-//                    } else if (array.length() >= 10) {// 点击加载更多
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(0);
-//                    }
-
-                    if ((array==null || array.length() == 0) && showPage == 1) {
+                    if (array.length() == 0 && showPage == 1) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(4);
                         return;
                     }else{
                         footerLayout.setVisibility(View.GONE);
                     }
-
-//                    if (array.length() == 0 && showPage == 1) {// 暂无数据
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(4);
-//                        return;
-//                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+//                    else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
 //                        footerLayout.setVisibility(View.GONE);
 //                        setFooterType(5);
-//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {// 已无更多
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
 //                        footerLayout.setVisibility(View.VISIBLE);
 //                        setFooterType(2);
-//                    } else if (array.length() >= 10) {// 点击加载更多
+//                    } else if (array.length() >= 10) {
 //                        footerLayout.setVisibility(View.VISIBLE);
 //                        setFooterType(0);
 //                    }
-//                    setFooterType(0);
-
-                    LogUtil.e("epra===initHttp2", "==="+array.length());
 
                     for (int i = 0; i < array.length(); i++) {
-                        PowerExchangeBean bean = JSON.parseObject(array.getJSONObject(i).toString(), PowerExchangeBean.class);
+                        HistorysRecordBean bean = JSON.parseObject(array.getJSONObject(i).toString(),HistorysRecordBean.class);
                         data.add(bean);
                     }
 
                     myAdapter.notifyDataSetChanged();
+
+
+                    cyclingorder_statistics();
 
                 } catch (Exception e) {
 
@@ -349,6 +319,71 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                     isRefresh = false;
 //                    setFooterVisibility();
                 }
+            }
+        });
+    }
+
+    private void cyclingorder_statistics(){
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Gson gson = new Gson();
+        List<String> timeList = new ArrayList<>();
+        timeList.add(begintime);
+        timeList.add(endtime);
+
+        LogUtil.e("cia===initHttp", school_id+"==="+timeList);
+
+        RequestParams params = new RequestParams();
+        params.put("school_id", school_id);
+        params.put("time", gson.toJson(timeList));
+
+        HttpHelper.get(context, Urls.cyclingorder_statistics, params, new TextHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+                setFooterType(1);
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                UIHelper.ToastError(context, throwable.toString());
+//                swipeRefreshLayout.setRefreshing(false);
+//                isRefresh = false;
+//                setFooterType(3);
+//                setFooterVisibility();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+//                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            LogUtil.e("cyclingorder_s1", "==="+responseString);
+
+                            JSONObject json = JSON.parseObject(responseString);
+
+//
+                            tv_order_amount.setText("共计："+json.getString("order_amount")+"元");
+
+                        } catch (Exception e) {
+
+                        }
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+                });
+
+
+
             }
         });
     }
@@ -364,13 +399,6 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                     tv_day.setText(begintime+" 到 "+endtime);
 
                     LogUtil.e("onActivityResult===",begintime+"==="+endtime+"==="+data);
-
-                    Gson gson = new Gson();
-                    List<String> timeList = new ArrayList<>();
-                    timeList.add(begintime);
-                    timeList.add(endtime);
-
-                    timeJson = gson.toJson(timeList);
 
 //                    onRefresh();
 
@@ -398,25 +426,23 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
 
     private void setFooterType(int type) {
         switch (type) {
-            case 0: // 点击加载更多
+            case 0:
                 isLast = false;
-                showPage += 1;
                 footerViewType01.setVisibility(View.VISIBLE);
                 footerViewType02.setVisibility(View.GONE);
                 footerViewType03.setVisibility(View.GONE);
                 footerViewType04.setVisibility(View.GONE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 1: // 正在加载，请您稍等
+            case 1:
                 isLast = false;
-//                showPage += 1;
                 footerViewType01.setVisibility(View.GONE);
                 footerViewType02.setVisibility(View.VISIBLE);
                 footerViewType03.setVisibility(View.GONE);
                 footerViewType04.setVisibility(View.GONE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 2: // 已无更多
+            case 2:
                 isLast = true;
                 footerViewType01.setVisibility(View.GONE);
                 footerViewType02.setVisibility(View.GONE);
@@ -424,7 +450,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 footerViewType04.setVisibility(View.GONE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 3: // 刷新失败，请重试
+            case 3:
                 isLast = false;
                 // showPage -= 1;
                 footerViewType01.setVisibility(View.GONE);
@@ -433,9 +459,8 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
                 footerViewType04.setVisibility(View.VISIBLE);
                 footerViewType05.setVisibility(View.GONE);
                 break;
-            case 4:// 暂无数据
+            case 4:
                 isLast = true;
-//                showPage += 1;
                 footerViewType01.setVisibility(View.GONE);
                 footerViewType02.setVisibility(View.GONE);
                 footerViewType03.setVisibility(View.GONE);
@@ -459,7 +484,7 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         }
     }
 
-    private class MyAdapter extends BaseViewAdapter<PowerExchangeBean> {
+    private class MyAdapter extends BaseViewAdapter<HistorysRecordBean> {
 
         private LayoutInflater inflater;
 
@@ -471,64 +496,47 @@ public class ExchangePowerRecordActivity extends SwipeBackActivity implements Vi
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (null == convertView) {
-                convertView = inflater.inflate(R.layout.item_exchange_power_record, null);
+                convertView = inflater.inflate(R.layout.item_cycling_income, null);
             }
 
-            LinearLayout ll_valid_power_exchange = BaseViewHolder.get(convertView,R.id.ll_valid_power_exchange);
-            LinearLayout ll_invalid_power_exchange = BaseViewHolder.get(convertView,R.id.ll_invalid_power_exchange);
-            LinearLayout ll_power_exchanging = BaseViewHolder.get(convertView,R.id.ll_power_exchanging);
+            TextView tv_user_name= BaseViewHolder.get(convertView,R.id.tv_user_name);
+            TextView tv_user_phone = BaseViewHolder.get(convertView,R.id.tv_user_phone);
+            TextView tv_car_number = BaseViewHolder.get(convertView,R.id.tv_car_number);
+            TextView tv_carmodel_name = BaseViewHolder.get(convertView,R.id.tv_carmodel_name);
+            TextView tv_cycling_time = BaseViewHolder.get(convertView,R.id.tv_cycling_time);
+            TextView tv_order_state = BaseViewHolder.get(convertView,R.id.tv_order_state);
+            TextView tv_order_amount = BaseViewHolder.get(convertView,R.id.tv_order_amount);
+            TextView tv_payment_time = BaseViewHolder.get(convertView,R.id.tv_payment_time);
 
-            TextView date = BaseViewHolder.get(convertView,R.id.tv_date);
-            TextView car_course = BaseViewHolder.get(convertView,R.id.tv_car_course);
-            TextView car_valid = BaseViewHolder.get(convertView,R.id.tv_car_valid);
-            TextView car_invalid = BaseViewHolder.get(convertView,R.id.tv_car_invalid);
+            HistorysRecordBean bean = getDatas().get(position);
+            tv_user_name.setText(bean.getUser_name());
+            tv_user_phone.setText(bean.getUser_phone());
+            tv_car_number.setText(bean.getCar_number());
+            tv_carmodel_name.setText(bean.getCarmodel_name());
+            tv_cycling_time.setText(bean.getCycling_time());
 
-            final PowerExchangeBean bean = getDatas().get(position);
-            date.setText(bean.getDate());
-            car_course.setText(bean.getCar_course());
-            car_valid.setText(bean.getCar_valid());
-            car_invalid.setText(bean.getCar_invalid());
+            int state = bean.getOrder_state();
+            tv_order_state.setText(""+(state==0?"已取消":state==10?"已下单":state==20?"进行中":state==30?"待支付":"已完成"));   //订单状态 0、已取消 10、已下单 20、进行中 30、待支付 40、已完成
+            tv_order_amount.setText(bean.getOrder_amount());
+            tv_payment_time.setText(bean.getPayment_time());
 
+//            if(status==0){
+//                text_aft_electricity.setText("当前电量：");
+//            }else{
+//                text_aft_electricity.setText("更换后电量：");
+//            }
 
-            ll_power_exchanging.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
-//                    intent.putExtra("date", "2020-2-18");
-                    intent.putExtra("date", bean.getDate());
-                    intent.putExtra("admin_id", admin_id);
-                    intent.putExtra("status", 0);
-                    context.startActivity(intent);
-                }
-
-            });
-
-            ll_valid_power_exchange.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
-                    intent.putExtra("date", bean.getDate());
-                    intent.putExtra("admin_id", admin_id);
-                    intent.putExtra("status", 1);
-                    context.startActivity(intent);
-                }
-
-            });
-
-            ll_invalid_power_exchange.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ExchangePowerDetailActivity.class);
-                    intent.putExtra("date", bean.getDate());
-                    intent.putExtra("admin_id", admin_id);
-                    intent.putExtra("status", 2);
-                    context.startActivity(intent);
-                }
-
-            });
+//            ll_valid_power_exchange.setOnClickListener(new View.OnClickListener(){
+//
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(context, SettlementPlatformActivity.class);
+////                    intent.putExtra("order_type", 1);
+////                    intent.putExtra("order_id", order_id);
+//                    context.startActivity(intent);
+//                }
+//
+//            });
 
             return convertView;
         }

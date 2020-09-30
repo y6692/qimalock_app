@@ -38,6 +38,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+
 
 /**
  * Created by Administrator1 on 2017/2/13.

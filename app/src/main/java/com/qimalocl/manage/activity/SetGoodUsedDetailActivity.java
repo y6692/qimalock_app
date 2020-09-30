@@ -38,6 +38,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+
 
 /**
  * Created by Administrator1 on 2017/2/13.
@@ -70,16 +72,18 @@ public class SetGoodUsedDetailActivity extends SwipeBackActivity implements View
     private int showPage = 1;
 
     private String date;
+    private int admin_id;
     private int type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exchange_power_record);
+        setContentView(R.layout.activity_exchange_power_detail);
         context = this;
         data = new ArrayList<>();
 
         date = getIntent().getStringExtra("date");
+        admin_id = getIntent().getIntExtra("admin_id", 0);
         type = getIntent().getIntExtra("type", 1);
 
         initView();
@@ -198,6 +202,8 @@ public class SetGoodUsedDetailActivity extends SwipeBackActivity implements View
         RequestParams params = new RequestParams();
         params.put("date", date);
         params.put("type", 2);
+        params.put("school_id", school_id);
+        params.put("admin_id", admin_id);
         params.put("page",showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);
 

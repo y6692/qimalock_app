@@ -38,6 +38,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+
 
 /**
  * Created by Administrator1 on 2017/2/13.
@@ -197,8 +199,10 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
         }
         RequestParams params = new RequestParams();
         params.put("type", type);
+        params.put("school_id", school_id);
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
+
 
         LogUtil.e("sguda===0", "===");
 

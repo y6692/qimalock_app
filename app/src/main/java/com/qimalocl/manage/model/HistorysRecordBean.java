@@ -23,7 +23,12 @@ public class HistorysRecordBean {
     private String created_at;   //借车时间
     private String car_end_time;   //还车时间
     private String order_amount;   //订单金额
-    private int order_state;   //订单状态
+    private int order_state;   //订单状态   订单状态 0、已取消 10、已下单 20、进行中 30、待支付 40、已完成
+
+    private int carmodel_id;    //车型ID
+    private String carmodel_name;   //车型名称
+    private String payment_time;    //支付时间
+    private String cycling_time;    //骑行时间
 
     private boolean isLoad; //是否加载过
     private boolean isShowDate; //是否显示日期
@@ -147,6 +152,38 @@ public class HistorysRecordBean {
 
     public void setOrder_state(int order_state) {
         this.order_state = order_state;
+    }
+
+    public int getCarmodel_id() {
+        return carmodel_id;
+    }
+
+    public void setCarmodel_id(int carmodel_id) {
+        this.carmodel_id = carmodel_id;
+    }
+
+    public String getCarmodel_name() {
+        return carmodel_name;
+    }
+
+    public void setCarmodel_name(String carmodel_name) {
+        this.carmodel_name = carmodel_name;
+    }
+
+    public String getPayment_time() {
+        return payment_time;
+    }
+
+    public void setPayment_time(String payment_time) {
+        this.payment_time = payment_time;
+    }
+
+    public String getCycling_time() {
+        return cycling_time;
+    }
+
+    public void setCycling_time(String cycling_time) {
+        this.cycling_time = cycling_time;
     }
 
     public boolean isLoad() {

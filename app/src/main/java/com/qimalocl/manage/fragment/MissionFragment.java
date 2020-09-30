@@ -68,6 +68,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
+import static com.qimalocl.manage.base.BaseApplication.school_id;
 
 @SuppressLint("NewApi")
 public class MissionFragment extends BaseFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener,
@@ -354,8 +355,10 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
         RequestParams params = new RequestParams();
         params.put("type", 1);
+        params.put("school_id", school_id);
         params.put("page", showPage);
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
+
 
 //        LogUtil.e("recycletask===0", totalnum+"==="+codenum);
 
@@ -582,13 +585,6 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.historyLayout:
-                UIHelper.goToAct(context, HistorysRecordActivity.class);
-                break;
-
-            case R.id.locationLayout:
-                UIHelper.goToAct(context, BikeLocationActivity.class);
-                break;
 
             case R.id.footer_Layout:
                 if (!isLast) {

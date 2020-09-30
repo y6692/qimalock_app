@@ -134,7 +134,7 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 
                     LogUtil.e("onSuccess===1", responseString+"==="+result.getStatus_code());
 
-                    if(result.getStatus_code()==401){
+                    if(result.getStatus_code()==401 || result.getStatus_code()==402){
                         LogUtil.e("onSuccess===2", responseString+"==="+result.getStatus_code());
 
                         SharedPreferencesUrls.getInstance().putString("access_token", "");

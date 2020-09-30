@@ -71,16 +71,18 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
     private int showPage = 1;
 
     private String date;
+    private int admin_id;
     private int status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exchange_power_record);
+        setContentView(R.layout.activity_exchange_power_detail);
         context = this;
         data = new ArrayList<>();
 
         date = getIntent().getStringExtra("date");
+        admin_id = getIntent().getIntExtra("admin_id", 0);
         status = getIntent().getIntExtra("status", 0);
 
         initView();
@@ -199,6 +201,7 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
         RequestParams params = new RequestParams();
         params.put("date", date);
         params.put("school_id", school_id);
+        params.put("admin_id", admin_id);
         params.put("status", status);
         params.put("page",showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);

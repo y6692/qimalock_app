@@ -1,3 +1,74 @@
+//                                int[] carmodels = null;
+//                                if(SharedPreferencesUrls.getInstance().getInt("school_id", -1)==-1){
+//                                    UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
+//
+//                                    String[] schools = bean.getSchools();
+//                                    if(schools!=null && schools.length>0){
+//
+//                                        SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+//
+//                                        carmodels = bean2.getCarmodel_ids();
+//
+//                                        LogUtil.e("sf===initHttp1", schools[0]+"==="+carmodels);
+//
+//                                    }
+//                                }else{
+//                                    Gson gson = new Gson();
+//
+//                                    school_id = SharedPreferencesUrls.getInstance().getInt("school_id", -1);
+//                                    school_name = SharedPreferencesUrls.getInstance().getString("school_name", "");
+//                                    school_latitude = SharedPreferencesUrls.getInstance().getString("school_latitude", "");
+//                                    school_longitude = SharedPreferencesUrls.getInstance().getString("school_longitude", "");
+//                                    school_carmodel_ids = gson.fromJson(SharedPreferencesUrls.getInstance().getString("school_carmodel_ids", ""), int[].class);;
+//
+//                                    carmodels = school_carmodel_ids;
+//
+//                                    LogUtil.e("sf===initHttp2", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
+//                                }
+
+
+//                                if(carmodels==null || carmodels.length==0){
+//                                    bikeLayout.setVisibility(View.GONE);
+//                                    ebikeLayout.setVisibility(View.GONE);
+//
+//                                    switcher_bike.setChecked(false);
+//                                    switcher_ebike.setChecked(false);
+//                                }else if(carmodels!=null && carmodels.length>0){
+//
+//                                    LogUtil.e("minef===initHttp4", "===");
+//
+//                                    if(carmodels.length==1){
+//                                        bikeLayout.setVisibility(View.GONE);
+//                                        ebikeLayout.setVisibility(View.GONE);
+//
+//                                        if(carmodels[0]==1){
+//                                            switcher_bike.setChecked(true);
+//                                            switcher_ebike.setChecked(false);
+//                                        }else if(carmodels[0]==2){
+//                                            switcher_bike.setChecked(false);
+//                                            switcher_ebike.setChecked(true);
+//                                        }
+//                                    }else if(carmodels.length==2){
+//                                        bikeLayout.setVisibility(View.VISIBLE);
+//                                        ebikeLayout.setVisibility(View.VISIBLE);
+//
+//                                        switcher_bike.setChecked(true);
+//                                        switcher_ebike.setChecked(true);
+//                                    }
+//
+//                                }
+
+//                                initNearby(latitude, longitude);
+
+
+//                                if (result.getFlag().equals("Success")) {
+//
+//
+//
+//                                } else {
+//                                    Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
+//                                }
+
 //                                    if("江苏理工学院".equals(schools[0]) || "泰山医学院".equals(schools[0]) || "中国矿业大学（南湖校区）".equals(schools[0]) || "河南财经政法大学".equals(schools[0])){
 //                                        carmodel_id = 2;
 //                                        switcher_type.setChecked(true);

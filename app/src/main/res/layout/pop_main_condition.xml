@@ -39,7 +39,7 @@
                 android:background="#eeeeee">
 
                 <TextView
-                    android:id="@+id/tv_1"
+                    android:id="@+id/tv_condition_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp16"
@@ -55,7 +55,7 @@
                     android:text="条件筛选"/>
 
                 <TextView
-                    android:id="@+id/mainUI_title_rightBtn"
+                    android:id="@+id/tv_condition_confirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="确定"

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -35,7 +36,11 @@ import com.qimalocl.manage.utils.LogUtil;
 import org.apache.http.Header;
 import org.json.JSONArray;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.qimalocl.manage.base.BaseApplication.school_id;
@@ -70,8 +75,16 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
     private boolean isRefresh = true;// 是否刷新中
     private boolean isLast = false;
     private int showPage = 1;
-    private String starttime = "";
-    private String endtime = "";
+
+    private boolean isManager;
+    private int admin_id;
+    private String timeJson;
+
+    private String begintime;
+    private String endtime;
+
+    LinearLayout ll_day;
+    TextView tv_day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +102,50 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
         title.setText("维保记录");
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
+
+        ll_day = (LinearLayout) findViewById(R.id.ll_day);
+        tv_day = (TextView) findViewById(R.id.tv_day);
+
+
+        isManager = getIntent().getBooleanExtra("isManager", false);
+
+        if(isManager){
+            ll_day.setVisibility(View.GONE);
+            timeJson = getIntent().getStringExtra("time");
+        }else{
+            ll_day.setVisibility(View.VISIBLE);
+
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(date);
+            String dateString="";
+            try {
+                calendar.add(calendar.DATE,1);//把日期往后增加一天.整数往后推,负数往前移动
+                date=calendar.getTime(); //这个时间就是日期往后推一天的结果
+                endtime = simpleDateFormat.format(date);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            Date datenow = new Date(System.currentTimeMillis());
+            begintime = simpleDateFormat.format(datenow);
+
+            Log.e("cia===onCreate", begintime+"==="+endtime);
+
+            tv_day.setText(begintime+" 到 "+endtime);
+
+
+            Gson gson = new Gson();
+            List<String> timeList = new ArrayList<>();
+            timeList.add(begintime);
+            timeList.add(endtime);
+
+            timeJson = gson.toJson(timeList);
+        }
+        admin_id = getIntent().getIntExtra("admin_id", 0);
 
         // list投资列表
         footerView = LayoutInflater.from(context).inflate(R.layout.footer_item, null);
@@ -118,7 +175,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
         myList.setAdapter(myAdapter);
 
         backImg.setOnClickListener(this);
-//        rightBtn.setOnClickListener(this);
+        tv_day.setOnClickListener(this);
         footerLayout.setOnClickListener(this);
     }
 
@@ -167,7 +224,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
             case R.id.mainUI_title_backBtn:
                 scrollToFinishActivity();
                 break;
-            case R.id.mainUI_title_rightBtn:
+            case R.id.tv_day:
                 Intent intent = new Intent(context,HistoryRoadFiltateActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent,0);
@@ -185,7 +242,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
     }
     private void initHttp(){
 
-        LogUtil.e("mra===initHttp", school_id+"==="+showPage);
+        LogUtil.e("mra===initHttp", school_id+"==="+admin_id+"==="+showPage);
 
 //        String uid = SharedPreferencesUrls.getInstance().getString("uid","");
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
@@ -195,7 +252,9 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
         }
         RequestParams params = new RequestParams();
         params.put("school_id", school_id);
-        params.put("page",showPage);
+        params.put("admin_id", admin_id);
+        params.put("time", timeJson);
+//        params.put("page",showPage);
 //        params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
         HttpHelper.get(context, Urls.carbadaction_count, params, new TextHttpResponseHandler() {
@@ -221,20 +280,30 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
                     LogUtil.e("mra===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
-                    if (array.length() == 0 && showPage == 1) {
+
+                    if ((array==null || array.length() == 0) && showPage == 1) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(4);
                         return;
-                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+                    }else{
                         footerLayout.setVisibility(View.GONE);
-                        setFooterType(5);
-                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-                        footerLayout.setVisibility(View.VISIBLE);
-                        setFooterType(2);
-                    } else if (array.length() >= 10) {
-                        footerLayout.setVisibility(View.VISIBLE);
-                        setFooterType(0);
                     }
+
+
+//                    if (array.length() == 0 && showPage == 1) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(4);
+//                        return;
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
+//                        footerLayout.setVisibility(View.GONE);
+//                        setFooterType(5);
+//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(2);
+//                    } else if (array.length() >= 10) {
+//                        footerLayout.setVisibility(View.VISIBLE);
+//                        setFooterType(0);
+//                    }
                     for (int i = 0; i < array.length(); i++) {
                         MaintenanceBean bean = JSON.parseObject(array.getJSONObject(i).toString(), MaintenanceBean.class);
                         data.add(bean);
@@ -260,20 +329,38 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                     isRefresh = false;
-                    setFooterVisibility();
+//                    setFooterVisibility();
                 }
             }
         });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent idata) {
         switch (requestCode) {
             case 0:
-                if (data != null) {
-                    starttime = data.getExtras().getString("starttime");
-                    endtime = data.getExtras().getString("endtime");
-                    onRefresh();
+                if (idata != null) {
+                    begintime = idata.getExtras().getString("starttime");
+                    endtime = idata.getExtras().getString("endtime");
+
+                    tv_day.setText(begintime+" 到 "+endtime);
+
+                    LogUtil.e("onActivityResult===",begintime+"==="+endtime+"==="+data);
+
+                    Gson gson = new Gson();
+                    List<String> timeList = new ArrayList<>();
+                    timeList.add(begintime);
+                    timeList.add(endtime);
+
+                    timeJson = gson.toJson(timeList);
+
+//                    onRefresh();
+
+                    if(data.size()!=0){
+                        myAdapter.getDatas().clear();
+                        myAdapter.notifyDataSetChanged();
+                    }
+                    initHttp();
                 }
                 break;
 
@@ -389,6 +476,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
                     Intent intent = new Intent(context, SetGoodUsedDetailActivity.class);
 //                    intent.putExtra("date", "2020-02-19");
                     intent.putExtra("date", bean.getDate());
+                    intent.putExtra("admin_id", admin_id);
                     intent.putExtra("type", 1);   //类型 1 已回收 2 投放使用 已修好
                     context.startActivity(intent);
                 }
@@ -402,6 +490,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
                     Intent intent = new Intent(context, RecycleDetailActivity.class);
 //                    intent.putExtra("date", "2020-02-19");
                     intent.putExtra("date", bean.getDate());
+                    intent.putExtra("admin_id", admin_id);
                     context.startActivity(intent);
                 }
 
@@ -414,6 +503,7 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
                     Intent intent = new Intent(context, SetGoodUsedDetailActivity.class);
 //                    intent.putExtra("date", "2020-02-19");
                     intent.putExtra("date", bean.getDate());
+                    intent.putExtra("admin_id", admin_id);
                     intent.putExtra("type", 2);
                     context.startActivity(intent);
                 }

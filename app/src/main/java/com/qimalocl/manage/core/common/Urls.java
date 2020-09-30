@@ -115,12 +115,35 @@ public class Urls {
 	//入库接口
 	public static String lock_in = host2 + "/car/lock_in";
 
-	//车辆历史订单记录查询接口
-	public static String cyclingorder = host2 + "/cyclingorder";
+//	//车辆历史订单记录查询接口
+//	public static String cyclingorder = host2 + "/cyclingorder";
 	//回收任务 未回收(个人中心) 未修好(个人中心) 列表接口
 	public static String recycletask = host2 + "/carbadaction/recycletask";
 	//长期未使用 、修好未使用（个人中心）列表接口
 	public static String long_setgood_unused = host2 + "/car/long_setgood_unused";
+
+	//其他订单列表
+	public static String otherorder = host2 + "/otherorder";
+	//其他订单金额统计
+	public static String otherorder_statistics = host2 + "/otherorder/statistics";
+	//套餐卡订单列表
+	public static String usercyclingcard = host2 + "/usercyclingcard";
+	//套餐卡订单金额统计
+	public static String usercyclingcard_statistics = host2 + "/usercyclingcard/statistics";
+	//退款订单列表
+	public static String refundorder = host2 + "/refundorder";
+	//退款订单金额统计
+	public static String refundorder_statistics = host2 + "/refundorder/statistics";
+	//骑行订单列表
+	public static String cyclingorder = host2 + "/cyclingorder";
+	//骑行订单金额统计
+	public static String cyclingorder_statistics = host2 + "/cyclingorder/statistics";
+
+	//督导、投资人管辖学校 对应的调度员换电有效、无效数量
+	public static String carbatteryaction_dispatcher_statistics = host2 + "/carbatteryaction/dispatcher_statistics";
+	//督导、投资人管辖学校 对应的调度员已修好数量
+	public static String carbadaction_dispatcher_statistics = host2 + "/carbadaction/dispatcher_statistics";
+
 
 	/**上传头像*/
 	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";

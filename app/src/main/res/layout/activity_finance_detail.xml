@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/ui_main_title"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/rl_cyclingIncomeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="16dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentLeft="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="骑行收入"
+                        android:textColor="#333333"
+                        android:textSize="@dimen/sp16"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginRight="17dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentRight="true">
+
+
+                    <ImageView
+                        android:layout_width="8dp"
+                        android:layout_height="14dp"
+                        android:layout_marginLeft="5dp"
+                        android:src="@drawable/yjt4"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="9dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="#CCCCCC"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_cardIncomeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="套餐卡收入"
+                        android:textColor="#333333"
+                        android:textSize="@dimen/sp16"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginRight="17dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentRight="true">
+
+                    <ImageView
+                        android:layout_width="8dp"
+                        android:layout_height="14dp"
+                        android:layout_marginLeft="5dp"
+                        android:src="@drawable/yjt4"/>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <View
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="9dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="#CCCCCC"/>
+
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/rl_rechargeIncomeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentLeft="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="充值收入"
+                        android:textColor="#333333"
+                        android:textSize="@dimen/sp16"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginRight="17dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentRight="true">
+
+
+                    <ImageView
+                        android:layout_width="8dp"
+                        android:layout_height="14dp"
+                        android:layout_marginLeft="5dp"
+                        android:src="@drawable/yjt4"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="9dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="#CCCCCC"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_otherIncomeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentLeft="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="其他收入"
+                        android:textColor="#333333"
+                        android:textSize="@dimen/sp16"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginRight="17dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentRight="true">
+
+
+                    <ImageView
+                        android:layout_width="8dp"
+                        android:layout_height="14dp"
+                        android:layout_marginLeft="5dp"
+                        android:src="@drawable/yjt4"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="9dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="#CCCCCC"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_cyclingRefundLayout"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="30dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentLeft="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="骑行退款"
+                        android:textColor="#333333"
+                        android:textSize="@dimen/sp16"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginRight="17dp"
+                    android:orientation="horizontal"
+                    android:layout_alignParentRight="true">
+
+
+                    <ImageView
+                        android:layout_width="8dp"
+                        android:layout_height="14dp"
+                        android:layout_marginLeft="5dp"
+                        android:src="@drawable/yjt4"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:background="@color/line_color"
+        android:layout_marginLeft="@dimen/dp15"
+        android:layout_marginRight="@dimen/dp15"/>
+
+</LinearLayout>

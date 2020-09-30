@@ -48,8 +48,11 @@ import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
+import com.qimalocl.manage.activity.CarbadactionDispatcherStatisticsActivity;
+import com.qimalocl.manage.activity.CarbatteryactionDispatcherStatisticsActivity;
 import com.qimalocl.manage.activity.DispatchDetailActivity;
 import com.qimalocl.manage.activity.ExchangePowerRecordActivity;
+import com.qimalocl.manage.activity.FinanceDetailActivity;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.activity.LongSetgoodUnusedDetailActivity;
 import com.qimalocl.manage.activity.LowPowerDetailActivity;
@@ -131,7 +134,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private static final int MSG_SET_TAGS = 1002;
 
     private LoadingDialog loadingDialog;
-    private ImageView rightBtn, iv_isRead;
+    private ImageView rightBtn, iv_down;
     private ImageView backImage;
     private ImageView settingImage;
     private ImageView headerImageView;
@@ -141,7 +144,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private TextView schoolName;
 
     private LinearLayout ll_schoolName;
-    private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, superzoneLayout, changePhoneLayout, authLayout, inviteLayout;
+    private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, superzoneLayout, financeStatementLayout, changePhoneLayout, authLayout, inviteLayout;
 
     private TextView tv_low_power_count, tv_scrapped_count, tv_superzone_count;
 
@@ -216,7 +219,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private String lock_title_tbt;
     private String lock_title_tbt209d;
 
+    int admin_id;
     String role = "";
+    String role_level = "";
 
     private boolean isLowPowerLayout;
 
@@ -298,7 +303,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                     if(isMineThread){
                         LogUtil.e("minef===1", "===");
-//                        m_myHandler.sendEmptyMessage(1);
+                        m_myHandler.sendEmptyMessage(1);
                     }
 
                 }
@@ -339,9 +344,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             }else{
                 initHttp();
 //                datas();
-                carbatteryaction_lowpower();
-                carbadaction_scrapped();
-                over_area_cars();
+//                carbatteryaction_lowpower();
+//                carbadaction_scrapped();
+//                over_area_cars();
             }
 
         }
@@ -449,7 +454,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         roleName = getActivity().findViewById(R.id.personUI_roleName);
         schoolName.setSelected(true);
 
-        iv_isRead = getActivity().findViewById(R.id.iv_isRead);
+//        iv_isRead = getActivity().findViewById(R.id.iv_isRead);
 
 //        hisRouteLayout = getActivity().findViewById(R.id.personUI_bottom_hisRouteLayout);
 //        myPurseLayout = getActivity().findViewById(R.id.personUI_bottom_myPurseLayout);
@@ -485,26 +490,27 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
 
         ll_schoolName = getActivity().findViewById(R.id.ll_schoolName);
+        iv_down = getActivity().findViewById(R.id.iv_down);
         maintenanceRecordLayout = getActivity().findViewById(R.id.personUI_maintenanceRecordLayout);
         exchangePowerRecordLayout = getActivity().findViewById(R.id.personUI_exchangePowerRecordLayout);
         lowPowerLayout = getActivity().findViewById(R.id.personUI_lowPowerLayout);
         scrappedLayout = getActivity().findViewById(R.id.personUI_scrappedLayout);
         superzoneLayout = getActivity().findViewById(R.id.personUI_superzoneLayout);
+        financeStatementLayout = getActivity().findViewById(R.id.personUI_financeStatementLayout);
+
         changePhoneLayout = getActivity().findViewById(R.id.personUI_changePhoneLayout);
         authLayout = getActivity().findViewById(R.id.personUI_authLayout);
         inviteLayout = getActivity().findViewById(R.id.personUI_inviteLayout);
 
 
         rightBtn.setOnClickListener(this);
-//        headerImageView.setOnClickListener(this);
-
-
         ll_schoolName.setOnClickListener(this);
         maintenanceRecordLayout.setOnClickListener(this);
         exchangePowerRecordLayout.setOnClickListener(this);
         lowPowerLayout.setOnClickListener(this);
         scrappedLayout.setOnClickListener(this);
         superzoneLayout.setOnClickListener(this);
+        financeStatementLayout.setOnClickListener(this);
         changePhoneLayout.setOnClickListener(this);
         authLayout.setOnClickListener(this);
         inviteLayout.setOnClickListener(this);
@@ -535,10 +541,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                 Gson gson = new Gson();
                 SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
-                SharedPreferencesUrls.getInstance().putString("school_name", school_name);
-                SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
-                SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
-                SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
+//                SharedPreferencesUrls.getInstance().putString("school_name", school_name);
+//                SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
+//                SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
+//                SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
 
 //                order_type = options1;
                 schoolName.setText(school_name);
@@ -1219,11 +1225,37 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
 
             case R.id.personUI_maintenanceRecordLayout:
-                UIHelper.goToAct(context, MaintenanceRecordActivity.class);
+//                UIHelper.goToAct(context, MaintenanceRecordActivity.class);
+
+                boolean isManager = false;
+                if("2".equals(role_level) || "3".equals(role_level)){
+                    isManager = true;
+                }
+
+                LogUtil.e("maintenanceRecordLayout===", role_level+"==="+isManager);
+
+                intent = new Intent();
+                intent.setClass(context, isManager? CarbadactionDispatcherStatisticsActivity.class:MaintenanceRecordActivity.class);
+                intent.putExtra("isManager", isManager);
+                intent.putExtra("admin_id", admin_id);
+                startActivity(intent);
                 break;
 
             case R.id.personUI_exchangePowerRecordLayout:
-                UIHelper.goToAct(context, ExchangePowerRecordActivity.class);
+//                UIHelper.goToAct(context, ExchangePowerRecordActivity.class);
+
+                isManager = false;
+                if("2".equals(role_level) || "3".equals(role_level)){
+                    isManager = true;
+                }
+
+                LogUtil.e("exchangePowerRecordLayout===", role_level+"==="+isManager);
+
+                intent = new Intent();
+                intent.setClass(context, isManager? CarbatteryactionDispatcherStatisticsActivity.class:ExchangePowerRecordActivity.class);
+                intent.putExtra("isManager", isManager);
+                intent.putExtra("admin_id", admin_id);
+                startActivity(intent);
                 break;
 
             case R.id.personUI_lowPowerLayout:
@@ -1311,6 +1343,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 UIHelper.goToAct(context, SuperzoneDetailActivity.class);
                 break;
 
+            case R.id.personUI_financeStatementLayout:
+                UIHelper.goToAct(context, FinanceDetailActivity.class);
+                break;
+
             case R.id.personUI_header:
                 clickPopupWindow();
 //                UIHelper.goToAct(context, PersonInfoActivity.class);
@@ -1331,14 +1367,10 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
         LogUtil.e("lowpower===", school_id+"===");
 
-        RequestParams params = new RequestParams();
-        params.put("school_id", school_id);
-
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
-//            RequestParams params = new RequestParams();
-//            params.put("uid",uid);
-//            params.put("access_token",access_token);
+            RequestParams params = new RequestParams();
+            params.put("school_id", school_id);
             HttpHelper.get(context, Urls.carbatteryaction_lowpower, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -1361,11 +1393,16 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                                 LowPowerBean lowPowerBean = JSON.parseObject(result.getData(), LowPowerBean.class);
 
-                                LogUtil.e("lowpower===2", "==="+lowPowerBean.getLow_power_total());
+                                lowPowerBean.getLow_total();
+                                lowPowerBean.getUltra_low_total();
+
 
                                 tv_low_power_count.setText(""+lowPowerBean.getLow_power_total());
 
                                 JSONArray array = new JSONArray(lowPowerBean.getLow_power_data());
+
+                                LogUtil.e("lowpower===2", "==="+array);
+
 //                                if (array.length() == 0 && showPage == 1) {
 //                                    footerLayout.setVisibility(View.VISIBLE);
 //                                    setFooterType(4);
@@ -1380,12 +1417,21 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                    footerLayout.setVisibility(View.VISIBLE);
 //                                    setFooterType(0);
 //                                }
-                                for (int i = 0; i < array.length(); i++) {
-                                    LowPowerDataBean bean = JSON.parseObject(array.getJSONObject(i).toString(), LowPowerDataBean.class);
 
-                                    String lock_name = bean.getLock_name();
+                                ll_xa.setVisibility(View.GONE);
+                                ll_xyt.setVisibility(View.GONE);
+                                ll_tbt.setVisibility(View.GONE);
+                                ll_tbt209d.setVisibility(View.GONE);
 
-                                    LogUtil.e("lowpower===3", lock_name+"==="+bean.getLock_title()+"==="+bean.getRemark()+"==="+bean.getUltra_low_count()+"==="+bean.getLow_count());
+                                if(array==null || array.length()==0){
+
+                                }else{
+                                    for (int i = 0; i < array.length(); i++) {
+                                        LowPowerDataBean bean = JSON.parseObject(array.getJSONObject(i).toString(), LowPowerDataBean.class);
+
+                                        String lock_name = bean.getLock_name();
+
+                                        LogUtil.e("lowpower===3", lock_name+"==="+bean.getLock_title()+"==="+bean.getRemark()+"==="+bean.getUltra_low_count()+"==="+bean.getLow_count());
 
 //                                    tv_low_count_xa.setText("低电："+low_count_xa);
 //                                    tv_ultra_low_count_xa.setText("超低电："+ultra_low_count_xa);
@@ -1397,62 +1443,65 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                    tv_ultra_low_count_tbt209d.setText("超低电："+ultra_low_count_tbt209d);
 
 
-                                    if("ebike_xa".equals(lock_name)){
-                                        ll_xa.setVisibility(View.VISIBLE);
+                                        if("ebike_xa".equals(lock_name)){
+                                            ll_xa.setVisibility(View.VISIBLE);
 
-                                        lock_id_xa = bean.getLock_id();
-//                                        lock_title_xa = bean.getLock_title();
-                                        lock_title_xa = "XA电单车";
-                                        tv_lock_title_xa.setText(lock_title_xa);
-                                        tv_remark_xa.setText(bean.getRemark());
-                                        tv_low_count_xa.setText("低电："+bean.getLow_count());
-                                        tv_ultra_low_count_xa.setText("超低电："+bean.getUltra_low_count());
+                                            lock_id_xa = bean.getLock_id();
+//                                          lock_title_xa = bean.getLock_title();
+                                            lock_title_xa = "XA电单车";
+                                            tv_lock_title_xa.setText(lock_title_xa);
+                                            tv_remark_xa.setText(bean.getRemark());
+                                            tv_low_count_xa.setText("低电："+bean.getLow_count());
+                                            tv_ultra_low_count_xa.setText("超低电："+bean.getUltra_low_count());
 
 //                                        ultra_low_count_xa = bean.getUltra_low_count();
 //                                        low_count_xa = bean.getLow_count();
-                                    }else if("ebike_xyt".equals(lock_name)){
-                                        ll_xyt.setVisibility(View.VISIBLE);
+                                        }else if("ebike_xyt".equals(lock_name)){
+                                            ll_xyt.setVisibility(View.VISIBLE);
 
-                                        lock_id_xyt = bean.getLock_id();
+                                            lock_id_xyt = bean.getLock_id();
 //                                        lock_title_xyt = bean.getLock_title();
-                                        lock_title_xyt = "XYT电单车";
-                                        tv_lock_title_xyt.setText(lock_title_xyt);
-                                        tv_remark_xyt.setText(bean.getRemark());
-                                        tv_low_count_xyt.setText("低电："+bean.getLow_count());
-                                        tv_ultra_low_count_xyt.setText("超低电："+bean.getUltra_low_count());
+                                            lock_title_xyt = "XYT电单车";
+                                            tv_lock_title_xyt.setText(lock_title_xyt);
+                                            tv_remark_xyt.setText(bean.getRemark());
+                                            tv_low_count_xyt.setText("低电："+bean.getLow_count());
+                                            tv_ultra_low_count_xyt.setText("超低电："+bean.getUltra_low_count());
 
 //                                        ultra_low_count_xyt = bean.getUltra_low_count();
 //                                        low_count_xyt = bean.getLow_count();
-                                    }else if("ebike_tbit".equals(lock_name)){
-                                        ll_tbt.setVisibility(View.VISIBLE);
+                                        }else if("ebike_tbit".equals(lock_name)){
+                                            ll_tbt.setVisibility(View.VISIBLE);
 
-                                        lock_id_tbt = bean.getLock_id();
+                                            lock_id_tbt = bean.getLock_id();
 //                                        lock_title_tbt = bean.getLock_title();
-                                        lock_title_tbt = "TBTD电单车";
-                                        tv_lock_title_tbt.setText(lock_title_tbt);
-                                        tv_remark_tbt.setText(bean.getRemark());
-                                        tv_low_count_tbt.setText("低电："+bean.getLow_count());
-                                        tv_ultra_low_count_tbt.setText("超低电："+bean.getUltra_low_count());
+                                            lock_title_tbt = "TBTD电单车";
+                                            tv_lock_title_tbt.setText(lock_title_tbt);
+                                            tv_remark_tbt.setText(bean.getRemark());
+                                            tv_low_count_tbt.setText("低电："+bean.getLow_count());
+                                            tv_ultra_low_count_tbt.setText("超低电："+bean.getUltra_low_count());
 
 //                                        ultra_low_count_tbt = bean.getUltra_low_count();
 //                                        low_count_tbt = bean.getLow_count();
-                                    }else if("ebike_tbit209d".equals(lock_name)){
-                                        ll_tbt209d.setVisibility(View.VISIBLE);
+                                        }else if("ebike_tbit209d".equals(lock_name)){
+                                            ll_tbt209d.setVisibility(View.VISIBLE);
 
-                                        lock_id_tbt209d = bean.getLock_id();
+                                            lock_id_tbt209d = bean.getLock_id();
 //                                        lock_title_tbt209d = bean.getLock_title();
-                                        lock_title_tbt209d = "TBTF电单车";
-                                        tv_lock_title_tbt209d.setText(lock_title_tbt209d );
-                                        tv_remark_tbt209d.setText(bean.getRemark());
-                                        tv_low_count_tbt209d.setText("低电："+bean.getLow_count());
-                                        tv_ultra_low_count_tbt209d.setText("超低电："+bean.getUltra_low_count());
+                                            lock_title_tbt209d = "TBTF电单车";
+                                            tv_lock_title_tbt209d.setText(lock_title_tbt209d );
+                                            tv_remark_tbt209d.setText(bean.getRemark());
+                                            tv_low_count_tbt209d.setText("低电："+bean.getLow_count());
+                                            tv_ultra_low_count_tbt209d.setText("超低电："+bean.getUltra_low_count());
 
 //                                        ultra_low_count_tbt209d = bean.getUltra_low_count();
 //                                        low_count_tbt209d = bean.getLow_count();
-                                    }
+                                        }
 
 //                                    data.add(bean);
+                                    }
                                 }
+
+
 
 //                                LowPowerDetailBean  bean_xa= JSON.parseObject(bean.getXiaoan(), LowPowerDetailBean.class);
 //                                LowPowerDetailBean  bean_xyt= JSON.parseObject(bean.getXyt(), LowPowerDetailBean.class);
@@ -1497,14 +1546,12 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private void carbadaction_scrapped(){
         LogUtil.e("scrapped===", school_id+"===");
 
-        RequestParams params = new RequestParams();
-        params.put("school_id", school_id);
+
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token != null && !"".equals(access_token)){
-//            RequestParams params = new RequestParams();
-//            params.put("uid",uid);
-//            params.put("access_token",access_token);
+            RequestParams params = new RequestParams();
+            params.put("school_id", school_id);
             HttpHelper.get(context, Urls.carbadaction_scrapped, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -1865,9 +1912,12 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                              myIntegral.setText(bean.getPoints());
                                 userName.setText(bean.getPhone());
 
+                                admin_id = bean.getId();
+                                role_level = bean.getRole_level();
+
                                 String[] schools = bean.getSchools();
 
-                                LogUtil.e("minef===initHttp2", schools+"===");
+                                LogUtil.e("minef===initHttp2", schools+"==="+SharedPreferencesUrls.getInstance().getInt("school_id", -1));
 
 //                                if(schools!=null && schools.length>0){
 //
@@ -1888,24 +1938,82 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                     item.clear();
                                 }
 
-                                for (int i = 0; i < schools.length;i++){
-                                    SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
-                                    datas.add(bean2);
-                                    item.add(bean2.getName());
+                                if(schools.length==0){
+                                    iv_down.setVisibility(View.GONE);
+                                    ll_schoolName.setEnabled(false);
+                                }else{
+                                    if(schools.length<=1){
+                                        iv_down.setVisibility(View.GONE);
+                                        ll_schoolName.setEnabled(false);
+                                    }else{
+                                        iv_down.setVisibility(View.VISIBLE);
+                                        ll_schoolName.setEnabled(true);
+                                    }
 
-                                    if(i==0){
+                                    boolean flag=false;
+                                    for (int i = 0; i < schools.length;i++){
+                                        SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
+                                        datas.add(bean2);
+                                        item.add(bean2.getName());
+
+                                        if((SharedPreferencesUrls.getInstance().getInt("school_id", -1)==-1 && i==0) || (SharedPreferencesUrls.getInstance().getInt("school_id", -1)!=-1 && bean2.getId()==SharedPreferencesUrls.getInstance().getInt("school_id", -1))){
+                                            flag=true;
+
+                                            school_id = bean2.getId();
+                                            school_name = bean2.getName();
+                                            school_latitude = bean2.getLatitude();
+                                            school_longitude = bean2.getLongitude();
+                                            school_carmodel_ids = bean2.getCarmodel_ids();
+
+                                            Gson gson = new Gson();
+                                            SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
+//                                            SharedPreferencesUrls.getInstance().putString("school_name", school_name);
+//                                            SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
+//                                            SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
+//                                            SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
+
+                                            schoolName.setText(school_name);
+
+                                            int[] carmodels = school_carmodel_ids;
+
+                                            LogUtil.e("minef===initHttp5", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
+
+                                            if(carmodels==null || carmodels.length==0){
+                                                carmodel = 0;
+                                            }else if(carmodels!=null && carmodels.length>0){
+
+                                                LogUtil.e("minef===initHttp4", "===");
+
+                                                if(carmodels.length==1){
+                                                    if(carmodels[0]==1){
+                                                        carmodel = 1;
+                                                    }else if(carmodels[0]==2){
+                                                        carmodel = 2;
+                                                    }
+                                                }else if(carmodels.length==2){
+                                                    carmodel = 3;
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+                                    if(!flag){
+                                        SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+                                        datas.add(bean2);
+                                        item.add(bean2.getName());
+
                                         school_id = bean2.getId();
                                         school_name = bean2.getName();
                                         school_latitude = bean2.getLatitude();
                                         school_longitude = bean2.getLongitude();
                                         school_carmodel_ids = bean2.getCarmodel_ids();
 
-                                        Gson gson = new Gson();
                                         SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
-                                        SharedPreferencesUrls.getInstance().putString("school_name", school_name);
-                                        SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
-                                        SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
-                                        SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
+//                                            SharedPreferencesUrls.getInstance().putString("school_name", school_name);
+//                                            SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
+//                                            SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
+//                                            SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
 
                                         schoolName.setText(school_name);
 
@@ -1928,10 +2036,44 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                             }else if(carmodels.length==2){
                                                 carmodel = 3;
                                             }
-
                                         }
                                     }
                                 }
+
+
+
+//                                if(SharedPreferencesUrls.getInstance().getInt("school_id", -1)!=-1){
+//                                    Gson gson = new Gson();
+//
+//                                    school_id = SharedPreferencesUrls.getInstance().getInt("school_id", -1);
+////                                    school_name = SharedPreferencesUrls.getInstance().getString("school_name", "");
+////                                    school_latitude = SharedPreferencesUrls.getInstance().getString("school_latitude", "");
+////                                    school_longitude = SharedPreferencesUrls.getInstance().getString("school_longitude", "");
+////                                    school_carmodel_ids = gson.fromJson(SharedPreferencesUrls.getInstance().getString("school_carmodel_ids", ""), int[].class);;
+//
+//                                    schoolName.setText(school_name);
+//
+//                                    int[] carmodels = school_carmodel_ids;
+//
+//                                    LogUtil.e("minef===initHttp5", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
+//
+//                                    if(carmodels==null || carmodels.length==0){
+//                                        carmodel = 0;
+//                                    }else if(carmodels!=null && carmodels.length>0){
+//
+//                                        LogUtil.e("minef===initHttp4", "===");
+//
+//                                        if(carmodels.length==1){
+//                                            if(carmodels[0]==1){
+//                                                carmodel = 1;
+//                                            }else if(carmodels[0]==2){
+//                                                carmodel = 2;
+//                                            }
+//                                        }else if(carmodels.length==2){
+//                                            carmodel = 3;
+//                                        }
+//                                    }
+//                                }
 
 
 

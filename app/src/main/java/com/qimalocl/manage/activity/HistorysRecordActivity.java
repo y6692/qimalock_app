@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -50,6 +51,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.qimalocl.manage.base.BaseApplication.school_id;
 
 
 /**
@@ -279,15 +282,27 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
     }
     private void initHttp(){
 
-        LogUtil.e("hra===initHttp", codenum+"==="+showPage);
+
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
             Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
             return;
         }
+
+//        Gson gson = new Gson();
+//        List<String> timeList = new ArrayList<>();
+//        timeList.add("2020-09-11");
+//        timeList.add("2020-09-22");
+
+        LogUtil.e("hra===initHttp", school_id+"==="+codenum+"==="+showPage);
+
+
+
         RequestParams params = new RequestParams();
         params.put("car_number", codenum);
+        params.put("school_id", school_id);
+//        params.put("time", gson.toJson(timeList));
         params.put("page", showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);
         HttpHelper.get(context, Urls.cyclingorder, params, new TextHttpResponseHandler() {
@@ -311,8 +326,6 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
                     LogUtil.e("hra===initHttp1", "==="+responseString);
-
-
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {

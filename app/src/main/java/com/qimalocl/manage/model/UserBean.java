@@ -238,7 +238,15 @@ public class UserBean {
         this.schools = schools;
     }
 
-//    public int[] getCarmodels() {
+    public String getRole_level() {
+        return role_level;
+    }
+
+    public void setRole_level(String role_level) {
+        this.role_level = role_level;
+    }
+
+    //    public int[] getCarmodels() {
 //        return carmodels;
 //    }
 //
