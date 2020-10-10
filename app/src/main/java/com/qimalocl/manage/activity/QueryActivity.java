@@ -67,6 +67,8 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
     private int carmodel_id;
     private String codenum;
 
+    LinearLayout leftBtn;
+
 //    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 //        v = inflater.inflate(R.layout.fragment_query, null);
 //        unbinder = ButterKnife.bind(this, v);
@@ -98,7 +100,9 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
 
 
     private void initView(){
+        leftBtn =  (LinearLayout)findViewById(R.id.ll_backBtn);
 
+        leftBtn.setOnClickListener(this);
         historyLayout.setOnClickListener(this);
         locationLayout.setOnClickListener(this);
 
@@ -116,6 +120,9 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.ll_backBtn:
+                finishMine();
+                break;
 
             case R.id.ll_history:
 //                UIHelper.goToAct(context, HistorysRecordActivity.class);

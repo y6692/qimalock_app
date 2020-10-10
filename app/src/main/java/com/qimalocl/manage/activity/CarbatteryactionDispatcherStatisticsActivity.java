@@ -317,7 +317,8 @@ public class CarbatteryactionDispatcherStatisticsActivity extends SwipeBackActiv
 //                    refundorder_statistics();
 
                 } catch (Exception e) {
-
+                    footerLayout.setVisibility(View.VISIBLE);
+                    setFooterType(4);
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                     isRefresh = false;

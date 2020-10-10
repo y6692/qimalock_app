@@ -239,19 +239,17 @@ public class ExchangePowerDetailActivity extends SwipeBackActivity implements Vi
                     } else if (array.length() < GlobalConfig.PAGE_SIZE) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(2);
-                    } else if (array.length() >= 10) {
+                    } else if (array.length() >= GlobalConfig.PAGE_SIZE) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(0);
                     }
+
                     for (int i = 0; i < array.length(); i++) {
                         ExchangePowerDetailBean bean = JSON.parseObject(array.getJSONObject(i).toString(), ExchangePowerDetailBean.class);
                         data.add(bean);
                     }
 
-//                    ExchangePowerDetailBean bean = new ExchangePowerDetailBean();
-//                    data.add(bean);
-
-                    myAdapter.notifyDataSetChanged();
+//                    myAdapter.notifyDataSetChanged();
 
 //                    if ("Success".equals(result.getFlag())) {
 //

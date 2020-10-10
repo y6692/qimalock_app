@@ -1,3 +1,156 @@
+//                                ViewGroup.LayoutParams param = cb_1.getLayoutParams();
+//                                param.height = 0;
+//                                param.width = 0;
+//
+//                                cb_1.setLayoutParams(param);
+//                                cb_2.setLayoutParams(param);
+//                                cb_3.setLayoutParams(param);
+//                                cb_4.setLayoutParams(param);
+//                                cb_5.setLayoutParams(param);
+//                                cb_6.setLayoutParams(param);
+
+//                                                        cb_1.setVisibility(View.VISIBLE);
+//                                                        cb_4.setVisibility(View.VISIBLE);
+//                                                        cb_5.setVisibility(View.VISIBLE);
+//                                                        cb_6.setVisibility(View.VISIBLE);
+//                                                        cb_1.setChecked(false);
+//                                                        cb_2.setChecked(false);
+//                                                        cb_3.setChecked(false);
+//                                                        cb_4.setChecked(false);
+//                                                        cb_5.setChecked(false);
+//                                                        cb_6.setChecked(false);
+
+//                                                        cb_2.setVisibility(View.GONE);
+//                                                        cb_3.setVisibility(View.GONE);
+//                                                        ViewGroup.LayoutParams param = cb_2.getLayoutParams();
+//                                                        param.height = 0;
+//                                                        param.width = 0;
+//                                                        FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(0, 0);
+//                                                        cb_2.setLayoutParams(param);
+//                                                        cb_3.setLayoutParams(param);
+
+//                                                        cb_2.setWidth(0);
+//                                                        cb_2.setHeight(0);
+//                                                        cb_3.setWidth(0);
+//                                                        cb_3.setHeight(0);
+
+//                                                        Drawable drawable = getResources().getDrawable(R.drawable.add_icon);
+//                                                        drawable.setBounds(0,0,0,0);
+//                                                        cb_2.setCompoundDrawables(drawable,null,null,null);
+//                                                        cb_3.setCompoundDrawables(drawable,null,null,null);
+
+//                                                        cb_3.setVisibility(View.GONE);
+//                                                        param = cb_3.getLayoutParams();
+//                                                        param.height = 0;
+//                                                        param.width = 0;
+//                                                        cb_3.setLayoutParams(param);
+
+//                                    if(!flag){
+//                                        SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+//
+//                                        school_id = bean2.getId();
+//                                        school_name = bean2.getName();
+//                                        school_latitude = bean2.getLatitude();
+//                                        school_longitude = bean2.getLongitude();
+//                                        school_carmodel_ids = bean2.getCarmodel_ids();
+//
+//                                        LatLng myLocation = new LatLng(Double.parseDouble(school_latitude), Double.parseDouble(school_longitude));
+//                                        leveltemp = 18f;
+//                                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
+//
+//                                        SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
+//
+//                                        int[] carmodels = school_carmodel_ids;
+//
+//                                        LogUtil.e("sf===initHttp3", first+"==="+school_id+"==="+bean2.getId()+"==="+carmodels.length);
+//
+//                                        if(carmodels==null || carmodels.length==0){
+//                                            cb_1.setVisibility(View.VISIBLE);
+//                                            cb_2.setVisibility(View.VISIBLE);
+//                                            cb_1.setChecked(false);
+//                                            cb_2.setChecked(false);
+//                                            cb_1.setText("只看超区");
+//                                            cb_2.setText("只看坏车");
+//
+//                                            ll_lowpowerLayout.setVisibility(View.GONE);
+//                                            ll_slowpowerLayout.setVisibility(View.GONE);
+//
+//                                            is_bike = false;
+//                                            is_ebike = false;
+//                                        }else if(carmodels!=null && carmodels.length>0){
+//
+//                                            LogUtil.e("sf===initHttp4", carmodels.length+"==="+carmodels[0]);
+//
+//                                            if(carmodels.length==1){
+//
+//                                                if(carmodels[0]==1){
+//                                                    cb_1.setVisibility(View.VISIBLE);
+//                                                    cb_2.setVisibility(View.VISIBLE);
+//                                                    cb_1.setChecked(false);
+//                                                    cb_2.setChecked(false);
+//                                                    cb_1.setText("只看超区");
+//                                                    cb_2.setText("只看坏车");
+//
+//                                                    ll_lowpowerLayout.setVisibility(View.GONE);
+//                                                    ll_slowpowerLayout.setVisibility(View.GONE);
+//
+//                                                    is_bike = true;
+//                                                    is_ebike = false;
+//                                                }else if(carmodels[0]==2){
+//
+//                                                    cb_1.setVisibility(View.VISIBLE);
+//                                                    cb_2.setVisibility(View.VISIBLE);
+//                                                    cb_3.setVisibility(View.VISIBLE);
+//                                                    cb_4.setVisibility(View.VISIBLE);
+//                                                    cb_1.setChecked(false);
+//                                                    cb_2.setChecked(false);
+//                                                    cb_3.setChecked(false);
+//                                                    cb_4.setChecked(false);
+//                                                    cb_1.setText("只看超区");
+//                                                    cb_2.setText("只看坏车");
+//                                                    cb_3.setText("只看低电");
+//                                                    cb_4.setText("只看超低电");
+//
+//                                                    ll_lowpowerLayout.setVisibility(View.VISIBLE);
+//                                                    ll_slowpowerLayout.setVisibility(View.VISIBLE);
+//
+//                                                    carbatteryaction_lowpower();
+//
+//                                                    is_bike = false;
+//                                                    is_ebike = true;
+//                                                }
+//                                            }else if(carmodels.length==2){
+//                                                cb_1.setVisibility(View.VISIBLE);
+//                                                cb_2.setVisibility(View.VISIBLE);
+//                                                cb_3.setVisibility(View.VISIBLE);
+//                                                cb_4.setVisibility(View.VISIBLE);
+//                                                cb_5.setVisibility(View.VISIBLE);
+//                                                cb_6.setVisibility(View.VISIBLE);
+//                                                cb_1.setChecked(false);
+//                                                cb_2.setChecked(true);
+//                                                cb_3.setChecked(true);
+//                                                cb_4.setChecked(false);
+//                                                cb_5.setChecked(false);
+//                                                cb_6.setChecked(false);
+//                                                cb_1.setText("只看超区");
+//                                                cb_2.setText("只看单车");
+//                                                cb_3.setText("只看电单车");
+//                                                cb_4.setText("只看坏车");
+//                                                cb_5.setText("只看低电");
+//                                                cb_6.setText("只看超低电");
+//
+//                                                ll_lowpowerLayout.setVisibility(View.VISIBLE);
+//                                                ll_slowpowerLayout.setVisibility(View.VISIBLE);
+//
+//                                                carbatteryaction_lowpower();
+//
+//                                                is_bike = true;
+//                                                is_ebike = true;
+//                                            }
+//
+//                                        }
+//                                    }
+
 //                                int[] carmodels = null;
 //                                if(SharedPreferencesUrls.getInstance().getInt("school_id", -1)==-1){
 //                                    UserBean bean = JSON.parseObject(result.getData(), UserBean.class);

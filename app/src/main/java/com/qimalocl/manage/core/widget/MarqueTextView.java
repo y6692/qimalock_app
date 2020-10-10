@@ -3,6 +3,8 @@ package com.qimalocl.manage.core.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.qimalocl.manage.utils.LogUtil;
+
 public class MarqueTextView extends android.support.v7.widget.AppCompatTextView{
     public MarqueTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -18,4 +20,13 @@ public class MarqueTextView extends android.support.v7.widget.AppCompatTextView{
         //就是把这里返回true即可
         return true;
     }
+
+//    @Override
+//    public void onWindowFocusChanged(boolean hasWindowFocus) {
+//
+//        LogUtil.e("onWindowFocusChanged===", "==="+hasWindowFocus);
+//
+//        if(hasWindowFocus)
+//            super.onWindowFocusChanged(hasWindowFocus);
+//    }
 }

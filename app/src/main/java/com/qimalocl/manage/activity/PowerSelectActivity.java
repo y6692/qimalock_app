@@ -155,6 +155,7 @@ public class PowerSelectActivity extends SwipeBackActivity implements View.OnCli
                 Intent intent = new Intent(context, LockStorageTBTDActivity.class);
 //                intent.putExtra("order_type", 3);
                 intent.putExtra("battery_name", battery_name);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
 
                 break;

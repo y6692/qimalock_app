@@ -214,7 +214,7 @@ public class OtherIncomeActivity extends SwipeBackActivity implements View.OnCli
                 scrollToFinishActivity();
                 break;
             case R.id.tv_day:
-                Intent intent = new Intent(context,HistoryRoadFiltateActivity.class);
+                Intent intent = new Intent(context, HistoryRoadFiltateActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent,0);
                 break;
@@ -254,7 +254,7 @@ public class OtherIncomeActivity extends SwipeBackActivity implements View.OnCli
         params.put("page", showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        tv_order_amount.setText("");
+
         HttpHelper.get(context, Urls.otherorder, params, new TextHttpResponseHandler() {
 
             @Override
@@ -275,43 +275,41 @@ public class OtherIncomeActivity extends SwipeBackActivity implements View.OnCli
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    LogUtil.e("cia===initHttp1", "==="+responseString);
+                    LogUtil.e("oia===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(4);
                         return;
-                    }else{
+                    }else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
                         footerLayout.setVisibility(View.GONE);
+                        setFooterType(5);
+                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(2);
+                    } else if (array.length() >= GlobalConfig.PAGE_SIZE) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(0);
                     }
-//                    else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
-//                        footerLayout.setVisibility(View.GONE);
-//                        setFooterType(5);
-//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(2);
-//                    } else if (array.length() >= 10) {
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(0);
-//                    }
 
                     for (int i = 0; i < array.length(); i++) {
                         OtherIncomeBean bean = JSON.parseObject(array.getJSONObject(i).toString(), OtherIncomeBean.class);
                         data.add(bean);
                     }
 
-                    myAdapter.notifyDataSetChanged();
+//                    myAdapter.notifyDataSetChanged();
 
 
                     otherorder_statistics();
 
                 } catch (Exception e) {
-
+                    footerLayout.setVisibility(View.VISIBLE);
+                    setFooterType(4);
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                     isRefresh = false;
-//                    setFooterVisibility();
+                    setFooterVisibility();
                 }
             }
         });
@@ -339,15 +337,12 @@ public class OtherIncomeActivity extends SwipeBackActivity implements View.OnCli
 
             @Override
             public void onStart() {
-                setFooterType(1);
+//                setFooterType(1);
+                onStartCommon("正在加载");
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                UIHelper.ToastError(context, throwable.toString());
-//                swipeRefreshLayout.setRefreshing(false);
-//                isRefresh = false;
-//                setFooterType(3);
-//                setFooterVisibility();
+                onFailureCommon(throwable.toString());
             }
 
             @Override
@@ -360,7 +355,7 @@ public class OtherIncomeActivity extends SwipeBackActivity implements View.OnCli
                         try {
 //                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            LogUtil.e("cyclingorder_s1", "==="+responseString);
+                            LogUtil.e("otherorder_s1", "==="+responseString);
 
                             JSONObject json = JSON.parseObject(responseString);
 
@@ -394,13 +389,16 @@ public class OtherIncomeActivity extends SwipeBackActivity implements View.OnCli
 
                     LogUtil.e("onActivityResult===",begintime+"==="+endtime+"==="+data);
 
-//                    onRefresh();
+                    tv_order_amount.setText("");
+                    onRefresh();
 
-                    if(data.size()!=0){
-                        myAdapter.getDatas().clear();
-                        myAdapter.notifyDataSetChanged();
-                    }
-                    initHttp();
+//                    if(data.size()!=0){
+//                        myAdapter.getDatas().clear();
+//                        myAdapter.notifyDataSetChanged();
+//                    }
+//
+//                    tv_order_amount.setText("");
+//                    initHttp();
                 }
                 break;
 

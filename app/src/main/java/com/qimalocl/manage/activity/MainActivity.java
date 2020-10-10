@@ -109,6 +109,9 @@ import butterknife.ButterKnife;
 import okhttp3.Request;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+import static com.qimalocl.manage.base.BaseApplication.school_id2;
 
 @SuppressLint("NewApi")
 public class MainActivity extends BaseActivity{
@@ -171,10 +174,15 @@ public class MainActivity extends BaseActivity{
 //        setContentLayout(R.layout.ui_main);
         ButterKnife.bind(this);
 
-        LogUtil.e("ma===onCreate", "==="+ AppStatusManager.getInstance().getAppStatus());
+
 
         activity = this;
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+
+        school_id = SharedPreferencesUrls.getInstance().getInt("school_id", 0);
+
+        LogUtil.e("ma===onCreate", school_id+"==="+ AppStatusManager.getInstance().getAppStatus());
 
         IntentFilter filter = new IntentFilter("data.broadcast.action");
         registerReceiver(mReceiver, filter);
@@ -225,9 +233,11 @@ public class MainActivity extends BaseActivity{
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token", "");
 
+//        school_id = SharedPreferencesUrls.getInstance().getInt("school_id", 0);
+
         boolean flag = getIntent().getBooleanExtra("flag", false);
 
-        LogUtil.e("ma===onResume",  flag + "===" + MissionFragment.isMissionThread + "===" + MineFragment.isMineThread);
+        LogUtil.e("ma===onResume",  school_id+"==="+ flag + "===" + MissionFragment.isMissionThread + "===" + MineFragment.isMineThread);
 
 //        if (loadingDialog != null && !loadingDialog.isShowing()) {
 //            loadingDialog.setTitle("请稍等");
@@ -245,7 +255,15 @@ public class MainActivity extends BaseActivity{
         if(flag){
 //            purseFragment.user();
 
-            scanFragment.cars(true);
+//            scanFragment.cars(true);
+
+
+            school_carmodel_ids = new int[]{};
+            scanFragment.school_carmodel_ids2 = new int[]{};
+//            scanFragment.polygon = null;
+            school_id2=0;
+
+            scanFragment.initHttp(false);
             missionFragment.initHttp();
             mineFragment.initHttp();
         }
@@ -602,7 +620,7 @@ public class MainActivity extends BaseActivity{
     public void onDestroy() {
         super.onDestroy();
 
-        LogUtil.e("main==onDestroy", "===");
+        LogUtil.e("main==onDestroy", "==="+mReceiver);
 
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
@@ -622,7 +640,7 @@ public class MainActivity extends BaseActivity{
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             try{
                 CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-                customBuilder.setTitle("温馨提示").setMessage("您将退出7MA调度。")
+                customBuilder.setTitle("温馨提示").setMessage("您将退出7MA运维。")
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
@@ -630,7 +648,11 @@ public class MainActivity extends BaseActivity{
                         }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-                        AppManager.getAppManager().AppExit(context);
+//                        AppManager.getAppManager().AppExit(context);
+
+                        finish();
+                        //参数用作状态码；根据惯例，非 0 的状态码表示异常终止。
+                        System.exit(0);
                     }
                 });
                 customBuilder.create().show();

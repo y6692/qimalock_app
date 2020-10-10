@@ -39,10 +39,12 @@ public class BaseApplication extends MultiDexApplication {
 	public static int height;
 	public static float density;
 
+
 	public static int school_id;
+	public static int school_id2;
 	public static String school_name;
-	public static String school_latitude;	//用户管辖学校纬度
-	public static String school_longitude;	//用户管辖学校经度
+	public static String school_latitude = "";	//用户管辖学校纬度
+	public static String school_longitude = "";	//用户管辖学校经度
 	public static int[] school_carmodel_ids;
 
 

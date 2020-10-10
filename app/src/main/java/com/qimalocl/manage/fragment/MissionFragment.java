@@ -127,7 +127,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
     String codenum="";
     int totalnum;
 
-    public static boolean isMissionThread = true;
+    public static boolean isMissionThread = false;
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_mission, null);
@@ -152,17 +152,19 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
 
                 while (true){
 
-                    try {
-                        Thread.sleep(30*1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
 
                     LogUtil.e("missionf===", "==="+isMissionThread);
 
                     if(isMissionThread){
                         LogUtil.e("missionf===1", "===");
                         m_myHandler.sendEmptyMessage(1);
+                    }
+
+                    try {
+                        Thread.sleep(30*1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
 
                 }
@@ -360,7 +362,7 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
         params.put("pagesize", GlobalConfig.PAGE_SIZE);
 
 
-//        LogUtil.e("recycletask===0", totalnum+"==="+codenum);
+        LogUtil.e("recycletask===0", school_id+"==="+totalnum+"==="+codenum);
 
         HttpHelper.get(context, Urls.recycletask, params, new TextHttpResponseHandler() {
             @Override
@@ -497,6 +499,9 @@ public class MissionFragment extends BaseFragment implements View.OnClickListene
                             e.printStackTrace();
 
                             LogUtil.e("recycletask===e", e+"===");
+
+                            footerLayout.setVisibility(View.VISIBLE);
+                            setFooterType(4);
                         } finally {
                             swipeRefreshLayout.setRefreshing(false);
                             isRefresh = false;

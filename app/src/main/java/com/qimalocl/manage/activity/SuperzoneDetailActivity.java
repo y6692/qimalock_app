@@ -339,7 +339,8 @@ public class SuperzoneDetailActivity extends SwipeBackActivity implements View.O
 //                        setFooterVisibility();
 //                    }
                 } catch (Exception e) {
-
+                    footerLayout.setVisibility(View.VISIBLE);
+                    setFooterType(4);
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                     isRefresh = false;

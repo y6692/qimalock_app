@@ -24,6 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -33,6 +36,8 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.model.ResultConsel;
+import com.qimalocl.manage.model.SchoolListBean;
+import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.model.UserMsgBean;
 import com.qimalocl.manage.swipebacklayout.app.SwipeBackActivity;
 import com.qimalocl.manage.utils.LogUtil;
@@ -46,6 +51,11 @@ import java.util.UUID;
 
 
 import static android.text.TextUtils.isEmpty;
+import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+import static com.qimalocl.manage.base.BaseApplication.school_latitude;
+import static com.qimalocl.manage.base.BaseApplication.school_longitude;
+import static com.qimalocl.manage.base.BaseApplication.school_name;
 
 /**
  * Created by Administrator1 on 2017/2/16.
@@ -339,15 +349,8 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
 
                             if (null != bean.getToken()) {
                                 SharedPreferencesUrls.getInstance().putString("access_token", "Bearer "+bean.getToken());
-                                Toast.makeText(context,"恭喜您,登录成功",Toast.LENGTH_SHORT).show();
 
-//                                UIHelper.goToAct(context, MainActivity.class);
-
-                                Intent intent = new Intent(context, MainActivity.class);
-                                intent.putExtra("flag", true);
-                                startActivity(intent);
-
-                                scrollToFinishActivity();
+                                user();
 
                             }else{
                                 Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
@@ -356,7 +359,79 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        if (loadingDialog != null && loadingDialog.isShowing()) {
+//                        if (loadingDialog != null && loadingDialog.isShowing()) {
+//                            loadingDialog.dismiss();
+//                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void user(){
+
+        LogUtil.e("nla===user0", "==="+school_id);
+
+        HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+//                    if(isFresh){
+//                        onStartCommon("正在加载");
+//                    }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            LogUtil.e("nla===user1", school_id+"==="+responseString);
+
+
+                            UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
+                            String[] schools = bean.getSchools();
+
+                            if(schools.length==0){
+
+                            }else{
+                                for (int i = 0; i < schools.length;i++){
+                                    SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
+
+                                    LogUtil.e("nla===user2", school_id+"==="+bean2.getId());
+
+                                    if(i==0){
+                                        school_id = bean2.getId();
+//                                            school_name = bean2.getName();
+//                                            school_latitude = bean2.getLatitude();
+//                                            school_longitude = bean2.getLongitude();
+//                                            school_carmodel_ids = bean2.getCarmodel_ids();
+
+                                        SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
+                                    }
+                                }
+                            }
+
+
+                            Toast.makeText(context,"恭喜您,登录成功",Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(context, MainActivity.class);
+                            intent.putExtra("flag", true);
+                            startActivity(intent);
+
+                            scrollToFinishActivity();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (loadingDialog != null && loadingDialog.isShowing()){
                             loadingDialog.dismiss();
                         }
                     }
@@ -365,6 +440,7 @@ public class NoteLoginActivity extends SwipeBackActivity implements View.OnClick
             }
         });
     }
+
 
 
 

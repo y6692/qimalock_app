@@ -97,6 +97,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
             intent.putExtra("mac", result.getAddress());
             intent.putExtra("name", result.getName());
             intent.putExtra("type", "5");
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             mContext.startActivity(intent);
             mActivity.finish();
         }

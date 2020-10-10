@@ -119,6 +119,7 @@ import static com.qimalocl.manage.base.BaseApplication.school_name;
 import static com.qimalocl.manage.base.BaseApplication.school_longitude;
 import static com.qimalocl.manage.base.BaseApplication.school_latitude;
 import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
+import static com.qimalocl.manage.base.BaseApplication.school_id2;
 
 
 @SuppressLint("NewApi")
@@ -141,7 +142,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ImageView authState;
     private TextView userName, roleName;
 
-    private TextView schoolName;
+    private MarqueTextView schoolName;
 
     private LinearLayout ll_schoolName;
     private RelativeLayout  maintenanceRecordLayout, exchangePowerRecordLayout, lowPowerLayout, scrappedLayout, superzoneLayout, financeStatementLayout, changePhoneLayout, authLayout, inviteLayout;
@@ -230,7 +231,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private MyPagerAdapter myPagerAdapter;
 
     private int carmodel = 0;
-    public static boolean isMineThread = true;
+    public static boolean isMineThread = false;
 
     MineDataFragment mineDataFragment;
     MineDataBikeFragment mineDataBikeFragment;
@@ -240,7 +241,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     private ArrayList<String> item = new ArrayList<>();
     private ArrayList<SchoolListBean> datas = new ArrayList<>();
 
-
+    private int low_power_count;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -342,6 +343,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                 Intent intent = new Intent(BaseApplication.context, LoginActivity.class);
                 startActivity(intent);
             }else{
+                schoolName.setText("");
                 initHttp();
 //                datas();
 //                carbatteryaction_lowpower();
@@ -452,7 +454,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         userName = getActivity().findViewById(R.id.personUI_userName);
         schoolName = getActivity().findViewById(R.id.personUI_schoolName);
         roleName = getActivity().findViewById(R.id.personUI_roleName);
-        schoolName.setSelected(true);
+//        schoolName.setSelected(true);
+
 
 //        iv_isRead = getActivity().findViewById(R.id.iv_isRead);
 
@@ -530,162 +533,161 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         pvOptions.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
 
             @Override
-            public void onOptionsSelect(int options1, int option2, int options3) {
+            public void onOptionsSelect(final int options1, int option2, int options3) {
 
-                SchoolListBean bean = datas.get(options1);
-                school_id = bean.getId();
-                school_name = bean.getName();
-                school_latitude = bean.getLatitude();
-                school_longitude = bean.getLongitude();
-                school_carmodel_ids = bean.getCarmodel_ids();
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        school_id2 = school_id;
 
-                Gson gson = new Gson();
-                SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
-//                SharedPreferencesUrls.getInstance().putString("school_name", school_name);
-//                SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
-//                SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
-//                SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
+                        SchoolListBean bean = datas.get(options1);
+                        school_id = bean.getId();
+                        school_name = bean.getName();
+                        school_latitude = bean.getLatitude();
+                        school_longitude = bean.getLongitude();
+                        school_carmodel_ids = bean.getCarmodel_ids();
+
+                        SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
 
 //                order_type = options1;
-                schoolName.setText(school_name);
+                        schoolName.setText(school_name);
 
-                int[] carmodels = school_carmodel_ids;
+                        int[] carmodels = school_carmodel_ids;
 
-                LogUtil.e("minef===pvOptions", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
+                        LogUtil.e("minef===pvOptions", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
 
-                if(carmodels==null || carmodels.length==0){
-                    carmodel = 0;
-                }else if(carmodels!=null && carmodels.length>0){
+                        if(carmodels==null || carmodels.length==0){
+                            carmodel = 0;
+                        }else if(carmodels!=null && carmodels.length>0){
 
-                    LogUtil.e("minef===pvOptions1", "===");
+                            LogUtil.e("minef===pvOptions1", "===");
 
-                    if(carmodels.length==1){
-                        if(carmodels[0]==1){
-                            carmodel = 1;
-                        }else if(carmodels[0]==2){
-                            carmodel = 2;
+                            if(carmodels.length==1){
+                                if(carmodels[0]==1){
+                                    carmodel = 1;
+                                }else if(carmodels[0]==2){
+                                    carmodel = 2;
+                                }
+                            }else if(carmodels.length==2){
+                                carmodel = 3;
+                            }
+
                         }
-                    }else if(carmodels.length==2){
-                        carmodel = 3;
-                    }
 
-                }
-
-                LogUtil.e("minef===pvOptions2", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+school_carmodel_ids.length+"==="+carmodel);
+                        LogUtil.e("minef===pvOptions2", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+school_carmodel_ids.length+"==="+carmodel);
 
 
-                if(myPagerAdapter==null){
+                        if(myPagerAdapter==null){
 
-                }
-
-
-                if(fragmentList.size()>0){
-                    fragmentList.clear();
-                }
-
-                LogUtil.e("MyPagerAdapter===", carmodel+"==="+fragmentList);
-
-                if(mineDataFragment==null){
-                    mineDataFragment = new MineDataFragment();
-                }else{
-                    mineDataFragment.onDestroy();
-                    mineDataFragment = new MineDataFragment();
-                }
+                        }
 
 
-                fragmentList.add(mineDataFragment);
-                if(carmodel==1){
-                    if(mineDataBikeFragment==null){
-                        mineDataBikeFragment = new MineDataBikeFragment();
-                    }else{
-                        mineDataBikeFragment.onDestroy();
-                        mineDataBikeFragment = new MineDataBikeFragment();
-                    }
+                        if(fragmentList.size()>0){
+                            fragmentList.clear();
+                        }
 
-                    fragmentList.add(mineDataBikeFragment);
-                }else if(carmodel==2){
-                    if(mineDataEbikeFragment==null){
-                        mineDataEbikeFragment = new MineDataEbikeFragment();
-                    }else{
-                        mineDataEbikeFragment.onDestroy();
-                        mineDataEbikeFragment = new MineDataEbikeFragment();
-                    }
+                        LogUtil.e("MyPagerAdapter===", carmodel+"==="+fragmentList);
 
-                    fragmentList.add(mineDataEbikeFragment);
-                }else if(carmodel==3){
-                    if(mineDataBikeFragment==null){
-                        mineDataBikeFragment = new MineDataBikeFragment();
-                    }else{
-                        mineDataBikeFragment.onDestroy();
-                        mineDataBikeFragment = new MineDataBikeFragment();
-                    }
-                    if(mineDataEbikeFragment==null){
-                        mineDataEbikeFragment = new MineDataEbikeFragment();
-                    }else{
-                        mineDataEbikeFragment.onDestroy();
-                        mineDataEbikeFragment = new MineDataEbikeFragment();
-                    }
-                    fragmentList.add(mineDataBikeFragment);
-                    fragmentList.add(mineDataEbikeFragment);
-                }
+                        if(mineDataFragment==null){
+                            mineDataFragment = new MineDataFragment();
+                        }else{
+                            mineDataFragment.onDestroy();
+                            mineDataFragment = new MineDataFragment();
+                        }
+
+
+                        fragmentList.add(mineDataFragment);
+                        if(carmodel==1){
+                            if(mineDataBikeFragment==null){
+                                mineDataBikeFragment = new MineDataBikeFragment();
+                            }else{
+                                mineDataBikeFragment.onDestroy();
+                                mineDataBikeFragment = new MineDataBikeFragment();
+                            }
+
+                            fragmentList.add(mineDataBikeFragment);
+                        }else if(carmodel==2){
+                            if(mineDataEbikeFragment==null){
+                                mineDataEbikeFragment = new MineDataEbikeFragment();
+                            }else{
+                                mineDataEbikeFragment.onDestroy();
+                                mineDataEbikeFragment = new MineDataEbikeFragment();
+                            }
+
+                            fragmentList.add(mineDataEbikeFragment);
+                        }else if(carmodel==3){
+                            if(mineDataBikeFragment==null){
+                                mineDataBikeFragment = new MineDataBikeFragment();
+                            }else{
+                                mineDataBikeFragment.onDestroy();
+                                mineDataBikeFragment = new MineDataBikeFragment();
+                            }
+                            if(mineDataEbikeFragment==null){
+                                mineDataEbikeFragment = new MineDataEbikeFragment();
+                            }else{
+                                mineDataEbikeFragment.onDestroy();
+                                mineDataEbikeFragment = new MineDataEbikeFragment();
+                            }
+                            fragmentList.add(mineDataBikeFragment);
+                            fragmentList.add(mineDataEbikeFragment);
+                        }
 
 
 //                myPagerAdapter.notifyDataSetChanged();
 
-                myPagerAdapter = new MyPagerAdapter(getFragmentManager());
-                vp.setAdapter(myPagerAdapter);
-                tab.setupWithViewPager(vp);
+                        myPagerAdapter = new MyPagerAdapter(getFragmentManager());
+                        vp.setAdapter(myPagerAdapter);
+                        tab.setupWithViewPager(vp);
 
-                vp.setCurrentItem(0);
+                        vp.setCurrentItem(0);
 
-                vp.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                    @Override
-                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                    }
+                        vp.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                            @Override
+                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                            }
 
-                    @Override public void onPageSelected(int position) {
-                        vp.setCurrentItem(position);
-                    }
+                            @Override public void onPageSelected(int position) {
+                                vp.setCurrentItem(position);
+                            }
 
-                    @Override public void onPageScrollStateChanged(int state) {
+                            @Override public void onPageScrollStateChanged(int state) {
+                            }
+                        });
+
+
+
+                        carbatteryaction_lowpower();
+                        carbadaction_scrapped();
+                        over_area_cars();
+
+                        if(mineDataFragment!=null){
+                            mineDataFragment.datas();
+                        }
+
+                        if(carmodel==1){
+                            if(mineDataBikeFragment!=null){
+                                mineDataBikeFragment.orders();
+                            }
+                        }else if(carmodel==2){
+                            if(mineDataEbikeFragment!=null){
+                                mineDataEbikeFragment.orders();
+                            }
+                        }else if(carmodel==3){
+                            if(mineDataBikeFragment!=null){
+                                mineDataBikeFragment.orders();
+                            }
+
+                            if(mineDataEbikeFragment!=null){
+                                mineDataEbikeFragment.orders();
+                            }
+                        }
+
+                        LogUtil.e("minef===pvOptions",  school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+school_carmodel_ids);
                     }
                 });
 
 
 
-                carbatteryaction_lowpower();
-                carbadaction_scrapped();
-                over_area_cars();
-
-                if(mineDataFragment!=null){
-                    mineDataFragment.datas();
-                }
-
-                if(carmodel==1){
-                    if(mineDataBikeFragment!=null){
-                        mineDataBikeFragment.orders();
-                    }
-                }else if(carmodel==2){
-                    if(mineDataEbikeFragment!=null){
-                        mineDataEbikeFragment.orders();
-                    }
-                }else if(carmodel==3){
-                    if(mineDataBikeFragment!=null){
-                        mineDataBikeFragment.orders();
-                    }
-
-                    if(mineDataEbikeFragment!=null){
-                        mineDataEbikeFragment.orders();
-                    }
-                }
-
-
-
-
-
-
-
-                LogUtil.e("minef===pvOptions",  school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+school_carmodel_ids);
             }
         });
 
@@ -1277,9 +1279,15 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                }
 
 //                if(popupwindow==null || (popupwindow!=null && !popupwindow.isShowing())){
-                if(popupwindow==null || !popupwindow.isShowing()){
-                    initmPopupWindowView();
+
+
+                if(low_power_count!=0){
+                    if(popupwindow==null || !popupwindow.isShowing()){
+                        initmPopupWindowView();
+                    }
                 }
+
+
 
                 break;
 
@@ -1397,7 +1405,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 lowPowerBean.getUltra_low_total();
 
 
-                                tv_low_power_count.setText(""+lowPowerBean.getLow_power_total());
+                                low_power_count = lowPowerBean.getTotal();
+                                tv_low_power_count.setText(""+low_power_count);
 
                                 JSONArray array = new JSONArray(lowPowerBean.getLow_power_data());
 
@@ -1874,7 +1883,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     };
 
     public void initHttp() {
-        LogUtil.e("minef===initHttp", "==="+isHidden());
+        LogUtil.e("minef===initHttp", school_id+"==="+isHidden());
 
         if(isHidden()) return;
 
@@ -1915,9 +1924,15 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                 admin_id = bean.getId();
                                 role_level = bean.getRole_level();
 
+                                if("3".equals(role_level)){
+                                    financeStatementLayout.setVisibility(View.VISIBLE);
+                                }else{
+                                    financeStatementLayout.setVisibility(View.GONE);
+                                }
+
                                 String[] schools = bean.getSchools();
 
-                                LogUtil.e("minef===initHttp2", schools+"==="+SharedPreferencesUrls.getInstance().getInt("school_id", -1));
+                                LogUtil.e("minef===initHttp2", schools.length+"==="+SharedPreferencesUrls.getInstance().getInt("school_id", 0));
 
 //                                if(schools!=null && schools.length>0){
 //
@@ -1956,7 +1971,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                         datas.add(bean2);
                                         item.add(bean2.getName());
 
-                                        if((SharedPreferencesUrls.getInstance().getInt("school_id", -1)==-1 && i==0) || (SharedPreferencesUrls.getInstance().getInt("school_id", -1)!=-1 && bean2.getId()==SharedPreferencesUrls.getInstance().getInt("school_id", -1))){
+                                        if((SharedPreferencesUrls.getInstance().getInt("school_id", 0)==0 && i==0) || (SharedPreferencesUrls.getInstance().getInt("school_id", 0)!=0 && bean2.getId()==SharedPreferencesUrls.getInstance().getInt("school_id", 0))){
                                             flag=true;
 
                                             school_id = bean2.getId();
@@ -1965,7 +1980,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
                                             school_longitude = bean2.getLongitude();
                                             school_carmodel_ids = bean2.getCarmodel_ids();
 
-                                            Gson gson = new Gson();
                                             SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
 //                                            SharedPreferencesUrls.getInstance().putString("school_name", school_name);
 //                                            SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
@@ -1973,6 +1987,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 //                                            SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
 
                                             schoolName.setText(school_name);
+//                                            schoolName.setFocusable(true);
 
                                             int[] carmodels = school_carmodel_ids;
 
@@ -1998,46 +2013,42 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
                                     }
 
-                                    if(!flag){
-                                        SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
-                                        datas.add(bean2);
-                                        item.add(bean2.getName());
-
-                                        school_id = bean2.getId();
-                                        school_name = bean2.getName();
-                                        school_latitude = bean2.getLatitude();
-                                        school_longitude = bean2.getLongitude();
-                                        school_carmodel_ids = bean2.getCarmodel_ids();
-
-                                        SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
-//                                            SharedPreferencesUrls.getInstance().putString("school_name", school_name);
-//                                            SharedPreferencesUrls.getInstance().putString("school_latitude", school_latitude);
-//                                            SharedPreferencesUrls.getInstance().putString("school_longitude", school_longitude);
-//                                            SharedPreferencesUrls.getInstance().putString("school_carmodel_ids", gson.toJson(school_carmodel_ids));
-
-                                        schoolName.setText(school_name);
-
-                                        int[] carmodels = school_carmodel_ids;
-
-                                        LogUtil.e("minef===initHttp5", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
-
-                                        if(carmodels==null || carmodels.length==0){
-                                            carmodel = 0;
-                                        }else if(carmodels!=null && carmodels.length>0){
-
-                                            LogUtil.e("minef===initHttp4", "===");
-
-                                            if(carmodels.length==1){
-                                                if(carmodels[0]==1){
-                                                    carmodel = 1;
-                                                }else if(carmodels[0]==2){
-                                                    carmodel = 2;
-                                                }
-                                            }else if(carmodels.length==2){
-                                                carmodel = 3;
-                                            }
-                                        }
-                                    }
+//                                    if(!flag){
+//                                        SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+//                                        datas.add(bean2);
+//                                        item.add(bean2.getName());
+//
+//                                        school_id = bean2.getId();
+//                                        school_name = bean2.getName();
+//                                        school_latitude = bean2.getLatitude();
+//                                        school_longitude = bean2.getLongitude();
+//                                        school_carmodel_ids = bean2.getCarmodel_ids();
+//
+//                                        SharedPreferencesUrls.getInstance().putInt("school_id", school_id);
+//
+//                                        schoolName.setText(school_name);
+//
+//                                        int[] carmodels = school_carmodel_ids;
+//
+//                                        LogUtil.e("minef===initHttp5", school_id+"==="+school_name+"==="+school_latitude+"==="+school_longitude+"==="+carmodels.length);
+//
+//                                        if(carmodels==null || carmodels.length==0){
+//                                            carmodel = 0;
+//                                        }else if(carmodels!=null && carmodels.length>0){
+//
+//                                            LogUtil.e("minef===initHttp4", "===");
+//
+//                                            if(carmodels.length==1){
+//                                                if(carmodels[0]==1){
+//                                                    carmodel = 1;
+//                                                }else if(carmodels[0]==2){
+//                                                    carmodel = 2;
+//                                                }
+//                                            }else if(carmodels.length==2){
+//                                                carmodel = 3;
+//                                            }
+//                                        }
+//                                    }
                                 }
 
 

@@ -459,25 +459,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="107dp"
+            android:layout_marginBottom="140dp"
             android:layout_marginLeft="@dimen/dp30"
             android:orientation="vertical"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/mainUI_refresh"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@null"
                 android:src="@drawable/refresh_icon"
                 android:layout_alignParentLeft="true"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/sp12"
-                android:textColor="@color/tx_black"
-                android:text="刷新"/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="@dimen/sp12"-->
+<!--                android:textColor="@color/tx_black"-->
+<!--                android:text="刷新"/>-->
 
         </LinearLayout>
 
@@ -487,17 +487,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="46dp"
+            android:layout_marginBottom="80dp"
             android:layout_marginLeft="@dimen/dp30"
             android:orientation="vertical"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/mainUI_myLocation"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@null"
-                android:src="@drawable/btn_location"
+                android:src="@drawable/location_icon"
                 android:layout_alignParentLeft="true"/>
 
         </LinearLayout>
@@ -698,24 +698,24 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="46dp"
-            android:layout_marginRight="@dimen/dp35"
+            android:layout_marginBottom="80dp"
+            android:layout_marginRight="@dimen/dp30"
             android:orientation="vertical"
             android:gravity="center">
 
             <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@null"
-                android:src="@drawable/refresh_icon"
+                android:src="@drawable/condition_icon"
                 android:layout_alignParentLeft="true"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/sp12"
-                android:textColor="@color/tx_black"
-                android:text=""/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="@dimen/sp12"-->
+<!--                android:textColor="@color/tx_black"-->
+<!--                android:text=""/>-->
 
         </LinearLayout>
 

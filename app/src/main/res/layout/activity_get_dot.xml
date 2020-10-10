@@ -365,7 +365,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="@null"
-                android:src="@drawable/btn_location"
+                android:src="@drawable/location_icon"
                 android:layout_alignParentLeft="true"/>
 
             <TextView

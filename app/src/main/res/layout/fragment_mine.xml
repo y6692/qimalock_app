@@ -32,224 +32,240 @@
         </RelativeLayout>
 
 
-        <ScrollView
+<!--        <ScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content">-->
+
+<!--            -->
+<!--        </ScrollView>-->
+
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="80dp"
+            android:orientation="vertical"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:paddingTop="24dp"
+                android:paddingBottom="51dp"
+                android:paddingLeft="38dp"
+                android:paddingRight="30dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@drawable/bcg_title_home"
                 >
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="24dp"
-                    android:paddingBottom="51dp"
-                    android:paddingLeft="38dp"
-                    android:paddingRight="30dp"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:background="@drawable/bcg_title_home"
-                    >
+                    android:orientation="vertical"
+                    android:gravity="center">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                    <RelativeLayout
+                        android:layout_width="80dp"
+                        android:layout_height="80dp">
 
-                        <RelativeLayout
+                        <com.qimalocl.manage.core.widget.MLImageView
+                            android:id="@+id/personUI_header"
                             android:layout_width="80dp"
-                            android:layout_height="80dp">
+                            android:layout_height="80dp"
+                            android:src="@drawable/head_icon"
+                            melove:border_color="@color/ml_white"
+                            melove:border_width="1dp"
+                            melove:shape_type="round"
+                            android:layout_centerInParent="true"
+                            android:background="@null"
+                            android:scaleType="centerInside"/>
 
-                            <com.qimalocl.manage.core.widget.MLImageView
-                                android:id="@+id/personUI_header"
-                                android:layout_width="80dp"
-                                android:layout_height="80dp"
-                                android:src="@drawable/head_icon"
-                                melove:border_color="@color/ml_white"
-                                melove:border_width="1dp"
-                                melove:shape_type="round"
-                                android:layout_centerInParent="true"
-                                android:background="@null"
-                                android:scaleType="centerInside"/>
+                    </RelativeLayout>
+                </LinearLayout>
 
-                        </RelativeLayout>
-                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="23dp"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical">
 
-                    <LinearLayout
+
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="23dp"
-                        android:orientation="vertical"
                         android:gravity="center_vertical">
 
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal"
-                                android:layout_centerVertical="true">
-
-                                <TextView
-                                    android:id="@+id/personUI_userName"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/sp16"
-                                    android:textColor="@color/white"
-                                    android:text=""/>
-
-                            </LinearLayout>
-
-
-
-                            <LinearLayout
-                                android:id="@+id/ll_backBtn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_alignParentRight="true">
-
-                                <ImageView
-                                    android:id="@+id/personUI_rightBtn"
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/set_icon"/>
-
-                            </LinearLayout>
-
-                        </RelativeLayout>
-
                         <LinearLayout
-                            android:id="@+id/ll_schoolName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="9dp"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:layout_centerVertical="true">
 
                             <TextView
-                                android:visibility="gone"
-                                android:id="@+id/personUI_roleName"
+                                android:id="@+id/personUI_userName"
                                 android:layout_width="wrap_content"
-                                android:layout_height="25dp"
+                                android:layout_height="wrap_content"
                                 android:textSize="@dimen/sp16"
                                 android:textColor="@color/white"
                                 android:text=""/>
 
-<!--                            <com.qimalocl.manage.core.widget.MarqueTextView-->
+                        </LinearLayout>
 
+
+
+                        <LinearLayout
+                            android:id="@+id/ll_backBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentRight="true">
+
+                            <ImageView
+                                android:id="@+id/personUI_rightBtn"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/set_icon"/>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_schoolName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="9dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/personUI_roleName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="25dp"
+                            android:textSize="@dimen/sp16"
+                            android:textColor="@color/white"
+                            android:text=""/>
+
+<!--                        android:gravity="left|center"-->
+<!--                        android:focusable="true"-->
+<!--                        android:focusableInTouchMode="true"-->
+<!--                        android:scrollHorizontally="true"-->
+
+                        <com.qimalocl.manage.core.widget.MarqueTextView
+                            android:id="@+id/personUI_schoolName"
+                            android:layout_width="200dp"
+                            android:layout_height="25dp"
+                            android:paddingRight="5dp"
+                            android:layout_weight="1"
+                            android:textSize="@dimen/sp16"
+                            android:textColor="@color/white"
+                            android:singleLine="true"
+                            android:ellipsize="marquee"
+
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:text=""/>
+
+<!--                            <TextView-->
 <!--                                android:id="@+id/personUI_schoolName"-->
 <!--                                android:layout_width="wrap_content"-->
 <!--                                android:layout_height="25dp"-->
 <!--                                android:textSize="@dimen/sp16"-->
 <!--                                android:textColor="@color/white"-->
 <!--                                android:singleLine="true"-->
-<!--                                android:ellipsize="marquee"-->
-<!--                                android:marqueeRepeatLimit="marquee_forever"-->
-<!--                                android:text="123"/>-->
+<!--                                android:text=""/>-->
 
-                            <TextView
-                                android:id="@+id/personUI_schoolName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="25dp"
-                                android:textSize="@dimen/sp16"
-                                android:textColor="@color/white"
-                                android:singleLine="true"
-                                android:text=""/>
+                        <ImageView
+                            android:id="@+id/iv_down"
+                            android:layout_width="16dp"
+                            android:layout_height="8dp"
+                            android:layout_marginLeft="9dp"
+                            android:src="@drawable/s_down"
+                            />
 
-                            <ImageView
-                                android:id="@+id/iv_down"
-                                android:layout_width="16dp"
-                                android:layout_height="8dp"
-                                android:layout_marginLeft="9dp"
-                                android:src="@drawable/s_down"
-                                />
-
-                            <!--android:focusable="true"-->
-                            <!--android:focusableInTouchMode="true"-->
-                            <!--android:scrollHorizontally="true"-->
+                        <!--android:focusable="true"-->
+                        <!--android:focusableInTouchMode="true"-->
+                        <!--android:scrollHorizontally="true"-->
 
 
-
-                        </LinearLayout>
 
                     </LinearLayout>
 
                 </LinearLayout>
 
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="172dp"
+                android:layout_marginTop="-44dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/back_bd4"
+                android:orientation="vertical">
+
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="172dp"
-                    android:layout_marginTop="-44dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
-                    android:background="@drawable/back_bd4"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
-
-
-                    <LinearLayout
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/vp"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <android.support.v4.view.ViewPager
-                            android:id="@+id/vp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="10dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="2dp"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-
-                            <android.support.design.widget.TabLayout
-                                android:id="@+id/tab"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:tabIndicatorHeight="0dp"
-                                app:tabIndicatorColor="#F95A64"
-
-                                app:tabMaxWidth="10dp"
-                                app:tabMinWidth="10dp"
-
-                                app:tabBackground="@drawable/tabitem2"
-
-                                />
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-
-
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+
+                        <android.support.design.widget.TabLayout
+                            android:id="@+id/tab"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:tabIndicatorHeight="0dp"
+                            app:tabIndicatorColor="#F95A64"
+
+                            app:tabMaxWidth="10dp"
+                            app:tabMinWidth="10dp"
+
+                            app:tabBackground="@drawable/tabitem2"
+
+                            />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
 
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@color/white"
                     android:orientation="vertical">
 
@@ -269,8 +285,8 @@
                             android:layout_alignParentLeft="true">
 
                             <!--<ImageView-->
-                                <!--android:layout_width="24dp"-->
-                                <!--android:layout_height="24dp"/>-->
+                            <!--android:layout_width="24dp"-->
+                            <!--android:layout_height="24dp"/>-->
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -281,17 +297,17 @@
                         </LinearLayout>
 
                         <!--<LinearLayout-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:gravity="center_vertical"-->
-                            <!--android:layout_marginRight="35dp"-->
-                            <!--android:orientation="horizontal"-->
-                            <!--android:layout_alignParentRight="true">-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:layout_marginRight="35dp"-->
+                        <!--android:orientation="horizontal"-->
+                        <!--android:layout_alignParentRight="true">-->
 
-                            <!--<ImageView-->
-                                <!--android:layout_width="8dp"-->
-                                <!--android:layout_height="14dp"-->
-                                <!--android:src="@drawable/yjt4"/>-->
+                        <!--<ImageView-->
+                        <!--android:layout_width="8dp"-->
+                        <!--android:layout_height="14dp"-->
+                        <!--android:src="@drawable/yjt4"/>-->
                         <!--</LinearLayout>-->
                     </RelativeLayout>
 
@@ -332,17 +348,17 @@
                         </LinearLayout>
 
                         <!--<LinearLayout-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:gravity="center_vertical"-->
-                            <!--android:layout_marginRight="35dp"-->
-                            <!--android:orientation="horizontal"-->
-                            <!--android:layout_alignParentRight="true">-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:layout_marginRight="35dp"-->
+                        <!--android:orientation="horizontal"-->
+                        <!--android:layout_alignParentRight="true">-->
 
-                            <!--<ImageView-->
-                                <!--android:layout_width="8dp"-->
-                                <!--android:layout_height="14dp"-->
-                                <!--android:src="@drawable/yjt4"/>-->
+                        <!--<ImageView-->
+                        <!--android:layout_width="8dp"-->
+                        <!--android:layout_height="14dp"-->
+                        <!--android:src="@drawable/yjt4"/>-->
                         <!--</LinearLayout>-->
                     </RelativeLayout>
 
@@ -700,9 +716,11 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
-        </ScrollView>
+            </ScrollView>>
 
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

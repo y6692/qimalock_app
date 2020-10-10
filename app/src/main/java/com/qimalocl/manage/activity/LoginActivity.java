@@ -254,7 +254,7 @@ public class LoginActivity extends SwipeBackActivity implements View.OnClickList
 
                 try{
                     CustomDialog.Builder customBuilder = new CustomDialog.Builder(this);
-                    customBuilder.setTitle("温馨提示").setMessage("您将退出7MA调度。")
+                    customBuilder.setTitle("温馨提示").setMessage("您将退出7MA运维。")
                             .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.cancel();

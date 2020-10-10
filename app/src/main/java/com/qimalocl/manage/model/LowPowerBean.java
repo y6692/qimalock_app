@@ -6,18 +6,18 @@ package com.qimalocl.manage.model;
 
 public class LowPowerBean {
 
-    private int low_power_total;    //低电和超低电总数量
+    private int total;    //低电和超低电总数量
     private int low_total;    //低电总数量
     private int ultra_low_total;    //超低电总数量
 
     private String low_power_data;  //数据
 
-    public int getLow_power_total() {
-        return low_power_total;
+    public int getTotal() {
+        return total;
     }
 
-    public void setLow_power_total(int low_power_total) {
-        this.low_power_total = low_power_total;
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     public int getLow_total() {

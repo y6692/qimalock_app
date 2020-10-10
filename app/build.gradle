@@ -44,6 +44,13 @@ android {
             storePassword 'password'
         }
 
+        debug {
+            keyAlias "7malock"
+            keyPassword "123456"
+            storeFile file("../7malock.jks")
+            storePassword "123456"
+        }
+
         release {
             keyAlias "7malock"
             keyPassword "123456"
@@ -53,32 +60,44 @@ android {
     }
 
     buildTypes {
-        release {
-            debuggable true
-            signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
-            android.applicationVariants.all { variant ->
-                variant.outputs.all {
-                    outputFileName = "7MAlock_${releaseTime()}.apk"
-                }
-            }
-        }
-
-
         debug {
-            debuggable true
-            signingConfig signingConfigs.release
+//            applicationIdSuffix '.debug'
+//            signingConfig signingConfigs.debug
+//            android.applicationVariants.all { variant ->
+//                variant.outputs.all {
+//                    outputFileName = "7MAlock_debug.apk"
+//                }
+//            }
+
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+//            versionNameSuffix "-debug"
             minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+        }
+
+        release {
+//            debuggable false
+//            signingConfig signingConfigs.release
+//            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             android.applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = "7MAlock_debug.apk"
+
+                    if (variant.buildType.name.equals('release')) {
+                        outputFileName = "7MAlock_${releaseTime()}_${variant.buildType.name}.apk"
+                    } else if (variant.buildType.name.equals('debug')) {
+                        outputFileName = "7MAlock_debug.apk"
+                    }
+
+
                 }
             }
         }
+
+
+
     }
 
     dexOptions {

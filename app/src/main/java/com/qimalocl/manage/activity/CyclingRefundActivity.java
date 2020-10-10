@@ -152,6 +152,7 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
         Log.e("cia===onCreate", begintime+"==="+endtime);
 
         tv_day.setText(begintime+" 到 "+endtime);
+//        tv_order_amount.setText("adasfasfffasasfasffdf");
 
         myList.setOnItemClickListener(this);
         if(data.isEmpty()){
@@ -206,6 +207,7 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
             swipeRefreshLayout.setRefreshing(false);
         }
     }
+
     @Override
     public void onClick(View v) {
 
@@ -213,11 +215,13 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
             case R.id.mainUI_title_backBtn:
                 scrollToFinishActivity();
                 break;
+
             case R.id.tv_day:
-                Intent intent = new Intent(context,HistoryRoadFiltateActivity.class);
+                Intent intent = new Intent(context, HistoryRoadFiltateActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent,0);
                 break;
+
             case R.id.footer_Layout:
                 if (!isLast) {
                     showPage += 1;
@@ -225,6 +229,7 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
                     myAdapter.notifyDataSetChanged();
                 }
                 break;
+
             default:
                 break;
         }
@@ -245,7 +250,7 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
         timeList.add(begintime);
         timeList.add(endtime);
 
-        LogUtil.e("cia===initHttp", school_id+"==="+timeList);
+        LogUtil.e("cra===initHttp", school_id+"==="+timeList);
 
         RequestParams params = new RequestParams();
 //        params.put("car_number", codenum);
@@ -254,7 +259,7 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
         params.put("page", showPage);
         params.put("per_page", GlobalConfig.PAGE_SIZE);
 
-        tv_order_amount.setText("");
+
         HttpHelper.get(context, Urls.refundorder, params, new TextHttpResponseHandler() {
 
             @Override
@@ -275,43 +280,41 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
                 try {
                     ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                    LogUtil.e("cia===initHttp1", "==="+responseString);
+                    LogUtil.e("cra===initHttp1", "==="+responseString);
 
                     JSONArray array = new JSONArray(result.getData());
                     if (array.length() == 0 && showPage == 1) {
                         footerLayout.setVisibility(View.VISIBLE);
                         setFooterType(4);
                         return;
-                    }else{
+                    }else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
                         footerLayout.setVisibility(View.GONE);
+                        setFooterType(5);
+                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(2);
+                    } else if (array.length() >= GlobalConfig.PAGE_SIZE) {
+                        footerLayout.setVisibility(View.VISIBLE);
+                        setFooterType(0);
                     }
-//                    else if (array.length() < GlobalConfig.PAGE_SIZE && showPage == 1) {
-//                        footerLayout.setVisibility(View.GONE);
-//                        setFooterType(5);
-//                    } else if (array.length() < GlobalConfig.PAGE_SIZE) {
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(2);
-//                    } else if (array.length() >= 10) {
-//                        footerLayout.setVisibility(View.VISIBLE);
-//                        setFooterType(0);
-//                    }
 
                     for (int i = 0; i < array.length(); i++) {
                         CyclingRefundBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CyclingRefundBean.class);
                         data.add(bean);
                     }
 
-                    myAdapter.notifyDataSetChanged();
+//                    myAdapter.notifyDataSetChanged();
 
 
                     refundorder_statistics();
 
                 } catch (Exception e) {
-
+                    footerLayout.setVisibility(View.VISIBLE);
+                    setFooterType(4);
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                     isRefresh = false;
-//                    setFooterVisibility();
+                    setFooterVisibility();
                 }
             }
         });
@@ -329,7 +332,7 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
         timeList.add(begintime);
         timeList.add(endtime);
 
-        LogUtil.e("cia===initHttp", school_id+"==="+timeList);
+        LogUtil.e("cra===initHttp", school_id+"==="+timeList);
 
         RequestParams params = new RequestParams();
         params.put("school_id", school_id);
@@ -339,15 +342,12 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
 
             @Override
             public void onStart() {
-                setFooterType(1);
+//                setFooterType(1);
+                onStartCommon("正在加载");
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                UIHelper.ToastError(context, throwable.toString());
-//                swipeRefreshLayout.setRefreshing(false);
-//                isRefresh = false;
-//                setFooterType(3);
-//                setFooterVisibility();
+                onFailureCommon(throwable.toString());
             }
 
             @Override
@@ -360,7 +360,7 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
                         try {
 //                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-                            LogUtil.e("cyclingorder_s1", "==="+responseString);
+                            LogUtil.e("refundorder_s1", "==="+responseString);
 
                             JSONObject json = JSON.parseObject(responseString);
 
@@ -384,6 +384,9 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent idata) {
+
+        LogUtil.e("cra===onActivityResult",    requestCode+"==="+resultCode+"==="+idata);
+
         switch (requestCode) {
             case 0:
                 if (idata != null) {
@@ -392,15 +395,18 @@ public class CyclingRefundActivity extends SwipeBackActivity implements View.OnC
 
                     tv_day.setText(begintime+" 到 "+endtime);
 
-                    LogUtil.e("onActivityResult===",begintime+"==="+endtime+"==="+data);
+                    LogUtil.e("onActivityResult===",    begintime+"==="+endtime+"==="+data);
 
-//                    onRefresh();
+                    tv_order_amount.setText("");
+                    onRefresh();
 
-                    if(data.size()!=0){
-                        myAdapter.getDatas().clear();
-                        myAdapter.notifyDataSetChanged();
-                    }
-                    initHttp();
+//                    if(data.size()!=0){
+//                        myAdapter.getDatas().clear();
+//                        myAdapter.notifyDataSetChanged();
+//                    }
+//
+//                    tv_order_amount.setText("");
+//                    initHttp();
                 }
                 break;
 

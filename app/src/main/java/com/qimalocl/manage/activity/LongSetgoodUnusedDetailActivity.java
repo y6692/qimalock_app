@@ -281,6 +281,9 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
 
                         } catch (Exception e) {
                             e.printStackTrace();
+
+                            footerLayout.setVisibility(View.VISIBLE);
+                            setFooterType(4);
                         } finally {
                             swipeRefreshLayout.setRefreshing(false);
                             isRefresh = false;

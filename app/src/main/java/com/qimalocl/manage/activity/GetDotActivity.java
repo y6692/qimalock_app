@@ -124,6 +124,12 @@ import cn.jock.pickerview.view.view.OptionsPickerView;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.KEYGUARD_SERVICE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+import static com.qimalocl.manage.base.BaseApplication.school_id2;
+import static com.qimalocl.manage.base.BaseApplication.school_latitude;
+import static com.qimalocl.manage.base.BaseApplication.school_longitude;
+import static com.qimalocl.manage.base.BaseApplication.school_name;
 
 @SuppressLint("NewApi")
 public class GetDotActivity extends MPermissionsActivity implements View.OnClickListener, LocationSource,
@@ -239,6 +245,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
     private BluetoothAdapter.LeScanCallback mLeScanCallback;
     private int n=0;
     private float accuracy = 29.0f;
+    float leveltemp = 18f;
 
 //    private boolean isHidden;
 
@@ -735,6 +742,15 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
                     aMap.animateCamera(update);
                 }
+
+//                if("".equals(school_latitude) || "".equals(school_longitude)){
+//
+//                }else{
+//                    LatLng myLocation = new LatLng(Double.parseDouble(school_latitude), Double.parseDouble(school_longitude));
+//                    leveltemp = 18f;
+//                    aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
+//                }
+
                 break;
 
             case R.id.getDot_confirmLayout:
@@ -898,9 +914,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                         }
 
 //                        setFooterType(2);
-//
 //                        LogUtil.e("getSchoolList===3", datas.size()+"==="+schoolList.size());
-//
 //                        myAdapter.notifyDataSetChanged();
 
 
@@ -1204,6 +1218,17 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                                                     }
                                                 }
                                             }).start();
+
+                                            if("".equals(school_latitude) || "".equals(school_longitude)){
+                                                if (myLocation != null) {
+                                                    CameraUpdate update = CameraUpdateFactory.changeLatLng(myLocation);
+                                                    aMap.animateCamera(update);
+                                                }
+                                            }else{
+                                                LatLng myLocation = new LatLng(Double.parseDouble(school_latitude), Double.parseDouble(school_longitude));
+                                                leveltemp = 18f;
+                                                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
+                                            }
 
                                         }else {
                                             if (loadingDialog != null && loadingDialog.isShowing()){
@@ -1586,7 +1611,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 //                        schoolRange();
 //                        initNearby(amapLocation.getLatitude(), amapLocation.getLongitude());
                         parking();
-                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+//                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
 
                         if(mode==1){
                             addChooseMarker();
@@ -1639,6 +1664,97 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
 
         }
     }
+
+    public void initHttp(){
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token != null && !"".equals(access_token)){
+            LogUtil.e("sf===user0", "==="+school_id);
+
+            HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+//                    onStartCommon("正在加载");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                LogUtil.e("sf===user1", "==="+responseString);
+
+                                UserBean bean = JSON.parseObject(result.getData(), UserBean.class);
+                                String[] schools = bean.getSchools();
+
+                                if(schools.length==0){
+                                    if (myLocation != null) {
+                                        leveltemp = 18f;
+                                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
+                                    }
+
+                                }else{
+
+                                    boolean flag=false;
+                                    for (int i = 0; i < schools.length;i++){
+                                        SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
+
+                                        LogUtil.e("sf===user2", first+"==="+school_id+"==="+school_id2+"==="+bean2.getId()+"==="+SharedPreferencesUrls.getInstance().getInt("school_id", 0));
+
+                                        if((SharedPreferencesUrls.getInstance().getInt("school_id", 0)==0 && i==0) || (SharedPreferencesUrls.getInstance().getInt("school_id", 0)!=0 && bean2.getId()==SharedPreferencesUrls.getInstance().getInt("school_id", 0))){
+                                            flag=true;
+
+                                            if(first || school_id2 != bean2.getId()){
+                                                first = false;
+
+                                                aMap.clear();
+
+                                                LatLng myLocation = new LatLng(Double.parseDouble(bean2.getLatitude()), Double.parseDouble(bean2.getLongitude()));
+                                                leveltemp = 18f;
+                                                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
+
+                                            }
+
+                                        }
+                                    }
+
+                                    if(!flag){
+                                        SchoolListBean bean2 = JSON.parseObject(schools[0], SchoolListBean.class);
+
+                                        school_latitude = bean2.getLatitude();
+                                        school_longitude = bean2.getLongitude();
+
+                                        LatLng myLocation = new LatLng(Double.parseDouble(school_latitude), Double.parseDouble(school_longitude));
+                                        leveltemp = 18f;
+                                        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
+
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }else {
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+        }
+    }
+
 
 
     @Override

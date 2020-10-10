@@ -190,7 +190,7 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
         }
     }
     private void initHttp(){
-        LogUtil.e("sguda===initHttp", date+"==="+type+"==="+showPage);
+        LogUtil.e("sguda===initHttp", school_id+"==="+date+"==="+type+"==="+showPage);
 
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
         if (access_token == null || "".equals(access_token)){
@@ -281,6 +281,9 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
 
                         } catch (Exception e) {
                             e.printStackTrace();
+
+                            footerLayout.setVisibility(View.VISIBLE);
+                            setFooterType(4);
                         } finally {
                             swipeRefreshLayout.setRefreshing(false);
                             isRefresh = false;

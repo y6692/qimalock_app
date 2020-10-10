@@ -35,6 +35,8 @@ import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
 
+import static com.qimalocl.manage.base.BaseApplication.school_id;
+
 /**
  * Used to intercept and handle the responses from requests made using {@link AsyncHttpClient}. The
  * {@link #onSuccess(int, Header[], String)} method is designed to be anonymously
@@ -138,6 +140,13 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
                         LogUtil.e("onSuccess===2", responseString+"==="+result.getStatus_code());
 
                         SharedPreferencesUrls.getInstance().putString("access_token", "");
+
+
+                        if(result.getStatus_code()==402){
+                            school_id = 0;
+                            SharedPreferencesUrls.getInstance().putInt("school_id", 0);
+                        }
+
 //                        SharedPreferencesUrls.getInstance().putString("iscert", "");
 
                         ToastUtil.showMessageApp(BaseApplication.context, result.getMessage());

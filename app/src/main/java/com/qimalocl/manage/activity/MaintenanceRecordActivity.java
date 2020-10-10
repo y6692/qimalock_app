@@ -325,7 +325,8 @@ public class MaintenanceRecordActivity extends SwipeBackActivity implements View
 //                        setFooterVisibility();
 //                    }
                 } catch (Exception e) {
-
+                    footerLayout.setVisibility(View.VISIBLE);
+                    setFooterType(4);
                 } finally {
                     swipeRefreshLayout.setRefreshing(false);
                     isRefresh = false;

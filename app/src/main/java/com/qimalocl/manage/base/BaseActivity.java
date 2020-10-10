@@ -45,6 +45,7 @@ import com.qimalocl.manage.core.common.AppManager;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
+import com.qimalocl.manage.core.widget.ConfirmDialog;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.MyScrollView;
 import com.qimalocl.manage.fragment.ScanFragment;
@@ -123,13 +124,13 @@ public class BaseActivity extends BaseFragmentActivity  implements View.OnClickL
 	protected void onResume() {
 		super.onResume();
 
-		LogUtil.e("ba===onResume", "==="+AppStatusManager.getInstance().getAppStatus());
+//		LogUtil.e("ba===onResume", "==="+AppStatusManager.getInstance().getAppStatus());
 
 		if(!"https://newmapi.7mate.cn/api".equals(Urls.host2)){
 
 			if(tv_test!=null) return;
 
-			LogUtil.e("ba===onResume_1", "==="+AppStatusManager.getInstance().getAppStatus());
+//			LogUtil.e("ba===onResume_1", "==="+AppStatusManager.getInstance().getAppStatus());
 
 			ll_test = findViewById(R.id.ll_test);
 			rl_test = findViewById(R.id.rl_test);
@@ -148,6 +149,35 @@ public class BaseActivity extends BaseFragmentActivity  implements View.OnClickL
 			rl_test.setVisibility(View.VISIBLE);
 			sv_test.setVisibility(View.GONE);
 
+			Log.e("ba===onResume_1", "==="+AppStatusManager.getInstance().getAppStatus());
+
+			btn_clear.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+//					Log.e("btn_clear===", "==="+testLog);
+
+					testLog="";
+					tv_test.setText("");
+				}
+			});
+
+			btn_log.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+//					Log.e("btn_log===", "==="+isLog);
+
+					if(!isLog){
+						isLog = true;
+						sv_test.setVisibility(View.VISIBLE);
+
+						scrollToBottom(sv_test, tv_test);
+					}else{
+						isLog = false;
+						sv_test.setVisibility(View.GONE);
+					}
+				}
+			});
+
 //          testLog+="log:\n";
 //          tv_test.setText(testLog);
 //			LogUtil.e("log", "");
@@ -161,12 +191,15 @@ public class BaseActivity extends BaseFragmentActivity  implements View.OnClickL
 	public void onClick(View v) {
 		switch (v.getId()){
 
-			case R.id.btn_clear:
-				testLog="";
-				tv_test.setText("");
-				break;
+//			case R.id.btn_clear:
+//				Log.e("btn_clear===", "==="+testLog);
+//
+//				testLog="";
+//				tv_test.setText("");
+//				break;
 
 			case R.id.btn_log:
+				LogUtil.e("btn_log===", "==="+isLog);
 
 				if(!isLog){
 					isLog = true;
