@@ -610,7 +610,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                LatLng myLocation = new LatLng(32.76446, 119.920594);
 //                addChooseMarker();
 //                aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, leveltemp));
-
             }
 
             if (!mFirstFix && !first){
@@ -1777,7 +1776,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
         tv_deviceuuid.setText(deviceuuid);
-        if(!"7".equals(type) && !"11".equals(type)){    //状态不稳定，所以不要显示
+        if(!"7".equals(type) && !"11".equals(type)){    //状态不准，所以不要显示
             tv_lock_status.setText(lock_status==0?"未知":lock_status==1?"已上锁":lock_status==2?"已开锁":lock_status==3?"离线":"正常");
         }
 
@@ -3660,8 +3659,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             case R.id.tv_condition_confirm:
                 LogUtil.e("tv_condition_confirm===", "==="+popupwindowCond);
 
-
+                carbatteryaction_lowpower();
                 cars(true);
+
 
                 popupwindowCond.dismiss();
                 break;
@@ -3787,6 +3787,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.mainUI_refreshLayout:
                 initHttp(true);
+                carbatteryaction_lowpower();
 //                cars(true);
                 break;
 

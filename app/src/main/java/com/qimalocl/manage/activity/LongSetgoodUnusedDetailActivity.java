@@ -91,7 +91,7 @@ public class LongSetgoodUnusedDetailActivity extends SwipeBackActivity implement
 
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
-        title.setText(type==1?"长期未使用":"修好未使用");
+        title.setText(type==1?"沉淀车辆":"修好未使用");
 //        rightBtn = (TextView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
