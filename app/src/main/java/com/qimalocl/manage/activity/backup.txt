@@ -1,3 +1,35 @@
+
+
+                    //TODO  2
+//                                if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                                    ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                                    popupwindow.dismiss();
+//                                }
+//                                BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//                                mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//                                BLEService.bluetoothAdapter = mBluetoothAdapter;
+//
+//                                bleService.view = context;
+//                                bleService.showValue = true;
+//
+//                                if (mBluetoothAdapter == null) {
+//                                    ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                                    popupwindow.dismiss();
+//                                    return;
+//                                }
+//                                if (!mBluetoothAdapter.isEnabled()) {
+//                                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                                    startActivityForResult(enableBtIntent, 188);
+//                                } else {
+//                                    LogUtil.e("mf===4_1", bleid + "==="+m_nowMac);
+//
+//                                    bleService.connect(m_nowMac);
+//
+//                                    checkConnect();
+//                                }
+
+
 //                                ViewGroup.LayoutParams param = cb_1.getLayoutParams();
 //                                param.height = 0;
 //                                param.width = 0;

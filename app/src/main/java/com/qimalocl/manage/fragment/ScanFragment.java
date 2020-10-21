@@ -393,6 +393,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private Thread ebikeInfoThread;
     public String oid = "";
     private int notice_code = 0;
+    private boolean isNetSuc;
 
     private boolean threadScan = true;
 
@@ -1384,7 +1385,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 String lock_secretkey = bean.getLock_secretkey();
                                 String lock_password = bean.getLock_password();
 
-                                if("9".equals(type) || "10".equals(type)){
+                                if("9".equals(type) || "10".equals(type) || "12".equals(type)){
                                     Config.newKey = hexStringToByteArray(lock_secretkey);
                                     Config.passwordnew = hexStringToByteArray(lock_password);
                                 }else if("2".equals(type) || "3".equals(type)){
@@ -1470,7 +1471,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 String lock_secretkey = bean.getLock_secretkey();
                                 String lock_password = bean.getLock_password();
 
-                                if("9".equals(type) || "10".equals(type)){
+                                if("9".equals(type) || "10".equals(type) || "12".equals(type)){
                                     Config.newKey = hexStringToByteArray(lock_secretkey);
                                     Config.passwordnew = hexStringToByteArray(lock_password);
                                 }else if("2".equals(type) || "3".equals(type)){
@@ -3415,7 +3416,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 TbitBle.destroy();
             }
 
-        }else if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)){
+        }else if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type) || "12".equals(type)){
             BleManager.getInstance().disconnectAllDevice();
             BleManager.getInstance().destroy();
         }
@@ -4681,7 +4682,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //
 //                    }
 
-            if ("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)) {
+            if ("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type) || "12".equals(type)) {
                 if(!isLookPsdBtn){   //没连上
 
                     initBle();
@@ -4733,7 +4734,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             if(TbitBle.hasInitialized()){
                 TbitBle.disConnect();
             }
-        }else if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)){
+        }else if("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type) || "12".equals(type)){
             BleManager.getInstance().disconnectAllDevice();
             BleManager.getInstance().destroy();
         }
@@ -4767,7 +4768,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 if ("1".equals(type)) {          //单车机械锁
 //                  UIHelper.goToAct(context, CurRoadStartActivity.class);
 //                  popupwindow.dismiss();
-                } else if ("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type)) {    //单车蓝牙锁
+                } else if ("2".equals(type) || "3".equals(type) || "9".equals(type) || "10".equals(type) || "12".equals(type)) {    //单车蓝牙锁
 
                     if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                         ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
@@ -4796,7 +4797,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
 
-                        if("10".equals(type)){
+                        if("10".equals(type) || "12".equals(type)){
                             initBle();
 
                             connect();
@@ -4831,35 +4832,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 }else if ("4".equals(type) || "8".equals(type)) {
 
                     unlock();
-
-                    //TODO  2
-//                                if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-//                                    ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
-//                                    popupwindow.dismiss();
-//                                }
-//                                BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-//                                mBluetoothAdapter = bluetoothManager.getAdapter();
-//
-//                                BLEService.bluetoothAdapter = mBluetoothAdapter;
-//
-//                                bleService.view = context;
-//                                bleService.showValue = true;
-//
-//                                if (mBluetoothAdapter == null) {
-//                                    ToastUtil.showMessageApp(context, "获取蓝牙失败");
-//                                    popupwindow.dismiss();
-//                                    return;
-//                                }
-//                                if (!mBluetoothAdapter.isEnabled()) {
-//                                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                                    startActivityForResult(enableBtIntent, 188);
-//                                } else {
-//                                    LogUtil.e("mf===4_1", bleid + "==="+m_nowMac);
-//
-//                                    bleService.connect(m_nowMac);
-//
-//                                    checkConnect();
-//                                }
 
                 }else if ("5".equals(type) || "6".equals(type)) {      //泺平单车蓝牙锁
 
@@ -4947,6 +4919,38 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         }, timeout);
                     }
                 }
+//                else if ("12".equals(type)) {      //TODO
+//                    LogUtil.e("sf===12_1", deviceuuid + "==="+ bleid + "==="+ m_nowMac);
+//
+////                  lockStatus = 2;
+//                    isNetSuc = false;
+////                  unlock();
+//
+//                    if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                        ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                    }
+//                    //蓝牙锁
+//                    BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//                    mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//                    if (mBluetoothAdapter == null) {
+//                        ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                        return;
+//                    }
+//                    if (!mBluetoothAdapter.isEnabled()) {
+//                        isPermission = false;
+//                        closeLoadingDialog2();
+//                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                        startActivityForResult(enableBtIntent, 188);
+//                    } else {
+//                        isOpenLock = true;
+//                        isNetSuc = false;
+//
+//                        connect();
+//                    }
+//
+//                }
             }
         });
 
@@ -5113,7 +5117,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                     LogUtil.e("0x99===timeout", isLookPsdBtn+"==="+isStop+"==="+type);
 
-                    if("3".equals(type)){
+                    if("3".equals(type) || "12".equals(type)){
                         if(isOpenLock){
                             unlock();
                         }else{
@@ -5277,7 +5281,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 public void run() {
                                     if("2".equals(type) || "3".equals(type)){
                                         getBattery();
-                                    }else if("9".equals(type) || "10".equals(type)){
+                                    }else if("9".equals(type) || "10".equals(type) || "12".equals(type)){
                                         getBattery2();
                                     }
 
@@ -5296,7 +5300,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             state = 1;
                             m_myHandlerState.removeCallbacksAndMessages(null);
-                            if("9".equals(type) || "10".equals(type)){
+                            if("9".equals(type) || "10".equals(type) || "12".equals(type)){
 
 //                                                if(isForeground){
 //                                                    Toast.makeText(context, "开锁成功", Toast.LENGTH_SHORT).show();

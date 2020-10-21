@@ -362,19 +362,19 @@ public class DeviceListActivity extends MPermissionsActivity{
                 LogUtil.e("dla===", "==="+isChange);
 
                 if("t".equals(BaseApplication.mode)){
-//                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageTestActivity.class, bundle);
+                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageTestActivity.class, bundle);
 
-                    Intent intent = new Intent();
-                    intent.setClass(context, LockStorageTestActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    startActivity(intent);
+//                    Intent intent = new Intent();
+//                    intent.setClass(context, LockStorageTestActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                    startActivity(intent);
                 }else{
-//                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
 
-                    Intent intent = new Intent();
-                    intent.setClass(context, LockStorageActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    startActivity(intent);
+//                    Intent intent = new Intent();
+//                    intent.setClass(context, LockStorageActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                    startActivity(intent);
                 }
 
 
