@@ -435,6 +435,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private CheckBox cb_6;
 
     private boolean first = true;
+    private boolean isLowpowerLayout;
 
     public int[] school_carmodel_ids2;
 
@@ -2753,6 +2754,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                     cb_1.setText("只看超区");
                                                     cb_2.setText("只看坏车");
 
+                                                    isLowpowerLayout = false;
                                                     ll_lowpowerLayout.setVisibility(View.GONE);
                                                     ll_slowpowerLayout.setVisibility(View.GONE);
 
@@ -2772,6 +2774,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                             cb_1.setText("只看超区");
                                                             cb_2.setText("只看坏车");
 
+                                                            isLowpowerLayout = false;
                                                             ll_lowpowerLayout.setVisibility(View.GONE);
                                                             ll_slowpowerLayout.setVisibility(View.GONE);
 
@@ -2791,6 +2794,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                             cb_3.setText("只看低电");
                                                             cb_4.setText("只看超低电");
 
+                                                            isLowpowerLayout = true;
                                                             ll_lowpowerLayout.setVisibility(View.VISIBLE);
                                                             ll_slowpowerLayout.setVisibility(View.VISIBLE);
 
@@ -2819,6 +2823,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                         cb_5.setText("只看低电");
                                                         cb_6.setText("只看超低电");
 
+                                                        isLowpowerLayout = true;
                                                         ll_lowpowerLayout.setVisibility(View.VISIBLE);
                                                         ll_slowpowerLayout.setVisibility(View.VISIBLE);
 
@@ -2854,6 +2859,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     }
 
     private void carbatteryaction_lowpower(){
+        if(!isLowpowerLayout) return;
 
         LogUtil.e("sf===lowpower", school_id+"===");
 
