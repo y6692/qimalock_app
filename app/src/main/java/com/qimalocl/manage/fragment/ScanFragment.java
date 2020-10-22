@@ -388,6 +388,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private boolean isAgain = false;
     private String backType = "";
     private boolean isOpenLock = false;
+    private boolean isGetState = false;
     private int order_type = 0;
     private boolean isWaitEbikeInfo = true;
     private Thread ebikeInfoThread;
@@ -3847,6 +3848,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.ll_open_lock:
                 isOpenLock = true;
+                isGetState = false;
 
                 if(carmodel_id==1){
                     open_lock();
@@ -3931,6 +3933,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
             case R.id.ll_close_lock:
                 isOpenLock = false;
+                isGetState = false;
 
                 if("7".equals(type)){
                     LogUtil.e("close===7_1", deviceuuid + "==="+ bleid + "==="+ m_nowMac);
@@ -4674,6 +4677,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             LogUtil.e("ll_get_state===2",  isLookPsdBtn + "===" + type + "===" + isMac + "===" + token);
 
             isOpenLock = false;
+            isGetState = true;
 
 //                    if("10".equals(type)){
 //                        BleManager.getInstance().init(activity.getApplication());
@@ -5332,7 +5336,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 LogUtil.e("closeLock===suc", "===");
 
                             } else {
-//                                                ToastUtil.showMessageApp(context,"关锁失败");
+//                              ToastUtil.showMessageApp(context,"关锁失败");
                                 if(isForeground){
                                     Toast.makeText(context, "关锁失败", Toast.LENGTH_SHORT).show();
                                 }
@@ -5365,9 +5369,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                         }
                                     }, 1000);
                                 }else{
-                                    if(isForeground){
+                                    if(isForeground && !isGetState){
 //                                                        Toast.makeText(context, "锁已关闭", Toast.LENGTH_SHORT).show();
+
                                         Toast.makeText(context, "关锁成功", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    if(isGetState){
+                                        isGetState = false;
                                     }
 
                                     LogUtil.e("closeLock===1", "锁已关闭==="+first3);
@@ -5386,8 +5395,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                 //锁已开启
 //                                                ToastUtil.showMessageApp(context,"锁已打开");
-                                if(isForeground){
+                                if(isForeground && !isGetState){
                                     Toast.makeText(context, "开锁成功", Toast.LENGTH_SHORT).show();
+                                }
+
+                                if(isGetState){
+                                    isGetState = false;
                                 }
 
                                 tv_lock_status.setText("已开锁");
