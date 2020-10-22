@@ -5,6 +5,7 @@ def static releaseTime() {
     return new Date().format("yyyyMMdd_HHmm")
 }
 
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
