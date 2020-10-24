@@ -6889,6 +6889,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     SharedPreferencesUrls.getInstance().putString("latitude",""+latitude);
                     SharedPreferencesUrls.getInstance().putString("longitude",""+longitude);
 
+                    Log.e("onLocationChanged===", amapLocation.getLatitude()+"==="+amapLocation.getAltitude()+"==="+amapLocation.getProvince()+"==="+amapLocation.getAdCode());
+
+
 //                    LogUtil.e("onLocationChanged=", mFirstFix+"==="+myLocation);
 
 //                    Toast.makeText(context,"==="+myLocation, Toast.LENGTH_SHORT).show();

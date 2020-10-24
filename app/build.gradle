@@ -145,8 +145,14 @@ dependencies {
     implementation(name: 'bleLocker', ext: 'aar')
     implementation(name: 'XiaoanBleSdk_V1.0.3', ext: 'aar')
     implementation 'com.android.support:recyclerview-v7:28.0.0'
-    implementation files('libs/Android_Map3D_SDK_V6.9.0_20190530.jar')
-    implementation files('libs/AMap_Location_V4.6.0_20190423.jar')
+
+//    implementation files('libs/Android_Map3D_SDK_V6.9.0_20190530.jar')
+//    implementation files('libs/AMap_Location_V4.6.0_20190423.jar')
+
+    implementation 'com.amap.api:3dmap:latest.integration'
+//    implementation 'com.amap.api:search:latest.integration'
+    implementation 'com.amap.api:location:latest.integration'
+
     implementation('com.github.hotchemi:permissionsdispatcher:3.3.1') {
         exclude group: 'com.android.support'
     }
