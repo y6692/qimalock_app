@@ -648,11 +648,11 @@ public class MainActivity extends BaseActivity{
                         }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
-//                        AppManager.getAppManager().AppExit(context);
+                        AppManager.getAppManager().AppExit(context);
 
-                        finish();
-                        //参数用作状态码；根据惯例，非 0 的状态码表示异常终止。
-                        System.exit(0);
+//                        finish();
+//                        //参数用作状态码；根据惯例，非 0 的状态码表示异常终止。
+//                        System.exit(0);
                     }
                 });
                 customBuilder.create().show();

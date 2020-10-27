@@ -3670,7 +3670,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 carbatteryaction_lowpower();
                 cars(true);
 
-
                 popupwindowCond.dismiss();
                 break;
 
@@ -3921,6 +3920,61 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         unlock();
 
+//                        if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                            ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                            popupwindow.dismiss();
+//                        }
+//                        //蓝牙锁
+//                        BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//                        mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//                        if (mBluetoothAdapter == null) {
+//                            ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                            popupwindow.dismiss();
+//                            return;
+//                        }
+//                        if (!mBluetoothAdapter.isEnabled()) {
+//                            isPermission = false;
+//                            closeLoadingDialog2();
+//                            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                            startActivityForResult(enableBtIntent, 188);
+//                        } else {
+////                                        closeLoadingDialog();
+////                                        if (loadingDialog != null && !loadingDialog.isShowing()) {
+////                                            loadingDialog.setTitle("正在唤醒车锁");
+////                                            loadingDialog.show();
+////                                        }
+//
+//                            if(!TbitBle.hasInitialized()){
+//                                TbitBle.initialize(context, new SecretProtocolAdapter());
+//                            }
+//
+//                            LogUtil.e("open===11_2", TbitBle.getBleConnectionState() + "===");
+//
+//                            if(TbitBle.getBleConnectionState()==0){
+//                                tbtble_connect();
+//
+//                                isConnect = false;
+////                                m_myHandler2.postDelayed(new Runnable() {
+////                                    @Override
+////                                    public void run() {
+////                                        if (!isConnect){
+//////                                          closeLoadingDialog();
+////
+////                                            LogUtil.e("mf===11==timeout", isConnect + "==="+activity.isFinishing());
+////
+////                                            TbitBle.disConnect();
+////
+////                                            unlock();
+////                                        }
+////                                    }
+////                                }, timeout);
+//                            }else{
+//                                tbtble_unlock();
+//                            }
+//
+//                        }
 
                     }else{
                         unlock();
@@ -5733,7 +5787,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                         ClientManager.getClient().stopSearch();
 
 //                        connectDeviceLP();
-//
 //                        ClientManager.getClient().registerConnectStatusListener(m_nowMac, mConnectStatusListener);
                     }
                 }
