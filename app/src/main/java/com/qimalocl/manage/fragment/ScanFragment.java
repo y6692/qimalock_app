@@ -223,7 +223,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.marqueeView) MarqueeView marqueeView;
 //    @BindView(R.id.lv_msg) ListView lv_msg;
     @BindView(R.id.mainUI_msg) LinearLayout llMsg;
-    @BindView(R.id.mainUI_rightBtn) TextView rightBtn;
 
     @BindView(R.id.mainUI_leftBtn) TextView leftBtn;
     @BindView(R.id.mainUI_scanCode_lookRecordBtn) Button lookBtn;
@@ -260,6 +259,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.mainUI_refresh) ImageView iv_refresh;
 
     private LinearLayout scanCodeBtn;
+    private LinearLayout ll_conditionLayout;
+    private LinearLayout ll_condition_2;
+    private TextView tv_condition;
+    private TextView tv_condition_num;
+    private TextView tv_condition_2;
+    private TextView tv_condition_num_2;
 
     private TextView tv_electricity;
     private TextView tv_lock_status;
@@ -278,7 +283,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private Circle mCircle;
     private BitmapDescriptor successDescripter;
     private BitmapDescriptor bikeDescripter;
-    private BitmapDescriptor bikeDescripter_bad;
     private BitmapDescriptor bikeDescripter_red;
     private BitmapDescriptor bikeDescripter_yellow;
     private BitmapDescriptor bikeDescripter_green;
@@ -299,6 +303,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private BitmapDescriptor bikeDescripter_tbtf_green;
     private BitmapDescriptor bikeDescripter_tbtf_blue;
     private BitmapDescriptor bikeDescripter_tbtf_brown;
+
+    private BitmapDescriptor bikeDescripter_good;
+    private BitmapDescriptor ebikeDescripter_good;
+    private BitmapDescriptor bikeDescripter_bad;
+    private BitmapDescriptor ebikeDescripter_bad;
+    private BitmapDescriptor ebikeDescripter_exchange;
+    private BitmapDescriptor ebikeDescripter_lowpower;
+
     private Handler handler = new Handler();
     private Marker centerMarker;
     private boolean isMovingMarker = false;
@@ -426,17 +438,29 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private ImageView iv_popup_window_cond_back;
     private PopupWindow popupwindowCond;
 
-    private TextView tv_condition_cancel;
-    private TextView tv_condition_confirm;
-    private CheckBox cb_1;
-    private CheckBox cb_2;
-    private CheckBox cb_3;
-    private CheckBox cb_4;
+    private LinearLayout tv_condition_cancel;
+    private Button tv_condition_confirm;
+    private LinearLayout ll_carmodel;
+    private RelativeLayout rl_main_1;
+    private RelativeLayout rl_main_2;
+    private RelativeLayout rl_main_3;
+    private ImageView iv_carmodel1;
+    private ImageView iv_carmodel2;
+    private ImageView iv_carmodel3;
+    private TextView tv_carmodel1;
+    private TextView tv_carmodel2;
+    private TextView tv_carmodel3;
+    private TextView tv_1;
+    private TextView tv_2;
+    private TextView tv_3;
+    private TextView tv_4;
+    private TextView tv_5;
     private CheckBox cb_5;
     private CheckBox cb_6;
 
     private boolean first = true;
     private boolean isLowpowerLayout;
+    private boolean isAll = true;
 
     public int[] school_carmodel_ids2;
 
@@ -979,10 +1003,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         tv_condition_cancel = customView.findViewById(R.id.tv_condition_cancel);
         tv_condition_confirm = customView.findViewById(R.id.tv_condition_confirm);
-        cb_1 = customView.findViewById(R.id.cb_1);
-        cb_2 = customView.findViewById(R.id.cb_2);
-        cb_3 = customView.findViewById(R.id.cb_3);
-        cb_4 = customView.findViewById(R.id.cb_4);
+        ll_carmodel = customView.findViewById(R.id.ll_carmodel);
+        rl_main_1 = customView.findViewById(R.id.rl_main_1);
+        rl_main_2 = customView.findViewById(R.id.rl_main_2);
+        rl_main_3 = customView.findViewById(R.id.rl_main_3);
+        iv_carmodel1 = customView.findViewById(R.id.iv_carmodel1);
+        iv_carmodel2 = customView.findViewById(R.id.iv_carmodel2);
+        iv_carmodel3 = customView.findViewById(R.id.iv_carmodel3);
+        tv_carmodel1 = customView.findViewById(R.id.tv_carmodel1);
+        tv_carmodel2 = customView.findViewById(R.id.tv_carmodel2);
+        tv_carmodel3 = customView.findViewById(R.id.tv_carmodel3);
+        tv_1 = customView.findViewById(R.id.tv_1);
+        tv_2 = customView.findViewById(R.id.tv_2);
+        tv_3 = customView.findViewById(R.id.tv_3);
+        tv_4 = customView.findViewById(R.id.tv_4);
+        tv_5 = customView.findViewById(R.id.tv_5);
         cb_5 = customView.findViewById(R.id.cb_5);
         cb_6 = customView.findViewById(R.id.cb_6);
 
@@ -1106,34 +1141,43 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(18f);// 设置缩放监听
         aMap.moveCamera(cameraUpdate);
 
+
+
         successDescripter = BitmapDescriptorFactory.fromResource(R.drawable.icon_usecarnow_position_succeed);
-        bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
-        bikeDescripter_bad = BitmapDescriptorFactory.fromResource(R.drawable.bike_bad_icon);
+//        bikeDescripter = BitmapDescriptorFactory.fromResource(R.drawable.bike_icon);
+//        bikeDescripter_bad = BitmapDescriptorFactory.fromResource(R.drawable.bike_bad_icon);
+//
+//        bikeDescripter_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_red_icon);
+//        bikeDescripter_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_yellow_icon);
+//        bikeDescripter_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_green_icon);
+//        bikeDescripter_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_blue_icon);
+//        bikeDescripter_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_brown_icon);
+//
+//        bikeDescripter_xa_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_red_icon);
+//        bikeDescripter_xa_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_yellow_icon);
+//        bikeDescripter_xa_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_green_icon);
+//        bikeDescripter_xa_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_blue_icon);
+//        bikeDescripter_xa_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_brown_icon);
+//
+//        bikeDescripter_tbtd_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_red_icon);
+//        bikeDescripter_tbtd_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_yellow_icon);
+//        bikeDescripter_tbtd_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_green_icon);
+//        bikeDescripter_tbtd_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_blue_icon);
+//        bikeDescripter_tbtd_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_brown_icon);
+//
+//        bikeDescripter_tbtf_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_red_icon);
+//        bikeDescripter_tbtf_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_yellow_icon);
+//        bikeDescripter_tbtf_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_green_icon);
+//        bikeDescripter_tbtf_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_blue_icon);
+//        bikeDescripter_tbtf_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_brown_icon);
 
-        bikeDescripter_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_red_icon);
-        bikeDescripter_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_yellow_icon);
-        bikeDescripter_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_green_icon);
-        bikeDescripter_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_blue_icon);
-        bikeDescripter_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_brown_icon);
 
-        bikeDescripter_xa_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_red_icon);
-        bikeDescripter_xa_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_yellow_icon);
-        bikeDescripter_xa_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_green_icon);
-        bikeDescripter_xa_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_blue_icon);
-        bikeDescripter_xa_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_xa_brown_icon);
-
-        bikeDescripter_tbtd_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_red_icon);
-        bikeDescripter_tbtd_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_yellow_icon);
-        bikeDescripter_tbtd_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_green_icon);
-        bikeDescripter_tbtd_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_blue_icon);
-        bikeDescripter_tbtd_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbt_brown_icon);
-
-        bikeDescripter_tbtf_red = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_red_icon);
-        bikeDescripter_tbtf_yellow = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_yellow_icon);
-        bikeDescripter_tbtf_green = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_green_icon);
-        bikeDescripter_tbtf_blue = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_blue_icon);
-        bikeDescripter_tbtf_brown = BitmapDescriptorFactory.fromResource(R.drawable.ebike_tbtf_brown_icon);
-
+        bikeDescripter_good = BitmapDescriptorFactory.fromResource(R.drawable.bike_good);
+        ebikeDescripter_good = BitmapDescriptorFactory.fromResource(R.drawable.ebike_good);
+        bikeDescripter_bad = BitmapDescriptorFactory.fromResource(R.drawable.bike_bad);
+        ebikeDescripter_bad = BitmapDescriptorFactory.fromResource(R.drawable.ebike_bad);
+        ebikeDescripter_exchange = BitmapDescriptorFactory.fromResource(R.drawable.ebike_exchange);
+        ebikeDescripter_lowpower = BitmapDescriptorFactory.fromResource(R.drawable.ebike_lowpower);
 
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
@@ -1179,10 +1223,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        tvMsg.updateUI();
 
         scanCodeBtn = activity.findViewById(R.id.mainUI_scanCode_lock);
+        ll_conditionLayout = activity.findViewById(R.id.ll_conditionLayout);
+        ll_condition_2= activity.findViewById(R.id.ll_condition_2);
+        tv_condition = activity.findViewById(R.id.tv_condition);
+        tv_condition_num = activity.findViewById(R.id.tv_condition_num);
+        tv_condition_2 = activity.findViewById(R.id.tv_condition_2);
+        tv_condition_num_2 = activity.findViewById(R.id.tv_condition_num_2);
 
 
         llMsg.setOnClickListener(this);
-        rightBtn.setOnClickListener(this);
+//        rightBtn.setOnClickListener(this);
         leftBtn.setOnClickListener(this);
         lookBtn.setOnClickListener(this);
 
@@ -1205,10 +1255,14 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         switcher_ebike.setOnClickListener(this);
         tv_condition_cancel.setOnClickListener(this);
         tv_condition_confirm.setOnClickListener(this);
-        cb_1.setOnClickListener(this);
-        cb_2.setOnClickListener(this);
-        cb_3.setOnClickListener(this);
-        cb_4.setOnClickListener(this);
+        rl_main_1.setOnClickListener(this);
+        rl_main_2.setOnClickListener(this);
+        rl_main_3.setOnClickListener(this);
+        tv_1.setOnClickListener(this);
+        tv_2.setOnClickListener(this);
+        tv_3.setOnClickListener(this);
+        tv_4.setOnClickListener(this);
+        tv_5.setOnClickListener(this);
         cb_5.setOnClickListener(this);
         cb_6.setOnClickListener(this);
         conditionLayout.setOnClickListener(this);
@@ -1216,8 +1270,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         switcher_bike.setChecked(true);
         switcher_ebike.setChecked(true);
-        cb_2.setChecked(true);
-        cb_3.setChecked(true);
+//        cb_2.setChecked(true);
+//        cb_3.setChecked(true);
 
 //        lv_msg.setOnItemClickListener(this);
 
@@ -2633,6 +2687,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 String[] schools = bean.getSchools();
 
                                 if(schools.length==0){
+                                    ll_conditionLayout.setVisibility(View.GONE);
+
                                     if(polygon!=null){
                                         polygon.remove();
                                     }
@@ -2654,7 +2710,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
                                         bikeMarkerList.clear();
                                     }
+
+                                    if (loadingDialog != null && loadingDialog.isShowing()){
+                                        loadingDialog.dismiss();
+                                    }
                                 }else{
+                                    ll_conditionLayout.setVisibility(View.VISIBLE);
+
                                     boolean flag=false;
                                     for (int i = 0; i < schools.length;i++){
                                         SchoolListBean bean2 = JSON.parseObject(schools[i], SchoolListBean.class);
@@ -2717,124 +2779,203 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                                 school_carmodel_ids = bean2.getCarmodel_ids();
                                                 school_carmodel_ids2 = bean2.getCarmodel_ids();
 
-                                                ll_lowpowerLayout.setVisibility(View.GONE);
-                                                ll_slowpowerLayout.setVisibility(View.GONE);
-                                                cb_1.setVisibility(View.GONE);
-                                                cb_2.setVisibility(View.GONE);
-                                                cb_3.setVisibility(View.GONE);
-                                                cb_4.setVisibility(View.GONE);
-                                                cb_5.setVisibility(View.GONE);
-                                                cb_6.setVisibility(View.GONE);
-                                                cb_1.setChecked(false);
-                                                cb_2.setChecked(false);
-                                                cb_3.setChecked(false);
-                                                cb_4.setChecked(false);
-                                                cb_5.setChecked(false);
-                                                cb_6.setChecked(false);
-                                                cb_1.setText("");
-                                                cb_2.setText("");
-                                                cb_3.setText("");
-                                                cb_4.setText("");
-                                                cb_5.setText("");
-                                                cb_6.setText("");
+                                                ll_carmodel.setVisibility(View.GONE);
+
+//                                                isLowpowerLayout = false;
+//                                                ll_lowpowerLayout.setVisibility(View.GONE);
+//                                                ll_slowpowerLayout.setVisibility(View.GONE);
+                                                tv_1.setVisibility(View.GONE);
+                                                tv_2.setVisibility(View.GONE);
+                                                tv_3.setVisibility(View.GONE);
+                                                tv_4.setVisibility(View.GONE);
+                                                tv_5.setVisibility(View.GONE);
+//                                                cb_5.setVisibility(View.GONE);
+//                                                cb_6.setVisibility(View.GONE);
+
+                                                rl_main_1.setBackgroundResource(R.drawable.block_bcg4);
+                                                rl_main_2.setBackgroundResource(R.drawable.block_bcg3);
+                                                rl_main_3.setBackgroundResource(R.drawable.block_bcg3);
+                                                iv_carmodel1.setImageResource(R.drawable.carmodel1_s);
+                                                iv_carmodel2.setImageResource(R.drawable.carmodel2_u);
+                                                iv_carmodel3.setImageResource(R.drawable.carmodel3_u);
+                                                tv_carmodel1.setTextColor(Color.parseColor("#FFFFFF"));
+                                                tv_carmodel2.setTextColor(Color.parseColor("#665E5E"));
+                                                tv_carmodel3.setTextColor(Color.parseColor("#665E5E"));
+//                                                rl_main_1.setChecked(true);
+//                                                rl_main_2.setChecked(false);
+//                                                rl_main_3.setChecked(false);
+//                                                tv_1.setChecked(false);
+//                                                tv_2.setChecked(false);
+//                                                tv_3.setChecked(false);
+//                                                tv_4.setChecked(false);
+//                                                cb_5.setChecked(false);
+//                                                cb_6.setChecked(false);
+                                                tv_1.setText("");
+                                                tv_2.setText("");
+                                                tv_3.setText("");
+                                                tv_4.setText("");
+                                                tv_5.setText("");
+//                                                cb_5.setText("");
+//                                                cb_6.setText("");
                                                 is_bike = false;
                                                 is_ebike = false;
                                                 is_bad = false;
                                                 is_area = 0;
                                                 is_lowpower = false;
                                                 is_slowpower = false;
+                                                carType = 0;
+                                                switchType = 0;
 
                                                 int[] carmodels = school_carmodel_ids;
                                                 LogUtil.e("sf===user4", "==="+carmodels);
 
                                                 if(carmodels==null || carmodels.length==0){
-                                                    cb_1.setVisibility(View.VISIBLE);
-                                                    cb_2.setVisibility(View.VISIBLE);
-                                                    cb_1.setChecked(false);
-                                                    cb_2.setChecked(false);
-                                                    cb_1.setText("只看超区");
-                                                    cb_2.setText("只看坏车");
+                                                    ll_conditionLayout.setVisibility(View.GONE);
+                                                    ll_carmodel.setVisibility(View.GONE);
+                                                    tv_1.setVisibility(View.VISIBLE);
+                                                    tv_2.setVisibility(View.VISIBLE);
+                                                    tv_3.setVisibility(View.VISIBLE);
+//                                                    tv_1.setChecked(false);
+//                                                    tv_2.setChecked(false);
+//                                                    tv_3.setChecked(false);
+                                                    tv_1.setText("只看超区");
+                                                    tv_2.setText("只看坏车");
+                                                    tv_3.setText("沉淀车辆");
 
-                                                    isLowpowerLayout = false;
-                                                    ll_lowpowerLayout.setVisibility(View.GONE);
-                                                    ll_slowpowerLayout.setVisibility(View.GONE);
+//                                                    isLowpowerLayout = false;
+//                                                    ll_lowpowerLayout.setVisibility(View.GONE);
+//                                                    ll_slowpowerLayout.setVisibility(View.GONE);
 
-                                                    is_bike = false;
-                                                    is_ebike = false;
+//                                                    is_bike = false;
+//                                                    is_ebike = false;
+                                                    carType = 0;
+                                                    isAll = false;
                                                 }else if(carmodels!=null && carmodels.length>0){
-
+                                                    ll_conditionLayout.setVisibility(View.VISIBLE);
                                                     LogUtil.e("sf===user5", carmodels.length+"==="+carmodels[0]);
 
                                                     if(carmodels.length==1){
+                                                        ll_carmodel.setVisibility(View.GONE);
 
                                                         if(carmodels[0]==1){
-                                                            cb_1.setVisibility(View.VISIBLE);
-                                                            cb_2.setVisibility(View.VISIBLE);
-                                                            cb_1.setChecked(false);
-                                                            cb_2.setChecked(false);
-                                                            cb_1.setText("只看超区");
-                                                            cb_2.setText("只看坏车");
+                                                            tv_1.setVisibility(View.VISIBLE);
+                                                            tv_2.setVisibility(View.VISIBLE);
+                                                            tv_3.setVisibility(View.VISIBLE);
+                                                            tv_4.setVisibility(View.VISIBLE);
+//                                                            cb_1.setChecked(false);
+//                                                            cb_2.setChecked(false);
+//                                                            cb_3.setChecked(false);
+                                                            tv_1.setText("查看全部车辆");
+                                                            tv_2.setText("只看超区");
+                                                            tv_3.setText("只看坏车");
+                                                            tv_4.setText("沉淀车辆");
 
-                                                            isLowpowerLayout = false;
-                                                            ll_lowpowerLayout.setVisibility(View.GONE);
-                                                            ll_slowpowerLayout.setVisibility(View.GONE);
+//                                                            isLowpowerLayout = false;
+//                                                            ll_lowpowerLayout.setVisibility(View.GONE);
+//                                                            ll_slowpowerLayout.setVisibility(View.GONE);
 
-                                                            is_bike = true;
-                                                            is_ebike = false;
+//                                                            is_bike = true;
+//                                                            is_ebike = false;
+                                                            carType = 1;
+                                                            isAll = false;
                                                         }else if(carmodels[0]==2){
-                                                            cb_1.setVisibility(View.VISIBLE);
-                                                            cb_2.setVisibility(View.VISIBLE);
-                                                            cb_3.setVisibility(View.VISIBLE);
-                                                            cb_4.setVisibility(View.VISIBLE);
-                                                            cb_1.setChecked(false);
-                                                            cb_2.setChecked(false);
-                                                            cb_3.setChecked(false);
-                                                            cb_4.setChecked(false);
-                                                            cb_1.setText("只看超区");
-                                                            cb_2.setText("只看坏车");
-                                                            cb_3.setText("只看低电");
-                                                            cb_4.setText("只看超低电");
+                                                            tv_1.setVisibility(View.VISIBLE);
+                                                            tv_2.setVisibility(View.VISIBLE);
+                                                            tv_3.setVisibility(View.VISIBLE);
+                                                            tv_4.setVisibility(View.VISIBLE);
+                                                            tv_5.setVisibility(View.VISIBLE);
+//                                                            tv_1.setChecked(false);
+//                                                            tv_2.setChecked(false);
+//                                                            tv_3.setChecked(false);
+//                                                            tv_4.setChecked(false);
+                                                            tv_1.setText("查看全部车辆");
+                                                            tv_2.setText("只看超区");
+                                                            tv_3.setText("只看坏车");
+                                                            tv_4.setText("沉淀车辆");
+                                                            tv_5.setText("只看欠压");
 
-                                                            isLowpowerLayout = true;
-                                                            ll_lowpowerLayout.setVisibility(View.VISIBLE);
-                                                            ll_slowpowerLayout.setVisibility(View.VISIBLE);
+//                                                            isLowpowerLayout = true;
+//                                                            ll_lowpowerLayout.setVisibility(View.VISIBLE);
+//                                                            ll_slowpowerLayout.setVisibility(View.VISIBLE);
 
-                                                            carbatteryaction_lowpower();
+//                                                            car_bike_num();
 
-                                                            is_bike = false;
-                                                            is_ebike = true;
+//                                                            is_bike = false;
+//                                                            is_ebike = true;
+                                                            carType = 2;
+                                                            isAll = false;
                                                         }
                                                     }else if(carmodels.length==2){
-                                                        cb_1.setVisibility(View.VISIBLE);
-                                                        cb_2.setVisibility(View.VISIBLE);
-                                                        cb_3.setVisibility(View.VISIBLE);
-                                                        cb_4.setVisibility(View.VISIBLE);
-                                                        cb_5.setVisibility(View.VISIBLE);
-                                                        cb_6.setVisibility(View.VISIBLE);
-                                                        cb_1.setChecked(false);
-                                                        cb_2.setChecked(true);
-                                                        cb_3.setChecked(true);
-                                                        cb_4.setChecked(false);
-                                                        cb_5.setChecked(false);
-                                                        cb_6.setChecked(false);
-                                                        cb_1.setText("只看超区");
-                                                        cb_2.setText("只看单车");
-                                                        cb_3.setText("只看电单车");
-                                                        cb_4.setText("只看坏车");
-                                                        cb_5.setText("只看低电");
-                                                        cb_6.setText("只看超低电");
+                                                        ll_carmodel.setVisibility(View.VISIBLE);
 
-                                                        isLowpowerLayout = true;
-                                                        ll_lowpowerLayout.setVisibility(View.VISIBLE);
-                                                        ll_slowpowerLayout.setVisibility(View.VISIBLE);
+                                                        tv_1.setVisibility(View.VISIBLE);
+                                                        tv_2.setVisibility(View.VISIBLE);
+                                                        tv_3.setVisibility(View.VISIBLE);
+                                                        tv_4.setVisibility(View.VISIBLE);
+//                                                        cb_5.setVisibility(View.VISIBLE);
+//                                                        cb_6.setVisibility(View.VISIBLE);
+//                                                        tv_1.setChecked(false);
+//                                                        tv_2.setChecked(false);
+//                                                        tv_3.setChecked(false);
+//                                                        tv_4.setChecked(false);
+//                                                        cb_5.setChecked(false);
+//                                                        cb_6.setChecked(false);
+                                                        tv_1.setText("只看超区");
+                                                        tv_2.setText("只看坏车");
+                                                        tv_3.setText("沉淀车辆");
+                                                        tv_4.setText("只看欠压");
+//                                                        cb_5.setText("只看低电");
+//                                                        cb_6.setText("只看超低电");
 
-                                                        carbatteryaction_lowpower();
+//                                                        isLowpowerLayout = true;
+//                                                        ll_lowpowerLayout.setVisibility(View.VISIBLE);
+//                                                        ll_slowpowerLayout.setVisibility(View.VISIBLE);
 
-                                                        is_bike = true;
-                                                        is_ebike = true;
+//                                                        car_bike_num();
+
+//                                                        is_bike = true;
+//                                                        is_ebike = true;
+                                                        carType = 0;
+                                                        isAll = true;
                                                     }
 
                                                 }
+
+
+                                                if(carType==0){
+                                                    tv_1.setBackgroundResource(R.drawable.block_bcg7);
+                                                    tv_2.setBackgroundResource(R.drawable.block_bcg7);
+                                                    tv_3.setBackgroundResource(R.drawable.block_bcg7);
+                                                    tv_4.setBackgroundResource(R.drawable.block_bcg7);
+                                                    tv_1.setTextColor(Color.parseColor("#7F665E5E"));
+                                                    tv_2.setTextColor(Color.parseColor("#7F665E5E"));
+                                                    tv_3.setTextColor(Color.parseColor("#7F665E5E"));
+                                                    tv_4.setTextColor(Color.parseColor("#7F665E5E"));
+
+                                                    tv_1.setClickable(false);
+                                                    tv_2.setClickable(false);
+                                                    tv_3.setClickable(false);
+                                                    tv_4.setClickable(false);
+                                                }else{
+                                                    tv_1.setBackgroundResource(R.drawable.block_bcg6);
+                                                    tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                                                    tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                                                    tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                                                    tv_5.setBackgroundResource(R.drawable.block_bcg5);
+                                                    tv_1.setTextColor(Color.parseColor("#FFFFFFFF"));
+                                                    tv_2.setTextColor(Color.parseColor("#FF665E5E"));
+                                                    tv_3.setTextColor(Color.parseColor("#FF665E5E"));
+                                                    tv_4.setTextColor(Color.parseColor("#FF665E5E"));
+                                                    tv_5.setTextColor(Color.parseColor("#FF665E5E"));
+
+                                                    tv_1.setClickable(true);
+                                                    tv_2.setClickable(true);
+                                                    tv_3.setClickable(true);
+                                                    tv_4.setClickable(true);
+                                                    tv_5.setClickable(true);
+                                                }
+
+
                                             }
                                         }
                                     }
@@ -2844,10 +2985,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             } catch (Exception e) {
                                 e.printStackTrace();
+
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
                             }
-                            if (loadingDialog != null && loadingDialog.isShowing()){
-                                loadingDialog.dismiss();
-                            }
+
                         }
                     });
 
@@ -2859,7 +3002,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
-    private void carbatteryaction_lowpower(){
+    private void carbatteryaction_lowpower2(){
         if(!isLowpowerLayout) return;
 
         LogUtil.e("sf===lowpower", school_id+"===");
@@ -2893,6 +3036,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 tv_lowpower.setText(""+lowPowerBean.getLow_total());
                                 tv_slowpower.setText(""+lowPowerBean.getUltra_low_total());
 
+
+
                             } catch (Exception e) {
                                 e.printStackTrace();
 
@@ -2912,6 +3057,173 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
+    private void car_bike_num(){
+        if(carType!=0){
+            if (loadingDialog != null && loadingDialog.isShowing()){
+                loadingDialog.dismiss();
+            }
+
+            return;
+        }
+
+        LogUtil.e("sf===car_bike_num", school_id+"===");
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token != null && !"".equals(access_token)){
+
+            RequestParams params = new RequestParams();
+
+
+//            final String ct = carType==0?"":carType==1?"单车":"助力车";
+//            final String st = switchType==1?"坏车":switchType==2?"沉淀":switchType==3?"欠压":"超区";
+
+
+            params.put("school_id", school_id);
+            params.put("carmodel_type", 1);  //0、单车+助力车 1、只看单车 2、只看助力车
+            params.put("car_type", 0);  //1、坏车 2、沉淀车 3、欠压 4、超区
+
+
+            LogUtil.e("carbatteryaction_lowpower===", school_id+"==="+carType+"==="+switchType+"==="+is_area+"==="+carmodel_id);
+
+            HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
+                @Override
+                public void onStart() {
+//                    onStartCommon("正在加载");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+
+                    LogUtil.e("car_bike_num===fail", "==="+throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            LogUtil.e("car_bike_num===0", "==="+responseString);
+
+                            try {
+                                final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                final JSONArray array = new JSONArray(result.getData());
+
+                                LogUtil.e("car_bike_num===1", array.length()+"==="+bikeMarkerList+"==="+responseString);
+
+                                car_ebike_num(array.length());
+
+//                                        if (0 == array.length()){   //1、坏车 2、低电 3、超低电 4、坏车+低电 5、坏车+超低电 6、低电+超低电 7、坏车+低电+超低电
+//                                            ToastUtils.showMessage("暂无数据");
+//
+//                                            if(carType!=0){
+//                                                tv_condition.setText("现有"+ct+st);
+//                                                tv_condition_num.setText("0");
+//                                            }
+//
+                            } catch (Exception e) {
+                                LogUtil.e("cars===e", "==="+e);
+
+                                if (loadingDialog != null && loadingDialog.isShowing()){
+                                    loadingDialog.dismiss();
+                                }
+                            }
+
+
+
+
+
+                        }
+                    });
+
+
+                }
+            });
+
+        }else {
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+        }
+    }
+
+
+    private void car_ebike_num(final int bike_num){
+        if(carType!=0) return;
+
+        LogUtil.e("sf===car_ebike_num", school_id+"===");
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token != null && !"".equals(access_token)){
+
+            RequestParams params = new RequestParams();
+
+//            final String ct = carType==0?"":carType==1?"单车":"助力车";
+//            final String st = switchType==1?"坏车":switchType==2?"沉淀":switchType==3?"欠压":"超区";
+
+            params.put("school_id", school_id);
+            params.put("carmodel_type", 2);  //0、单车+助力车 1、只看单车 2、只看助力车
+            params.put("car_type", 0);  //1、坏车 2、沉淀车 3、欠压 4、超区
+
+
+            LogUtil.e("carbatteryaction_lowpower===", school_id+"==="+carType+"==="+switchType+"==="+is_area+"==="+carmodel_id);
+
+            HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
+                @Override
+                public void onStart() {
+//                    onStartCommon("正在加载");
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+
+                    LogUtil.e("cars===fail", "==="+throwable.toString());
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            LogUtil.e("car_ebike_num===0", "==="+responseString);
+
+                            try {
+                                final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                final JSONArray array = new JSONArray(result.getData());
+
+                                LogUtil.e("car_ebike_num===1", array.length()+"==="+bikeMarkerList+"==="+responseString);
+
+                                ll_conditionLayout.setVisibility(View.VISIBLE);
+
+                                tv_condition.setText("现有单车");
+                                tv_condition_num.setText(""+bike_num);
+
+                                ll_condition_2.setVisibility(View.VISIBLE);
+                                tv_condition_2.setText("  助力车");
+                                tv_condition_num_2.setText(""+array.length());
+
+                            } catch (Exception e) {
+                                LogUtil.e("cars===e", "==="+e);
+                            }
+
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+
+                        }
+                    });
+
+
+                }
+            });
+
+        }else {
+            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context,LoginActivity.class);
+        }
+    }
 
     Handler m_myHandlerState = new Handler();
     protected Handler m_myHandler = new Handler(new Handler.Callback() {
@@ -3138,9 +3450,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                     polygon = aMap.addPolygon(pOption.strokeWidth(3)
 //                                            .strokeDashStyle()
-                                            .strokeColor(Color.argb(255, 0, 135, 255))
+                                            .strokeColor(Color.parseColor("#7F2947FF"))
+                                            .fillColor(Color.parseColor("#7FCDE8FF")));
+//                                            .strokeColor(Color.argb(255, 0, 135, 255))      //Color.parseColor(“#6495ED”)
 //                                            .fillColor(Color.argb(0, 0, 0, 0)));
-                                            .fillColor(Color.argb(76, 0, 173, 255)));
+//                                            .fillColor(Color.argb(76, 0, 173, 255)));
 
                                     LogUtil.e("sf===operationarea4", "==="+polygon);
 
@@ -3164,6 +3478,203 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     int carType = 0;
     public void cars(final boolean isFresh){
+
+        ll_conditionLayout.setVisibility(View.GONE);
+
+        RequestParams params = new RequestParams();
+
+//        carType = 3;
+//        if(is_bike){
+//            carType = 1;
+//        }
+//
+//        if(is_ebike){
+//            if(is_bike){
+//                carType = 0;
+//            }else{
+//                carType = 2;
+//            }
+//        }
+//
+////      1、坏车 2、低电 3、超低电 4、坏车+低电 5、坏车+超低电 6、低电+超低电 7、坏车+低电+超低电
+//        switchType = 0;
+//        if(is_bad && !is_lowpower && !is_slowpower){
+//            switchType = 1;
+//        }else if(!is_bad && is_lowpower && !is_slowpower){
+//            switchType = 2;
+//        }else if(!is_bad && !is_lowpower && is_slowpower){
+//            switchType = 3;
+//        }else if(is_bad && is_lowpower && !is_slowpower){
+//            switchType = 4;
+//        }else if(is_bad && !is_lowpower && is_slowpower){
+//            switchType = 5;
+//        }else if(!is_bad && is_lowpower && is_slowpower){
+//            switchType = 6;
+//        }else if(is_bad && is_lowpower && is_slowpower){
+//            switchType = 7;
+//        }
+
+        final String ct = carType==0?"":carType==1?"单车":"助力车";
+        final String st = switchType==1?"坏车":switchType==2?"沉淀":switchType==3?"欠压":switchType==4?"超区":"";
+
+
+        params.put("school_id", school_id);
+        params.put("carmodel_type", carType);  //0、单车+助力车 1、只看单车 2、只看助力车
+        params.put("car_type", switchType);  //1、坏车 2、沉淀车 3、欠压 4、超区
+
+
+        LogUtil.e("cars===", school_id+"==="+carType+"==="+switchType+"==="+is_area+"==="+carmodel_id);
+
+        HttpHelper.get(context, Urls.cars, params, new TextHttpResponseHandler() {     //TODO
+            @Override
+            public void onStart() {
+                if(isFresh){
+                    onStartCommon("正在加载");
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                onFailureCommon(throwable.toString());
+
+                LogUtil.e("cars===fail", "==="+throwable.toString());
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        LogUtil.e("cars===0", "==="+responseString);
+
+                        final ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                            }
+//                        }).start();
+
+
+                        try {
+                            final JSONArray array = new JSONArray(result.getData());
+
+                            LogUtil.e("cars===1", array.length()+"==="+bikeMarkerList+"==="+responseString);
+
+                            for (Marker marker : bikeMarkerList){
+                                if (marker != null){
+                                    marker.remove();
+                                }
+                            }
+
+                            if (!bikeMarkerList.isEmpty() || 0 != bikeMarkerList.size()){
+                                bikeMarkerList.clear();
+                            }
+
+
+
+                            if(carType!=0){
+                                ll_conditionLayout.setVisibility(View.VISIBLE);
+
+                                ll_condition_2.setVisibility(View.GONE);
+                                tv_condition.setText("现有"+ct+st);
+                                tv_condition_num.setText(""+array.length());
+                            }
+
+                            int bike_num=0;
+                            int ebike_num=0;
+                            if (0 == array.length()){   //1、坏车 2、低电 3、超低电 4、坏车+低电 5、坏车+超低电 6、低电+超低电 7、坏车+低电+超低电
+                                ToastUtils.showMessage("暂无数据");
+
+                            } else {
+
+
+
+                                for (int i = 0; i < array.length(); i++){
+
+                                    CarsBean bean = JSON.parseObject(array.getJSONObject(i).toString(), CarsBean.class);
+
+//                                          LogUtil.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
+
+                                    // 加入自定义标签
+                                    MarkerOptions bikeMarkerOption = null;
+
+                                    int lock_id = bean.getLock_id();
+                                    int carmodel_id = bean.getCarmodel_id();
+
+                                    LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+carmodel_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
+
+                                    if(carType==0){
+                                        if(carmodel_id==1){
+                                            bike_num++;
+                                        }else if(carmodel_id==2){
+                                            ebike_num++;
+                                        }
+                                    }
+//                                    else if(carType==0){
+//                                        if(carmodel_id==1){
+//                                            bike_num++;
+//                                        }else if(carmodel_id==2){
+//                                            ebike_num++;
+//                                        }
+//                                    }
+
+//                                            图标级别 单车：0、好车 2、维护中    助力车：1、绿色 2、维护中 3、换电中 4、欠压
+                                    if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
+                                        if(carmodel_id==1){
+
+                                            bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                    .icon(bean.getLevel()==0?bikeDescripter_good:bikeDescripter_bad);
+
+                                        }else if(carmodel_id==2){
+                                            bikeMarkerOption = new MarkerOptions().title(bean.getNumber()).position(new LatLng(
+                                                    Double.parseDouble(bean.getLatitude()),Double.parseDouble(bean.getLongitude())))
+                                                    .icon(bean.getLevel()==1?ebikeDescripter_good:bean.getLevel()==2?ebikeDescripter_bad:bean.getLevel()==3?ebikeDescripter_exchange:ebikeDescripter_lowpower);
+
+                                        }
+
+                                        Marker bikeMarker = aMap.addMarker(bikeMarkerOption);
+                                        bikeMarkerList.add(bikeMarker);
+                                    }
+
+                                }
+                            }
+
+                            if(carType==0){
+                                ll_conditionLayout.setVisibility(View.VISIBLE);
+
+                                tv_condition.setText("现有单车");
+                                tv_condition_num.setText(""+bike_num);
+
+                                ll_condition_2.setVisibility(View.VISIBLE);
+                                tv_condition_2.setText("  助力车");
+                                tv_condition_num_2.setText(""+ebike_num);
+                            }
+
+
+//                            car_bike_num();
+                        } catch (Exception e) {
+                            LogUtil.e("cars===e", "==="+e);
+
+
+                        }
+
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+
+                    }
+                });
+
+
+            }
+        });
+
+    }
+
+    public void cars2(final boolean isFresh){
 
         RequestParams params = new RequestParams();
 
@@ -3232,6 +3743,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
 
 
+//        tv_condition.setText(""+switchType);
 
         params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
         params.put("car_type", switchType);  //0全部 1只看坏车 2只看低电 3只看坏车+只看低电
@@ -3580,15 +4092,15 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 UIHelper.goToAct(context, DeviceSelectActivity.class);
                 break;
 
-            case R.id.mainUI_rightBtn:
-                if ("登录".equals(rightBtn.getText().toString().trim())){
-                    UIHelper.goToAct(context, LoginActivity.class);
-                }else {
-                    SharedPreferencesUrls.getInstance().putString("access_token","");
-                    Toast.makeText(context,"登出登录成功",Toast.LENGTH_SHORT).show();
-                    rightBtn.setText("登录");
-                }
-                break;
+//            case R.id.mainUI_rightBtn:
+//                if ("登录".equals(rightBtn.getText().toString().trim())){
+//                    UIHelper.goToAct(context, LoginActivity.class);
+//                }else {
+//                    SharedPreferencesUrls.getInstance().putString("access_token","");
+//                    Toast.makeText(context,"登出登录成功",Toast.LENGTH_SHORT).show();
+//                    rightBtn.setText("登录");
+//                }
+//                break;
 
             case R.id.switcher:
 //                SharedPreferencesUrls.getInstance().putBoolean("switcher", switcher.isChecked());
@@ -3667,62 +4179,88 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             case R.id.tv_condition_confirm:
                 LogUtil.e("tv_condition_confirm===", "==="+popupwindowCond);
 
-                carbatteryaction_lowpower();
+//                car_bike_num();
                 cars(true);
 
                 popupwindowCond.dismiss();
                 break;
 
-            case R.id.cb_1:
-//                if(switcher_ebike.isChecked()){
-//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
-//                }else{
-//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
-//                }
-                LogUtil.e("biking==cb_1", cb_1.getText()+"==="+cb_1.isChecked());
-
-                checkCondition(cb_1);
-
-//                cars(true);
+            case R.id.rl_main_1:
+//                LogUtil.e("biking==cb_main_1", rl_main_1.getText()+"==="+cb_main_1.isChecked());
+//
+                checkCondition(tv_carmodel1);
                 break;
 
-            case R.id.cb_2:
-//                if(switcher_ebike.isChecked()){
-//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
-//                }else{
-//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
-//                }
-                LogUtil.e("biking==cb_2", cb_2.getText()+"==="+cb_2.isChecked());
-
-                checkCondition(cb_2);
-
-//                cars(true);
+            case R.id.rl_main_2:
+//                LogUtil.e("biking==cb_main_2", cb_main_2.getText()+"==="+cb_main_2.isChecked());
+//
+                checkCondition(tv_carmodel2);
                 break;
 
-            case R.id.cb_3:
-//                if(switcher_ebike.isChecked()){
-//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
-//                }else{
-//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
-//                }
-                LogUtil.e("biking==cb_3", cb_3.getText()+"==="+cb_3.isChecked());
-
-                checkCondition(cb_3);
-
-//                cars(true);
+            case R.id.rl_main_3:
+//                LogUtil.e("biking==cb_main_3", cb_main_3.getText()+"==="+cb_main_3.isChecked());
+//
+                checkCondition(tv_carmodel3);
                 break;
 
-            case R.id.cb_4:
+            case R.id.tv_1:
 //                if(switcher_ebike.isChecked()){
 //                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
 //                }else{
 //                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
 //                }
-                LogUtil.e("biking==cb_4", cb_4.getText()+"==="+cb_4.isChecked());
+//                LogUtil.e("biking==cb_1", cb_1.getText()+"==="+cb_1.isChecked());
 
-                checkCondition(cb_4);
+                checkCondition(tv_1);
 
-//                cars(true);
+                break;
+
+            case R.id.tv_2:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+//                LogUtil.e("biking==cb_2", cb_2.getText()+"==="+cb_2.isChecked());
+
+                checkCondition(tv_2);
+
+                break;
+
+            case R.id.tv_3:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+//                LogUtil.e("biking==cb_3", cb_3.getText()+"==="+cb_3.isChecked());
+
+                checkCondition(tv_3);
+
+                break;
+
+            case R.id.tv_4:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+//                LogUtil.e("biking==cb_4", cb_4.getText()+"==="+cb_4.isChecked());
+
+                checkCondition(tv_4);
+
+                break;
+
+            case R.id.tv_5:
+//                if(switcher_ebike.isChecked()){
+//                    LogUtil.e("biking==switcher_ebike1", "onClick==="+switcher_ebike.isChecked());
+//                }else{
+//                    LogUtil.e("biking==switcher_ebike2", "onClick==="+switcher_ebike.isChecked());
+//                }
+//                LogUtil.e("biking==cb_4", cb_4.getText()+"==="+cb_4.isChecked());
+
+                checkCondition(tv_5);
+
                 break;
 
             case R.id.cb_5:
@@ -3735,7 +4273,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 checkCondition(cb_5);
 
-//                cars(true);
                 break;
 
             case R.id.cb_6:
@@ -3748,7 +4285,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 checkCondition(cb_6);
 
-//                cars(true);
                 break;
 
             case R.id.mainUI_myLocationLayout:
@@ -3793,8 +4329,41 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.mainUI_refreshLayout:
+//                switchType = 0;
+//
+//                if(carType==0){
+//                    tv_1.setBackgroundResource(R.drawable.block_bcg7);
+//                    tv_2.setBackgroundResource(R.drawable.block_bcg7);
+//                    tv_3.setBackgroundResource(R.drawable.block_bcg7);
+//                    tv_4.setBackgroundResource(R.drawable.block_bcg7);
+//                    tv_1.setTextColor(Color.parseColor("#7F665E5E"));
+//                    tv_2.setTextColor(Color.parseColor("#7F665E5E"));
+//                    tv_3.setTextColor(Color.parseColor("#7F665E5E"));
+//                    tv_4.setTextColor(Color.parseColor("#7F665E5E"));
+//
+//                    tv_1.setClickable(false);
+//                    tv_2.setClickable(false);
+//                    tv_3.setClickable(false);
+//                    tv_4.setClickable(false);
+//                }else{
+//                    tv_1.setBackgroundResource(R.drawable.block_bcg5);
+//                    tv_2.setBackgroundResource(R.drawable.block_bcg5);
+//                    tv_3.setBackgroundResource(R.drawable.block_bcg5);
+//                    tv_4.setBackgroundResource(R.drawable.block_bcg5);
+//                    tv_1.setTextColor(Color.parseColor("#FF665E5E"));
+//                    tv_2.setTextColor(Color.parseColor("#FF665E5E"));
+//                    tv_3.setTextColor(Color.parseColor("#FF665E5E"));
+//                    tv_4.setTextColor(Color.parseColor("#FF665E5E"));
+//
+//                    tv_1.setClickable(true);
+//                    tv_2.setClickable(true);
+//                    tv_3.setClickable(true);
+//                    tv_4.setClickable(true);
+//                }
+
+
                 initHttp(true);
-                carbatteryaction_lowpower();
+//                car_bike_num();
 //                cars(true);
                 break;
 
@@ -4126,15 +4695,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 LogUtil.e("_lowPowerLayout===", "==="+popupwindowCond);
 
+
+
                 if(popupwindowCond==null || !popupwindowCond.isShowing()){
                     initmPopupWindowViewCond();
                 }
 
                 break;
 
-            case R.id.popupWindowCond_back:
-                popupwindowCond.dismiss();
-                break;
+//            case R.id.popupWindowCond_back:
+//                popupwindowCond.dismiss();
+//                break;
 
             default:
                 break;
@@ -4146,111 +4717,306 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     boolean is_bad;
     boolean is_lowpower;
     boolean is_slowpower;
-    void checkCondition(CheckBox cb){
-//        int carType = 3;
-//        if(switcher_bike.isChecked()){
-//            carType = 1;
-//        }
-//
-//        if(switcher_ebike.isChecked()){
-//            if(switcher_bike.isChecked()){
-//                carType = 0;
-//            }else{
-//                carType = 2;
+    void checkCondition(TextView tv){
+
+
+
+//        1、坏车 2、沉淀车 3、欠压 4、超区
+        if("全部车型".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_bike = true;
+//                is_ebike = true;
 //            }
-//        }
-//
-//
-//        switchType = 0;
-//        if(switcher_bad.isChecked()){
-//            switchType = 1;
-//        }
-//
-//        if(switcher.isChecked()){
-//            if(switcher_bad.isChecked()){
-//                switchType = 3;
+//            is_bike = true;
+//            is_ebike = true;
+
+            carType = 0;
+            switchType = 0;
+
+            rl_main_1.setBackgroundResource(R.drawable.block_bcg4);
+            rl_main_2.setBackgroundResource(R.drawable.block_bcg3);
+            rl_main_3.setBackgroundResource(R.drawable.block_bcg3);
+            iv_carmodel1.setImageResource(R.drawable.carmodel1_s);
+            iv_carmodel2.setImageResource(R.drawable.carmodel2_u);
+            iv_carmodel3.setImageResource(R.drawable.carmodel3_u);
+            tv_carmodel1.setTextColor(Color.parseColor("#FFFFFF"));
+            tv_carmodel2.setTextColor(Color.parseColor("#665E5E"));
+            tv_carmodel3.setTextColor(Color.parseColor("#665E5E"));
+
+            tv_1.setBackgroundResource(R.drawable.block_bcg7);
+            tv_2.setBackgroundResource(R.drawable.block_bcg7);
+            tv_3.setBackgroundResource(R.drawable.block_bcg7);
+            tv_4.setBackgroundResource(R.drawable.block_bcg7);
+            tv_1.setTextColor(Color.parseColor("#7F665E5E"));
+            tv_2.setTextColor(Color.parseColor("#7F665E5E"));
+            tv_3.setTextColor(Color.parseColor("#7F665E5E"));
+            tv_4.setTextColor(Color.parseColor("#7F665E5E"));
+
+            tv_1.setClickable(false);
+            tv_2.setClickable(false);
+            tv_3.setClickable(false);
+            tv_4.setClickable(false);
+
+            tv_4.setVisibility(View.VISIBLE);
+        }else if("只看单车".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_bike = true;
 //            }else{
-//                switchType = 2;
+//                is_bike = false;
 //            }
-//        }
-//
-//        is_area = 0;
-//        if(switcher_over_area.isChecked()){
+//            is_bike = true;
+//            is_ebike = false;
+
+            carType = 1;
+            switchType = 0;
+
+            rl_main_1.setBackgroundResource(R.drawable.block_bcg3);
+            rl_main_2.setBackgroundResource(R.drawable.block_bcg4);
+            rl_main_3.setBackgroundResource(R.drawable.block_bcg3);
+            iv_carmodel1.setImageResource(R.drawable.carmodel1_u);
+            iv_carmodel2.setImageResource(R.drawable.carmodel2_s);
+            iv_carmodel3.setImageResource(R.drawable.carmodel3_u);
+            tv_carmodel1.setTextColor(Color.parseColor("#665E5E"));
+            tv_carmodel2.setTextColor(Color.parseColor("#FFFFFF"));
+            tv_carmodel3.setTextColor(Color.parseColor("#665E5E"));
+
+            tv_1.setBackgroundResource(R.drawable.block_bcg5);
+            tv_2.setBackgroundResource(R.drawable.block_bcg5);
+            tv_3.setBackgroundResource(R.drawable.block_bcg5);
+            tv_4.setBackgroundResource(R.drawable.block_bcg5);
+            tv_1.setTextColor(Color.parseColor("#FF665E5E"));
+            tv_2.setTextColor(Color.parseColor("#FF665E5E"));
+            tv_3.setTextColor(Color.parseColor("#FF665E5E"));
+            tv_4.setTextColor(Color.parseColor("#FF665E5E"));
+
+            tv_1.setClickable(true);
+            tv_2.setClickable(true);
+            tv_3.setClickable(true);
+            tv_4.setClickable(true);
+
+            tv_4.setVisibility(View.GONE);
+
+
+        }else if("只看助力车".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_ebike = true;
+//            }else{
+//                is_ebike = false;
+//            }
+//            is_bike = false;
+//            is_ebike = true;
+
+            carType = 2;
+            switchType = 0;
+
+            rl_main_1.setBackgroundResource(R.drawable.block_bcg3);
+            rl_main_2.setBackgroundResource(R.drawable.block_bcg3);
+            rl_main_3.setBackgroundResource(R.drawable.block_bcg4);
+            iv_carmodel1.setImageResource(R.drawable.carmodel1_u);
+            iv_carmodel2.setImageResource(R.drawable.carmodel2_u);
+            iv_carmodel3.setImageResource(R.drawable.carmodel3_s);
+            tv_carmodel1.setTextColor(Color.parseColor("#665E5E"));
+            tv_carmodel2.setTextColor(Color.parseColor("#665E5E"));
+            tv_carmodel3.setTextColor(Color.parseColor("#FFFFFF"));
+
+            tv_1.setBackgroundResource(R.drawable.block_bcg5);
+            tv_2.setBackgroundResource(R.drawable.block_bcg5);
+            tv_3.setBackgroundResource(R.drawable.block_bcg5);
+            tv_4.setBackgroundResource(R.drawable.block_bcg5);
+            tv_1.setTextColor(Color.parseColor("#FF665E5E"));
+            tv_2.setTextColor(Color.parseColor("#FF665E5E"));
+            tv_3.setTextColor(Color.parseColor("#FF665E5E"));
+            tv_4.setTextColor(Color.parseColor("#FF665E5E"));
+
+            tv_1.setClickable(true);
+            tv_2.setClickable(true);
+            tv_3.setClickable(true);
+            tv_4.setClickable(true);
+
+            tv_4.setVisibility(View.VISIBLE);
+        }else if("查看全部车辆".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_area = 1;
+//            }else{
+//                is_area = 0;
+//            }
 //            is_area = 1;
-//        }
-//
-//        params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
-//        params.put("car_type", switchType);  //1、坏车 2、低电 3、超低电 4、坏车+低电 5、坏车+超低电 6、低电+超低电 7、坏车+低电+超低电
-//        params.put("is_area", is_area);  //0默认 1查看超区
 
-        if("只看超区".equals(cb.getText())){
-            if(cb.isChecked()){
-                is_area = 1;
-            }else{
-                is_area = 0;
-            }
-        }else if("只看坏车".equals(cb.getText())){
-            if(cb.isChecked()){
-                is_bad = true;
-            }else{
-                is_bad = false;
-            }
+            switchType = 0;
 
-        }else if("只看单车".equals(cb.getText())){
-            if(cb.isChecked()){
-                is_bike = true;
+            if(isAll){
+
             }else{
-                is_bike = false;
+                tv_1.setBackgroundResource(R.drawable.block_bcg6);
+                tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                tv_5.setBackgroundResource(R.drawable.block_bcg5);
+                tv_1.setTextColor(Color.parseColor("#FFFFFF"));
+                tv_2.setTextColor(Color.parseColor("#665E5E"));
+                tv_3.setTextColor(Color.parseColor("#665E5E"));
+                tv_4.setTextColor(Color.parseColor("#665E5E"));
+                tv_5.setTextColor(Color.parseColor("#665E5E"));
             }
 
-//            carType = 3;
-//            if(is_bike){
-//                carType = 1;
+
+//            cb_1.setChecked(true);
+//            cb_2.setChecked(false);
+//            cb_3.setChecked(false);
+//            cb_4.setChecked(false);
+        }else if("只看超区".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_area = 1;
+//            }else{
+//                is_area = 0;
 //            }
-//
-//            if(is_ebike){
-//                if(is_bike){
-//                    carType = 0;
-//                }else{
-//                    carType = 2;
-//                }
-//            }
+//            is_area = 1;
 
-        }else if("只看电单车".equals(cb.getText())){
-            if(cb.isChecked()){
-                is_ebike = true;
+            switchType = 4;
+
+            if(isAll){
+                tv_1.setBackgroundResource(R.drawable.block_bcg6);
+                tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                tv_1.setTextColor(Color.parseColor("#FFFFFF"));
+                tv_2.setTextColor(Color.parseColor("#665E5E"));
+                tv_3.setTextColor(Color.parseColor("#665E5E"));
+                tv_4.setTextColor(Color.parseColor("#665E5E"));
             }else{
-                is_ebike = false;
+                tv_1.setBackgroundResource(R.drawable.block_bcg5);
+                tv_2.setBackgroundResource(R.drawable.block_bcg6);
+                tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                tv_5.setBackgroundResource(R.drawable.block_bcg5);
+                tv_1.setTextColor(Color.parseColor("#665E5E"));
+                tv_2.setTextColor(Color.parseColor("#FFFFFF"));
+                tv_3.setTextColor(Color.parseColor("#665E5E"));
+                tv_4.setTextColor(Color.parseColor("#665E5E"));
+                tv_5.setTextColor(Color.parseColor("#665E5E"));
             }
 
-//            carType = 3;
-//            if(is_bike){
-//                carType = 1;
-//            }
-//
-//            if(is_ebike){
-//                if(is_bike){
-//                    carType = 0;
-//                }else{
-//                    carType = 2;
-//                }
-//            }
 
-        }else if("只看低电".equals(cb.getText())){
-            if(cb.isChecked()){
-                is_lowpower = true;
+//            cb_1.setChecked(true);
+//            cb_2.setChecked(false);
+//            cb_3.setChecked(false);
+//            cb_4.setChecked(false);
+        }else if("只看坏车".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_bad = true;
+//            }else{
+//                is_bad = false;
+//            }
+//            is_bad = true;
+
+            switchType = 1;
+
+            if(isAll){
+                tv_1.setBackgroundResource(R.drawable.block_bcg5);
+                tv_2.setBackgroundResource(R.drawable.block_bcg6);
+                tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                tv_1.setTextColor(Color.parseColor("#665E5E"));
+                tv_2.setTextColor(Color.parseColor("#FFFFFF"));
+                tv_3.setTextColor(Color.parseColor("#665E5E"));
+                tv_4.setTextColor(Color.parseColor("#665E5E"));
             }else{
-                is_lowpower = false;
+                tv_1.setBackgroundResource(R.drawable.block_bcg5);
+                tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                tv_3.setBackgroundResource(R.drawable.block_bcg6);
+                tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                tv_5.setBackgroundResource(R.drawable.block_bcg5);
+                tv_1.setTextColor(Color.parseColor("#665E5E"));
+                tv_2.setTextColor(Color.parseColor("#665E5E"));
+                tv_3.setTextColor(Color.parseColor("#FFFFFF"));
+                tv_4.setTextColor(Color.parseColor("#665E5E"));
+                tv_5.setTextColor(Color.parseColor("#665E5E"));
             }
 
-        }else if("只看超低电".equals(cb.getText())){
-            if(cb.isChecked()){
-                is_slowpower = true;
+
+//            cb_1.setChecked(false);
+//            cb_2.setChecked(true);
+//            cb_3.setChecked(false);
+//            cb_4.setChecked(false);
+        }else if("沉淀车辆".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_lowpower = true;
+//            }else{
+//                is_lowpower = false;
+//            }
+//            is_lowpower = true;
+
+            switchType = 2;
+
+            if(isAll){
+                tv_1.setBackgroundResource(R.drawable.block_bcg5);
+                tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                tv_3.setBackgroundResource(R.drawable.block_bcg6);
+                tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                tv_1.setTextColor(Color.parseColor("#665E5E"));
+                tv_2.setTextColor(Color.parseColor("#665E5E"));
+                tv_3.setTextColor(Color.parseColor("#FFFFFF"));
+                tv_4.setTextColor(Color.parseColor("#665E5E"));
             }else{
-                is_slowpower = false;
+                tv_1.setBackgroundResource(R.drawable.block_bcg5);
+                tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                tv_4.setBackgroundResource(R.drawable.block_bcg6);
+                tv_5.setBackgroundResource(R.drawable.block_bcg5);
+                tv_1.setTextColor(Color.parseColor("#665E5E"));
+                tv_2.setTextColor(Color.parseColor("#665E5E"));
+                tv_3.setTextColor(Color.parseColor("#665E5E"));
+                tv_4.setTextColor(Color.parseColor("#FFFFFF"));
+                tv_5.setTextColor(Color.parseColor("#665E5E"));
             }
+
+
+//            cb_1.setChecked(false);
+//            cb_2.setChecked(false);
+//            cb_3.setChecked(true);
+//            cb_4.setChecked(false);
+        }else if("只看欠压".equals(tv.getText())){
+//            if(cb.isChecked()){
+//                is_slowpower = true;
+//            }else{
+//                is_slowpower = false;
+//            }
+//            is_slowpower = true;
+
+            switchType = 3;
+
+            if(isAll){
+                tv_1.setBackgroundResource(R.drawable.block_bcg5);
+                tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                tv_4.setBackgroundResource(R.drawable.block_bcg6);
+                tv_1.setTextColor(Color.parseColor("#665E5E"));
+                tv_2.setTextColor(Color.parseColor("#665E5E"));
+                tv_3.setTextColor(Color.parseColor("#665E5E"));
+                tv_4.setTextColor(Color.parseColor("#FFFFFF"));
+            }else{
+                tv_1.setBackgroundResource(R.drawable.block_bcg5);
+                tv_2.setBackgroundResource(R.drawable.block_bcg5);
+                tv_3.setBackgroundResource(R.drawable.block_bcg5);
+                tv_4.setBackgroundResource(R.drawable.block_bcg5);
+                tv_5.setBackgroundResource(R.drawable.block_bcg6);
+                tv_1.setTextColor(Color.parseColor("#665E5E"));
+                tv_2.setTextColor(Color.parseColor("#665E5E"));
+                tv_3.setTextColor(Color.parseColor("#665E5E"));
+                tv_4.setTextColor(Color.parseColor("#665E5E"));
+                tv_5.setTextColor(Color.parseColor("#FFFFFF"));
+            }
+
+
+//            cb_1.setChecked(false);
+//            cb_2.setChecked(false);
+//            cb_3.setChecked(false);
+//            cb_4.setChecked(true);
         }
     }
+
+
+
 
     public void initmPopupWindowViewCond(){
 

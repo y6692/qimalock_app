@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/ui_main_title"/>
+        layout="@layout/ui_main_title_no"/>
 
 
     <!--<RelativeLayout-->
@@ -35,7 +35,7 @@
             <!--android:textSize="@dimen/sp16" />-->
     <!--</RelativeLayout>-->
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -44,6 +44,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             layout="@layout/layout_swipe_list" />
-    </LinearLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:src="@drawable/head_border"
+            android:scaleType="fitXY"
+            />
+    </RelativeLayout>
 
 </LinearLayout>

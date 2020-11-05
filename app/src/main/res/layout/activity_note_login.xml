@@ -11,7 +11,7 @@
 
 
     <include
-        layout="@layout/ui_main_title"/>
+        layout="@layout/ui_main_title_no"/>
 
     <LinearLayout
         android:layout_width="match_parent"

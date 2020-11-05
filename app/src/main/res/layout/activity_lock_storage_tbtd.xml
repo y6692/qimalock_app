@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="37dp">
+        android:paddingTop="12dp">
         <com.qimalocl.manage.core.widget.ReboundScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">

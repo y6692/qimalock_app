@@ -12,8 +12,8 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-//  	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
-    public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
+  	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+//    public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
 //	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
 
 
@@ -59,8 +59,10 @@ public class Urls {
 	//get车绑学校列表接口  post车绑定学校接口
 	public static String carschoolaction = host2 + "/carschoolaction";
 
-	//首页车辆（图标）接口
-	public static String cars = host2 + "/cars";
+//	//首页车辆（图标）接口
+//	public static String cars = host2 + "/cars";
+	//首页车辆（图标）接口2
+	public static String cars = host2 + "/cars/home";
 	//车辆详情接口
 	public static String car = host2 + "/car/";
 	//获取泺平锁开锁秘钥接口

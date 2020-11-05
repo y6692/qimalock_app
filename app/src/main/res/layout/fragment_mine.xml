@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:melove="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -74,9 +73,9 @@
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:src="@drawable/head_icon"
-                            melove:border_color="@color/ml_white"
-                            melove:border_width="1dp"
-                            melove:shape_type="round"
+                            app:border_color="@color/ml_white"
+                            app:border_width="1dp"
+                            app:shape_type="round"
                             android:layout_centerInParent="true"
                             android:background="@null"
                             android:scaleType="centerInside"/>

@@ -16,10 +16,10 @@
             layout="@layout/ui_main_title"/>
 
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@drawable/divider_bcg" />
+<!--        <ImageView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="3dp"-->
+<!--            android:background="@drawable/divider_bcg" />-->
 
         <!--plaColumnNumber：竖屏显示多少列-->
         <!--plaLandscapeColumnNumber：横屏显示多少列-->
@@ -28,7 +28,6 @@
             android:id="@+id/rechargeUI_moneyList"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_marginTop="20dp"
             android:layout_marginLeft="21dp"
             android:layout_marginRight="21dp"
             android:choiceMode="singleChoice"

@@ -1,37 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/pop_low_power_bg">
+    android:id="@+id/pop_low_power_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+<!--    android:fitsSystemWindows="true"-->
+<!--    android:clipToPadding="true"-->
+<!--    android:background="@color/white"-->
 
     <!-- 弹窗背景 -->
     <ImageView
+        android:visibility="gone"
         android:id="@+id/popupWindowCond_back"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#FFF5F7FA"
-        android:visibility="gone"
         android:scaleType="fitXY"
         android:fitsSystemWindows="true"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:orientation="vertical"
-        android:background="@drawable/pop_rent_bcg"
-        android:layout_alignParentBottom="true">
+        android:id="@+id/mainUI_title_mainLayout">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp">
+
+            <LinearLayout
+                android:id="@+id/tv_condition_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/mainUI_title_backBtn"
+                    android:layout_width="11.5dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="30dp"
+                    android:src="@drawable/back_image"/>
+
+                <TextView
+                    android:visibility="gone"
+                    android:layout_marginLeft="-10dp"
+                    android:id="@+id/tv_left"
+                    android:textSize="@dimen/sp16"
+                    android:text="返回"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/mainUI_title_titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="#EA5359"
+                android:text="条件筛选"
+                android:layout_centerInParent="true"/>
+
+            <TextView
+                android:id="@+id/mainUI_title_rightBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp14"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:layout_marginRight="@dimen/dp30"/>
+
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:src="@drawable/head_border"
+            android:scaleType="fitXY"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/mainUI_title_mainLayout"
+        android:background="@color/white"
+        android:orientation="vertical">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:layout_marginBottom="14dp"
+            android:layout_marginTop="5dp"
             android:gravity="center_vertical"
             android:orientation="vertical"
             >
 
             <RelativeLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
@@ -39,7 +113,7 @@
                 android:background="#eeeeee">
 
                 <TextView
-                    android:id="@+id/tv_condition_cancel"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/sp16"
@@ -54,213 +128,396 @@
                     android:layout_centerInParent="true"
                     android:text="条件筛选"/>
 
-                <TextView
-                    android:id="@+id/tv_condition_confirm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="确定"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/sp14"
-                    android:layout_alignParentRight="true"
-                    android:gravity="center"/>
-
             </RelativeLayout>
 
-<!--            <GridView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content">-->
-<!--                -->
-<!--                -->
-<!--            </GridView>-->
+            <LinearLayout
 
-<!--            android:columnCount="6"-->
-<!--            android:numColumns="auto_fit"-->
-<!--            <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
+                android:id="@+id/ll_carmodel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:orientation="vertical">
 
-<!--                android:nu-->
-<!--                android:orientation="horizontal"-->
-<!--                android:padding="16dip"-->
-<!--                android:rowCount="3">-->
-<!--                <TextView-->
-<!--                    android:width="300dp"-->
-<!--                    android:id="@+id/edit_input"-->
-<!--                    android:layout_gravity="fill"-->
-<!--                    android:textSize="14sp"-->
-<!--                    android:gravity="center_vertical"-->
-<!--                    android:paddingLeft="8dip" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/delete"-->
-<!--                    android:layout_marginLeft="16dip" />-->
-<!--                　　　-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_1"/>-->
-
-<!--                <TextView-->
-<!--                    android:text="1" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_3"/>-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_4"-->
-<!--                    android:layout_marginLeft="16dip"-->
-<!--                    android:layout_marginTop="16dip"/>-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_5"-->
-<!--                    android:layout_marginLeft="16dip"-->
-<!--                    android:layout_marginTop="16dip" />-->
-<!--                　　-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/confirm"-->
-<!--                    android:layout_marginLeft="16dip"-->
-<!--                    android:layout_marginTop="16dip"-->
-<!--                    android:layout_rowSpan="2" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_6"-->
-<!--                    android:layout_marginTop="16dip"/>-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_7"-->
-<!--                    android:layout_marginLeft="16dip"-->
-<!--                    android:layout_marginTop="16dip" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_8"-->
-<!--                    android:layout_marginLeft="16dip"-->
-<!--                    android:layout_marginTop="16dip" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_9"-->
-<!--                    android:layout_marginLeft="16dip"-->
-<!--                    android:layout_marginTop="16dip" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/num_0"-->
-<!--                    android:layout_marginLeft="16dip"-->
-<!--                    android:layout_marginTop="16dip"/>-->
+                <TextView
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp18"
+                    android:textColor="@color/text_black_color"
+                    android:text="车型选项"
+                    android:layout_centerInParent="true"/>
 
 
-<!--            </GridLayout>-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="3"
+                    android:orientation="horizontal">
 
+                    <RelativeLayout
+                        android:id="@+id/rl_main_1"
+                        android:layout_width="0dp"
+                        android:layout_height="161dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/dp10"
+                        android:layout_marginRight="@dimen/dp10"
+                        android:background="@drawable/block_bcg3">
 
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="@dimen/dp20"-->
-<!--                android:paddingLeft="20dp"-->
-<!--                android:paddingRight="20dp"-->
-<!--                android:weightSum="2"-->
-<!--                android:orientation="horizontal">-->
+                        <ImageView
+                            android:id="@+id/iv_carmodel1"
+                            android:layout_width="52dp"
+                            android:layout_height="73dp"
+                            android:layout_marginTop="29dp"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/carmodel1_u"/>
 
-<!--                <CheckBox-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="只看超区" />-->
+                        <TextView
+                            android:id="@+id/tv_carmodel1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="22dp"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="全部车型"/>
 
-<!--                <CheckBox-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="只看单车" />-->
+                    </RelativeLayout>
 
-<!--                <CheckBox-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="只看电单车" />-->
+                    <RelativeLayout
+                        android:id="@+id/rl_main_2"
+                        android:layout_width="0dp"
+                        android:layout_height="161dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/dp10"
+                        android:layout_marginRight="@dimen/dp10"
+                        android:background="@drawable/block_bcg3">
 
-<!--            </LinearLayout>-->
+                        <ImageView
+                            android:id="@+id/iv_carmodel2"
+                            android:layout_width="74dp"
+                            android:layout_height="59dp"
+                            android:layout_marginTop="36dp"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/carmodel2_u"/>
+
+                        <TextView
+                            android:id="@+id/tv_carmodel2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="22dp"
+                            android:gravity="center"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="只看单车"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_main_3"
+                        android:layout_width="0dp"
+                        android:layout_height="161dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/dp10"
+                        android:layout_marginRight="@dimen/dp10"
+                        android:background="@drawable/block_bcg3">
+
+                        <ImageView
+                            android:id="@+id/iv_carmodel3"
+                            android:layout_width="86dp"
+                            android:layout_height="60dp"
+                            android:layout_marginTop="36dp"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/carmodel3_u"/>
+
+                        <TextView
+                            android:id="@+id/tv_carmodel3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="22dp"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="只看助力车"/>
+
+                    </RelativeLayout>
+
+<!--                    <CheckBox-->
+<!--                        android:id="@+id/cb_main_1"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_below="@+id/tvHead"-->
+<!--                        android:layout_toLeftOf="@+id/tvHead"-->
+<!--                        android:text="全部车型" />-->
+
+<!--                    <CheckBox-->
+<!--                        android:id="@+id/cb_main_2"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_below="@+id/tvHead"-->
+<!--                        android:layout_toLeftOf="@+id/tvHead"-->
+<!--                        android:text="只看单车" />-->
+
+<!--                    <CheckBox-->
+<!--                        android:id="@+id/cb_main_3"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_below="@+id/tvHead"-->
+<!--                        android:layout_toLeftOf="@+id/tvHead"-->
+<!--                        android:text="只看助力车" />-->
+
+                </LinearLayout>
+
+            </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp20"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
+                android:layout_marginTop="31dp"
+                android:paddingLeft="1.5dp"
+                android:paddingRight="1.5dp"
                 android:weightSum="3"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <CheckBox
-                    android:id="@+id/cb_1"
-                    android:layout_width="0dp"
+                <TextView
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_below="@+id/tvHead"
-                    android:layout_toLeftOf="@+id/tvHead"
-                    android:text="只看超区" />
+                    android:textSize="@dimen/sp18"
+                    android:textColor="@color/text_black_color"
+                    android:text="条件选项"
+                    android:layout_centerInParent="true"/>
 
-                <CheckBox
-                    android:id="@+id/cb_2"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_below="@+id/tvHead"
-                    android:layout_toLeftOf="@+id/tvHead"
-                    android:text="只看单车" />
+                    android:weightSum="2"
+                    android:orientation="horizontal">
 
-                <CheckBox
-                    android:id="@+id/cb_3"
-                    android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="14.5dp"
+                        android:layout_marginRight="14.5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/block_bcg5"
+                            android:gravity="center"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="只看超区"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="14.5dp"
+                        android:layout_marginRight="14.5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+
+                            android:id="@+id/tv_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/block_bcg5"
+                            android:gravity="center"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="只看坏车"/>
+                    </LinearLayout>
+
+
+<!--                    <CheckBox-->
+<!--                        android:id="@+id/cb_1"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_below="@+id/tvHead"-->
+<!--                        android:layout_toLeftOf="@+id/tvHead"-->
+<!--                        android:text="只看超区" />-->
+
+<!--                    <CheckBox-->
+<!--                        android:id="@+id/cb_2"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_below="@+id/tvHead"-->
+<!--                        android:layout_toLeftOf="@+id/tvHead"-->
+<!--                        android:text="只看坏车" />-->
+
+<!--                    <CheckBox-->
+<!--                        android:id="@+id/cb_3"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_below="@+id/tvHead"-->
+<!--                        android:layout_toLeftOf="@+id/tvHead"-->
+<!--                        android:text="只看沉淀车" />-->
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_below="@+id/tvHead"
-                    android:layout_toLeftOf="@+id/tvHead"
-                    android:text="只看电单车" />
+                    android:layout_marginTop="29dp"
+                    android:weightSum="2"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="14.5dp"
+                        android:layout_marginRight="14.5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/block_bcg5"
+                            android:gravity="center"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="沉淀车辆"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="14.5dp"
+                        android:layout_marginRight="14.5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+
+                            android:id="@+id/tv_4"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/block_bcg5"
+                            android:gravity="center"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="只看欠压"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                        android:visibility="gone"
+                        android:id="@+id/cb_5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_below="@+id/tvHead"
+                        android:layout_toLeftOf="@+id/tvHead"
+                        android:text="只看低电" />
+
+                    <CheckBox
+                        android:visibility="gone"
+                        android:id="@+id/cb_6"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_below="@+id/tvHead"
+                        android:layout_toLeftOf="@+id/tvHead"
+                        android:text="只看超低电" />
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="29dp"
+                    android:weightSum="2"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="14.5dp"
+                        android:layout_marginRight="14.5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+
+                            android:id="@+id/tv_5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/block_bcg5"
+                            android:gravity="center"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="沉淀车辆"/>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="41dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="14.5dp"
+                        android:layout_marginRight="14.5dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tv_k"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/block_bcg5"
+                            android:gravity="center"
+                            android:textSize="15sp"
+                            android:textColor="#665E5E"
+                            android:text="沉淀车辆"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
 
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp20"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/cb_4"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_below="@+id/tvHead"
-                    android:layout_toLeftOf="@+id/tvHead"
-                    android:text="只看坏车" />
-
-                <CheckBox
-                    android:id="@+id/cb_5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_below="@+id/tvHead"
-                    android:layout_toLeftOf="@+id/tvHead"
-                    android:text="只看低电" />
-
-                <CheckBox
-                    android:id="@+id/cb_6"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_below="@+id/tvHead"
-                    android:layout_toLeftOf="@+id/tvHead"
-                    android:text="只看超低电" />
-
-            </LinearLayout>
-
-
 
         </LinearLayout>
 
 
 
 
+
+
     </LinearLayout>
+
+
+    <Button
+        android:id="@+id/tv_condition_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="49dp"
+        android:layout_marginLeft="62.5dp"
+        android:layout_marginRight="62.5dp"
+        android:background="@drawable/btn_bcg_normal4"
+        android:gravity="center"
+        android:maxHeight="0dp"
+        android:text="确 定"
+        android:textColor="@color/white"
+        android:stateListAnimator="@null"
+        android:textSize="24sp" />
+
 </RelativeLayout>

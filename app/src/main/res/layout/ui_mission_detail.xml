@@ -8,14 +8,35 @@
     android:clipToPadding="true">
 
     <include
-        layout="@layout/ui_main_title"/>
+        layout="@layout/ui_main_title_no"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/ui_backgroud">
 
+
+
+
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/tv_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="5dp"
+            android:layout_centerInParent="true"
+            android:text="地图位置显示"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <com.amap.api.maps.MapView
+            android:id="@+id/ui_merchantAddress_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.amap.api.maps.MapView>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -121,24 +142,12 @@
 
         </LinearLayout>
 
-
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/tv_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="5dp"
-            android:layout_centerInParent="true"
-            android:text="地图位置显示"
-            android:textColor="@android:color/black"
-            android:textSize="14sp" />
-
-        <com.amap.api.maps.MapView
-            android:id="@+id/ui_merchantAddress_map"
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </com.amap.api.maps.MapView>
-    </LinearLayout>
+            android:layout_height="25dp"
+            android:src="@drawable/head_border"
+            android:scaleType="fitXY"
+            />
+    </RelativeLayout>
 
 </LinearLayout>

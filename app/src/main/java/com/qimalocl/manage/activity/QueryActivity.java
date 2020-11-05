@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.maps.model.BitmapDescriptor;
@@ -68,6 +69,7 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
     private String codenum;
 
     LinearLayout leftBtn;
+    TextView title;
 
 //    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 //        v = inflater.inflate(R.layout.fragment_query, null);
@@ -101,6 +103,8 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
 
     private void initView(){
         leftBtn =  (LinearLayout)findViewById(R.id.ll_backBtn);
+        title = (TextView) findViewById(R.id.mainUI_title_titleText);
+        title.setText("查询");
 
         leftBtn.setOnClickListener(this);
         historyLayout.setOnClickListener(this);

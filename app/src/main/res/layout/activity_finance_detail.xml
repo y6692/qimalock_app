@@ -26,7 +26,6 @@
                 android:id="@+id/rl_cyclingIncomeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
-                android:layout_marginTop="16dp"
                 >
 
                 <LinearLayout

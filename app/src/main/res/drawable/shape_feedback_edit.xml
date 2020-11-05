@@ -6,10 +6,10 @@
     <solid android:color="#ffffff" >
     </solid>
 
-    <!--<stroke-->
-        <!--android:width="1dp"-->
-        <!--android:color="#dedede" >-->
-    <!--</stroke>-->
+<!--    <stroke-->
+<!--        android:width="1dp"-->
+<!--        android:color="#dedede" >-->
+<!--    </stroke>-->
 
     <!-- 矩形的圆角半径 -->
     <corners android:radius="@dimen/dp20" />

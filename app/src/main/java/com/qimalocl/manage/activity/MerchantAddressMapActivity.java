@@ -74,7 +74,7 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
     @BindView(R.id.et_name)
     EditText codeNumEdit;
     @BindView(R.id.searchBtn)
-    TextView searchBtn;
+    ImageView searchBtn;
     @BindView(R.id.tv_day)
     TextView tv_day;
     @BindView(R.id.ll_car_search)

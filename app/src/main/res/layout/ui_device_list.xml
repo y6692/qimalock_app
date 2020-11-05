@@ -10,13 +10,13 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/bcg_title_home">
+        android:layout_height="44dp"
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/mainUI_title_backBtn"
-            android:layout_width="23dp"
-            android:layout_height="17dp"
+            android:layout_width="11.5dp"
+            android:layout_height="20dp"
             android:layout_marginLeft="30dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
@@ -28,19 +28,26 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text=""
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="17sp"
+            android:textColor="#EA5359" />
 
         <ImageView
             android:id="@+id/bt_scan"
-            android:layout_width="23dp"
-            android:layout_height="23dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="40dp"
+            android:layout_marginRight="30dp"
             android:src="@drawable/fresh"
             android:gravity="center" />
     </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:src="@drawable/head_border"
+        android:scaleType="fitXY"
+        />
 
     <ListView
         android:id="@+id/list_item"

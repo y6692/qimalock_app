@@ -9,8 +9,8 @@
     <RelativeLayout
         android:id="@+id/mainUI_titleLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp40"
-        android:background="@drawable/bcg_title_home"
+        android:layout_height="44dp"
+        android:background="@color/white"
         >
 
 
@@ -23,8 +23,8 @@
 
             <ImageView
                 android:id="@+id/mainUI_title_backBtn"
-                android:layout_width="23dp"
-                android:layout_height="17dp"
+                android:layout_width="11.5dp"
+                android:layout_height="20dp"
                 android:layout_marginLeft="30dp"
                 android:src="@drawable/back_image"/>
 
@@ -34,8 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:textSize="@dimen/sp18"
-            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textColor="#EA5359"
             android:text="电子围栏"
             android:gravity="center"/>
 
@@ -49,14 +49,16 @@
             android:gravity="center_vertical">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_marginRight="21dp"
-                android:src="@drawable/title_add_icon"/>
+                android:src="@drawable/add_head_icon"/>
 
         </LinearLayout>
 
     </RelativeLayout>
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -71,6 +73,13 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true">
         </com.amap.api.maps.MapView>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:src="@drawable/head_border"
+            android:scaleType="fitXY"
+            />
 
         <LinearLayout
             android:id="@+id/mainUI_msg"
@@ -168,6 +177,7 @@
                 android:text="扫码入库"
                 android:paddingTop="@dimen/dp5"/>
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/mainUI_lockLayout"
             android:layout_width="wrap_content"
@@ -200,15 +210,22 @@
             android:id="@+id/ll_top"
             android:layout_width="match_parent"
             android:layout_height="144dp"
-            android:paddingLeft="@dimen/dp30"
-            android:paddingRight="@dimen/dp30"
+
             android:orientation="vertical"
             android:background="@color/white">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:src="@drawable/head_border"
+                android:scaleType="fitXY"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
+                android:paddingLeft="@dimen/dp30"
+                android:paddingRight="@dimen/dp30"
                 android:orientation="horizontal"
                 android:background="@color/white">
 
@@ -356,14 +373,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="106dp"
-            android:layout_marginLeft="@dimen/dp30"
+            android:layout_marginLeft="2dp"
             android:orientation="vertical"
             android:gravity="center">
 
             <ImageView
                 android:id="@+id/mainUI_myLocation"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:background="@null"
                 android:src="@drawable/location_icon"
                 android:layout_alignParentLeft="true"/>

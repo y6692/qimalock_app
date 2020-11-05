@@ -1,4 +1,152 @@
+void checkCondition(CheckBox cb){
+//        int carType = 3;
+//        if(switcher_bike.isChecked()){
+//            carType = 1;
+//        }
+//
+//        if(switcher_ebike.isChecked()){
+//            if(switcher_bike.isChecked()){
+//                carType = 0;
+//            }else{
+//                carType = 2;
+//            }
+//        }
+//
+//
+//        switchType = 0;
+//        if(switcher_bad.isChecked()){
+//            switchType = 1;
+//        }
+//
+//        if(switcher.isChecked()){
+//            if(switcher_bad.isChecked()){
+//                switchType = 3;
+//            }else{
+//                switchType = 2;
+//            }
+//        }
+//
+//        is_area = 0;
+//        if(switcher_over_area.isChecked()){
+//            is_area = 1;
+//        }
+//
+//        params.put("carmodel_type", carType);  //0单车+助力车 1只看单车 2只看助力车 3空类型 (必传)
+//        params.put("car_type", switchType);  //1、坏车 2、低电 3、超低电 4、坏车+低电 5、坏车+超低电 6、低电+超低电 7、坏车+低电+超低电
+//        params.put("is_area", is_area);  //0默认 1查看超区
 
+        if("全部车型".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_bike = true;
+                is_ebike = true;
+            }
+//            else{
+//                is_bike = false;
+//            }
+
+//            rl_main_1.setChecked(true);
+//            rl_main_2.setChecked(false);
+//            rl_main_3.setChecked(false);
+
+            cb_4.setVisibility(View.VISIBLE);
+        }else if("只看单车".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_bike = true;
+            }else{
+                is_bike = false;
+            }
+
+//            rl_main_1.setChecked(false);
+//            rl_main_2.setChecked(true);
+//            rl_main_3.setChecked(false);
+
+            cb_4.setVisibility(View.GONE);
+
+//            carType = 3;
+//            if(is_bike){
+//                carType = 1;
+//            }
+//
+//            if(is_ebike){
+//                if(is_bike){
+//                    carType = 0;
+//                }else{
+//                    carType = 2;
+//                }
+//            }
+
+        }else if("只看助力车".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_ebike = true;
+            }else{
+                is_ebike = false;
+            }
+
+//            rl_main_1.setChecked(false);
+//            rl_main_2.setChecked(false);
+//            rl_main_3.setChecked(true);
+
+            cb_4.setVisibility(View.VISIBLE);
+
+//            carType = 3;
+//            if(is_bike){
+//                carType = 1;
+//            }
+//
+//            if(is_ebike){
+//                if(is_bike){
+//                    carType = 0;
+//                }else{
+//                    carType = 2;
+//                }
+//            }
+
+        }else if("只看超区".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_area = 1;
+            }else{
+                is_area = 0;
+            }
+
+            cb_1.setChecked(true);
+            cb_2.setChecked(false);
+            cb_3.setChecked(false);
+            cb_4.setChecked(false);
+        }else if("只看坏车".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_bad = true;
+            }else{
+                is_bad = false;
+            }
+
+            cb_1.setChecked(false);
+            cb_2.setChecked(true);
+            cb_3.setChecked(false);
+            cb_4.setChecked(false);
+        }else if("沉淀车辆".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_lowpower = true;
+            }else{
+                is_lowpower = false;
+            }
+
+            cb_1.setChecked(false);
+            cb_2.setChecked(false);
+            cb_3.setChecked(true);
+            cb_4.setChecked(false);
+        }else if("只看欠压".equals(cb.getText())){
+            if(cb.isChecked()){
+                is_slowpower = true;
+            }else{
+                is_slowpower = false;
+            }
+
+            cb_1.setChecked(false);
+            cb_2.setChecked(false);
+            cb_3.setChecked(false);
+            cb_4.setChecked(true);
+        }
+    }
 
                     //TODO  2
 //                                if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {

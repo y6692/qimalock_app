@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/pop_low_power_bg">
+
+    <!-- 弹窗背景 -->
+    <ImageView
+        android:id="@+id/popupWindowCond_back"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#FFF5F7FA"
+        android:visibility="gone"
+        android:scaleType="fitXY"
+        android:fitsSystemWindows="true"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/pop_rent_bcg"
+        android:layout_alignParentBottom="true">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:background="#eeeeee">
+
+                <TextView
+                    android:id="@+id/tv_condition_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp16"
+                    android:textColor="#333333"
+                    android:text="取消"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp16"
+                    android:textColor="#333333"
+                    android:layout_centerInParent="true"
+                    android:text="条件筛选"/>
+
+                <TextView
+                    android:id="@+id/tv_condition_confirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="确定"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/sp14"
+                    android:layout_alignParentRight="true"
+                    android:gravity="center"/>
+
+            </RelativeLayout>
+
+<!--            <GridView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content">-->
+<!--                -->
+<!--                -->
+<!--            </GridView>-->
+
+<!--            android:columnCount="6"-->
+<!--            android:numColumns="auto_fit"-->
+<!--            <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+
+<!--                android:nu-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="16dip"-->
+<!--                android:rowCount="3">-->
+<!--                <TextView-->
+<!--                    android:width="300dp"-->
+<!--                    android:id="@+id/edit_input"-->
+<!--                    android:layout_gravity="fill"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:paddingLeft="8dip" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/delete"-->
+<!--                    android:layout_marginLeft="16dip" />-->
+<!--                　　　-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_1"/>-->
+
+<!--                <TextView-->
+<!--                    android:text="1" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_3"/>-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_4"-->
+<!--                    android:layout_marginLeft="16dip"-->
+<!--                    android:layout_marginTop="16dip"/>-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_5"-->
+<!--                    android:layout_marginLeft="16dip"-->
+<!--                    android:layout_marginTop="16dip" />-->
+<!--                　　-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/confirm"-->
+<!--                    android:layout_marginLeft="16dip"-->
+<!--                    android:layout_marginTop="16dip"-->
+<!--                    android:layout_rowSpan="2" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_6"-->
+<!--                    android:layout_marginTop="16dip"/>-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_7"-->
+<!--                    android:layout_marginLeft="16dip"-->
+<!--                    android:layout_marginTop="16dip" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_8"-->
+<!--                    android:layout_marginLeft="16dip"-->
+<!--                    android:layout_marginTop="16dip" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_9"-->
+<!--                    android:layout_marginLeft="16dip"-->
+<!--                    android:layout_marginTop="16dip" />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/num_0"-->
+<!--                    android:layout_marginLeft="16dip"-->
+<!--                    android:layout_marginTop="16dip"/>-->
+
+
+<!--            </GridLayout>-->
+
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/dp20"-->
+<!--                android:paddingLeft="20dp"-->
+<!--                android:paddingRight="20dp"-->
+<!--                android:weightSum="2"-->
+<!--                android:orientation="horizontal">-->
+
+<!--                <CheckBox-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="只看超区" />-->
+
+<!--                <CheckBox-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="只看单车" />-->
+
+<!--                <CheckBox-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="只看电单车" />-->
+
+<!--            </LinearLayout>-->
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:weightSum="3"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cb_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_below="@+id/tvHead"
+                    android:layout_toLeftOf="@+id/tvHead"
+                    android:text="只看超区" />
+
+                <CheckBox
+                    android:id="@+id/cb_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_below="@+id/tvHead"
+                    android:layout_toLeftOf="@+id/tvHead"
+                    android:text="只看单车" />
+
+                <CheckBox
+                    android:id="@+id/cb_3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_below="@+id/tvHead"
+                    android:layout_toLeftOf="@+id/tvHead"
+                    android:text="只看电单车" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cb_4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_below="@+id/tvHead"
+                    android:layout_toLeftOf="@+id/tvHead"
+                    android:text="只看坏车" />
+
+                <CheckBox
+                    android:id="@+id/cb_5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_below="@+id/tvHead"
+                    android:layout_toLeftOf="@+id/tvHead"
+                    android:text="只看低电" />
+
+                <CheckBox
+                    android:id="@+id/cb_6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_below="@+id/tvHead"
+                    android:layout_toLeftOf="@+id/tvHead"
+                    android:text="只看超低电" />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+</RelativeLayout>

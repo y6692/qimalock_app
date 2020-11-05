@@ -87,7 +87,7 @@ public class AddDispatchActivity extends SwipeBackActivity implements View.OnCli
     private Context context;
     private ImageView backImg;
     private TextView title;
-    private Button rightBtn;
+    private ImageView rightBtn;
     // List
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView myList;
@@ -151,7 +151,7 @@ public class AddDispatchActivity extends SwipeBackActivity implements View.OnCli
         backImg = (ImageView) findViewById(R.id.mainUI_title_backBtn);
         title = (TextView) findViewById(R.id.mainUI_title_titleText);
         title.setText("新增调运");
-        rightBtn = (Button)findViewById(R.id.mainUI_title_rightBtn);
+        rightBtn = (ImageView)findViewById(R.id.mainUI_title_rightBtn);
 //        rightBtn.setText("查询");
 
         // list投资列表

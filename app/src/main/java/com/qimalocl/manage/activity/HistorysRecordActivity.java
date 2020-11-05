@@ -67,7 +67,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
     @BindView(R.id.ui_historysRecord_codeNumEdit)
     ClearEditText codeNumEdit;
     @BindView(R.id.ui_historysRecord_searchBtn)
-    TextView searchBtn;
+    ImageView searchBtn;
 //    @BindView(R.id.ui_historysRecord_listview)
 //    MyListView listview;
 //    @BindView(R.id.ui_historysRecord_msgText)
