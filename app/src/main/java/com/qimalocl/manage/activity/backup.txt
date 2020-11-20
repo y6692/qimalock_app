@@ -1,3 +1,86 @@
+
+//            if("11".equals(type)){
+//
+//
+//                if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                    ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                    popupwindow.dismiss();
+//                }
+//                //蓝牙锁
+//                BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//                mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//                if (mBluetoothAdapter == null) {
+//                    ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                    popupwindow.dismiss();
+//                    return;
+//                }
+//                if (!mBluetoothAdapter.isEnabled()) {
+//                    isPermission = false;
+//                    closeLoadingDialog2();
+//                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                    startActivityForResult(enableBtIntent, 188);
+//                } else {
+//
+//
+//                    LogUtil.e("batteryBle_unlock===11", TbitBle.hasInitialized() + "===");
+//
+//                    if(!TbitBle.hasInitialized()){
+//                        TbitBle.initialize(context, new SecretProtocolAdapter());
+//                    }
+//
+//                    LogUtil.e("batteryBle_unlock===11_1", TbitBle.hasInitialized() + "===" + TbitBle.getBleConnectionState());
+//
+//                    tbtble_connect_battery();
+//
+////                                            if(TbitBle.getBleConnectionState()==0){
+////                                                tbtble_connect_battery();
+////
+////                                                isConnect = false;
+////
+////                                            }else{
+////                                                batteryBle_unlock();
+////                                            }
+//
+//                }
+//            }
+
+//                                        if("4".equals(type)){
+//                                            curMarker.setIcon(bikeDescripter_blue);
+//                                        }else if("7".equals(type)){
+//                                            curMarker.setIcon(bikeDescripter_xa_blue);
+//                                        }else if("8".equals(type)){
+//                                            curMarker.setIcon(bikeDescripter_tbtd_blue);
+//                                        }else if("11".equals(type)){
+//                                            curMarker.setIcon(bikeDescripter_tbtf_blue);
+//                                        }
+
+//                                            if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                                                loadingDialog.setTitle("正在唤醒车锁");
+//                                                loadingDialog.show();
+//                                            }
+
+//                                                m_myHandler.postDelayed(new Runnable() {
+//                                                    @Override
+//                                                    public void run() {
+//                                                        if (!isConnect){
+////                                                          closeLoadingDialog();
+//
+//                                                            LogUtil.e("batteryBle_unlock===11==timeout", isConnect + "==="+activity.isFinishing());
+//
+////                                                          battery_unlock();
+//
+//                                                            ToastUtil.showMessageApp(context, "蓝牙连接失败");
+//                                                        }
+//                                                    }
+//                                                }, timeout);
+
+//                                if(result.getStatus_code()==200){
+//                                }else if(result.getStatus_code()==503){
+//                                }else {
+//                                }
+
 void checkCondition(CheckBox cb){
 //        int carType = 3;
 //        if(switcher_bike.isChecked()){

@@ -124,13 +124,16 @@ import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
 import com.qimalocl.manage.core.widget.VerticalScrollTextView;
 import com.qimalocl.manage.model.BadCarBean;
+import com.qimalocl.manage.model.BatteryUnlockBean;
 import com.qimalocl.manage.model.CarBean;
 import com.qimalocl.manage.model.CarsBean;
+import com.qimalocl.manage.model.ElectricityBean;
 import com.qimalocl.manage.model.GlobalConfig;
 import com.qimalocl.manage.model.KeyBean;
 import com.qimalocl.manage.model.LowPowerBean;
 import com.qimalocl.manage.model.LowPowerDataBean;
 import com.qimalocl.manage.model.NearbyBean;
+import com.qimalocl.manage.model.PhoneBean;
 import com.qimalocl.manage.model.PowerExchangeBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
@@ -198,6 +201,7 @@ import permissions.dispatcher.NeedsPermission;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.INPUT_METHOD_SERVICE;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.fitsleep.sunshinelibrary.utils.EncryptUtils.Encrypt;
 import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
 import static com.qimalocl.manage.base.BaseApplication.school_id;
@@ -223,6 +227,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @BindView(R.id.marqueeView) MarqueeView marqueeView;
 //    @BindView(R.id.lv_msg) ListView lv_msg;
     @BindView(R.id.mainUI_msg) LinearLayout llMsg;
+
+//    @BindView(R.id.ll_pop_ebike_7) LinearLayout ll_pop_ebike_7;
+//    @BindView(R.id.ll_pop_ebike_6) LinearLayout ll_pop_ebike_6;
 
     @BindView(R.id.mainUI_leftBtn) TextView leftBtn;
     @BindView(R.id.mainUI_scanCode_lookRecordBtn) Button lookBtn;
@@ -341,6 +348,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private String bleid = "";
     private String deviceuuid = "";
     private String electricity = "";
+    private int electricity_status;
     private String carmodel_name = "";
     private String bad_reason = "";
     private String battery_name = "";
@@ -368,6 +376,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private String token;
 
     private PopupWindow popupwindow;
+    private PopupWindow popupwindow_phone;
 
     BluetoothAdapter mBluetoothAdapter;
 
@@ -433,6 +442,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     private Handler m_myHandler2 = new Handler();
 
+    CustomDialog.Builder customBuilder;
+    CustomDialog.Builder customBuilder2;
+    private CustomDialog customDialog;
+    private CustomDialog customDialog2;
+
     private View customView;
     private RelativeLayout pop_win_bg;
     private ImageView iv_popup_window_cond_back;
@@ -463,6 +477,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     private boolean isAll = true;
 
     public int[] school_carmodel_ids2;
+
+    private boolean isMapPop;
+
+    String title1;
+    String title2;
+    String phone1;
+    String phone2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -682,6 +703,200 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 
         }
+    }
+
+    public void initmPopupPhoneWindowView(){
+
+        // 获取自定义布局文件的视图
+        View customView = getLayoutInflater().inflate(R.layout.pop_service_menu, null, false);
+        // 创建PopupWindow宽度和高度
+        RelativeLayout pop_win_bg = (RelativeLayout) customView.findViewById(R.id.pop_win_bg);
+        ImageView iv_popup_window_back = (ImageView) customView.findViewById(R.id.popupWindow_back);
+        // 获取截图的Bitmap
+        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+        if (bitmap != null) {
+            // 将截屏Bitma放入ImageView
+            iv_popup_window_back.setImageBitmap(bitmap);
+            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
+        } else {
+            // 获取的Bitmap为null时，用半透明代替
+            iv_popup_window_back.setBackgroundColor(0x77000000);
+        }
+        // 打开弹窗
+        UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
+        // 创建PopupWindow宽度和高度
+        popupwindow_phone = new PopupWindow(customView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, true);
+
+        //设置动画效果 ,从上到下加载方式等，不设置自动的下拉，最好 [动画效果不好，不加实现下拉效果，不错]
+        popupwindow_phone.setAnimationStyle(R.style.PopupAnimation);
+        popupwindow_phone.setOutsideTouchable(false);
+
+        TextView tv_feedback = (TextView)customView.findViewById(R.id.pop_tv_feedback);
+        TextView tv_title1 = (TextView)customView.findViewById(R.id.pop_title1);
+        TextView tv_title2 = (TextView)customView.findViewById(R.id.pop_title2);
+        TextView tv_phone1 = (TextView)customView.findViewById(R.id.pop_phone1);
+        TextView tv_phone2 = (TextView)customView.findViewById(R.id.pop_phone2);
+        LinearLayout cancelLayout = (LinearLayout)customView.findViewById(R.id.ll_pop_cancelLayout);
+//        final LinearLayout callLayout = (LinearLayout)customView.findViewById(R.id.pop_menu_callLayout);
+
+        tv_title1.setText(title1);
+        tv_title2.setText(title2);
+        tv_phone1.setText(phone1);
+        tv_phone2.setText(phone2);
+
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.pop_phone1:
+                        if (Build.VERSION.SDK_INT >= 23) {
+                            int checkPermission = activity.checkSelfPermission(Manifest.permission.CALL_PHONE);
+                            if (checkPermission != PERMISSION_GRANTED) {
+                                if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
+                                    requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 0);
+                                } else {
+                                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开拨打电话权限！")
+                                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                            requestPermissions(
+                                                    new String[] { Manifest.permission.CALL_PHONE }, 0);
+                                        }
+                                    });
+                                    customBuilder.create().show();
+                                }
+                                return;
+                            }
+                        }
+                        Intent intent=new Intent();
+                        intent.setAction(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + phone1));
+                        context.startActivity(intent);
+                        break;
+
+                    case R.id.pop_phone2:
+                        if (Build.VERSION.SDK_INT >= 23) {
+                            int checkPermission = activity.checkSelfPermission(Manifest.permission.CALL_PHONE);
+                            if (checkPermission != PERMISSION_GRANTED) {
+                                if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
+                                    requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 0);
+                                } else {
+                                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+                                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开拨打电话权限！")
+                                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                            requestPermissions(
+                                                    new String[] { Manifest.permission.CALL_PHONE }, 0);
+                                        }
+                                    });
+                                    customBuilder.create().show();
+                                }
+                                return;
+                            }
+                        }
+                        intent=new Intent();
+                        intent.setAction(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + phone2));
+                        context.startActivity(intent);
+                        break;
+
+                    case R.id.ll_pop_cancelLayout:
+//                        UIHelper.goToAct(context, ServiceCenterActivity.class);
+
+                        break;
+                }
+                popupwindow_phone.dismiss();
+            }
+        };
+
+        tv_feedback.setOnClickListener(listener);
+        tv_phone1.setOnClickListener(listener);
+        tv_phone2.setOnClickListener(listener);
+        cancelLayout.setOnClickListener(listener);
+
+
+        popupwindow_phone.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+    }
+
+    private void getPhones(){
+//        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+//        if (access_token == null || "".equals(access_token)){
+//            Toast.makeText(context,"请先登录账号",Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+
+        HttpHelper.get2(context, Urls.phones, null, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                onStartCommon("正在加载");
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                LogUtil.e("sf===phonesFail","==="+responseString);
+                onFailureCommon(throwable.toString());
+            }
+
+
+
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            LogUtil.e("sf===phones1","==="+responseString);
+
+                            ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                            JSONArray array = new JSONArray(result.getData());
+
+
+                            for (int i = 0; i < array.length();i++){
+                                PhoneBean bean = JSON.parseObject(array.getJSONObject(i).toString(), PhoneBean.class);
+
+                                if(i==0){
+                                    title1 = bean.getTitle();
+                                    phone1 = bean.getPhone();
+                                } else if(i==1){
+                                    title2 = bean.getTitle();
+                                    phone2 = bean.getPhone();
+                                }
+
+
+        //                        datas.add(bean);
+                            }
+
+                            if(popupwindow_phone==null || (popupwindow_phone!=null && !popupwindow_phone.isShowing())){
+                                initmPopupPhoneWindowView();
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                        }
+                        if (loadingDialog != null && loadingDialog.isShowing()){
+                            loadingDialog.dismiss();
+                        }
+                    }
+                });
+
+
+
+            }
+        });
     }
 
 //    List list2 = new ArrayList();
@@ -994,6 +1209,61 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
 
+        customBuilder = new CustomDialog.Builder(context);
+        customBuilder.setTitle("温馨提示").setMessage("")
+                .setPositiveButton("拨打客服电话", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+
+                        getPhones();
+
+
+
+//                        if (Build.VERSION.SDK_INT >= 23) {
+//                            int checkPermission = activity.checkSelfPermission(Manifest.permission.CALL_PHONE);
+//                            if (checkPermission != PERMISSION_GRANTED) {
+//                                if (shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)) {
+//                                    requestPermissions(new String[] { Manifest.permission.CALL_PHONE }, 0);
+//                                } else {
+//                                    CustomDialog.Builder customBuilder = new CustomDialog.Builder(context);
+//                                    customBuilder.setTitle("温馨提示").setMessage("您需要在设置里打开拨打电话权限！")
+//                                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                                public void onClick(DialogInterface dialog, int which) {
+//                                                    dialog.cancel();
+//                                                }
+//                                            }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog, int which) {
+//                                            dialog.cancel();
+//                                            requestPermissions(
+//                                                    new String[] { Manifest.permission.CALL_PHONE }, 0);
+//                                        }
+//                                    });
+//                                    customBuilder.create().show();
+//                                }
+//                                return;
+//                            }
+//                        }
+//
+//                        Intent intent=new Intent();
+//                        intent.setAction(Intent.ACTION_CALL);
+//                        intent.setData(Uri.parse("tel:18151276837"));
+//                        context.startActivity(intent);
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+        });
+//        customDialog = customBuilder.create();
+
+        customBuilder2 = new CustomDialog.Builder(context);
+        customBuilder2.setTitle("温馨提示").setMessage("")
+                .setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+
+                    }
+                });
 
 
         customView = getLayoutInflater().inflate(R.layout.pop_main_condition, null, false);
@@ -1230,6 +1500,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_condition_2 = activity.findViewById(R.id.tv_condition_2);
         tv_condition_num_2 = activity.findViewById(R.id.tv_condition_num_2);
 
+//        LinearLayout ui_pop_ebike_7 = activity.findViewById(R.id.ui_pop_ebike_7);
+//        ui_pop_ebike_7.set
 
         llMsg.setOnClickListener(this);
 //        rightBtn.setOnClickListener(this);
@@ -1431,6 +1703,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 m_nowMac = bean.getLock_mac();
                                 bleid = bean.getLock_secretkey();
                                 electricity = bean.getElectricity();
+                                electricity_status = bean.getElectricity_status();  //电量状态 1、正常 0、欠压
                                 carmodel_id = bean.getCarmodel_id();
                                 carmodel_name = bean.getCarmodel_name();
                                 status = bean.getStatus();
@@ -1449,10 +1722,25 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     Config.passwordnew = Config.passwordnew2;
                                 }
 
-                                LogUtil.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order);
+                                LogUtil.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order+">>>"+status+"==="+electricity_status);
+
+
+                                if(carmodel_id==2 && status!=3 && status!=4){
+                                    if(curMarker!=null){
+                                        if(electricity_status==0){
+                                            curMarker.setIcon(ebikeDescripter_lowpower);
+                                        }else if(electricity_status==1){
+                                            curMarker.setIcon(ebikeDescripter_good);
+                                        }else if(electricity_status==2){
+                                            curMarker.setIcon(ebikeDescripter_exchange);
+                                        }
+                                    }
+                                }
+
 
                                 end2();
 
+                                isMapPop = true;
                                 if(carmodel_id==1){
                                     initmPopupWindowView();
                                 }else if(carmodel_id==2){
@@ -1537,10 +1825,22 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                 LogUtil.e("sf===lockInfo1", codenum+"==="+type+"==="+carmodel_id+"==="+m_nowMac+"==="+lock_status+"==="+can_finish_order);
 
+
+
                                 if(carmodel_id==1){
-                                    initmPopupRentWindowView();
+                                    if(isMapPop){
+                                        initmPopupWindowView();
+                                    }else{
+                                        initmPopupRentWindowView();
+                                    }
+
                                 }else if(carmodel_id==2){
-                                    initmPopupRentWindowView2();
+                                    if(isMapPop){
+                                        initmPopupWindowView2();
+                                    }else{
+                                        initmPopupRentWindowView2();
+                                    }
+
                                 }
 
 
@@ -1627,14 +1927,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
         ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
 
+        ImageView ib = customView.findViewById(R.id.ib);
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
         TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
         tv_electricity = customView.findViewById(R.id.tv_electricity);
         tv_lock_status = customView.findViewById(R.id.tv_lock_status);
-        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
-        LinearLayout ll_get_state = customView.findViewById(R.id.ll_get_state);
-        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+
+        LinearLayout ll_pop_bike_3 = customView.findViewById(R.id.ll_pop_bike_3);
+        LinearLayout ll_pop_bike_4 = customView.findViewById(R.id.ll_pop_bike_4);
+
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
         LinearLayout ll_bad2 = customView.findViewById(R.id.ll_bad2);
@@ -1655,6 +1957,30 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_bad_reason.setText("损坏部位："+bad_reason);      //TODO 损坏部位没有使用后台该车最新的坏车原因
         tv_bad_reason2.setText("损坏部位："+bad_reason);
 
+
+        int layout_num = 3;
+        if(can_finish_order==1){
+            layout_num++;
+        }
+
+        LinearLayout ll_pop_bike = null;
+        if(layout_num<=3){
+            ll_pop_bike_3.setVisibility(View.VISIBLE);
+            ll_pop_bike_4.setVisibility(View.GONE);
+
+            ll_pop_bike = ll_pop_bike_3;
+        }else if(layout_num==4){
+            ll_pop_bike_3.setVisibility(View.GONE);
+            ll_pop_bike_4.setVisibility(View.VISIBLE);
+
+            ll_pop_bike = ll_pop_bike_4;
+        }
+
+        LogUtil.e("initmPopupRentWindowView===", layout_num+"==="+isSearch+"==="+type+"==="+can_finish_order+"==="+status);
+
+        LinearLayout ll_open_lock = ll_pop_bike.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_get_state = ll_pop_bike.findViewById(R.id.ll_get_state);
+        LinearLayout ll_end_order = ll_pop_bike.findViewById(R.id.ll_end_order);
 
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
@@ -1677,6 +2003,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad2.setVisibility(View.GONE);
         }
 
+        if(status==3 || status==4 || status==6){
+            ib.setImageResource(R.drawable.pop_bike_bad);
+        }else{
+            ib.setImageResource(R.drawable.pop_bike_good);
+        }
+
         LogUtil.e("initmPopup===", can_finish_order+"==="+status);
 
         ll_open_lock.setOnClickListener(this);
@@ -1689,16 +2021,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         ll_query.setOnClickListener(this);
 
         // 获取截图的Bitmap
-        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
-        if (bitmap != null) {
-            // 将截屏Bitma放入ImageView
-            iv_popup_window_back.setImageBitmap(bitmap);
-            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
-            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
-        } else {
-            // 获取的Bitmap为null时，用半透明代替
-            iv_popup_window_back.setBackgroundColor(0x77000000);
-        }
+//        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+//        if (bitmap != null) {
+//            // 将截屏Bitma放入ImageView
+//            iv_popup_window_back.setImageBitmap(bitmap);
+//            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+//            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
+//        } else {
+//            // 获取的Bitmap为null时，用半透明代替
+//            iv_popup_window_back.setBackgroundColor(0x77000000);
+//        }
         // 打开弹窗
         UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
         // 创建PopupWindow宽度和高度
@@ -1805,7 +2137,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
         ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
 
-
+        ImageView ib = customView.findViewById(R.id.ib);
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
         TextView tv_deviceuuid = customView.findViewById(R.id.tv_deviceuuid);
@@ -1814,12 +2146,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_electricity = customView.findViewById(R.id.tv_electricity);
         TextView tv_battery_name = customView.findViewById(R.id.tv_battery_name);
 
+        LinearLayout ll_pop_ebike_4 = customView.findViewById(R.id.ll_pop_ebike_4);
+        LinearLayout ll_pop_ebike_5 = customView.findViewById(R.id.ll_pop_ebike_5);
+        LinearLayout ll_pop_ebike_6 = customView.findViewById(R.id.ll_pop_ebike_6);
+        LinearLayout ll_pop_ebike_7 = customView.findViewById(R.id.ll_pop_ebike_7);
 //        lock_switcher = customView.findViewById(R.id.lock_switcher);
-        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
-        LinearLayout ll_close_lock = customView.findViewById(R.id.ll_close_lock);
-        LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
-        LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
-        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+//        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+//        LinearLayout ll_close_lock = customView.findViewById(R.id.ll_close_lock);
+//        LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
+//        LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
+//        LinearLayout ll_power_query = customView.findViewById(R.id.ll_power_query);
+//        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
         LinearLayout ll_bad2 = customView.findViewById(R.id.ll_bad2);
@@ -1828,7 +2165,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         LinearLayout ll_set_recovered = customView.findViewById(R.id.ll_set_recovered);
         LinearLayout ll_set_ok = customView.findViewById(R.id.ll_set_ok);
         TextView tv_set_useless = customView.findViewById(R.id.tv_set_useless);
-        LinearLayout ll_query = customView.findViewById(R.id.ll_query);
+
+        tv_bad_reason.setText("损坏部位："+bad_reason);
+        tv_bad_reason2.setText("损坏部位："+bad_reason);
+
+
 
         tv_number.setText(codenum);
         tv_lock_title.setText(lock_name);
@@ -1840,8 +2181,62 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_lock_mac.setText(m_nowMac);
         tv_electricity.setText(electricity);
         tv_battery_name.setText(battery_name);
-        tv_bad_reason.setText("损坏部位："+bad_reason);
-        tv_bad_reason2.setText("损坏部位："+bad_reason);
+
+
+        int layout_num = 4;
+        if(isSearch){
+            layout_num++;
+        }
+
+        if("11".equals(type)){
+            layout_num++;
+        }
+
+        if(can_finish_order==1){
+            layout_num++;
+        }
+
+//        LinearLayout ll_query = null;
+        LinearLayout ll_pop_ebike = null;
+        if(layout_num==4){
+            ll_pop_ebike_4.setVisibility(View.VISIBLE);
+            ll_pop_ebike_5.setVisibility(View.GONE);
+            ll_pop_ebike_6.setVisibility(View.GONE);
+            ll_pop_ebike_7.setVisibility(View.GONE);
+
+            ll_pop_ebike = ll_pop_ebike_4;
+        }else if(layout_num==5){
+            ll_pop_ebike_4.setVisibility(View.GONE);
+            ll_pop_ebike_5.setVisibility(View.VISIBLE);
+            ll_pop_ebike_6.setVisibility(View.GONE);
+            ll_pop_ebike_7.setVisibility(View.GONE);
+
+            ll_pop_ebike = ll_pop_ebike_5;
+        }else if(layout_num==6){
+            ll_pop_ebike_4.setVisibility(View.GONE);
+            ll_pop_ebike_5.setVisibility(View.GONE);
+            ll_pop_ebike_6.setVisibility(View.VISIBLE);
+            ll_pop_ebike_7.setVisibility(View.GONE);
+
+            ll_pop_ebike = ll_pop_ebike_6;
+        }else if(layout_num==7){
+            ll_pop_ebike_4.setVisibility(View.GONE);
+            ll_pop_ebike_5.setVisibility(View.GONE);
+            ll_pop_ebike_6.setVisibility(View.GONE);
+            ll_pop_ebike_7.setVisibility(View.VISIBLE);
+
+            ll_pop_ebike = ll_pop_ebike_7;
+        }
+
+        LogUtil.e("initmPopupRentWindowView2===", layout_num+"==="+isSearch+"==="+type+"==="+can_finish_order+"==="+status);
+
+        LinearLayout ll_open_lock = ll_pop_ebike.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_close_lock = ll_pop_ebike.findViewById(R.id.ll_close_lock);
+        LinearLayout ll_car_search = ll_pop_ebike.findViewById(R.id.ll_car_search);
+        LinearLayout ll_power_exchange = ll_pop_ebike.findViewById(R.id.ll_power_exchange);
+        LinearLayout ll_power_query = ll_pop_ebike.findViewById(R.id.ll_power_query);
+        LinearLayout ll_end_order = ll_pop_ebike.findViewById(R.id.ll_end_order);
+        LinearLayout ll_query = ll_pop_ebike.findViewById(R.id.ll_query);
 
         if(isSearch){
             ll_car_search.setVisibility(View.VISIBLE);
@@ -1849,11 +2244,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_car_search.setVisibility(View.GONE);
         }
 
+        if("11".equals(type)){
+            ll_power_query.setVisibility(View.VISIBLE);
+        }else{
+            ll_power_query.setVisibility(View.GONE);
+        }
+
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
         }else{
             ll_end_order.setVisibility(View.GONE);
         }
+
 
         if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
             ll_bad.setVisibility(View.VISIBLE);
@@ -1870,6 +2272,18 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad2.setVisibility(View.GONE);
         }
 
+        if(status==3 || status==4 || status==6){
+            ib.setImageResource(R.drawable.pop_ebike_bad);
+        }else{
+            if(electricity_status==0){
+                ib.setImageResource(R.drawable.pop_ebike_lowpower);
+            }else if(electricity_status==1){
+                ib.setImageResource(R.drawable.pop_ebike_good);
+            }else if(electricity_status==2){
+                ib.setImageResource(R.drawable.pop_ebike_exchange);
+            }
+        }
+
 //        if(lock_status==2){
 //            lock_switcher.setChecked(true);
 //        }else{
@@ -1884,6 +2298,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        lock_switcher.setOnClickListener(this);     //TODO 行运兔电单车的弹窗开关锁按钮无效
         ll_open_lock.setOnClickListener(this);
         ll_close_lock.setOnClickListener(this);
+        ll_power_query.setOnClickListener(this);
         ll_power_exchange.setOnClickListener(this);
         ll_car_search.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
@@ -1894,16 +2309,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         ll_query.setOnClickListener(this);
 
         // 获取截图的Bitmap
-        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
-        if (bitmap != null) {
-            // 将截屏Bitma放入ImageView
-            iv_popup_window_back.setImageBitmap(bitmap);
-            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
-            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
-        } else {
-            // 获取的Bitmap为null时，用半透明代替
-            iv_popup_window_back.setBackgroundColor(0x77000000);
-        }
+//        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+//        if (bitmap != null) {
+//            // 将截屏Bitma放入ImageView
+//            iv_popup_window_back.setImageBitmap(bitmap);
+//            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+//            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
+//        } else {
+//            // 获取的Bitmap为null时，用半透明代替
+//            iv_popup_window_back.setBackgroundColor(0x77000000);
+//        }
         // 打开弹窗
         UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
         // 创建PopupWindow宽度和高度
@@ -1914,23 +2329,39 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
         popupwindow.showAtLocation(customView, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
+//        ll_query.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                LogUtil.e("ll_query===", carmodel_id + "==="+ codenum);
+//
+////                Intent intent = new Intent(context, MerchantAddressMapActivity.class);
+//                Intent intent = new Intent(context, QueryActivity.class);
+//                intent.putExtra("carmodel_id", carmodel_id);
+//                intent.putExtra("codenum", codenum);
+//                startActivity(intent);
+//            }
+//        });
+
+
     }
 
     public void initmPopupWindowView(){
         // 获取自定义布局文件的视图
-        View customView = getLayoutInflater().inflate(R.layout.pop_menu, null, false);
+        View customView = getLayoutInflater().inflate(R.layout.pop_menu_bike, null, false);
         // 创建PopupWindow宽度和高度
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
         ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
 
+//        LinearLayout ll_pop_bike_3 = customView.findViewById(R.id.ll_pop_bike_3);
+//        LinearLayout ll_pop_bike_4 = customView.findViewById(R.id.ll_pop_bike_4);
+
+        ImageView ib = customView.findViewById(R.id.ib);
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
         TextView tv_lock_mac = customView.findViewById(R.id.tv_lock_mac);
         tv_electricity = customView.findViewById(R.id.tv_electricity);
         tv_lock_status = customView.findViewById(R.id.tv_lock_status);
-        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
-        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
-        LinearLayout ll_get_state = customView.findViewById(R.id.ll_get_state);
+
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
         TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
@@ -1947,6 +2378,31 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_electricity.setText("");
         tv_lock_status.setText("");
         tv_bad_reason.setText("损坏部位："+bad_reason);      //TODO 损坏部位没有使用后台该车最新的坏车原因
+
+        int layout_num = 2;
+        if(can_finish_order==1){
+            layout_num++;
+        }
+
+//        LinearLayout ll_pop_bike = null;
+//        if(layout_num<=3){
+//            ll_pop_bike_3.setVisibility(View.VISIBLE);
+//            ll_pop_bike_4.setVisibility(View.GONE);
+//
+//            ll_pop_bike = ll_pop_bike_3;
+//        }else if(layout_num==4){
+//            ll_pop_bike_3.setVisibility(View.GONE);
+//            ll_pop_bike_4.setVisibility(View.VISIBLE);
+//
+//            ll_pop_bike = ll_pop_bike_4;
+//        }
+
+        LogUtil.e("initmPopupWindowView===", layout_num+"==="+isSearch+"==="+type+"==="+can_finish_order+"==="+status);
+
+        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+        LinearLayout ll_get_state = customView.findViewById(R.id.ll_get_state);
+
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
         }else{
@@ -1959,7 +2415,11 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             ll_bad.setVisibility(View.GONE);
         }
 
-        LogUtil.e("initmPopup===", can_finish_order+"==="+status);
+        if(status==3 || status==4 || status==6){
+            ib.setImageResource(R.drawable.pop_bike_bad);
+        }else{
+            ib.setImageResource(R.drawable.pop_bike_good);
+        }
 
         ll_open_lock.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
@@ -1971,16 +2431,16 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         ll_query.setOnClickListener(this);
 
         // 获取截图的Bitmap
-        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
-        if (bitmap != null) {
-            // 将截屏Bitma放入ImageView
-            iv_popup_window_back.setImageBitmap(bitmap);
-            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
-            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
-        } else {
-            // 获取的Bitmap为null时，用半透明代替
-            iv_popup_window_back.setBackgroundColor(0x77000000);
-        }
+//        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+//        if (bitmap != null) {
+//            // 将截屏Bitma放入ImageView
+//            iv_popup_window_back.setImageBitmap(bitmap);
+//            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+//            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
+//        } else {
+//            // 获取的Bitmap为null时，用半透明代替
+//            iv_popup_window_back.setBackgroundColor(0x77000000);
+//        }
         // 打开弹窗
         UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
         // 创建PopupWindow宽度和高度
@@ -2082,12 +2542,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         // 获取自定义布局文件的视图
 //        View customView = getLayoutInflater().inflate(R.layout.pop_menu, null, false);
 
-        View customView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu2, null, false);
+        View customView = LayoutInflater.from(getContext()).inflate(R.layout.pop_menu_ebike, null, false);
 
         // 创建PopupWindow宽度和高度
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_win_bg);
         ImageView iv_popup_window_back =  customView.findViewById(R.id.popupWindow_back);
 
+        ImageView ib = customView.findViewById(R.id.ib);
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
         TextView tv_deviceuuid = customView.findViewById(R.id.tv_deviceuuid);
@@ -2096,13 +2557,17 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         TextView tv_electricity = customView.findViewById(R.id.tv_electricity);
         TextView tv_battery_name = customView.findViewById(R.id.tv_battery_name);
 
+        LinearLayout ll_pop_ebike_4 = customView.findViewById(R.id.ll_pop_ebike_4);
+        LinearLayout ll_pop_ebike_5 = customView.findViewById(R.id.ll_pop_ebike_5);
+        LinearLayout ll_pop_ebike_6 = customView.findViewById(R.id.ll_pop_ebike_6);
+        LinearLayout ll_pop_ebike_7 = customView.findViewById(R.id.ll_pop_ebike_7);
 //        lock_switcher = customView.findViewById(R.id.lock_switcher);
-        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
-        LinearLayout ll_close_lock = customView.findViewById(R.id.ll_close_lock);
-        LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
-        LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
-        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
-        LinearLayout ll_query = customView.findViewById(R.id.ll_query);
+//        LinearLayout ll_open_lock = customView.findViewById(R.id.ll_open_lock);
+//        LinearLayout ll_close_lock = customView.findViewById(R.id.ll_close_lock);
+//        LinearLayout ll_car_search = customView.findViewById(R.id.ll_car_search);
+//        LinearLayout ll_power_exchange = customView.findViewById(R.id.ll_power_exchange);
+//        LinearLayout ll_end_order = customView.findViewById(R.id.ll_end_order);
+//        LinearLayout ll_query = customView.findViewById(R.id.ll_query);
 
         LinearLayout ll_bad = customView.findViewById(R.id.ll_bad);
         TextView tv_bad_reason = customView.findViewById(R.id.tv_bad_reason);
@@ -2122,16 +2587,97 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         tv_battery_name.setText(battery_name);
         tv_bad_reason.setText("损坏部位："+bad_reason);
 
+
+        int layout_num = 5;
+//        if(isSearch){
+//            layout_num++;
+//        }
+
+        if("11".equals(type)){
+            layout_num++;
+        }
+
+        if(can_finish_order==1){
+            layout_num++;
+        }
+
+//        LinearLayout ll_query = null;
+        LinearLayout ll_pop_ebike = null;
+        if(layout_num==4){
+            ll_pop_ebike_4.setVisibility(View.VISIBLE);
+            ll_pop_ebike_5.setVisibility(View.GONE);
+            ll_pop_ebike_6.setVisibility(View.GONE);
+            ll_pop_ebike_7.setVisibility(View.GONE);
+
+            ll_pop_ebike = ll_pop_ebike_4;
+        }else if(layout_num==5){
+            ll_pop_ebike_4.setVisibility(View.GONE);
+            ll_pop_ebike_5.setVisibility(View.VISIBLE);
+            ll_pop_ebike_6.setVisibility(View.GONE);
+            ll_pop_ebike_7.setVisibility(View.GONE);
+
+            ll_pop_ebike = ll_pop_ebike_5;
+        }else if(layout_num==6){
+            ll_pop_ebike_4.setVisibility(View.GONE);
+            ll_pop_ebike_5.setVisibility(View.GONE);
+            ll_pop_ebike_6.setVisibility(View.VISIBLE);
+            ll_pop_ebike_7.setVisibility(View.GONE);
+
+            ll_pop_ebike = ll_pop_ebike_6;
+        }else if(layout_num==7){
+            ll_pop_ebike_4.setVisibility(View.GONE);
+            ll_pop_ebike_5.setVisibility(View.GONE);
+            ll_pop_ebike_6.setVisibility(View.GONE);
+            ll_pop_ebike_7.setVisibility(View.VISIBLE);
+
+            ll_pop_ebike = ll_pop_ebike_7;
+        }
+
+        LogUtil.e("initmPopupWindowView2===", layout_num+"==="+isSearch+"==="+type+"==="+can_finish_order+"==="+lock_status+"==="+status);
+
+        LinearLayout ll_open_lock = ll_pop_ebike.findViewById(R.id.ll_open_lock);
+        LinearLayout ll_close_lock = ll_pop_ebike.findViewById(R.id.ll_close_lock);
+        LinearLayout ll_car_search = ll_pop_ebike.findViewById(R.id.ll_car_search);
+        LinearLayout ll_power_exchange = ll_pop_ebike.findViewById(R.id.ll_power_exchange);
+        LinearLayout ll_power_query = ll_pop_ebike.findViewById(R.id.ll_power_query);
+        LinearLayout ll_end_order = ll_pop_ebike.findViewById(R.id.ll_end_order);
+        LinearLayout ll_query = ll_pop_ebike.findViewById(R.id.ll_query);
+
+//        if(isSearch){
+//            ll_car_search.setVisibility(View.VISIBLE);
+//        }else{
+//            ll_car_search.setVisibility(View.GONE);
+//        }
+
+        if("11".equals(type)){
+            ll_power_query.setVisibility(View.VISIBLE);
+        }else{
+            ll_power_query.setVisibility(View.GONE);
+        }
+
         if(can_finish_order==1){
             ll_end_order.setVisibility(View.VISIBLE);
         }else{
             ll_end_order.setVisibility(View.GONE);
         }
 
+
         if(status==3 || status==4){    //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
             ll_bad.setVisibility(View.VISIBLE);
         }else{
             ll_bad.setVisibility(View.GONE);
+        }
+
+        if(status==3 || status==4 || status==6){
+            ib.setImageResource(R.drawable.pop_ebike_bad);
+        }else{
+            if(electricity_status==0){
+                ib.setImageResource(R.drawable.pop_ebike_lowpower);
+            }else if(electricity_status==1){
+                ib.setImageResource(R.drawable.pop_ebike_good);
+            }else if(electricity_status==2){
+                ib.setImageResource(R.drawable.pop_ebike_exchange);
+            }
         }
 
 //        if(lock_status==2){
@@ -2141,16 +2687,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        }
 
         // 获取截图的Bitmap
-        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
-        if (bitmap != null) {
-            // 将截屏Bitma放入ImageView
-            iv_popup_window_back.setImageBitmap(bitmap);
-            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
-            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
-        } else {
-            // 获取的Bitmap为null时，用半透明代替
-            iv_popup_window_back.setBackgroundColor(0x77000000);
-        }
+//        Bitmap bitmap = UtilScreenCapture.getDrawing(activity);
+//        if (bitmap != null) {
+//            // 将截屏Bitma放入ImageView
+//            iv_popup_window_back.setImageBitmap(bitmap);
+//            // 将ImageView进行高斯模糊【25是最高模糊等级】【0x77000000是蒙上一层颜色，此参数可不填】
+////            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0xAA000000);
+//
+//            UtilBitmap.blurImageView(context, iv_popup_window_back, 10,0x00000000);
+//        } else {
+//            // 获取的Bitmap为null时，用半透明代替
+////            iv_popup_window_back.setBackgroundColor(0x77000000);
+//
+//            iv_popup_window_back.setBackgroundColor(0x00000000);
+//        }
         // 打开弹窗
         UtilAnim.showToUp(pop_win_bg, iv_popup_window_back);
         // 创建PopupWindow宽度和高度
@@ -2192,6 +2742,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        lock_switcher.setOnClickListener(this);
         ll_open_lock.setOnClickListener(this);
         ll_close_lock.setOnClickListener(this);
+        ll_power_query.setOnClickListener(this);
         ll_power_exchange.setOnClickListener(this);
         ll_car_search.setOnClickListener(this);
         ll_end_order.setOnClickListener(this);
@@ -2303,6 +2854,56 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             Toast.makeText(context,"请先登录账号", Toast.LENGTH_SHORT).show();
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
+//            if("11".equals(type)){
+//                if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//                    ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+//                    popupwindow.dismiss();
+//                }
+//                //蓝牙锁
+//                BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+//
+//                mBluetoothAdapter = bluetoothManager.getAdapter();
+//
+//                if (mBluetoothAdapter == null) {
+//                    ToastUtil.showMessageApp(context, "获取蓝牙失败");
+//                    popupwindow.dismiss();
+//                    return;
+//                }
+//                if (!mBluetoothAdapter.isEnabled()) {
+//                    isPermission = false;
+//                    closeLoadingDialog2();
+//                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                    startActivityForResult(enableBtIntent, 188);
+//                } else {
+//                    LogUtil.e("batteryBle_unlock===11", TbitBle.hasInitialized() + "===");
+//
+//                    onStartCommon("正在提交");
+//
+//                    if(!TbitBle.hasInitialized()){
+//                        TbitBle.initialize(context, new SecretProtocolAdapter());
+//                    }else{
+//                        TbitBle.disConnect();
+//                    }
+//
+//                    LogUtil.e("batteryBle_unlock===11_1", TbitBle.hasInitialized() + "===" + TbitBle.getBleConnectionState());
+//
+//                    tbtble_connect_battery();
+//
+////                                            if(TbitBle.getBleConnectionState()==0){
+////                                                tbtble_connect_battery();
+////
+////                                                isConnect = false;
+////
+////                                            }else{
+////                                                batteryBle_unlock();
+////                                            }
+//
+//                }
+//            }else{
+//                closeLoadingDialog();
+//            }
+
+
 //            RequestParams params = new RequestParams();
 //            params.put("number", codenum);
             HttpHelper.post(context, Urls.battery_unlock+codenum, null, new TextHttpResponseHandler() {
@@ -2324,24 +2925,20 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                 LogUtil.e("battery_unlock===1", type+"==="+responseString);
 
-                                if(result.getStatus_code()==200){
-//                                  m_myHandler.sendEmptyMessage(2);
-                                    if(curMarker!=null){
-                                        if("4".equals(type)){
-                                            curMarker.setIcon(bikeDescripter_blue);
-                                        }else if("7".equals(type)){
-                                            curMarker.setIcon(bikeDescripter_xa_blue);
-                                        }else if("8".equals(type)){
-                                            curMarker.setIcon(bikeDescripter_tbtd_blue);
-                                        }else if("11".equals(type)){
-                                            curMarker.setIcon(bikeDescripter_tbtf_blue);
-                                        }
+                                BatteryUnlockBean bean = JSON.parseObject(result.getData(), BatteryUnlockBean.class);
+
+                                int code = bean.getCode();
+                                int car_status = bean.getCar_status();
+
+//                                状态码 1、电池锁打开成功 2、电池锁打开失败 3、换电次数超2次 4、电量超过换电标准 5、查询队列连接失败
+                                if(code==1){
+                                    if(curMarker!=null && car_status==1){
+                                        curMarker.setIcon(ebikeDescripter_exchange);
                                     }
 
                                     closeLoadingDialog();
-                                    Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
-                                }else if(result.getStatus_code()==503){
-
+                                    Toast.makeText(context, bean.getMessage(), Toast.LENGTH_SHORT).show();
+                                }else if(code==2){
                                     if("11".equals(type)){
                                         if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                                             ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
@@ -2363,48 +2960,120 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                                             startActivityForResult(enableBtIntent, 188);
                                         } else {
-//                                            if (loadingDialog != null && !loadingDialog.isShowing()) {
-//                                                loadingDialog.setTitle("正在唤醒车锁");
-//                                                loadingDialog.show();
-//                                            }
-
                                             LogUtil.e("batteryBle_unlock===11", TbitBle.hasInitialized() + "===");
 
                                             if(!TbitBle.hasInitialized()){
                                                 TbitBle.initialize(context, new SecretProtocolAdapter());
-                                            }
-
-                                            if(TbitBle.getBleConnectionState()==0){
-                                                tbtble_connect_battery();
-
-                                                isConnect = false;
-//                                                m_myHandler.postDelayed(new Runnable() {
-//                                                    @Override
-//                                                    public void run() {
-//                                                        if (!isConnect){
-////                                                          closeLoadingDialog();
-//
-//                                                            LogUtil.e("batteryBle_unlock===11==timeout", isConnect + "==="+activity.isFinishing());
-//
-////                                                          battery_unlock();
-//
-//                                                            ToastUtil.showMessageApp(context, "蓝牙连接失败");
-//                                                        }
-//                                                    }
-//                                                }, timeout);
                                             }else{
-                                                batteryBle_unlock();
+                                                TbitBle.disConnect();
                                             }
+
+                                            LogUtil.e("batteryBle_unlock===11_1", TbitBle.hasInitialized() + "===" + TbitBle.getBleConnectionState());
+
+                                            tbtble_connect_battery();
+
+//                                            if(TbitBle.getBleConnectionState()==0){
+//                                                tbtble_connect_battery();
+//
+//                                                isConnect = false;
+//
+//                                            }else{
+//                                                batteryBle_unlock();
+//                                            }
 
                                         }
-                                    }else {
+                                    }else{
                                         closeLoadingDialog();
-                                        Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, bean.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
-
+                                }else if(code==3){  //拨打客服电话
+                                    closeLoadingDialog();
+                                    customBuilder.setTitle("温馨提示").setMessage(""+bean.getMessage());
+                                    customDialog = customBuilder.create();
+                                    customDialog.show();
+                                }else if(code==4){  //知道了
+                                    closeLoadingDialog();
+                                    customBuilder2.setTitle("温馨提示").setMessage(""+bean.getMessage());
+                                    customDialog2 = customBuilder2.create();
+                                    customDialog2.show();
                                 }else {
                                     closeLoadingDialog();
-                                    Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, bean.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+
+
+                            } catch (Exception e) {
+                                closeLoadingDialog();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+    }
+
+    void battery_ble_authority() {
+
+        LogUtil.e("battery_ble_authority===", codenum+"==="+tbt_battery);
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号", Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+            params.put("voltage", tbt_battery);
+            HttpHelper.get(context, Urls.battery_ble_authority+codenum, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+//                    onStartCommon("正在提交");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                LogUtil.e("battery_ble_authority===1", type+"==="+responseString);
+
+                                BatteryUnlockBean bean = JSON.parseObject(result.getData(), BatteryUnlockBean.class);
+
+                                int code = bean.getCode();
+
+//                                状态码 1、权限通过 2、坏车只需打开电池锁 3、换电次数超2次 4、电量超过换电标准
+                                if(code==1){
+                                    batteryBle_unlock();
+
+                                }else if(code==2){
+                                    batteryBle_unlock_no();
+
+                                }else if(code==3){  //拨打客服电话
+                                    closeLoadingDialog();
+                                    TbitBle.disConnect();
+
+                                    customBuilder.setTitle("温馨提示").setMessage(""+bean.getMessage());
+                                    customDialog = customBuilder.create();
+                                    customDialog.show();
+                                }else if(code==4){  //知道了
+                                    closeLoadingDialog();
+                                    TbitBle.disConnect();
+
+                                    customBuilder2.setTitle("温馨提示").setMessage(""+bean.getMessage());
+                                    customDialog2 = customBuilder2.create();
+                                    customDialog2.show();
+                                }else {
+                                    closeLoadingDialog();
+                                    TbitBle.disConnect();
+
+                                    Toast.makeText(context, bean.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
 
                             } catch (Exception e) {
@@ -2418,6 +3087,198 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
+    void power_query(){
+        if("11".equals(type)){
+            if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                ToastUtil.showMessageApp(context, "您的设备不支持蓝牙4.0");
+                popupwindow.dismiss();
+            }
+            //蓝牙锁
+            BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+
+            mBluetoothAdapter = bluetoothManager.getAdapter();
+
+            if (mBluetoothAdapter == null) {
+                ToastUtil.showMessageApp(context, "获取蓝牙失败");
+                popupwindow.dismiss();
+                return;
+            }
+            if (!mBluetoothAdapter.isEnabled()) {
+                isPermission = false;
+                closeLoadingDialog2();
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 188);
+            } else {
+//                                            if (loadingDialog != null && !loadingDialog.isShowing()) {
+//                                                loadingDialog.setTitle("正在唤醒车锁");
+//                                                loadingDialog.show();
+//                                            }
+
+                if (loadingDialog != null && !loadingDialog.isShowing()) {
+                    loadingDialog.setTitle("正在加载");
+                    loadingDialog.show();
+                }
+
+                LogUtil.e("power_query===11", TbitBle.hasInitialized() + "===");
+
+                if(!TbitBle.hasInitialized()){
+                    TbitBle.initialize(context, new SecretProtocolAdapter());
+                }else{
+                    TbitBle.disConnect();
+                }
+
+                LogUtil.e("power_query===11_1", TbitBle.hasInitialized() + "===" + TbitBle.getBleConnectionState());
+
+                tbtble_connect_power_query();
+
+//                m_myHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                    }
+//                }, 1000);
+
+
+//                if(TbitBle.getBleConnectionState()==0){
+//                    tbtble_connect_power_query();
+//                }else{
+//                    getBlePower();
+//                }
+
+            }
+        }
+    }
+
+    private void tbtble_connect_power_query() {
+        LogUtil.e("tbtble_connect_power_query===", deviceuuid+"==="+bleid);
+
+        TbitBle.connect(deviceuuid, bleid, new ResultCallback() {
+            @Override
+            public void onResult(final int resultCode) {
+
+                m_myHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try{
+                            LogUtil.e("tbtble_connect_power_query===1", resultCode+"==="+isOpenLock+"==="+isEndBtn+"==="+isAgain);
+
+                            if(resultCode==0){
+                                isConnect = true;
+
+                            }else{
+
+                                isConnect = false;
+                                LogUtil.e("tbtble_connect_power_query_f", "==="+resultCode);
+
+                                closeLoadingDialog();
+                                TbitBle.disConnect();
+
+                                ToastUtil.showMessageApp(context, "蓝牙连接失败");
+//                                battery_unlock();
+                            }
+                        }catch(Exception e){
+                            closeLoadingDialog();
+                            LogUtil.e("tbtble_connect_power_query===e", "==="+e);
+                        }
+
+                    }
+                });
+
+
+
+            }
+        }, new StateCallback() {
+            @Override
+            public void onStateUpdated(BikeState bikeState) {
+
+                // 连接成功状态更新
+                // 通过车辆状态获取设备特定信息
+
+                LogUtil.e("tbtble_connect_power_query=onStateU", bikeState+"===");
+
+                bike_state = bikeState;
+//                W206State w206State = (W206State) TbitBle.getConfig().getResolver().resolveCustomState(bikeState);
+
+                tbt_battery = bikeState.getBattery();
+                LogUtil.e("tbtble_connect_power_query=onStateU_1", bikeState+"==="+bikeState.getLocation()+"==="+tbt_battery);
+
+                TbitBle.disConnect();
+
+                demand_power();
+            }
+        });
+    }
+
+    BikeState bike_state;
+    void getBlePower() {
+//        W206State w206State = (W206State) TbitBle.getConfig().getResolver().resolveCustomState(bike_state);
+
+        tbt_battery = bike_state.getBattery();
+        LogUtil.e("getBlePower===", bike_state+"==="+bike_state.getLocation()+"==="+tbt_battery);
+
+        demand_power();
+    }
+
+    void demand_power() {
+
+        LogUtil.e("demand_power===", codenum+"==="+tbt_battery);
+
+        String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+        if (access_token == null || "".equals(access_token)){
+            Toast.makeText(context,"请先登录账号", Toast.LENGTH_SHORT).show();
+            UIHelper.goToAct(context, LoginActivity.class);
+        }else {
+            RequestParams params = new RequestParams();
+//            params.put("car_number", codenum);
+            params.put("voltage", tbt_battery);
+            HttpHelper.post(context, Urls.demand_power+codenum, params, new TextHttpResponseHandler() {
+                @Override
+                public void onStart() {
+//                    onStartCommon("正在提交");
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    onFailureCommon(throwable.toString());
+                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                    m_myHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
+
+                                LogUtil.e("demand_power===1", type+"==="+responseString);
+
+                                if(result.getStatus_code()==200){
+                                    ElectricityBean bean = JSON.parseObject(result.getData(), ElectricityBean.class);
+
+                                    LogUtil.e("demand_power===2", type+"==="+bean.getElectricity());
+
+                                    tv_electricity.setText(""+bean.getElectricity());
+
+
+                                    customBuilder2.setTitle("温馨提示").setMessage(""+result.getMessage());
+                                    customDialog2 = customBuilder2.create();
+                                    customDialog2.show();
+                                }else{
+                                    Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                            } catch (Exception e) {
+                            }
+                            if (loadingDialog != null && loadingDialog.isShowing()){
+                                loadingDialog.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+    }
+
+
     void battery_report() {
 
         LogUtil.e("battery_report===", codenum+"==="+tbt_battery);
@@ -2428,9 +3289,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-            params.put("car_number", codenum);
+//            params.put("car_number", codenum);
             params.put("voltage", tbt_battery);
-            HttpHelper.post(context, Urls.battery_report, params, new TextHttpResponseHandler() {
+            HttpHelper.post(context, Urls.battery_report+codenum, params, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
                     onStartCommon("正在提交");
@@ -2450,6 +3311,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 LogUtil.e("battery_report===1", type+"==="+responseString);
 
                                 if(result.getStatus_code()==200){
+                                    if(curMarker!=null){
+                                        curMarker.setIcon(ebikeDescripter_exchange);
+                                    }
+
                                     ToastUtil.showMessageApp(context,"打开电池锁成功");
                                 }else{
                                     Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
@@ -3620,7 +4485,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                                        }
 //                                    }
 
-//                                            图标级别 单车：0、好车 2、维护中    助力车：1、绿色 2、维护中 3、换电中 4、欠压
+//                                 图标级别 单车：0、好车 2、维护中    助力车：1、绿色 2、维护中 3、换电中 4、欠压
                                     if(!"".equals(bean.getLatitude()) && !"".equals(bean.getLongitude())){
                                         if(carmodel_id==1){
 
@@ -3881,10 +4746,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     }
 
-
-
-
-
     private void setUpMap() {
         aMap.setLocationSource(this);// 设置定位监听
         aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
@@ -3892,11 +4753,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
         aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
     }
-
-
-
-
-
 
     /**
      * 方法必须重写
@@ -4069,6 +4925,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         String access_token = SharedPreferencesUrls.getInstance().getString("access_token","");
+
+        LogUtil.e("onClick===", "==="+v.getId()+"==="+R.id.ll_query);
+
         switch (v.getId()){
 
             case R.id.mainUI_msg:
@@ -4653,6 +5512,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                 break;
 
             case R.id.ll_query:
+                LogUtil.e("ll_query===", carmodel_id + "==="+ codenum);
+
 //                Intent intent = new Intent(context, MerchantAddressMapActivity.class);
                 Intent intent = new Intent(context, QueryActivity.class);
                 intent.putExtra("carmodel_id", carmodel_id);
@@ -4686,16 +5547,21 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 LogUtil.e("power_exchange===", deviceuuid + "==="+ bleid + "==="+ m_nowMac);
 
-//                        unlock();
+//              unlock();
 
                 battery_unlock();
+                break;
+
+            case R.id.ll_power_query:
+
+                LogUtil.e("power_query===", deviceuuid + "==="+ bleid + "==="+ m_nowMac);
+
+                power_query();
                 break;
 
             case R.id.mainUI_conditionLayout:
 
                 LogUtil.e("_lowPowerLayout===", "==="+popupwindowCond);
-
-
 
                 if(popupwindowCond==null || !popupwindowCond.isShowing()){
                     initmPopupWindowViewCond();
@@ -5151,7 +6017,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             if(resultCode==0){
                                 isConnect = true;
 
-                                batteryBle_unlock();
+
+//                                batteryBle_unlock();
 
                             }else{
 
@@ -5159,6 +6026,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 LogUtil.e("tbtble_connect_battery_f", "==="+resultCode);
 
                                 closeLoadingDialog();
+                                TbitBle.disConnect();
+
                                 ToastUtil.showMessageApp(context, "蓝牙连接失败");
 //                                battery_unlock();
                             }
@@ -5183,6 +6052,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                 tbt_battery = bikeState.getBattery();
                 LogUtil.e("tbtble_connect_battery=onStateU", bikeState.getLocation()+"==="+tbt_battery);
+
+//                batteryBle_unlock();
+                battery_ble_authority();
             }
         });
     }
@@ -5334,6 +6206,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                     if(resultCode==0){
 
+
                                         closeLoadingDialog();
 
                                         battery_report();
@@ -5345,6 +6218,59 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                         closeLoadingDialog();
                                         ToastUtil.showMessageApp(context,"打开电池锁失败");
                                     }
+
+                                    TbitBle.disConnect();
+                                }catch(Exception e){
+                                    closeLoadingDialog();
+                                    LogUtil.e("batteryBle_unlock_e", "==="+e);
+                                }
+
+                            }
+                        });
+
+
+                    }
+                }, new PacketCallback() {
+                    @Override
+                    public void onPacketReceived(Packet packet) {
+                        // 收到packet回复
+                    }
+                });
+    }
+
+    private void batteryBle_unlock_no(){
+        TbitBle.commonCommand((byte)0x03, (byte)0x05, new Byte[]{0x01},
+                new ResultCallback() {
+                    @Override
+                    public void onResult(final int resultCode) {
+                        // 发送状态回复
+
+                        m_myHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                try{
+                                    LogUtil.e("batteryBle_unlock", isAgain+"==="+resultCode);
+
+                                    if(resultCode==0){
+//                                        if(curMarker!=null){
+//                                            curMarker.setIcon(ebikeDescripter_exchange);
+//                                        }
+
+                                        closeLoadingDialog();
+                                        ToastUtil.showMessageApp(context,"打开电池锁成功");
+
+//                                        battery_report();
+
+                                    }else{
+                                        LogUtil.e("batteryBle_unlock_f", "==="+resultCode);
+//                                        battery_unlock();
+
+                                        closeLoadingDialog();
+                                        ToastUtil.showMessageApp(context,"打开电池锁失败");
+                                    }
+
+                                    TbitBle.disConnect();
                                 }catch(Exception e){
                                     closeLoadingDialog();
                                     LogUtil.e("batteryBle_unlock_e", "==="+e);
@@ -7146,6 +8072,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                         if(!TbitBle.hasInitialized()){
                                             TbitBle.initialize(context, new SecretProtocolAdapter());
                                         }
+//                                        else{
+//                                            TbitBle.disConnect();
+//                                        }
 
                                         if(TbitBle.getBleConnectionState()==0){
                                             tbtble_connect();
@@ -7267,6 +8196,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                         if(!TbitBle.hasInitialized()){
                                             TbitBle.initialize(context, new SecretProtocolAdapter());
                                         }
+//                                        else{
+//                                            TbitBle.disConnect();
+//                                        }
 
                                         LogUtil.e("open===11_2", TbitBle.getBleConnectionState() + "===");
 
@@ -7523,7 +8455,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
     public void onDisConnect(BluetoothDevice bluetoothDevice) {
         LogUtil.e("mf===Xiaoan", "DisConnect==="+isConnect);
 
-
         if(isConnect){
             isConnect = false;
 
@@ -7536,8 +8467,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //        }
 
         isConnect = false;
-
-
     }
 
     public void xiaoanOpen_blue() {
@@ -7900,6 +8829,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                             bleid = data.getStringExtra("bleid");
                             deviceuuid = data.getStringExtra("deviceuuid");
                             electricity = data.getStringExtra("electricity");
+                            electricity_status = data.getIntExtra("electricity_status", 0);
                             carmodel_name = data.getStringExtra("carmodel_name");
                             lock_status = data.getIntExtra("lock_status", 0);
                             status = data.getIntExtra("status", 0);
@@ -7913,6 +8843,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                             initParams();
 
+                            isMapPop = false;
                             if(carmodel_id==1){
                                 initmPopupRentWindowView();
                             }else{

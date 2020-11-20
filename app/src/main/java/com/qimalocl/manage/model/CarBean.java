@@ -16,6 +16,7 @@ public class CarBean {
     private String lock_password;    //车锁密碼
     private String lock_secretkey;    //车锁秘钥
     private String electricity;    //电量
+    private int electricity_status;    //电量状态 1、正常 0、欠压
     private int carmodel_id;  //车型ID
     private String carmodel_name;    //车型名称
     private int status;  //车辆状态 0待投放 1正常 2锁定 3确认为坏车 4坏车已回收 5调运中 6报废
@@ -109,6 +110,14 @@ public class CarBean {
 
     public void setElectricity(String electricity) {
         this.electricity = electricity;
+    }
+
+    public int getElectricity_status() {
+        return electricity_status;
+    }
+
+    public void setElectricity_status(int electricity_status) {
+        this.electricity_status = electricity_status;
     }
 
     public int getCarmodel_id() {

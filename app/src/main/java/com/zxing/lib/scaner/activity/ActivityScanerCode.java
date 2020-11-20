@@ -155,6 +155,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 	private String m_nowMac = "";
 	private String bleid;
 	private String electricity = "";
+	private int electricity_status;
 	private int carmodel_id;
 	private String carmodel_name = "";
     private int status;
@@ -1515,6 +1516,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									m_nowMac = bean.getLock_mac();
 									bleid = bean.getLock_secretkey();
 									electricity = bean.getElectricity();
+									electricity_status = bean.getElectricity_status();
 									carmodel_id = bean.getCarmodel_id();
 									carmodel_name = bean.getCarmodel_name();
 									status = bean.getStatus();
@@ -1583,6 +1585,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 											intent.putExtra("bleid", bleid);
 											intent.putExtra("deviceuuid", deviceuuid);
 											intent.putExtra("electricity", electricity);
+											intent.putExtra("electricity_status", electricity_status);
 											intent.putExtra("carmodel_name", carmodel_name);
 											intent.putExtra("lock_status", lock_status);
 											intent.putExtra("status", status);
@@ -1710,6 +1713,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									intent.putExtra("bleid", bleid);
 									intent.putExtra("deviceuuid", deviceuuid);
 									intent.putExtra("electricity", electricity);
+									intent.putExtra("electricity_status", electricity_status);
 									intent.putExtra("carmodel_name", carmodel_name);
 									intent.putExtra("lock_status", lock_status);
 									intent.putExtra("status", status);
@@ -2011,6 +2015,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 					intent.putExtra("bleid", bleid);
 					intent.putExtra("deviceuuid", deviceuuid);
 					intent.putExtra("electricity", electricity);
+					intent.putExtra("electricity_status", electricity_status);
 					intent.putExtra("carmodel_name", carmodel_name);
                     intent.putExtra("lock_status", lock_status);
                     intent.putExtra("status", status);
@@ -2058,6 +2063,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				intent.putExtra("bleid", bleid);
 				intent.putExtra("deviceuuid", deviceuuid);
 				intent.putExtra("electricity", electricity);
+				intent.putExtra("electricity_status", electricity_status);
 				intent.putExtra("carmodel_name", carmodel_name);
                 intent.putExtra("lock_status", lock_status);
                 intent.putExtra("status", status);

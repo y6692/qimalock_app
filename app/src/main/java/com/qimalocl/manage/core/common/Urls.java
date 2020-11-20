@@ -17,6 +17,7 @@ public class Urls {
 //	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
 
 
+
 	//附近的车辆接口
 	public static String car_nearby = host2 + "/car/";
 	//电子围栏接口
@@ -69,10 +70,18 @@ public class Urls {
 	public static String rent = host2 + "/car/lp/rent";
 	//关闭电池锁接口（小安）
 	public static String battery_lock = host2 + "/car/battery_lock/";
-	//打开电池锁（换电）接口
-	public static String battery_unlock = host2 + "/car/battery_unlock/";
+	//换电(坏车时仅打开电池锁)接口
+//	public static String battery_unlock = host2 + "/car/battery_unlock/";
+	public static String battery_unlock = host2 + "/car/open_battery_lock/";
 	//打开电池锁换电上报接口
-	public static String battery_report = host2 + "/car/battery_report";
+//	public static String battery_report = host2 + "/car/battery_report";
+	public static String battery_report = host2 + "/carbatteryaction/battery_report/";
+	//蓝牙换电权限接口
+	public static String battery_ble_authority = host2 + "/carbatteryaction/authority/";
+
+	//蓝牙 查询电量&检测换电
+	public static String demand_power = host2 + "/carbatteryaction/demand_power/";
+
 	//寻车接口
 	public static String search = host2 + "/car/search/";
 	//设为回收 修好 报废接口
@@ -147,6 +156,8 @@ public class Urls {
 	//督导、投资人管辖学校 对应的调度员已修好数量
 	public static String carbadaction_dispatcher_statistics = host2 + "/carbadaction/dispatcher_statistics";
 
+	//人工客服接口
+	public static String phones = host2 + "/service_phone";
 
 	/**上传头像*/
 	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";

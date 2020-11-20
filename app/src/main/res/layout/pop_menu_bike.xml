@@ -20,8 +20,6 @@
         android:orientation="vertical"
         android:layout_alignParentBottom="true">
 
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="57dp"
@@ -39,10 +37,6 @@
                 />
 
         </LinearLayout>
-
-
-
-
 
         <RelativeLayout
             android:visibility="gone"
@@ -77,23 +71,13 @@
             android:orientation="vertical"
             android:background="@color/white">
 
-
+            <include
+                android:id="@+id/ll_pop_title_bike_3"
+                layout="@layout/ui_pop_title_bike_3"/>
 
             <include
-                android:id="@+id/ll_pop_title_bike_5"
-                layout="@layout/ui_pop_title_bike_5"/>
-
-            <include
-                android:visibility="gone"
                 android:id="@+id/ll_pop_bike_3"
                 layout="@layout/ui_pop_bike_3"/>
-
-            <include
-                android:visibility="gone"
-                android:id="@+id/ll_pop_bike_4"
-                layout="@layout/ui_pop_bike_4"/>
-
-
 
             <LinearLayout
                 android:id="@+id/ll_bad"
@@ -217,47 +201,8 @@
 
             </LinearLayout>
 
-
-            <LinearLayout
-                android:id="@+id/ll_bad2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:orientation="vertical">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:background="#4CEA5359"
-                    />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8.5dp"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:id="@+id/tv_bad_reason2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:text="损坏部位：abc1234324sadasdasdasdasasda21321321321312321312312312321312312312312"
-                        android:textSize="10sp"
-                        android:textColor="#665E5E"
-                        android:gravity="center_vertical"
-                        android:singleLine="false"/>
-
-                </RelativeLayout>
-
-
-            </LinearLayout>
-
-
         </LinearLayout>
+
 
 
 
