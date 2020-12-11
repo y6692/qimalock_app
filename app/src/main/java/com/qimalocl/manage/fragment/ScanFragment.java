@@ -2137,7 +2137,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_rent_bg);
         ImageView iv_popup_window_back = customView.findViewById(R.id.popupWindow_back);
 
-        ImageView ib = customView.findViewById(R.id.ib);
+        ib = customView.findViewById(R.id.ib);
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
         TextView tv_deviceuuid = customView.findViewById(R.id.tv_deviceuuid);
@@ -2537,6 +2537,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     }
 
+    ImageView ib;
     public void initmPopupWindowView2(){
 
         // 获取自定义布局文件的视图
@@ -2548,7 +2549,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         RelativeLayout pop_win_bg = customView.findViewById(R.id.pop_win_bg);
         ImageView iv_popup_window_back =  customView.findViewById(R.id.popupWindow_back);
 
-        ImageView ib = customView.findViewById(R.id.ib);
+        ib = customView.findViewById(R.id.ib);
         TextView tv_number = customView.findViewById(R.id.tv_number);
         TextView tv_lock_title = customView.findViewById(R.id.tv_lock_title);
         TextView tv_deviceuuid = customView.findViewById(R.id.tv_deviceuuid);
@@ -2845,6 +2846,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
+    int car_status;
     void battery_unlock() {
 
         LogUtil.e("battery_unlock===", "==="+codenum);
@@ -2928,12 +2930,13 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 BatteryUnlockBean bean = JSON.parseObject(result.getData(), BatteryUnlockBean.class);
 
                                 int code = bean.getCode();
-                                int car_status = bean.getCar_status();
+                                car_status = bean.getCar_status();
 
 //                                状态码 1、电池锁打开成功 2、电池锁打开失败 3、换电次数超2次 4、电量超过换电标准 5、查询队列连接失败
                                 if(code==1){
                                     if(curMarker!=null && car_status==1){
                                         curMarker.setIcon(ebikeDescripter_exchange);
+                                        ib.setImageResource(R.drawable.pop_ebike_exchange);
                                     }
 
                                     closeLoadingDialog();
@@ -3311,8 +3314,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 LogUtil.e("battery_report===1", type+"==="+responseString);
 
                                 if(result.getStatus_code()==200){
-                                    if(curMarker!=null){
+                                    if(curMarker!=null && car_status==1){
                                         curMarker.setIcon(ebikeDescripter_exchange);
+                                        ib.setImageResource(R.drawable.pop_ebike_exchange);
                                     }
 
                                     ToastUtil.showMessageApp(context,"打开电池锁成功");
