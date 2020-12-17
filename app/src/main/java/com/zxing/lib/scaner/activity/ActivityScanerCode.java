@@ -109,7 +109,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 二维码扫描
  */
 @SuppressLint("NewApi")
-public class ActivityScanerCode extends SwipeBackActivity implements View.OnClickListener{
+public class ActivityScanerCode extends SwipeBackActivity implements View.OnClickListener, TextHttpResponseHandler.ConnectLinstener {
 
 	private Context context;
 	private Activity mActivity = this;
@@ -1474,7 +1474,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		}else {
 //			RequestParams params = new RequestParams();
 //			params.put("tokencode",result);
-			HttpHelper.get(ActivityScanerCode.this, Urls.car + URLEncoder.encode(result), new TextHttpResponseHandler() {
+			HttpHelper.get(ActivityScanerCode.this, Urls.car + URLEncoder.encode(result), new TextHttpResponseHandler(this) {
 				@Override
 				public void onStart() {
 					onStartCommon("正在提交");
@@ -1613,18 +1613,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									LogUtil.e("lockinfo===error",	result.getStatus_code()+"==="+result.getMessage());
 
 									if(result.getStatus_code()==407){
-										showNoticeDialog();
 
-										m_myHandler.postDelayed(new Runnable() {
-											@Override
-											public void run() {
-												if (noticeDialog != null && noticeDialog.isShowing()){
-													noticeDialog.dismiss();
-												}
-
-												closeBtnBikeNum();
-											}
-										}, 3000);
 									}else{
 										Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
 										closeBtnBikeNum();
@@ -1655,6 +1644,26 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 				}
 			});
 		}
+	}
+
+
+	@Override
+	public void onReceiveData() {
+		Log.e("onReceiveData===", "===");
+
+		showNoticeDialog();
+
+		m_myHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (noticeDialog != null && noticeDialog.isShowing()){
+					noticeDialog.dismiss();
+				}
+
+				closeBtnBikeNum();
+			}
+		}, 3000);
+
 	}
 
 	Dialog noticeDialog;
@@ -2312,4 +2321,6 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		}
 		return super.onKeyDown(keyCode, event);
 	}
+
+
 }

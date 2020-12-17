@@ -215,7 +215,7 @@ import static com.sofi.blelocker.library.utils.BluetoothUtils.unregisterReceiver
 @SuppressLint("NewApi")
 public class ScanFragment extends BaseFragment implements View.OnClickListener, LocationSource
         , BleStateChangeListener, ScanResultCallback
-        , AMapLocationListener,AMap.OnCameraChangeListener,AMap.OnMapTouchListener{
+        , AMapLocationListener,AMap.OnCameraChangeListener,AMap.OnMapTouchListener {
 
     Unbinder unbinder;
 
@@ -3536,6 +3536,10 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         if (access_token != null && !"".equals(access_token)){
             LogUtil.e("sf===user0", "==="+school_id);
 
+
+
+
+
             HttpHelper.get(context, Urls.user, new TextHttpResponseHandler() {
                 @Override
                 public void onStart() {
@@ -3876,6 +3880,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
             UIHelper.goToAct(context,LoginActivity.class);
         }
     }
+
+
 
     private void carbatteryaction_lowpower2(){
         if(!isLowpowerLayout) return;

@@ -78,12 +78,33 @@ import static com.qimalocl.manage.base.BaseApplication.school_id;
 public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
     private static final String LOG_TAG = "TextHttpResponseHandler";
 
+    private ConnectLinstener mListener;
+
+//    public abstract void setOnConnectLinstener(ConnectLinstener linstener) {
+//        this.mListener = linstener;
+//    }
+
+    // 数据接收回调接口
+    public interface ConnectLinstener {
+        void onReceiveData();
+    }
+
     /**
      * Creates new instance with default UTF-8 encoding
      */
     public TextHttpResponseHandler() {
         this(DEFAULT_CHARSET);
     }
+
+    public TextHttpResponseHandler(ConnectLinstener linstener) {
+
+        this(DEFAULT_CHARSET);
+        this.mListener = linstener;
+    }
+
+//    public TextHttpResponseHandler() {
+//        super();
+//    }
 
     /**
      * Creates new instance with given string encoding
@@ -93,6 +114,7 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
     public TextHttpResponseHandler(String encoding) {
         super();
         setCharset(encoding);
+
     }
 
     /**
@@ -179,16 +201,18 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 
                         onSuccess(statusCode, headers, responseString);
 
-                    }
-//                    else if(result.getStatus_code()==407){
-//                        LogUtil.e("onSuccess===407", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
-//
+                    }else if(result.getStatus_code()==407){
+                        LogUtil.e("onSuccess===407", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
+
 //                        showMessage();
-//
-//                        onSuccess(statusCode, headers, responseString);
-//
-//                    }
-                    else{
+
+                        mListener.onReceiveData();
+
+                        onSuccess(statusCode, headers, responseString);
+
+
+
+                    }else{
 
                         LogUtil.e("onSuccess===4", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
 
