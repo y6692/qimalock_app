@@ -78,6 +78,7 @@ import com.qimalocl.manage.core.common.AppManager;
 import com.qimalocl.manage.core.common.HttpHelper;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
 import com.qimalocl.manage.core.common.UIHelper;
+import com.qimalocl.manage.core.common.UpdateManager;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
@@ -189,6 +190,8 @@ public class MainActivity extends BaseActivity{
 
         initData();
         initView();
+
+        UpdateManager.getUpdateManager().setType(0).checkAppUpdate(this, context, 1, null);
 
 //        initLocation();
 //        AppApplication.getApp().scan();

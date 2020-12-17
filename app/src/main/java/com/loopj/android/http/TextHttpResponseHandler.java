@@ -22,18 +22,25 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.http.Header;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.qimalocl.manage.R;
 import com.qimalocl.manage.activity.LoginActivity;
 import com.qimalocl.manage.base.BaseApplication;
 import com.qimalocl.manage.core.common.SharedPreferencesUrls;
+import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
+import com.zxing.lib.scaner.activity.ActivityScanerCode;
 
 import static com.qimalocl.manage.base.BaseApplication.school_id;
 
@@ -107,6 +114,13 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
      */
     public abstract void onSuccess(int statusCode, Header[] headers, String responseString);
 
+//    public abstract void showMessage();
+
+//    @Override
+//    public void showMessage2(){
+//
+//    };
+
     private Handler m_myHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message mes) {
@@ -165,7 +179,16 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 
                         onSuccess(statusCode, headers, responseString);
 
-                    }else{
+                    }
+//                    else if(result.getStatus_code()==407){
+//                        LogUtil.e("onSuccess===407", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
+//
+//                        showMessage();
+//
+//                        onSuccess(statusCode, headers, responseString);
+//
+//                    }
+                    else{
 
                         LogUtil.e("onSuccess===4", BaseApplication.context+"==="+responseString+"==="+result.getStatus_code());
 
@@ -191,6 +214,8 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 //			e.printStackTrace();
 //		}
     }
+
+
 
     @Override
     public void onFailure(int statusCode, Header[] headers, byte[] responseBytes, Throwable throwable) {

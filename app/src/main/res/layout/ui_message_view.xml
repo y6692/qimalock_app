@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+
+    android:background="@drawable/message_bg"
+    >
+
+    <RelativeLayout
+        android:layout_width="250dp"
+        android:layout_height="333dp"
+        android:layout_gravity="center"
+        >
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:orientation="vertical"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="39dp"
+            android:gravity="center_horizontal"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            >
+
+            <TextView
+                android:id="@+id/ui_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="消息提醒"
+                android:textColor="#FDFAF9"
+                android:textSize="36sp"
+                android:layout_centerHorizontal="true"
+                />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/ui_update_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:text="V1.8.0"
+                android:textSize="10sp"
+                />
+
+
+            <TextView
+                android:visibility="gone"
+                style="@style/DialogText"
+                android:id="@+id/ui_update_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginTop="27dp"
+                android:lineSpacingExtra="5dp"
+                android:singleLine="false"
+                android:text="2222"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                />
+
+        </LinearLayout>
+
+
+
+
+        <LinearLayout
+            android:id="@+id/ll_scan_positiveButton2"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:orientation="horizontal"
+            android:gravity="bottom"
+            android:layout_alignParentBottom="true"
+            android:paddingLeft="26dp"
+            android:paddingRight="26dp"
+            >
+
+            <Button
+                android:visibility="gone"
+                android:id="@+id/ui_update_closeBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginRight="7dp"
+                android:background="@drawable/btn_bcg_cancel"
+                android:text="以后再说"
+                android:textSize="@dimen/sp16"
+                android:textColor="#FF5A62"
+                android:layout_centerInParent="true"
+                android:stateListAnimator="@null"
+                />
+            <Button
+                android:visibility="gone"
+                android:id="@+id/ui_update_confirmBtn"
+                android:layout_width="175dp"
+                android:layout_height="35dp"
+                android:background="@drawable/btn_bcg_confirm3"
+                android:text="立即升级"
+                android:textSize="@dimen/sp18"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"
+                android:stateListAnimator="@null"
+                />
+
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="您不是该运营区的运维人员，没有使用权限"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:layout_centerHorizontal="true"
+                />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+
+
+</LinearLayout>

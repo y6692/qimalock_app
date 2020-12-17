@@ -12,8 +12,8 @@ public class Urls {
 	public static String HTTPS = "https://";
 	public static String host = HTTP + "app.7mate.cn";
 //	public static String host = HTTP + "uat.7mate.cn";
-//  	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
-    public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
+  	public static String host2 = HTTPS + "newmapi.7mate.cn/api";
+//    public static String host2 = HTTPS + "test-mapi.7mate.cn/api";
 //	public static String host2 = HTTPS + "dev-mapi.7mate.cn/api";
 
 
@@ -157,6 +157,9 @@ public class Urls {
 
 	//人工客服接口
 	public static String phones = host2 + "/service_phone";
+
+	//检测新版本接口
+	public static String version = host2 + "/version";
 
 	/**上传头像*/
 	public static String uploadsheadImg = host + "/index.php?g=App&m=User&a=uploadsheadImg";

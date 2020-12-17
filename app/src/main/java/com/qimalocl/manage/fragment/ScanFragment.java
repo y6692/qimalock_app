@@ -2833,7 +2833,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        }else {
 //                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
 //                        }
+
                             } catch (Exception e) {
+                                Log.e("ddSearch===e", "===" + e );
                             }
                             if (loadingDialog != null && loadingDialog.isShowing()){
                                 loadingDialog.dismiss();
@@ -2842,6 +2844,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                     });
 
                 }
+
+//                @Override
+//                public void showMessage() {
+//
+//                }
+
             });
         }
     }
@@ -3003,8 +3011,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                     closeLoadingDialog();
                                     Toast.makeText(context, bean.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
-
-
 
                             } catch (Exception e) {
                                 closeLoadingDialog();
@@ -6932,9 +6938,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 //                        m_myHandler.postDelayed(new Runnable() {
 //                            @Override
 //                            public void run() {
-//
-//
-//
 //                            }
 //                        }, 2000);
 
@@ -8168,7 +8171,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
                                 }
 
                             }else{
-//
 
                                 if("11".equals(type)){
                                     if (!activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {

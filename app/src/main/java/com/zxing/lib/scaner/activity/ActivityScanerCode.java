@@ -294,6 +294,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 //		setScanRule();
 //		scan();
 
+
 	}
 
 
@@ -1473,7 +1474,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 		}else {
 //			RequestParams params = new RequestParams();
 //			params.put("tokencode",result);
-			HttpHelper.get(ActivityScanerCode.this, Urls.car+ URLEncoder.encode(result), new TextHttpResponseHandler() {
+			HttpHelper.get(ActivityScanerCode.this, Urls.car + URLEncoder.encode(result), new TextHttpResponseHandler() {
 				@Override
 				public void onStart() {
 					onStartCommon("正在提交");
@@ -1609,14 +1610,31 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 										}
 									}
 								}else {
-									LogUtil.e("lockinfo===error","==="+result.getMessage());
+									LogUtil.e("lockinfo===error",	result.getStatus_code()+"==="+result.getMessage());
 
-									Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+									if(result.getStatus_code()==407){
+										showNoticeDialog();
+
+										m_myHandler.postDelayed(new Runnable() {
+											@Override
+											public void run() {
+												if (noticeDialog != null && noticeDialog.isShowing()){
+													noticeDialog.dismiss();
+												}
+
+												closeBtnBikeNum();
+											}
+										}, 3000);
+									}else{
+										Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+										closeBtnBikeNum();
+									}
+
 									if (loadingDialog != null && loadingDialog.isShowing()){
 										loadingDialog.dismiss();
 									}
 
-									closeBtnBikeNum();
+
 								}
 
 
@@ -1625,7 +1643,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								if (loadingDialog != null && loadingDialog.isShowing()){
 									loadingDialog.dismiss();
 								}
-								LogUtil.e("Test","异常"+e);
+								LogUtil.e("lockinfo===e","==="+e);
 
 								closeBtnBikeNum();
 //								initCamera(surfaceHolder);
@@ -1638,6 +1656,24 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 			});
 		}
 	}
+
+	Dialog noticeDialog;
+	private void showNoticeDialog() {
+
+		noticeDialog = new Dialog(BaseApplication.context, R.style.Theme_AppCompat_Dialog);
+		View noticeDialogView = LayoutInflater.from(BaseApplication.context).inflate(R.layout.ui_message_view, null);
+		noticeDialog.setContentView(noticeDialogView);
+		noticeDialog.setCanceledOnTouchOutside(false);
+
+
+		noticeDialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+		noticeDialog.show();
+
+		noticeDialog.setCancelable(false);
+
+		Log.e("showNoticeDialog===2", "===");
+	}
+
 
 	private void lockInfo2(String result){
 
@@ -1734,9 +1770,12 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 									scrollToFinishActivity();
 
 								}else {
-									LogUtil.e("lockinfo===error","==="+result.getMessage());
+									LogUtil.e("lockinfo2===error","==="+result.getMessage());
 
-									Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+									if(result.getStatus_code()!=407){
+										Toast.makeText(ActivityScanerCode.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+									}
+
 									if (loadingDialog != null && loadingDialog.isShowing()){
 										loadingDialog.dismiss();
 									}
@@ -1749,7 +1788,7 @@ public class ActivityScanerCode extends SwipeBackActivity implements View.OnClic
 								if (loadingDialog != null && loadingDialog.isShowing()){
 									loadingDialog.dismiss();
 								}
-								LogUtil.e("Test","异常"+e);
+								LogUtil.e("lockinfo2===e","==="+e);
 
 								closeBtnBikeNum();
 //								initCamera(surfaceHolder);

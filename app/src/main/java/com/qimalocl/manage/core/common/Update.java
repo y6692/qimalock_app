@@ -7,6 +7,11 @@ public class Update {
 	private String link;
 	private String updateDesc;
 
+	private String version;	//最新版本号
+	private String desc;	//版本描述
+	private String download_url;	//下载链接
+
+
 	public String getAppName() {
 		return appName;
 	}
@@ -45,5 +50,33 @@ public class Update {
 
 	public void setUpdateDesc(String updateDesc) {
 		this.updateDesc = updateDesc;
+	}
+
+	public String getForce() {
+		return force;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public String getDownload_url() {
+		return download_url;
+	}
+
+	public void setDownload_url(String download_url) {
+		this.download_url = download_url;
 	}
 }
