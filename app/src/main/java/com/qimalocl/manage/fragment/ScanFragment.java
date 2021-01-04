@@ -1217,8 +1217,6 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                         getPhones();
 
-
-
 //                        if (Build.VERSION.SDK_INT >= 23) {
 //                            int checkPermission = activity.checkSelfPermission(Manifest.permission.CALL_PHONE);
 //                            if (checkPermission != PERMISSION_GRANTED) {
@@ -4880,6 +4878,8 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        LogUtil.e("onCameraChange===", "==="+cameraPosition);
+
         if (centerMarker != null) {
             setMovingMarker();
         }
@@ -4893,9 +4893,9 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
         if (isUp){
 
 //            initNearby(cameraPosition.target.latitude, cameraPosition.target.longitude);
-            if (centerMarker != null) {
-                animMarker();
-            }
+//            if (centerMarker != null) {
+//                animMarker();
+//            }
         }
     }
 
