@@ -49,13 +49,47 @@
         android:scaleType="fitXY"
         />
 
-    <ListView
-        android:id="@+id/list_item"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="7"
-        android:divider="@android:color/black"
-        android:dividerHeight="0px" />
+        android:fitsSystemWindows="true"
+        android:clipToPadding="true"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        >
+
+        <ListView
+            android:id="@+id/list_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/black"
+            android:dividerHeight="0px" />
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:clipToPadding="true"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:gravity="center"
+            >
+
+            <TextView
+                android:id="@+id/tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:gravity="center"
+                android:text="Version：" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
 
     <TextView
         android:visibility="gone"

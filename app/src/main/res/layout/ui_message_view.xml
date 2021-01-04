@@ -111,6 +111,7 @@
                 android:text="您不是该运营区的运维人员，没有使用权限"
                 android:textColor="#333333"
                 android:textSize="16sp"
+                android:gravity="center"
                 android:layout_centerHorizontal="true"
                 />
 
