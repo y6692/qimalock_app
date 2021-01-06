@@ -5,11 +5,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.KeyguardManager;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,7 +14,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
@@ -29,25 +25,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +46,6 @@ import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.AMapOptions;
-import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
@@ -75,7 +61,6 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polygon;
 import com.amap.api.maps.model.PolygonOptions;
-import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.qimalocl.manage.R;
@@ -87,8 +72,6 @@ import com.qimalocl.manage.core.common.UIHelper;
 import com.qimalocl.manage.core.common.Urls;
 import com.qimalocl.manage.core.widget.CustomDialog;
 import com.qimalocl.manage.core.widget.LoadingDialog;
-import com.qimalocl.manage.model.LngLatBean;
-import com.qimalocl.manage.model.NearbyBean;
 import com.qimalocl.manage.model.ParkingBean;
 import com.qimalocl.manage.model.ResultConsel;
 import com.qimalocl.manage.model.SchoolListBean;
@@ -96,47 +79,31 @@ import com.qimalocl.manage.model.UserBean;
 import com.qimalocl.manage.utils.JsonUtil;
 import com.qimalocl.manage.utils.LogUtil;
 import com.qimalocl.manage.utils.ToastUtil;
-import com.sunshine.blelibrary.config.Config;
-import com.sunshine.blelibrary.inter.OnConnectionListener;
-import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import cn.jock.pickerview.view.view.OptionsPickerView;
 
-import static android.app.Activity.RESULT_OK;
-import static android.content.Context.KEYGUARD_SERVICE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static com.qimalocl.manage.base.BaseApplication.school_carmodel_ids;
-import static com.qimalocl.manage.base.BaseApplication.school_id;
 import static com.qimalocl.manage.base.BaseApplication.school_id2;
 import static com.qimalocl.manage.base.BaseApplication.school_latitude;
 import static com.qimalocl.manage.base.BaseApplication.school_longitude;
-import static com.qimalocl.manage.base.BaseApplication.school_name;
 
 @SuppressLint("NewApi")
-public class GetDotActivity extends MPermissionsActivity implements View.OnClickListener, LocationSource,
+public class GetDot2Activity extends MPermissionsActivity implements View.OnClickListener, LocationSource,
         AMapLocationListener, AMap.OnCameraChangeListener, AMap.OnMapTouchListener
         , AMap.OnMapClickListener, AMap.OnMapLongClickListener{
 
-    int mode = 1;
+    int mode = 0;
 
     Unbinder unbinder;
 
@@ -654,7 +621,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                 polygon = parkingBean.getPolygon();
                 list = polygon.getPoints();
 
-//                list.remove(list.size()-1);
+                list.remove(list.size()-1);
 
                 json_LngLat = JsonUtil.objectToJson(list);
 
@@ -1998,7 +1965,7 @@ public class GetDotActivity extends MPermissionsActivity implements View.OnClick
                     aMap.animateCamera(update, 1000, new AMap.CancelableCallback() {
                         @Override
                         public void onFinish() {
-                            aMap.setOnCameraChangeListener(GetDotActivity.this);
+                            aMap.setOnCameraChangeListener(GetDot2Activity.this);
                         }
 
                         @Override
