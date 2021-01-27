@@ -92,6 +92,9 @@ public class Urls {
 	//车辆开锁接口
 	public static String unlock = host2 + "/car/unlock/";
 
+	//车辆相关 - 获取车辆锁状态，number传 传二维码字符串或者车编号(url编码)
+	public static String lockStatus = host2 + "/car/";	//{number}/lockStatus
+
 	//换电统计接口
 	public static String carbatteryaction_count = host2 + "/carbatteryaction/count";
 	//换电列表接口

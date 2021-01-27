@@ -344,7 +344,7 @@ public class HistorysRecordActivity extends SwipeBackActivity implements View.On
                         setFooterType(0);
                     }
 
-
+                    date = "";
 
                     for (int i = 0; i < array.length(); i++) {
                         HistorysRecordBean bean = JSON.parseObject(array.getJSONObject(i).toString(),HistorysRecordBean.class);

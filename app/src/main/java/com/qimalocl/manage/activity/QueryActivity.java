@@ -67,6 +67,7 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
 
     private int carmodel_id;
     private String codenum;
+    private String type;
 
     LinearLayout leftBtn;
     TextView title;
@@ -96,6 +97,7 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
 
         carmodel_id = getIntent().getIntExtra("carmodel_id", 0);
         codenum = getIntent().getStringExtra("codenum");
+        type = getIntent().getStringExtra("type");
 
         initView();
     }
@@ -143,6 +145,7 @@ public class QueryActivity extends SwipeBackActivity implements View.OnClickList
                 intent = new Intent(context, MerchantAddressMapActivity.class);
                 intent.putExtra("carmodel_id", carmodel_id);
                 intent.putExtra("codenum", codenum);
+                intent.putExtra("type", type);
                 startActivity(intent);
                 break;
 

@@ -270,6 +270,8 @@ public class UnGoodUsedDetailActivity extends SwipeBackActivity implements View.
                                 setFooterType(0);
                             }
 
+                            date = "";
+
                             for (int i = 0; i < array.length();i++){
                                 BadCarBean bean = JSON.parseObject(array.getJSONObject(i).toString(), BadCarBean.class);
 

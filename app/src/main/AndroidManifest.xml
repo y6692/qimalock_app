@@ -432,6 +432,12 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
 
         <activity
+            android:name=".activity.LockStorageZLActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+
+        <activity
             android:name=".activity.FinanceDetailActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"

@@ -104,12 +104,11 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
     private String begintime;
     private String endtime;
 
-    private String type;
-
     DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     private int carmodel_id;
     private String codenum;
+    private String type;
 
     float leveltemp = 18f;
 
@@ -125,6 +124,9 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
         carmodel_id = getIntent().getIntExtra("carmodel_id", 0);
         codenum = getIntent().getStringExtra("codenum");
+        type = getIntent().getStringExtra("type");
+
+        Log.e("mama===onCreate", carmodel_id+"==="+codenum+"==="+type+"==="+("13".equals(type)));
 
         codenum = codenum==null?"":codenum;
 
@@ -168,7 +170,11 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
         if(carmodel_id==2){
             ll_car_search.setVisibility(View.VISIBLE);
         }else{
-            ll_car_search.setVisibility(View.GONE);
+            if("13".equals(type)){
+                ll_car_search.setVisibility(View.VISIBLE);
+            }else{
+                ll_car_search.setVisibility(View.GONE);
+            }
         }
 
         backBtn.setOnClickListener(this);
@@ -231,11 +237,16 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
 //                                codenum = jsonObject.getString("number");
                                 carmodel_id = jsonObject.getInt("carmodel_id");
+                                type = jsonObject.getString("lock_id");
 
                                 if(carmodel_id==2){
                                     ll_car_search.setVisibility(View.VISIBLE);
                                 }else{
-                                    ll_car_search.setVisibility(View.GONE);
+                                    if("13".equals(type)){
+                                        ll_car_search.setVisibility(View.VISIBLE);
+                                    }else{
+                                        ll_car_search.setVisibility(View.GONE);
+                                    }
                                 }
 
                             }else{
@@ -489,11 +500,6 @@ public class MerchantAddressMapActivity extends SwipeBackActivity implements Vie
 
                         ResultConsel result = JSON.parseObject(responseString, ResultConsel.class);
 
-//                        if(result.getStatus_code()==200){
-//                            curMarker.setIcon(bikeDescripter_blue);
-//                        }else{
-//
-//                        }
 
                         Toast.makeText(context, result.getMessage(), Toast.LENGTH_SHORT).show();
 

@@ -206,7 +206,10 @@ public abstract class TextHttpResponseHandler extends AsyncHttpResponseHandler {
 
 //                        showMessage();
 
-                        mListener.onReceiveData();
+                        if(mListener!=null){
+                            mListener.onReceiveData();
+                        }
+
 
                         onSuccess(statusCode, headers, responseString);
 

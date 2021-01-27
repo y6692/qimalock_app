@@ -3,7 +3,6 @@ package com.qimalocl.manage.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,23 +10,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -45,7 +36,6 @@ import com.clj.fastble.scan.BleScanRuleConfig;
 import com.fitsleep.sunshinelibrary.utils.ConvertUtils;
 import com.fitsleep.sunshinelibrary.utils.DialogUtils;
 import com.fitsleep.sunshinelibrary.utils.EncryptUtils;
-import com.fitsleep.sunshinelibrary.utils.Logger;
 import com.fitsleep.sunshinelibrary.utils.ToastUtils;
 import com.fitsleep.sunshinelibrary.utils.ToolsUtils;
 import com.fitsleep.sunshinelibrary.utils.UtilSharedPreference;
@@ -77,12 +67,9 @@ import com.sofi.blelocker.library.protocol.IConnectResponse;
 import com.sofi.blelocker.library.protocol.IEmptyResponse;
 import com.sofi.blelocker.library.protocol.IGetRecordResponse;
 import com.sofi.blelocker.library.protocol.IGetStatusResponse;
-import com.sofi.blelocker.library.utils.BluetoothLog;
 import com.sofi.blelocker.library.utils.StringUtils;
 import com.sunshine.blelibrary.config.Config;
 import com.sunshine.blelibrary.config.LockType;
-import com.sunshine.blelibrary.inter.OnConnectionListener;
-import com.sunshine.blelibrary.inter.OnDeviceSearchListener;
 import com.sunshine.blelibrary.mode.Battery2TxOrder;
 import com.sunshine.blelibrary.mode.BatteryTxOrder;
 import com.sunshine.blelibrary.mode.GetLockStatusTxOrder;
@@ -96,9 +83,7 @@ import com.zxing.lib.scaner.activity.AddCarCaptureAct;
 
 import org.apache.http.Header;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -109,7 +94,7 @@ import static com.sofi.blelocker.library.Constants.STATUS_CONNECTED;
 
 //已改密钥密码
 @SuppressLint("NewApi")
-public class LockStorageActivity extends MPermissionsActivity {
+public class LockStorageZLActivity extends MPermissionsActivity {
     @BindView(R.id.tv_name)
     TextView tvName;
     @BindView(R.id.tv_address)
@@ -195,6 +180,7 @@ public class LockStorageActivity extends MPermissionsActivity {
     //服务器时间戳，精确到秒，用于锁同步时间
     long serverTime;
 
+    private String vendor_lock_id = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,19 +243,8 @@ public class LockStorageActivity extends MPermissionsActivity {
         type = SharedPreferencesUrls.getInstance().getString("type", "");
 
         //carType:3为type2蓝牙锁, 其他为思科
-        if("2".equals(type) || "3".equals(type)){
-            carType = "3";
-            name = getIntent().getStringExtra("name");
-        }else if("9".equals(type) || "10".equals(type)){
-            carType = "2";
-            name = getIntent().getStringExtra("name");
-        }else if("13".equals(type)){
-            carType = "4";
-            name = getIntent().getStringExtra("name");
-        }else{
-            carType = "1";
-            name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
-        }
+        carType = "4";
+        name = getIntent().getStringExtra("name");
 
         mac = getIntent().getStringExtra("mac");
         codenum = getIntent().getStringExtra("codenum");
@@ -471,7 +446,7 @@ public class LockStorageActivity extends MPermissionsActivity {
         params.put("lock_mac", mac);
         params.put("type", 4);    //默认为1、思科 2、type2蓝牙锁, 3、泰比特209D, 4、智联锁
         HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
-//        HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
+            //        HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
 //                onStartCommon("正在提交");
@@ -497,6 +472,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                                 KeyBean bean = JSON.parseObject(result.getData(), KeyBean.class);
 
                                 isStorage = bean.getType();
+                                vendor_lock_id = bean.getVendor_lock_id();
 
                                 tvType.setText("是否入库："+(isStorage==1?"是":"否"));
 
@@ -506,59 +482,19 @@ public class LockStorageActivity extends MPermissionsActivity {
                                     loadingDialog.setTitle("正在连接");
                                     loadingDialog.show();
 
-                                    if("2".equals(type) || "3".equals(type) || "9".equals(type) || "13".equals(type)){
+                                    Config.key = hexStringToByteArray(bean.getLock_secretkey());
+                                    Config.password = hexStringToByteArray(bean.getLock_password());
 
-                                        if("9".equals(type) || "13".equals(type)){
-                                            Config.key = hexStringToByteArray(bean.getLock_secretkey());
-                                            Config.password = hexStringToByteArray(bean.getLock_password());
+
+                                    LogUtil.e("lock_info===2",type+"==="+bean.getLock_secretkey()+"==="+Config.key[0]+"==="+Config.key[1]+"==="+Config.password[0]+"==="+Config.password[1]);
+
+                                    m_myHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+                                            connect();
                                         }
-
-
-                                        LogUtil.e("lock_info===2",type+"==="+bean.getLock_secretkey()+"==="+Config.key[0]+"==="+Config.key[1]+"==="+Config.password[0]+"==="+Config.password[1]);
-
-                                        m_myHandler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-//                    if(isMac){
-//                        connect();
-//                    }else{
-//
-//                        setScanRule();
-//                        scan();
-//                    }
-
-                                                connect();
-                                            }
-                                        }, 0 * 1000);
-                                    }else{
-                                        new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-
-
-                                                            m_myHandler.postDelayed(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-
-                                                                    connectDevice();
-                                                                    ClientManager.getClient().registerConnectStatusListener(mac, mConnectStatusListener);
-                                                                    ClientManager.getClient().notifyClose(mac, mCloseListener);
-
-
-                                                                }
-                                                            }, 0 * 1000);
-                                                        }
-                                                    });
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        }).start();
-                                    }
+                                    }, 0 * 1000);
                                 }
                             }else{
                                 ToastUtil.showMessageApp(context, result.getMessage());
@@ -1763,13 +1699,13 @@ public class LockStorageActivity extends MPermissionsActivity {
             UIHelper.goToAct(context, LoginActivity.class);
         }else {
             RequestParams params = new RequestParams();
-            params.put("type", carType);
+            params.put("type", 5);
             params.put("qrcode", result);    //二维码链接地址
-            params.put("lock_no", name);     //车辆编号
+//            params.put("lock_no", name);     //车辆编号
             params.put("lock_mac", mac);    //mac地址
-//            params.put("vendor_lock_id", vendor_lock_id);    //mac地址
+            params.put("vendor_lock_id", vendor_lock_id);
 
-            LogUtil.e("addCar===", result+"==="+result+"==="+name+"==="+mac);
+            LogUtil.e("addCar===", result+"==="+mac+"==="+vendor_lock_id);
 
             HttpHelper.post(context, Urls.lock_in, params, new TextHttpResponseHandler() {
                 @Override
@@ -1793,15 +1729,12 @@ public class LockStorageActivity extends MPermissionsActivity {
 
                         LogUtil.e("addCar===", responseString+"===");
 
-//                        if (result.getFlag().equals("Success")) {
-//                            Toast.makeText(context,"恭喜您，入库成功",Toast.LENGTH_SHORT).show();
-//                        }else {
-//                            Toast.makeText(context,result.getMsg(),Toast.LENGTH_SHORT).show();
-//                        }
-
                         Toast.makeText(context,	result.getMessage(), Toast.LENGTH_SHORT).show();
 
-                        finish();
+                        if(result.getStatus_code()==200){
+                            finish();
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                         LogUtil.e("addCar===eee", "==="+e);
@@ -1830,7 +1763,7 @@ public class LockStorageActivity extends MPermissionsActivity {
                     if (permissions[0].equals(Manifest.permission.CAMERA)){
                         try {
                             Intent intent = new Intent();
-                            intent.setClass(LockStorageActivity.this, AddCarCaptureAct.class);
+                            intent.setClass(LockStorageZLActivity.this, AddCarCaptureAct.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivityForResult(intent, 1);
                         } catch (Exception e) {

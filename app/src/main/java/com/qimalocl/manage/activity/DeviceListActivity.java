@@ -369,7 +369,13 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 //                    startActivity(intent);
                 }else{
-                    IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+
+                    if("13".equals(type)){
+                        IntentUtils.startActivity(DeviceListActivity.this, LockStorageZLActivity.class, bundle);
+                    }else{
+                        IntentUtils.startActivity(DeviceListActivity.this, LockStorageActivity.class, bundle);
+                    }
+
 
 //                    Intent intent = new Intent();
 //                    intent.setClass(context, LockStorageActivity.class);
@@ -442,7 +448,7 @@ public class DeviceListActivity extends MPermissionsActivity{
 //                    bleDeviceList.add(bleDevice);
 //                }
 
-                if (device.getName()!=null && !macList.contains(device.getMac()) && ( ("2".equals(type) && device.getName().startsWith("NokeLock")) || ("9".equals(type) && device.getName().startsWith("SNLock-")) || (("5".equals(type) || "6".equals(type)) && device.getName().startsWith("bike:")) ) ) {
+                if (device.getName()!=null && !macList.contains(device.getMac()) && ( (("2".equals(type) || "13".equals(type)) && device.getName().startsWith("NokeLock")) || ("9".equals(type) && device.getName().startsWith("SNLock-")) || (("5".equals(type) || "6".equals(type)) && device.getName().startsWith("bike:")) ) ) {
 
                     LogUtil.e("dla===onLeScan2", device+"==="+device.getMac()+"==="+adapterList.contains(device));
 
