@@ -288,6 +288,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
         initView();
 
+
         new Thread(new Runnable() {
             @Override
             public void run() {
