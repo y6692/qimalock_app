@@ -256,15 +256,29 @@ public class LockStorageActivity extends MPermissionsActivity {
 //        type = getIntent().getStringExtra("type");
         type = SharedPreferencesUrls.getInstance().getString("type", "");
 
-        //carType:3为type2蓝牙锁, 其他为思科
+//        //carType:3为type2蓝牙锁, 其他为思科
+//        if("2".equals(type) || "3".equals(type)){
+//            carType = "3";
+//            name = getIntent().getStringExtra("name");
+//        }else if("9".equals(type) || "10".equals(type)){
+//            carType = "2";
+//            name = getIntent().getStringExtra("name");
+//        }else if("13".equals(type)){
+//            carType = "4";
+//            name = getIntent().getStringExtra("name");
+//        }else if("5".equals(type) || "6".equals(type)){
+////            carType = "4";
+////            name = getIntent().getStringExtra("name");
+//        }else{
+//            carType = "1";
+//            name = StringUtils.getBikeName(getIntent().getStringExtra("name"));
+//        }
+
         if("2".equals(type) || "3".equals(type)){
             carType = "3";
             name = getIntent().getStringExtra("name");
         }else if("9".equals(type) || "10".equals(type)){
             carType = "2";
-            name = getIntent().getStringExtra("name");
-        }else if("13".equals(type)){
-            carType = "4";
             name = getIntent().getStringExtra("name");
         }else{
             carType = "1";
@@ -469,9 +483,9 @@ public class LockStorageActivity extends MPermissionsActivity {
 
         RequestParams params = new RequestParams();
         params.put("lock_mac", mac);
-        params.put("type", 4);    //默认为1、思科 2、type2蓝牙锁, 3、泰比特209D, 4、智联锁
+        params.put("type", "3".equals(carType)?2:1);
         HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
-//        HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
+            //        HttpHelper.get(context, Urls.lock_info, params, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
 //                onStartCommon("正在提交");
@@ -506,9 +520,9 @@ public class LockStorageActivity extends MPermissionsActivity {
                                     loadingDialog.setTitle("正在连接");
                                     loadingDialog.show();
 
-                                    if("2".equals(type) || "3".equals(type) || "9".equals(type) || "13".equals(type)){
+                                    if("2".equals(type) || "3".equals(type) || "9".equals(type)){
 
-                                        if("9".equals(type) || "13".equals(type)){
+                                        if("9".equals(type)){
                                             Config.key = hexStringToByteArray(bean.getLock_secretkey());
                                             Config.password = hexStringToByteArray(bean.getLock_password());
                                         }
