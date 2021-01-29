@@ -4308,7 +4308,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
                                         LatLng latLng = new LatLng(Double.parseDouble(jsonObject.getString("latitude")), Double.parseDouble(jsonObject.getString("longitude")));
 
-                                        LogUtil.e("sf===operationarea2", "==="+latLng);
+//                                        LogUtil.e("sf===operationarea2", "==="+latLng);
 
                                         flag=0;
                                         list.add(latLng);
@@ -4477,13 +4477,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
 //                                          LogUtil.e("cars===2", bean.getNumber()+"==="+array.getJSONObject(i).toString());
 
-                                    // 加入自定义标签
                                     MarkerOptions bikeMarkerOption = null;
 
                                     int lock_id = bean.getLock_id();
                                     int carmodel_id = bean.getCarmodel_id();
 
-                                    LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+carmodel_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
+//                                    LogUtil.e("cars===2", bikeMarkerList.size()+"==="+lock_id+"==="+carmodel_id+"==="+bean.getNumber()+"==="+bean.getLevel()+"==="+bean.getLatitude()+"==="+bean.getLongitude());   //31.751411657279===119.94790856569   31.762293594349===119.92528159784
 
                                     if(carType==0){
                                         if(carmodel_id==1){
@@ -4783,6 +4782,7 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
      */
     @Override
     public void onDestroy() {
+        closeLoadingDialog();
 
         if("5".equals(type)  || "6".equals(type)){
             ClientManager.getClient().stopSearch();
@@ -8807,14 +8807,12 @@ public class ScanFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public void onResult(ScanResult scanResult) {
-
     }
 
     void closeLoadingDialog(){
         if (loadingDialog != null && loadingDialog.isShowing()){
             loadingDialog.dismiss();
         }
-
     }
 
     void closeLoadingDialog2(){

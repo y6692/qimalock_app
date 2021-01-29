@@ -118,7 +118,6 @@ public class BaseFragment extends Fragment {
 				}
 			}
 		});
-
 	}
 
 	public void onFailureCommon(final String s) {
@@ -131,7 +130,6 @@ public class BaseFragment extends Fragment {
 				UIHelper.ToastError(context, s);
 			}
 		});
-
 	}
 
 	public void onFailureCommon(final String title, final String s) {
